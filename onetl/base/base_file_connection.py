@@ -595,7 +595,7 @@ class BaseFileConnection(BaseConnection):
         Examples
         --------
 
-        >>> remote_file = connection.upload(
+        >>> remote_file = connection.upload_file(
         ...     local_file_path="/path/to/source.csv",
         ...     remote_file_path="/path/to/target.csv",
         ... )
