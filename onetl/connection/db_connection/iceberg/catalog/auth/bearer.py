@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from typing import Dict
 
