@@ -61,6 +61,7 @@ Breaking Changes
               ),
           ),
           warehouse=...,
+          spark=spark,
       )
 
   And also set of classes to configure for warehouses:
