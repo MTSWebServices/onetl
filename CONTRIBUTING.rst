@@ -6,15 +6,6 @@ reports, improving documentation, submitting feature requests, reviewing
 new submissions, or contributing code that can be incorporated into the
 project.
 
-Limitations
------------
-
-We should keep close to these items during development:
-
-* Some companies still use old Spark versions, like 3.2.0. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
-* Different users uses onETL in different ways - some uses only DB connectors, some only files. Connector-specific dependencies should be optional.
-* Instead of creating classes with a lot of different options, prefer splitting them into smaller classes, e.g. options class, context manager, etc, and using composition.
-
 Review process
 --------------
 
@@ -24,14 +15,17 @@ to see, why you need it, and how it will work. Discuss your ideas
 transparently and get community feedback before proceeding.
 
 Small changes can directly be crafted and submitted to the GitHub
-Repository as a Pull Request. This requires creating a repo fork.
+Repository as a Pull Request. This requires creating a **repo fork** using
+`instruction <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_.
 
-Create a fork
-~~~~~~~~~~~~~
+Important notes
+---------------
 
-If you are not a member of a development team building onETL, you should create a fork before making any changes.
+Please take into account that:
 
-Please follow `instruction <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_.
+* Some companies still use old Spark versions, like 3.2.0. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
+* Different users uses onETL in different ways - some uses only DB connectors, some only files. Connector-specific dependencies should be optional.
+* Instead of creating classes with a lot of different options, prefer splitting them into smaller classes, e.g. options class, context manager, etc, and using composition.
 
 Initial setup for local development
 -----------------------------------
