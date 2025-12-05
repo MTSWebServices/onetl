@@ -54,10 +54,6 @@ log = logging.getLogger(__name__)
 class Iceberg(DBConnection):
     """Iceberg connection. |support_hooks|
 
-    .. danger::
-
-        This is an alpha version of connector, it's behavior may change in the future.
-
     .. seealso::
 
         Before using this connector please take into account :ref:`iceberg-prerequisites`
