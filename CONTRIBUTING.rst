@@ -340,7 +340,7 @@ How to skip change notes check?
 Just add ``ci:skip-changelog`` label to pull request.
 
 Release Process
-^^^^^^^^^^^^^^^
+---------------
 
 Before making a release from the ``develop`` branch, follow these steps:
 
