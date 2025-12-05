@@ -51,7 +51,7 @@ Goals
 * Provide unified classes to extract data from (**E**) & load data to (**L**) various stores.
 * Provides `Spark DataFrame API <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.html>`_ for performing transformations (**T**) in terms of *ETL*.
 * Provide direct assess to database, allowing to execute SQL queries, as well as DDL, DML, and call functions/procedures. This can be used for building up *ELT* pipelines.
-* Support different `read strategies <https://onetl.readthedocs.io/en/stable/strategy/index.html>`_ for incremental and batch data fetching.
+* Support different `read strategies <https://onetl.readthedocs.io/en/stable/strategy/index.html>`_, e.g. icremental reads.
 * Provide `hooks <https://onetl.readthedocs.io/en/stable/hooks/index.html>`_ & `plugins <https://onetl.readthedocs.io/en/stable/plugins.html>`_ mechanism for altering behavior of internal classes.
 
 Non-goals
@@ -60,7 +60,7 @@ Non-goals
 * onETL is not a Spark replacement. It just provides additional functionality that Spark does not have, and improves UX for end users.
 * onETL is not a framework, as it does not have requirements to project structure, naming, the way of running ETL/ELT processes, configuration, etc. All of that should be implemented in some other tool.
 * onETL is deliberately developed without any integration with scheduling software like Apache Airflow. All integrations should be implemented as separated tools.
-* No Spark streaming support, only batch operations are supported. For streaming prefer `Apache Flink <https://flink.apache.org/>`_.
+* No Spark streaming support of any kind, only batch operations are supported. For streaming prefer `Apache Flink <https://flink.apache.org/>`_.
 
 Requirements
 ------------
