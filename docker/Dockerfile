@@ -1,5 +1,5 @@
 FROM python:3.13-slim-bookworm as base
-LABEL maintainer="DataOps.ETL"
+LABEL maintainer="MWS Data Bridge"
 
 ARG ONETL_USER_HOME=/usr/local/onetl
 

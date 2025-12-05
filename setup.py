@@ -55,7 +55,7 @@ long_description = (here / "README.rst").read_text()
 setup(
     name="onetl",
     version=get_version(),
-    author="DataOps.ETL",
+    author="MWS Data Bridge",
     author_email="onetools@mts.ru",
     description="One ETL tool to rule them all",
     long_description=long_description,
