@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-present MTS PJSC
+# SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from onetl.base.base_connection import BaseConnection
 from onetl.base.base_db_connection import BaseDBConnection, BaseDBDialect
