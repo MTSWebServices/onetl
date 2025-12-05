@@ -11,9 +11,27 @@ Limitations
 
 We should keep close to these items during development:
 
-* Some companies still use old Spark versions, like 2.3.1. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
+* Some companies still use old Spark versions, like 3.2.0. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
 * Different users uses onETL in different ways - some uses only DB connectors, some only files. Connector-specific dependencies should be optional.
 * Instead of creating classes with a lot of different options, prefer splitting them into smaller classes, e.g. options class, context manager, etc, and using composition.
+
+Review process
+--------------
+
+For any **significant** changes please create a new GitHub issue and
+enhancements that you wish to make. Describe the feature you would like
+to see, why you need it, and how it will work. Discuss your ideas
+transparently and get community feedback before proceeding.
+
+Small changes can directly be crafted and submitted to the GitHub
+Repository as a Pull Request. This requires creating a repo fork.
+
+Create a fork
+~~~~~~~~~~~~~
+
+If you are not a member of a development team building onETL, you should create a fork before making any changes.
+
+Please follow `instruction <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_.
 
 Initial setup for local development
 -----------------------------------
@@ -23,17 +41,10 @@ Install Git
 
 Please follow `instruction <https://docs.github.com/en/get-started/quickstart/set-up-git>`_.
 
-Create a fork
-~~~~~~~~~~~~~
-
-If you are not a member of a development team building onETL, you should create a fork before making any changes.
-
-Please follow `instruction <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_.
-
 Clone the repo
 ~~~~~~~~~~~~~~
 
-Open terminal and run these commands:
+Open terminal and run these commands to clone a **forked** repo:
 
 .. code:: bash
 
@@ -41,8 +52,8 @@ Open terminal and run these commands:
 
     cd onetl
 
-Setup environment
-~~~~~~~~~~~~~~~~~
+Enable pre-commit hooks
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Create virtualenv and install dependencies:
 
@@ -60,24 +71,7 @@ Create virtualenv and install dependencies:
         -r requirements/s3.txt \
         -r requirements/sftp.txt \
         -r requirements/webdav.txt \
-        -r requirements/dev.txt \
-        -r requirements/docs.txt \
-        -r requirements/tests/base.txt \
-        -r requirements/tests/clickhouse.txt \
-        -r requirements/tests/kafka.txt \
-        -r requirements/tests/mongodb.txt \
-        -r requirements/tests/mssql.txt \
-        -r requirements/tests/mysql.txt \
-        -r requirements/tests/postgres.txt \
-        -r requirements/tests/oracle.txt \
-        -r requirements/tests/pydantic-2.txt \
-        -r requirements/tests/spark-3.5.7.txt
-
-    # TODO: remove after https://github.com/zqmillet/sphinx-plantuml/pull/4
-    pip install sphinx-plantuml --no-deps
-
-Enable pre-commit hooks
-~~~~~~~~~~~~~~~~~~~~~~~
+        -r requirements/dev.txt
 
 Install pre-commit hooks:
 
@@ -96,6 +90,29 @@ How to
 
 Run tests locally
 ~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    You can skip this if only documentation is changed.
+
+Setup environment
+^^^^^^^^^^^^^^^^^
+
+Create virtualenv and install dependencies:
+
+.. code:: bash
+
+    pip install -U \
+        -r requirements/tests/base.txt \
+        -r requirements/tests/clickhouse.txt \
+        -r requirements/tests/kafka.txt \
+        -r requirements/tests/mongodb.txt \
+        -r requirements/tests/mssql.txt \
+        -r requirements/tests/mysql.txt \
+        -r requirements/tests/postgres.txt \
+        -r requirements/tests/oracle.txt \
+        -r requirements/tests/pydantic-2.txt \
+        -r requirements/tests/spark-3.5.7.txt
 
 Using docker-compose
 ^^^^^^^^^^^^^^^^^^^^
@@ -218,6 +235,19 @@ Stop all containers and remove created volumes:
 Build documentation
 ~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    You can skip this if only source code behavior remains the same.
+
+Create virtualenv and install dependencies:
+
+.. code:: bash
+
+    pip install -U -r requirements/docs.txt
+
+    # TODO: remove after https://github.com/zqmillet/sphinx-plantuml/pull/4
+    pip install sphinx-plantuml --no-deps
+
 Build documentation using Sphinx:
 
 .. code:: bash
@@ -227,21 +257,6 @@ Build documentation using Sphinx:
 
 Then open in browser ``docs/_build/index.html``.
 
-
-Review process
---------------
-
-Please create a new GitHub issue for any significant changes and
-enhancements that you wish to make. Provide the feature you would like
-to see, why you need it, and how it will work. Discuss your ideas
-transparently and get community feedback before proceeding.
-
-Significant Changes that you wish to contribute to the project should be
-discussed first in a GitHub issue that clearly outlines the changes and
-benefits of the feature.
-
-Small Changes can directly be crafted and submitted to the GitHub
-Repository as a Pull Request.
 
 Create pull request
 ~~~~~~~~~~~~~~~~~~~
@@ -341,6 +356,10 @@ Just add ``ci:skip-changelog`` label to pull request.
 
 Release Process
 ---------------
+
+.. note::
+
+    This is for repo maintainers only
 
 Before making a release from the ``develop`` branch, follow these steps:
 
