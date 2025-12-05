@@ -37,6 +37,5 @@ Iceberg supports multiple catalog implementations. Here are some popular options
 * `Apache Iceberg Hadoop Catalog <https://iceberg.apache.org/docs/latest/spark-configuration/>`_
 * `Lakekeeper <https://docs.lakekeeper.io/getting-started/>`_
 * `Polaris <https://polaris.apache.org/in-dev/unreleased/getting-started/>`_
-* `Nessie <https://projectnessie.org/guides/iceberg-rest/>`_
 * `Apache Gravitino <https://gravitino.apache.org/docs/>`_
 * `Databricks Unity Catalog <https://docs.databricks.com/aws/en/external-access/iceberg/>`_

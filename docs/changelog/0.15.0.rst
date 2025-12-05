@@ -88,14 +88,14 @@ Breaking Changes
       )
 
   .. code-block:: python
-      :caption: For Lakekeeper, Polaris, Nessie
+      :caption: For Lakekeeper, Polaris, Gravitino
 
       iceberg = Iceberg(
           catalog_name="mycatalog",
           catalog=...,
           # Delegate warehouse config to REST Catalog
           warehouse=Iceberg.DelegatedWarehouse(
-              warehouse="/some/warehouse",
+              warehouse="some-warehouse",
               access_delegation="vended-credentials",
           ),
           spark=spark,
