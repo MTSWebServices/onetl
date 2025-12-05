@@ -1,1 +1,0 @@
-Added warehouse usage to ``IcebergRESTCatalog``

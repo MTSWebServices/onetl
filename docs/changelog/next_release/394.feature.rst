@@ -1,1 +1,0 @@
-Introduced Basic authentication in Iceberg REST Catalog

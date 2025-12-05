@@ -1,1 +1,0 @@
-Implement ``Hive.WriteOptions(table_properties)``.

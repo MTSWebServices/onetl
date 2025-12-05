@@ -1,1 +1,0 @@
-Drop ``Teradata`` connector. It is not used in MTS anymore, and never had proper integration tests.
