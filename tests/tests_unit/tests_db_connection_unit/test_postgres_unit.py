@@ -15,15 +15,15 @@ def test_postgres_class_attributes():
 def test_postgres_package():
     warning_msg = re.escape("will be removed in 1.0.0, use `Postgres.get_packages()` instead")
     with pytest.warns(UserWarning, match=warning_msg):
-        assert Postgres.package == "org.postgresql:postgresql:42.7.7"
+        assert Postgres.package == "org.postgresql:postgresql:42.7.8"
 
 
 @pytest.mark.parametrize(
     "package_version, expected_packages",
     [
-        (None, ["org.postgresql:postgresql:42.7.7"]),
-        ("42.7.7", ["org.postgresql:postgresql:42.7.7"]),
-        ("42.7.7-patch", ["org.postgresql:postgresql:42.7.7-patch"]),
+        (None, ["org.postgresql:postgresql:42.7.8"]),
+        ("42.7.8", ["org.postgresql:postgresql:42.7.8"]),
+        ("42.7.8-patch", ["org.postgresql:postgresql:42.7.8-patch"]),
         ("42.6.0", ["org.postgresql:postgresql:42.6.0"]),
     ],
 )
