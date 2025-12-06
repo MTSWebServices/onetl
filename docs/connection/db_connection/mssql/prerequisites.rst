@@ -25,6 +25,18 @@ See :ref:`install-spark` installation instruction for more details.
 
 Connecting to MSSQL
 --------------------
+.. attention::
+   In case of NTLM Authentication to MSSQL the similar error might occur:
+
+   .. code-block:: bash
+
+     com.microsoft.sqlserver.jdbc.SQLServerException: The authenticationScheme ntlm is not valid.
+     at com.microsoft.sqlserver.jdbc.AuthenticationScheme.valueOfString(SQLServerDriver.java:153)
+     at com.microsoft.sqlserver.jdbc.SQLServerConnection.connectInternal(SQLServerConnection.java:1221)
+     at com.microsoft.sqlserver.jdbc.SQLServerConnection.connect(SQLServerConnection.java:866)
+     at com.microsoft.sqlserver.jdbc.SQLServerDriver.connect(SQLServerDriver.java:569)
+
+   Consider using proper version of JDBC driver (for instance, com.microsoft.sqlserver_mssql-jdbc-12.8.1.jre8.jar) and add it to the driver's class path.
 
 Connection port
 ~~~~~~~~~~~~~~~
