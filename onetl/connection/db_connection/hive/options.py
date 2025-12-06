@@ -319,7 +319,7 @@ class HiveWriteOptions(GenericOptions):
     """
 
     table_properties: Dict[str, Any] = Field(default_factory=dict)
-    """Properties to configure table behavior.
+    """TBLPROPERTIES to add to freshly created table.
 
     .. versionadded:: 0.15.0
 

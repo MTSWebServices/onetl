@@ -92,7 +92,9 @@ class SparkS3(SparkFileDFConnection):
         Region name of bucket in S3 service
 
     path_style_access : bool, optional
-        ``True`` to connect to bucket as ``protocol://host/bucket``, ``False`` to use ``protocol://bucket.host`` instead. This depends on S3 implementation.
+        ``True`` to connect to bucket as ``protocol://host/bucket``,
+        ``False`` to use ``protocol://bucket.host`` instead.
+        This depends on S3 implementation.
 
     extra : dict, optional
         A dictionary of additional properties to be used when connecting to S3.
@@ -110,7 +112,6 @@ class SparkS3(SparkFileDFConnection):
                 "committer.magic.enabled": True,
                 "committer.name": "magic",
                 "connection.timeout": 300000,
-                "path.style.access": True,
             }
 
         .. warning::
