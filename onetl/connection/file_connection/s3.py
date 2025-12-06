@@ -115,6 +115,22 @@ class S3(FileConnection):
             secret_key="SECRET_KEY",
         ).check()
 
+    .. hint::
+
+        In case of annoying AccessDenied error (with all permissions properly configured) specify region explicitly, for instance:
+
+        .. code:: python
+
+            from onetl.connection import S3
+
+            s3 = S3(
+                host="s3.domain.com",
+                protocol="http",
+                bucket="my-bucket",
+                access_key="ACCESS_KEY",
+                secret_key="SECRET_KEY",
+                region="us-east-1",
+            ).check()
     """
 
     host: Host
