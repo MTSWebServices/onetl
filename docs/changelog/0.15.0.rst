@@ -135,6 +135,14 @@ Features
 
   In particular, table's ``"auto.purge": "true"`` can be set now.
 
+Improvements
+------------
+
+Add a runtime warning about missing ``S3(region=...)`` and ``SparkS3(region=...)`` params.
+It is recommended to explicitly pass this parameter to avoid potential access errors.
+
+Thanks to :github:user:`yabel`
+
 Dependencies
 ------------
 
