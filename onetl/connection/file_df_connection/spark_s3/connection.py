@@ -408,7 +408,7 @@ class SparkS3(SparkFileDFConnection):
 
         return spark
 
-    @validator("region")
+    @validator("region", always=True)
     def _region_is_recommended(cls, value):
         if not value:
             warnings.warn(

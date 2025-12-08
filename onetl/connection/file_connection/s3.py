@@ -137,7 +137,7 @@ class S3(FileConnection):
         values["port"] = 443 if values["protocol"] == "https" else 80
         return values
 
-    @validator("region")
+    @validator("region", always=True)
     def _region_is_recommended(cls, value):
         if not value:
             warnings.warn(
