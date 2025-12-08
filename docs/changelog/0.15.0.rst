@@ -123,10 +123,6 @@ Having classes instead of dicts brings IDE autocompletion, and allows to reuse t
 Features
 --------
 
-- Allow to set ``SparkS3(path_style_access=True)`` instead  of ``SparkS3(extra={"path.style.access": True)`` (:github:pull:`392`).
-
-  This change improves IDE autocompletion and made it more explicit that the parameter is important for the connector's functionality.
-
 - Added support for ``Iceberg.WriteOptions(table_properties={})`` (:github:pull:`401`).
 
   In particular, table's ``"location": "/some/warehouse/mytable"`` can be set now.
@@ -138,8 +134,13 @@ Features
 Improvements
 ------------
 
-Add a runtime warning about missing ``S3(region=...)`` and ``SparkS3(region=...)`` params.
-It is recommended to explicitly pass this parameter to avoid potential access errors.
+- Allow to set ``SparkS3(path_style_access=True)`` instead  of ``SparkS3(extra={"path.style.access": True)`` (:github:pull:`392`).
+
+  This change improves IDE autocompletion and made it more explicit that the parameter is important for the connector's functionality.
+
+  - Add a runtime warning about missing ``S3(region=...)`` and ``SparkS3(region=...)`` params (:github:pull:`418`).
+
+  It is recommended to explicitly pass this parameter to avoid potential access errors.
 
 Thanks to :github:user:`yabel`
 
