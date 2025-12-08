@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -83,14 +83,14 @@ class SparkListenerTask:
 
     @classmethod
     def create(cls, task_info):
-        # https://spark.apache.org/docs/3.5.6/api/java/org/apache/spark/scheduler/TaskInfo.html
+        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/TaskInfo.html
         return cls(id=task_info.taskId())
 
     def on_task_start(self, event):
-        # https://spark.apache.org/docs/3.5.6/api/java/org/apache/spark/scheduler/SparkListenerTaskStart.html
+        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListenerTaskStart.html
         self.status = SparkListenerTaskStatus(event.taskInfo().status())
 
     def on_task_end(self, event):
-        # https://spark.apache.org/docs/3.5.6/api/java/org/apache/spark/scheduler/SparkListenerTaskEnd.html
+        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListenerTaskEnd.html
         self.status = SparkListenerTaskStatus(event.taskInfo().status())
         self.metrics = SparkListenerTaskMetrics.create(event.taskMetrics())

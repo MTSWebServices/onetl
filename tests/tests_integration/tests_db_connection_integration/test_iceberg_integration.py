@@ -2,23 +2,18 @@ import logging
 
 import pytest
 
-from onetl._util.version import Version
-
 try:
     import pandas
-    import pyspark
 except ImportError:
     pytest.skip("Missing pandas or pyspark", allow_module_level=True)
-
-if Version(pyspark.__version__).major > 3:
-    pytest.skip("Iceberg doesn't support Spark 4 yet", allow_module_level=True)
 
 pytestmark = pytest.mark.iceberg
 
 
-def test_iceberg_check(iceberg_connection, caplog):
+def test_iceberg_check(iceberg_connection_fs_catalog_local_fs_warehouse, caplog):
+    connection = iceberg_connection_fs_catalog_local_fs_warehouse
     with caplog.at_level(logging.INFO):
-        assert iceberg_connection.check() == iceberg_connection
+        assert connection.check() == connection
 
     assert "|Iceberg|" in caplog.text
     assert "spark = " not in caplog.text
@@ -27,13 +22,14 @@ def test_iceberg_check(iceberg_connection, caplog):
 
 
 @pytest.mark.parametrize("suffix", ["", ";"])
-def test_iceberg_connection_sql(iceberg_connection, processing, load_table_data, suffix):
+def test_iceberg_connection_sql(iceberg_connection_fs_catalog_local_fs_warehouse, processing, load_table_data, suffix):
     database_table_column = database_name_column = "namespace"
+    connection = iceberg_connection_fs_catalog_local_fs_warehouse
 
-    schema = f"{iceberg_connection.catalog_name}.{load_table_data.schema}"
-    table = f"{iceberg_connection.catalog_name}.{load_table_data.full_name}"
+    schema = f"{connection.catalog_name}.{load_table_data.schema}"
+    table = f"{connection.catalog_name}.{load_table_data.full_name}"
 
-    df = iceberg_connection.sql(f"SELECT * FROM {table}{suffix}")
+    df = connection.sql(f"SELECT * FROM {table}{suffix}")
     table_df = processing.get_expected_dataframe(
         schema=load_table_data.schema,
         table=load_table_data.table,
@@ -41,15 +37,15 @@ def test_iceberg_connection_sql(iceberg_connection, processing, load_table_data,
     )
     processing.assert_equal_df(df=df, other_frame=table_df, order_by="id_int")
 
-    df = iceberg_connection.sql(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
+    df = connection.sql(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
     filtered_df = table_df[table_df.id_int < 50]
     processing.assert_equal_df(df=df, other_frame=filtered_df, order_by="id_int")
 
-    df = iceberg_connection.sql("SHOW NAMESPACES")
+    df = connection.sql("SHOW NAMESPACES")
     result_df = pandas.DataFrame([["default"]], columns=[database_table_column])
     processing.assert_equal_df(df=df, other_frame=result_df)
 
-    df = iceberg_connection.sql(f"SHOW TABLES IN {schema}")
+    df = connection.sql(f"SHOW TABLES IN {schema}")
     result_df = pandas.DataFrame(
         [[schema.split(".")[-1], load_table_data.table, False]],
         columns=[database_name_column, "tableName", "isTemporary"],
@@ -58,11 +54,17 @@ def test_iceberg_connection_sql(iceberg_connection, processing, load_table_data,
 
     # wrong syntax
     with pytest.raises(Exception):
-        iceberg_connection.sql(f"SELEC 1{suffix}")
+        connection.sql(f"SELEC 1{suffix}")
 
 
 @pytest.mark.parametrize("suffix", ["", ";"])
-def test_iceberg_connection_execute_ddl(iceberg_connection, processing, get_schema_table, suffix):
+def test_iceberg_connection_execute_ddl(
+    iceberg_connection_fs_catalog_local_fs_warehouse,
+    processing,
+    get_schema_table,
+    suffix,
+):
+    connection = iceberg_connection_fs_catalog_local_fs_warehouse
     table_name, schema, table = get_schema_table
     fields = {
         column_name: processing.get_column_type(column_name)
@@ -72,28 +74,41 @@ def test_iceberg_connection_execute_ddl(iceberg_connection, processing, get_sche
 
     id_int_type = processing.get_column_type("id_int")
 
-    assert not iceberg_connection.execute(processing.create_schema_ddl(schema) + suffix)
+    assert not connection.execute(processing.create_schema_ddl(schema) + suffix)
 
-    assert not iceberg_connection.execute(
+    assert not connection.execute(
         processing.create_table_ddl(table, fields, schema) + f" PARTITIONED BY (id_int {id_int_type})" + suffix,
     )
-    assert not iceberg_connection.execute(processing.drop_table_ddl(table, schema) + suffix)
+    assert not connection.execute(
+        processing.drop_table_ddl(table, schema) + suffix,
+    )
     with pytest.raises(Exception):
-        iceberg_connection.execute(f"DROP TABLE {iceberg_connection.catalog_name}.{schema}.missing_table{suffix}")
+        connection.execute(
+            f"DROP TABLE {connection.catalog_name}.{schema}.missing_table{suffix}",
+        )
 
-    assert not iceberg_connection.execute(
+    assert not connection.execute(
         processing.create_table_ddl(table, fields, schema) + suffix,
     )
     # not supported by Iceberg
     with pytest.raises(Exception):
-        iceberg_connection.execute(f"DROP NAMESPACE {iceberg_connection.catalog_name}.{schema} CASCADE{suffix}")
+        connection.execute(
+            f"DROP NAMESPACE {connection.catalog_name}.{schema} CASCADE{suffix}",
+        )
 
 
 @pytest.mark.parametrize("suffix", ["", ";"])
-def test_iceberg_connection_execute_dml(request, iceberg_connection, processing, load_table_data, suffix):
+def test_iceberg_connection_execute_dml(
+    request,
+    iceberg_connection_fs_catalog_local_fs_warehouse,
+    processing,
+    load_table_data,
+    suffix,
+):
+    connection = iceberg_connection_fs_catalog_local_fs_warehouse
     table_name, schema, table = load_table_data
     temp_name = f"{table}_temp"
-    temp_table = f"{iceberg_connection.catalog_name}.{schema}.{temp_name}"
+    temp_table = f"{connection.catalog_name}.{schema}.{temp_name}"
 
     table_df = processing.get_expected_dataframe(
         schema=load_table_data.schema,
@@ -102,23 +117,23 @@ def test_iceberg_connection_execute_dml(request, iceberg_connection, processing,
     )
     fields = {col: processing.get_column_type(col) for col in processing.column_names}
 
-    assert not iceberg_connection.execute(
+    assert not connection.execute(
         processing.create_table_ddl(temp_name, fields, schema) + suffix,
     )
 
     def table_finalizer():
-        iceberg_connection.execute(processing.drop_table_ddl(temp_name, schema))
+        connection.execute(processing.drop_table_ddl(temp_name, schema))
 
     request.addfinalizer(table_finalizer)
 
-    assert not iceberg_connection.sql(f"SELECT * FROM {temp_table}{suffix}").count()
+    assert not connection.sql(f"SELECT * FROM {temp_table}{suffix}").count()
 
-    assert not iceberg_connection.execute(
-        f"INSERT INTO {temp_table} SELECT * FROM {iceberg_connection.catalog_name}.{table_name}",
+    assert not connection.execute(
+        f"INSERT INTO {temp_table} SELECT * FROM {connection.catalog_name}.{table_name}",
     )
-    df = iceberg_connection.sql(f"SELECT * FROM {temp_table}{suffix}")
+    df = connection.sql(f"SELECT * FROM {temp_table}{suffix}")
     assert df.count()
     processing.assert_equal_df(df=df, other_frame=table_df, order_by="id_int")
 
-    assert not iceberg_connection.execute(f"TRUNCATE TABLE {temp_table}{suffix}")
-    assert not iceberg_connection.sql(f"SELECT * FROM {temp_table}{suffix}").count()
+    assert not connection.execute(f"TRUNCATE TABLE {temp_table}{suffix}")
+    assert not connection.sql(f"SELECT * FROM {temp_table}{suffix}").count()

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class BaseSparkListener:
     """Base no-op SparkListener implementation.
 
-    See `SparkListener <https://spark.apache.org/docs/3.5.6/api/java/org/apache/spark/scheduler/SparkListener.html>`_ interface.
+    See `SparkListener <https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListener.html>`_ interface.
     """
 
     spark: SparkSession

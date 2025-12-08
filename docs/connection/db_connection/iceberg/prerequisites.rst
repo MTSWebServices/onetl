@@ -15,8 +15,8 @@ Version Compatibility
 ---------------------
 
 * Iceberg catalog: depends on chosen implementation (e.g. REST, Hadoop)
-* Spark versions: 3.2.x – 3.5.x
-* Java versions: 8 – 20
+* Spark versions: 3.2.x – 4.0.x
+* Java versions: 8 – 22
 
 See `official documentation <https://iceberg.apache.org/docs/latest/spark-getting-started/>`_
 for details on catalog and warehouse configuration.
@@ -29,15 +29,13 @@ BEFORE creating the connector instance.
 
 See :ref:`install-spark` installation instruction for more details.
 
-Configuring Catalog and Warehouse
+Popular Metastore Implementations
 ---------------------------------
 
-To work with Iceberg tables you must configure a **catalog** and a **warehouse location**.
-All configuration parameters are passed down as SparkSession options, see
-`Iceberg Spark configuration <https://iceberg.apache.org/docs/latest/spark-configuration/>`_.
+Iceberg supports multiple catalog implementations. Here are some popular options:
 
-For now, these options can be specified using the ``extra`` field in :ref:`iceberg-connection`.
-
-.. danger::
-
-    This will be changed in future onETL versions.
+* `Apache Iceberg Hadoop Catalog <https://iceberg.apache.org/docs/latest/spark-configuration/>`_
+* `Lakekeeper <https://docs.lakekeeper.io/getting-started/>`_
+* `Polaris <https://polaris.apache.org/in-dev/unreleased/getting-started/>`_
+* `Apache Gravitino <https://gravitino.apache.org/docs/>`_
+* `Databricks Unity Catalog <https://docs.databricks.com/aws/en/external-access/iceberg/>`_

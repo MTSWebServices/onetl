@@ -7,16 +7,16 @@
   os: ubuntu-22.04
 
 3_5_x: &3_5_x
-  mongodb-version: 8.0.13
-  spark-version: 3.5.6
+  mongodb-version: 8.2.2
+  spark-version: 3.5.7
   pydantic-version: 2
   python-version: '3.13'
   java-version: 20
   os: ubuntu-latest
 
 4_0_x: &4_0_x
-  mongodb-version: 8.0.13
-  spark-version: 4.0.0
+  mongodb-version: 8.2.2
+  spark-version: 4.0.1
   pydantic-version: 2
   python-version: '3.13'
   # https://stackoverflow.com/a/79017758/23601543

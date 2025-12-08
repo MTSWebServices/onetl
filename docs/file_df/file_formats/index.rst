@@ -10,7 +10,6 @@ File Formats
     avro
     csv
     excel
-    iceberg
     json
     jsonline
     orc

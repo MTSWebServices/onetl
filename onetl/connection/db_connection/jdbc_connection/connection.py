@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -322,7 +322,7 @@ class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
         query: str,
         options: JDBCSQLOptions | JDBCReadOptions,
     ) -> DataFrame:
-        jdbc_properties = self._get_jdbc_properties(options, exclude_none=True)
+        jdbc_properties = self._get_jdbc_properties(options, exclude={"partitioning_mode"}, exclude_none=True)
         return self.spark.read.format("jdbc").options(dbtable=f"({query}) T", **jdbc_properties).load()
 
     def _exclude_partition_options(

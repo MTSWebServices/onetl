@@ -218,22 +218,6 @@ jobs:
       python-version: ${{ matrix.python-version }}
       os: ${{ matrix.os }}
 
-  tests-teradata:
-    name: Run Teradata tests (spark=${{ matrix.spark-version }}, pydantic=${{ matrix.pydantic-version }}, java=${{ matrix.java-version }}, python=${{ matrix.python-version }}, os=${{ matrix.os }})
-    needs: [get-matrix]
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJson(needs.get-matrix.outputs.matrix-teradata) }}
-
-    uses: ./.github/workflows/test-teradata.yml
-    with:
-      spark-version: ${{ matrix.spark-version }}
-      pydantic-version: ${{ matrix.pydantic-version }}
-      java-version: ${{ matrix.java-version }}
-      python-version: ${{ matrix.python-version }}
-      os: ${{ matrix.os }}
-
   tests-ftp:
     name: Run FTP tests (server=${{ matrix.ftp-version }}, pydantic=${{ matrix.pydantic-version }}, python=${{ matrix.python-version }}, os=${{ matrix.os }})
     needs: [get-matrix]
@@ -360,7 +344,6 @@ jobs:
       - tests-mysql
       - tests-oracle
       - tests-postgres
-      - tests-teradata
       - tests-ftp
       - tests-ftps
       - tests-hdfs
@@ -371,7 +354,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
         uses: actions/setup-python@v6
@@ -391,7 +374,7 @@ jobs:
         run: pip install -I coverage pytest
 
       - name: Download all coverage reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: reports/
           pattern: coverage-*

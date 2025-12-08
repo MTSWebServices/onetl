@@ -1,8 +1,9 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
 from enum import Enum
+from typing import Any, Dict
 
 from onetl._util.alias import avoid_alias
 
@@ -30,15 +31,6 @@ class IcebergTableExistBehavior(str, Enum):
 
     def __str__(self):
         return str(self.value)
-
-
-class IcebergReadOptions(GenericOptions):
-    """Iceberg source reading options."""
-
-    class Config:
-        extra = "allow"
-        known_options: frozenset = frozenset()
-        prohibited_options = PROHIBITED_OPTIONS
 
 
 class IcebergWriteOptions(GenericOptions):
@@ -144,4 +136,14 @@ class IcebergWriteOptions(GenericOptions):
 
                 * Table exists
                     If the table exists, **raises an error**.
+    """
+
+    table_properties: Dict[str, Any] = Field(default_factory=dict)
+    """TBLPROPERTIES to add to freshly created table.
+
+    Examples: ``{"location": "/path"}``
+
+    .. warning::
+
+        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
     """

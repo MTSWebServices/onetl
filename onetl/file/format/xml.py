@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -67,7 +67,7 @@ class XML(ReadWriteFileFormat):
             from pyspark.sql import SparkSession
 
             # Create Spark session with XML package loaded
-            maven_packages = XML.get_packages(spark_version="3.5.6")
+            maven_packages = XML.get_packages(spark_version="3.5.7")
             spark = (
                 SparkSession.builder.appName("spark-app-name")
                 .config("spark.jars.packages", ",".join(maven_packages))
@@ -345,6 +345,10 @@ class XML(ReadWriteFileFormat):
         """
         Get package names to be downloaded by Spark. |support_hooks|
 
+        .. note::
+
+            For Spark 4.x this is not required anymore.
+
         .. versionadded:: 0.9.5
 
         Parameters
@@ -379,10 +383,10 @@ class XML(ReadWriteFileFormat):
 
             from onetl.file.format import XML
 
-            XML.get_packages(spark_version="3.5.6")
-            XML.get_packages(spark_version="3.5.6", scala_version="2.12")
+            XML.get_packages(spark_version="3.5.7")
+            XML.get_packages(spark_version="3.5.7", scala_version="2.12")
             XML.get_packages(
-                spark_version="3.5.6",
+                spark_version="3.5.7",
                 scala_version="2.12",
                 package_version="0.18.0",
             )

@@ -51,7 +51,7 @@ Goals
 * Provide unified classes to extract data from (**E**) & load data to (**L**) various stores.
 * Provides `Spark DataFrame API <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.html>`_ for performing transformations (**T**) in terms of *ETL*.
 * Provide direct assess to database, allowing to execute SQL queries, as well as DDL, DML, and call functions/procedures. This can be used for building up *ELT* pipelines.
-* Support different `read strategies <https://onetl.readthedocs.io/en/stable/strategy/index.html>`_ for incremental and batch data fetching.
+* Support different `read strategies <https://onetl.readthedocs.io/en/stable/strategy/index.html>`_, e.g. icremental reads.
 * Provide `hooks <https://onetl.readthedocs.io/en/stable/hooks/index.html>`_ & `plugins <https://onetl.readthedocs.io/en/stable/plugins.html>`_ mechanism for altering behavior of internal classes.
 
 Non-goals
@@ -60,7 +60,7 @@ Non-goals
 * onETL is not a Spark replacement. It just provides additional functionality that Spark does not have, and improves UX for end users.
 * onETL is not a framework, as it does not have requirements to project structure, naming, the way of running ETL/ELT processes, configuration, etc. All of that should be implemented in some other tool.
 * onETL is deliberately developed without any integration with scheduling software like Apache Airflow. All integrations should be implemented as separated tools.
-* Only batch operations, no streaming. For streaming prefer `Apache Flink <https://flink.apache.org/>`_.
+* No Spark streaming support of any kind, only batch operations are supported. For streaming prefer `Apache Flink <https://flink.apache.org/>`_.
 
 Requirements
 ------------
@@ -85,8 +85,6 @@ Supported storages
 |                    | Postgres     |                                                                                                                         |
 +                    +--------------+                                                                                                                         +
 |                    | Oracle       |                                                                                                                         |
-+                    +--------------+                                                                                                                         +
-|                    | Teradata     |                                                                                                                         |
 +                    +--------------+-------------------------------------------------------------------------------------------------------------------------+
 |                    | Hive         | Apache Spark `Hive integration <https://spark.apache.org/docs/latest/sql-data-sources-hive-tables.html>`_               |
 +                    +--------------+-------------------------------------------------------------------------------------------------------------------------+
@@ -190,9 +188,9 @@ Compatibility matrix
 +--------------------------------------------------------------+-------------+-------------+-------+
 | `3.4.x <https://spark.apache.org/docs/3.4.4/#downloading>`_  | 3.7 - 3.12  | 8u362 - 20  | 2.12  |
 +--------------------------------------------------------------+-------------+-------------+-------+
-| `3.5.x <https://spark.apache.org/docs/3.5.6/#downloading>`_  | 3.8 - 3.13  | 8u371 - 20  | 2.12  |
+| `3.5.x <https://spark.apache.org/docs/3.5.1/#downloading>`_  | 3.8 - 3.13  | 8u371 - 20  | 2.12  |
 +--------------------------------------------------------------+-------------+-------------+-------+
-| `4.0.x <https://spark.apache.org/docs/4.0.0/#downloading>`_  | 3.9 - 3.13  | 17 - 22     | 2.13  |
+| `4.0.x <https://spark.apache.org/docs/4.0.1/#downloading>`_  | 3.9 - 3.13  | 17 - 22     | 2.13  |
 +--------------------------------------------------------------+-------------+-------------+-------+
 
 .. _pyspark-install:
@@ -207,7 +205,7 @@ or install PySpark explicitly:
 
 .. code:: bash
 
-    pip install onetl pyspark==3.5.6  # install a specific PySpark version
+    pip install onetl pyspark==3.5.7  # install a specific PySpark version
 
 or inject PySpark to ``sys.path`` in some other way BEFORE creating a class instance.
 **Otherwise connection object cannot be created.**
@@ -548,7 +546,7 @@ Read files directly from S3 path, convert them to dataframe, transform it and th
     setup_logging()
 
     # Initialize new SparkSession with Hadoop AWS libraries and Postgres driver loaded
-    maven_packages = SparkS3.get_packages(spark_version="3.5.6") + Postgres.get_packages()
+    maven_packages = SparkS3.get_packages(spark_version="3.5.7") + Postgres.get_packages()
     exclude_packages = SparkS3.get_exclude_packages()
     spark = (
         SparkSession.builder.appName("spark_app_onetl_demo")
@@ -565,7 +563,7 @@ Read files directly from S3 path, convert them to dataframe, transform it and th
         access_key="somekey",
         secret_key="somesecret",
         # Access bucket as s3.test.com/my-bucket
-        extra={"path.style.access": True},
+        path_style_access=True,
         spark=spark,
     ).check()
 

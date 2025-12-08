@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -70,7 +70,7 @@ class Excel(ReadWriteFileFormat):
             # Create Spark session with Excel package loaded
             maven_packages = Excel.get_packages(
                 package_version="0.31.2",
-                spark_version="3.5.6",
+                spark_version="3.5.7",
             )
             spark = (
                 SparkSession.builder.appName("spark-app-name")
@@ -262,11 +262,11 @@ class Excel(ReadWriteFileFormat):
 
             Excel.get_packages(
                 package_version="0.31.2",
-                spark_version="3.5.6",
+                spark_version="3.5.7",
             )
             Excel.get_packages(
                 package_version="0.31.2",
-                spark_version="3.5.6",
+                spark_version="3.5.7",
                 scala_version="2.12",
             )
 

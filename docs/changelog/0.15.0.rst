@@ -1,0 +1,166 @@
+0.15.0 (2025-12-08)
+===================
+
+Removals
+----------------
+
+Drop ``Teradata`` connector. It is not used in our company anymore, and never had proper integration tests.
+
+Breaking Changes
+----------------
+
+Add ``Iceberg(catalog=..., warehouse=...)`` mandatory options (:github:pull:`391`, :github:pull:`393`, :github:pull:`394`, :github:pull:`397`, :github:pull:`399`, :github:pull:`413`).
+
+In 0.14.0 we've implemented very basic ``Iceberg`` connector configured via dictionary:
+
+.. code:: python
+
+    iceberg = Iceberg(
+        catalog_name="mycatalog",
+        extra={
+            "type": "rest",
+            "uri": "https://catalog.company.com/rest",
+            "rest.auth.type": "oauth2",
+            "token": "jwt_token",
+            "warehouse": "s3a://mybucket/",
+            "io-impl": "org.apache.iceberg.aws.s3.S3FileIO",
+            "s3.endpoint": "http://localhost:9010",
+            "s3.access-key-id": "access_key",
+            "s3.secret-access-key": "secret_key",
+            "s3.path-style-access": "true",
+            "client.region": "us-east-1",
+        },
+        spark=spark,
+    )
+
+Now we've implemented wrapper classes allowing to configure various Iceberg catalogs:
+
+.. code-block:: python
+    :caption: REST Catalog with Bearer token auth
+
+    iceberg = Iceberg(
+        catalog_name="mycatalog",
+        catalog=Iceberg.RESTCatalog(
+            url="https://catalog.company.com/rest",
+            auth=Iceberg.RESTCatalog.BearerAuth(
+                access_token="jwt_token",
+            ),
+        ),
+        warehouse=...,
+    )
+
+.. code-block:: python
+    :caption: REST Catalog with OAuth2 ClientCredentials auth
+
+    iceberg = Iceberg(
+        catalog_name="mycatalog",
+        catalog=Iceberg.RESTCatalog(
+            url="https://catalog.company.com/rest",
+            auth=Iceberg.RESTCatalog.OAuth2ClientCredentials(
+                client_id="my_client",
+                client_secret="my_secret",
+                oauth2_token_endpoint="http://keycloak.company.com/realms/my-realm/protocol/openid-connect/token",
+                scopes=["catalog"],
+            ),
+        ),
+        warehouse=...,
+        spark=spark,
+    )
+
+And also set of classes to configure for warehouses:
+
+.. code-block:: python
+    :caption: S3 warehouse
+
+    iceberg = Iceberg(
+        catalog_name="mycatalog",
+        catalog=...,
+        # using Iceberg AWS integration
+        warehouse=Iceberg.S3Warehouse(
+            path="/",
+            bucket="mybucket",
+            host="localhost",
+            port=9010,
+            protocol="http",
+            path_style_access=True,
+            access_key="access_key",
+            secret_key="secret_key",
+            region="us-east-1",
+        ),
+        spark=spark,
+    )
+
+.. code-block:: python
+    :caption: For Lakekeeper, Polaris, Gravitino
+
+    iceberg = Iceberg(
+        catalog_name="mycatalog",
+        catalog=...,
+        # Delegate warehouse config to REST Catalog
+        warehouse=Iceberg.DelegatedWarehouse(
+            warehouse="some-warehouse",
+            access_delegation="vended-credentials",
+        ),
+        spark=spark,
+    )
+
+.. code-block:: python
+    :caption: HDFS warehouse
+
+    iceberg = Iceberg(
+        catalog_name="mycatalog",
+        # store both data and metadata on HadoopFilesystem
+        catalog=Iceberg.FilesystemCatalog(),
+        warehouse=Iceberg.FilesystemWarehouse(
+            path="/some/warehouse",
+            connection=SparkHDFS(cluster="dwh"),
+        ),
+        spark=spark,
+    )
+
+Having classes instead of dicts brings IDE autocompletion, and allows to reuse the same catalog connection options for multiple warehouses.
+
+Features
+--------
+
+- Allow to set ``SparkS3(path_style_access=True)`` instead  of ``SparkS3(extra={"path.style.access": True)`` (:github:pull:`392`).
+
+  This change improves IDE autocompletion and made it more explicit that the parameter is important for the connector's functionality.
+
+- Added support for ``Iceberg.WriteOptions(table_properties={})`` (:github:pull:`401`).
+
+  In particular, table's ``"location": "/some/warehouse/mytable"`` can be set now.
+
+- Added support for ``Hive.WriteOptions(table_properties={})`` (:github:pull:`412`).
+
+  In particular, table's ``"auto.purge": "true"`` can be set now.
+
+Improvements
+------------
+
+Add a runtime warning about missing ``S3(region=...)`` and ``SparkS3(region=...)`` params.
+It is recommended to explicitly pass this parameter to avoid potential access errors.
+
+Thanks to :github:user:`yabel`
+
+Dependencies
+------------
+
+- Update JDBC connectors:
+
+  * MySQL ``9.4.0`` → ``9.5.0``
+  * MSSQL ``13.2.0`` → ``13.2.1``
+  * Oracle ``23.9.0.25.07`` → ``23.26.0.0.0``
+  * Postgres ``42.7.7`` → ``42.7.8``
+
+- Added support for ``Clickhouse.get_packages(package_version="0.9.3")``  (:github:pull:`407`).
+
+  Versions in range 0.8.0-0.9.2 are not supported due to `issue #2625 <https://github.com/ClickHouse/clickhouse-java/issues/2625>`_.
+
+  Versions 0.9.3+ is still not default one because of various compatibility and performance issues.
+  Use it at your own risk.
+
+Documentation
+-------------
+
+- Document using Greenplum connector with Spark on ``master=k8s``

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -595,7 +595,7 @@ class BaseFileConnection(BaseConnection):
         Examples
         --------
 
-        >>> remote_file = connection.upload(
+        >>> remote_file = connection.upload_file(
         ...     local_file_path="/path/to/source.csv",
         ...     remote_file_path="/path/to/target.csv",
         ... )

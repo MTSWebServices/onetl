@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ class SparkMetricsListener(BaseSparkListener):
 
             # Get execution metrics from SQLAppStatusStore,
             # as SparkListenerSQLExecutionEnd event does not provide them:
-            # https://github.com/apache/spark/blob/v3.5.6/sql/core/src/main/scala/org/apache/spark/sql/execution/ui/SQLAppStatusStore.scala
+            # https://github.com/apache/spark/blob/v3.5.7/sql/core/src/main/scala/org/apache/spark/sql/execution/ui/SQLAppStatusStore.scala
             session_status_store = self.spark._jsparkSession.sharedState().statusStore()  # noqa: WPS437
             raw_execution = session_status_store.execution(execution.id).get()
             metrics = raw_execution.metrics()

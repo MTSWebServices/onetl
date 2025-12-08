@@ -1,19 +1,31 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Union
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
 from onetl._util.version import Version
+from onetl.connection.db_connection.iceberg.catalog import (
+    IcebergCatalog,
+    IcebergFilesystemCatalog,
+    IcebergRESTCatalog,
+)
 from onetl.connection.db_connection.iceberg.dialect import IcebergDialect
 from onetl.connection.db_connection.iceberg.extra import IcebergExtra
 from onetl.connection.db_connection.iceberg.options import (
-    IcebergReadOptions,
     IcebergTableExistBehavior,
     IcebergWriteOptions,
+)
+from onetl.connection.db_connection.iceberg.warehouse import (
+    IcebergFilesystemWarehouse,
+    IcebergS3Warehouse,
+    IcebergWarehouse,
+)
+from onetl.connection.db_connection.iceberg.warehouse.delegated import (
+    IcebergDelegatedWarehouse,
 )
 from onetl.exception import MISSING_JVM_CLASS_MSG
 
@@ -23,7 +35,7 @@ except (ImportError, AttributeError):
     from pydantic import validator  # type: ignore[no-redef, assignment]
 
 from onetl._metrics.recorder import SparkMetricsRecorder
-from onetl._util.spark import get_spark_version, override_job_description
+from onetl._util.spark import get_spark_version, override_job_description, stringify
 from onetl._util.sql import clear_statement
 from onetl.connection.db_connection.db_connection import DBConnection
 from onetl.hooks import slot, support_hooks
@@ -42,10 +54,6 @@ log = logging.getLogger(__name__)
 class Iceberg(DBConnection):
     """Iceberg connection. |support_hooks|
 
-    .. danger::
-
-        This is an alpha version of connector, it's behavior may change in the future.
-
     .. seealso::
 
         Before using this connector please take into account :ref:`iceberg-prerequisites`
@@ -55,10 +63,13 @@ class Iceberg(DBConnection):
     Parameters
     ----------
     catalog_name : str
-        Catalog name
+        Catalog name. Arbitrary string used by Spark to identify catalog and tables (``mycatalog.myschema.mytable``).
 
-    spark : :obj:`pyspark.sql.SparkSession`
-        Spark session
+    catalog : :obj:`IcebergCatalog`
+        Iceberg catalog configuration
+
+    warehouse : :obj:`IcebergWarehouse`
+        Iceberg warehouse configuration
 
     extra : dict | None, default: ``None``
         A dictionary of additional properties to be used when configuring Iceberg catalog.
@@ -71,85 +82,137 @@ class Iceberg(DBConnection):
         .. code:: python
 
             extra = {
-                "type": "hadoop",
-                "warehouse": "file:///path/to/warehouse",
+                "cache-enabled": "true",
+                "cache.expiration-interval-ms": "40000",
             }
 
         This will be translated to:
 
         .. code:: ini
 
-            spark.sql.catalog.my_catalog = 'org.apache.iceberg.spark.SparkCatalog'
-            spark.sql.catalog.my_catalog.type = 'hadoop'
-            spark.sql.catalog.my_catalog.warehouse = 'file:///path/to/warehouse'
+            spark.sql.catalog.my_catalog.cache-enabled = 'true'
+            spark.sql.catalog.my_catalog.cache.expiration-interval-ms = '40000'
+
+    spark : :obj:`pyspark.sql.SparkSession`
+        Spark session
 
     Examples
     --------
 
-    **REST catalog + S3 warehouse**
+    .. tabs::
 
-    .. code:: python
+        .. code-tab:: python REST catalog with Bearer token auth, S3 warehouse with explicit credentials
 
-        from onetl.connection import Iceberg
-        from pyspark.sql import SparkSession
+            from onetl.connection import Iceberg
+            from pyspark.sql import SparkSession
 
-        maven_packages = [
-            *Iceberg.get_packages(package_version="1.9.2", spark_version="3.5"),
-            *SparkS3.get_packages(spark_version="3.5.6"),
-        ]
-        exclude_packages = SparkS3.get_exclude_packages()
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .config("spark.jars.excludes", ",".join(exclude_packages))
-            .getOrCreate()
-        )
+            maven_packages = [
+                *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
+                *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
+            ]
+            spark = (
+                SparkSession.builder.appName("spark-app-name")
+                .config("spark.jars.packages", ",".join(maven_packages))
+                .getOrCreate()
+            )
 
-        # Create connection
-        iceberg = Iceberg(
-            catalog_name="my_catalog",
-            spark=spark,
-            extra={
-                "type": "rest",
-                "uri": "http://localhost:8080",
-                "warehouse": "s3a://bucket/",
-                "hadoop.fs.s3a.endpoint": "http://localhost:9010",
-                "hadoop.fs.s3a.access.key": "access_key",
-                "hadoop.fs.s3a.secret.key": "secret_key",
-                "hadoop.fs.s3a.path.style.access": "true",
-            },
-        )
+            iceberg = Iceberg(
+                catalog_name="my_catalog",
+                spark=spark,
+                catalog=Iceberg.RESTCatalog(
+                    url="http://my.rest.catalog/iceberg",
+                    auth=Iceberg.RESTCatalog.OAuth2BearerToken(
+                        token="my_token",
+                    ),
+                ),
+                # explicit S3 warehouse params
+                warehouse=Iceberg.S3Warehouse(
+                    path="/warehouse",
+                    host="s3.domain.com",
+                    protocol="http",
+                    bucket="my-bucket",
+                    path_style_access=True,
+                    region="us-east-1",
+                    access_key="access_key",
+                    secret_key="secret_key"
+                ),
+            )
 
+        .. code-tab:: python REST catalog with OAuth2 client credentials, S3 warehouse with vended credentials
 
-    **Hadoop catalog + HDFS warehouse**
+            from onetl.connection import Iceberg
+            from pyspark.sql import SparkSession
 
-    .. code:: python
+            maven_packages = [
+                *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
+                # required to use S3 warehouse
+                *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
+            ]
+            spark = (
+                SparkSession.builder.appName("spark-app-name")
+                .config("spark.jars.packages", ",".join(maven_packages))
+                .getOrCreate()
+            )
 
-        from onetl.connection import Iceberg
-        from pyspark.sql import SparkSession
+            iceberg = Iceberg(
+                catalog_name="my_catalog",
+                spark=spark,
+                catalog=Iceberg.RESTCatalog(
+                    url="http://my.rest.catalog/iceberg",
+                    auth=Iceberg.RESTCatalog.OAuth2ClientCredentials(
+                        client_id="my_client",
+                        client_secret="my_secret",
+                        oauth2_token_endpoint="http://keycloak.domain.com/realms/my-realm/protocol/openid-connect/token",
+                    ),
+                ),
+                # S3 warehouse params and credentials are provided by REST Catalog
+                warehouse=Iceberg.DeletatedWarehouse(
+                    name="my-warehouse",
+                    access_delegation="vended-credentials",
+                ),
+            )
 
-        maven_packages = Iceberg.get_packages(package_version="1.9.2", spark_version="3.5")
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .getOrCreate()
-        )
+        .. code-tab:: python HDFS Filesystem catalog, HDFS warehouse
 
-        # Create connection
-        iceberg = Iceberg(
-            catalog_name="my_catalog",
-            spark=spark,
-            extra={
-                "type": "hadoop",
-                "warehouse": "hdfs://namenode:8020/warehouse/path",
-            },
-        )
+            from onetl.connection import Iceberg, SparkHDFS
+            from pyspark.sql import SparkSession
+
+            maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.7")
+            spark = (
+                SparkSession.builder.appName("spark-app-name")
+                .config("spark.jars.packages", ",".join(maven_packages))
+                .getOrCreate()
+            )
+
+            hdfs_connection = SparkHDFS(
+                host="namenode",
+                cluster="my-cluster",
+                spark=spark
+            )
+
+            iceberg = Iceberg(
+                catalog_name="my_catalog",
+                spark=spark,
+                catalog=Iceberg.FilesystemCatalog(),
+                warehouse=Iceberg.FilesystemWarehouse(
+                    connection=hdfs_connection,
+                    path="/warehouse/path",
+                ),
+            )
     """
 
     catalog_name: str
+    catalog: IcebergCatalog
+    warehouse: Optional[IcebergWarehouse] = None
     extra: IcebergExtra = IcebergExtra()
 
-    ReadOptions = IcebergReadOptions
+    FilesystemCatalog = IcebergFilesystemCatalog
+    RESTCatalog = IcebergRESTCatalog
+
+    FilesystemWarehouse = IcebergFilesystemWarehouse
+    S3Warehouse = IcebergS3Warehouse
+    DelegatedWarehouse = IcebergDelegatedWarehouse
+
     WriteOptions = IcebergWriteOptions
 
     Dialect = IcebergDialect
@@ -158,14 +221,36 @@ class Iceberg(DBConnection):
     def _check_query(self) -> str:
         return f"SHOW NAMESPACES IN {self.catalog_name}"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.spark.conf.set(
-            f"spark.sql.catalog.{self.catalog_name}",
-            "org.apache.iceberg.spark.SparkCatalog",
+    def __init__(
+        self,
+        *,
+        spark: SparkSession,
+        catalog_name: str,
+        catalog: IcebergCatalog,
+        warehouse: Optional[IcebergWarehouse] = None,
+        extra: Union[IcebergExtra, Dict[str, Any]] = IcebergExtra(),  # noqa: B008, WPS404
+    ):
+        super().__init__(
+            spark=spark,
+            catalog_name=catalog_name,  # type: ignore[call-arg]
+            catalog=catalog,  # type: ignore[call-arg]
+            warehouse=warehouse,  # type: ignore[call-arg]
+            extra=extra,  # type: ignore[call-arg]
         )
-        for k, v in self.extra.dict().items():
-            self.spark.conf.set(f"spark.sql.catalog.{self.catalog_name}.{k}", v)
+        for k, v in self._get_spark_config().items():
+            self.spark.conf.set(k, v)
+
+    def _get_spark_config(self) -> dict[str, str]:
+        """Useful for debug"""
+        catalog_config = {
+            **self.catalog.get_config(),
+            **(self.warehouse.get_config() if self.warehouse else {}),
+            **self.extra.dict(),
+        }
+        catalog_prefix = f"spark.sql.catalog.{self.catalog_name}"
+        spark_config = {catalog_prefix: "org.apache.iceberg.spark.SparkCatalog"}
+        spark_config.update({f"{catalog_prefix}.{k}": v for k, v in catalog_config.items()})
+        return spark_config
 
     @slot
     @classmethod
@@ -205,8 +290,8 @@ class Iceberg(DBConnection):
 
             from onetl.connection import Iceberg
 
-            # Note: Iceberg 1.9.2 requires Java 11+
-            Iceberg.get_packages(package_version="1.9.2", spark_version="3.5")
+            # Note: Iceberg 1.10.0 requires Java 11+
+            Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.7")
         """
 
         version = Version(package_version).min_digits(3)
@@ -393,7 +478,6 @@ class Iceberg(DBConnection):
         df_schema: StructType | None = None,
         window: Window | None = None,
         limit: int | None = None,
-        options: IcebergReadOptions | None = None,
     ) -> DataFrame:
         query = self.dialect.get_sql_query(
             table=self._normalize_table_name(source),
@@ -496,7 +580,13 @@ class Iceberg(DBConnection):
         write_options = self.WriteOptions.parse(options)
 
         writer = df.writeTo(table).using("iceberg")
-        for method, value in self._format_write_options(write_options).items():
+        if write_options.table_properties:
+            for key, value in write_options.table_properties.items():
+                writer = writer.tableProperty(key, stringify(value))
+        formatted_options = self._format_write_options(write_options)
+        formatted_options.pop("table_properties", None)
+
+        for method, value in formatted_options.items():
             if hasattr(writer, method):
                 if isinstance(value, Iterable) and not isinstance(value, str):
                     writer = getattr(writer, method)(*value)
@@ -541,6 +631,7 @@ class Iceberg(DBConnection):
             by_alias=True,
             exclude_unset=True,
             exclude={"if_exists"},
+            # do not exclude custom options here
         )
 
     def _normalize_table_name(self, table: str) -> str:

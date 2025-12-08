@@ -4,8 +4,6 @@ from importlib import import_module
 
 import pytest
 
-from onetl.connection.db_connection.iceberg.connection import Iceberg
-
 PreparedDbInfo = namedtuple("PreparedDbInfo", ["full_name", "schema", "table"])
 
 
@@ -37,7 +35,7 @@ def processing(request, spark):
     db_processing = getattr(module, class_name)
 
     if db_storage_name in ("hive", "iceberg"):
-        yield db_processing(spark)
+        yield db_processing(spark, request)
     else:
         with db_processing() as result:
             yield result
@@ -83,48 +81,3 @@ def load_table_data(prepare_schema_table, processing):
     )
 
     return prepare_schema_table
-
-
-@pytest.fixture
-def iceberg_connection(spark, iceberg_warehouse_dir):
-    iceberg = Iceberg(
-        spark=spark,
-        catalog_name="hadoop",
-        extra={
-            "type": "hadoop",
-            "warehouse": f"file://{iceberg_warehouse_dir}",
-        },
-    )
-    return iceberg
-
-
-@pytest.fixture
-def kafka_topic(processing, request):
-    topic = secrets.token_hex(6)
-    processing.create_topic(topic, num_partitions=1)
-
-    def delete_topic():
-        processing.delete_topic([topic])
-
-    request.addfinalizer(delete_topic)
-    return topic
-
-
-@pytest.fixture
-def kafka_dataframe_schema():
-    from pyspark.sql.types import (
-        FloatType,
-        LongType,
-        StringType,
-        StructField,
-        StructType,
-    )
-
-    return StructType(
-        [
-            StructField("id_int", LongType(), nullable=True),
-            StructField("text_string", StringType(), nullable=True),
-            StructField("hwm_int", LongType(), nullable=True),
-            StructField("float_value", FloatType(), nullable=True),
-        ],
-    )

@@ -10,9 +10,9 @@ pytestmark = [pytest.mark.s3, pytest.mark.file_df_connection, pytest.mark.connec
 @pytest.mark.parametrize(
     "spark_version, scala_version, package",
     [
-        ("3.5.6", None, "org.apache.spark:spark-hadoop-cloud_2.12:3.5.6"),
-        ("3.5.6", "2.12", "org.apache.spark:spark-hadoop-cloud_2.12:3.5.6"),
-        ("3.5.6", "2.13", "org.apache.spark:spark-hadoop-cloud_2.13:3.5.6"),
+        ("3.5.7", None, "org.apache.spark:spark-hadoop-cloud_2.12:3.5.7"),
+        ("3.5.7", "2.12", "org.apache.spark:spark-hadoop-cloud_2.12:3.5.7"),
+        ("3.5.7", "2.13", "org.apache.spark:spark-hadoop-cloud_2.13:3.5.7"),
     ],
 )
 def test_spark_s3_get_packages(spark_version, scala_version, package):
@@ -124,6 +124,40 @@ def test_spark_s3_with_port(spark_mock_hadoop_3, protocol):
     assert conn.port == 9000
     assert conn.instance_url == "s3://some_host:9000/bucket"
     assert str(conn) == "S3[some_host:9000/bucket]"
+
+
+def test_spark_s3_with_path_style_access(spark_mock_hadoop_3):
+    conn = SparkS3(
+        host="some_host",
+        bucket="bucket",
+        path_style_access=True,
+        spark=spark_mock_hadoop_3,
+    )
+
+    assert conn.path_style_access is True
+
+
+def test_spark_s3_with_path_style_access_from_extra(spark_mock_hadoop_3):
+    conn = SparkS3(
+        host="some_host",
+        bucket="bucket",
+        spark=spark_mock_hadoop_3,
+        extra={
+            "path.style.access": True,
+        },
+    )
+
+    assert conn.path_style_access is True
+
+
+def test_spark_s3_without_path_style_access(spark_mock_hadoop_3):
+    conn = SparkS3(
+        host="some_host",
+        bucket="bucket",
+        spark=spark_mock_hadoop_3,
+    )
+
+    assert conn.path_style_access is False
 
 
 @pytest.mark.parametrize(

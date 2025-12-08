@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 MTS PJSC
+# SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
@@ -115,7 +115,7 @@ class Samba(FileConnection):
     share: str
     protocol: Union[Literal["SMB"], Literal["NetBIOS"]] = "SMB"
     port: Optional[int] = None
-    domain: Optional[str] = ""
+    domain: str = ""
     auth_type: Union[Literal["NTLMv1"], Literal["NTLMv2"]] = "NTLMv2"
     user: Optional[str] = None
     password: Optional[SecretStr] = None
