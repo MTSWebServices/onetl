@@ -362,7 +362,7 @@ jobs:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-coverage
@@ -374,7 +374,7 @@ jobs:
         run: pip install -I coverage pytest
 
       - name: Download all coverage reports
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: reports/
           pattern: coverage-*
