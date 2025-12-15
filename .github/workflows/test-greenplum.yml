@@ -63,7 +63,7 @@ jobs:
           python-version: ${{ inputs.python-version }}
 
       - name: Cache Ivy
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: inputs.with-cache
         with:
           path: ~/.ivy2
@@ -73,7 +73,7 @@ jobs:
             ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-greenplum-
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: inputs.with-cache
         with:
           path: ~/.cache/pip
@@ -125,7 +125,7 @@ jobs:
           dest: ./logs
 
       - name: Upload Greenplum logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: container-logs-greenplum-${{ inputs.greenplum-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
@@ -137,7 +137,7 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-greenplum-${{ inputs.greenplum-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
           path: reports/*

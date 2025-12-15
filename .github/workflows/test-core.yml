@@ -43,7 +43,7 @@ jobs:
           java-version: ${{ inputs.java-version }}
 
       - name: Cache Ivy
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: inputs.with-cache
         with:
           path: ~/.ivy2
@@ -53,7 +53,7 @@ jobs:
             ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-clickhouse-
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: inputs.with-cache
         with:
           path: ~/.cache/pip
@@ -75,7 +75,7 @@ jobs:
           ./run_tests.sh onetl/_util onetl/hooks onetl/file/filter onetl/file/limit onetl/hwm/store/hwm_class_registry.py
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-core-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
           path: reports/*
