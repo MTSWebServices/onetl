@@ -41,18 +41,15 @@ def samba_file_connection(samba_server):
 
 
 @pytest.fixture()
-def samba_file_connection_with_path(request, samba_file_connection):
+def samba_file_connection_with_path(samba_file_connection, worker_id):
     connection = samba_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

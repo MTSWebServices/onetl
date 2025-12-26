@@ -35,19 +35,16 @@ def hdfs_file_connection(hdfs_server):
 
 
 @pytest.fixture()
-def hdfs_file_connection_with_path(request, hdfs_file_connection):
+def hdfs_file_connection_with_path(hdfs_file_connection, worker_id):
     connection = hdfs_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
     connection.create_dir(root)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

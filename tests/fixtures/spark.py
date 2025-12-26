@@ -3,22 +3,23 @@ import shutil
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from onetl._util.version import Version
 
 
 @pytest.fixture(scope="session")
-def warehouse_dir(tmp_path_factory):
+def warehouse_dir(tmp_path_factory, worker_id):
     # https://spark.apache.org/docs/latest/sql-data-sources-hive-tables.html
-    path = tmp_path_factory.mktemp("spark-warehouse")
+    path = tmp_path_factory.mktemp("spark-warehouse") / worker_id
     yield path
     shutil.rmtree(path, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
-def spark_metastore_dir(tmp_path_factory):
+def spark_metastore_dir(tmp_path_factory, worker_id):
     # https://stackoverflow.com/a/44048667
-    path = tmp_path_factory.mktemp("metastore_db")
+    path = tmp_path_factory.mktemp("metastore-db") / worker_id
     yield path
     shutil.rmtree(path, ignore_errors=True)
 
@@ -83,6 +84,7 @@ def maven_packages(request):
     if "avro" in markers:
         # There is no Avro package for Spark 2.3
         packages.extend(Avro.get_packages(spark_version=str(pyspark_version)))
+
     if "kafka" in markers:
         # Kafka connector for Spark 2.3 is too old and not supported
         packages.extend(Kafka.get_packages(spark_version=str(pyspark_version)))
@@ -149,10 +151,18 @@ def excluded_packages():
         pytest.param("real-spark", marks=[pytest.mark.db_connection, pytest.mark.connection]),
     ],
 )
-def spark(warehouse_dir, spark_metastore_dir, ivysettings_path, maven_packages, excluded_packages):
+def spark(
+    warehouse_dir,
+    spark_metastore_dir,
+    ivysettings_path,
+    maven_packages,
+    excluded_packages,
+    worker_id,
+    tmp_path_factory,
+):
     from pyspark.sql import SparkSession
 
-    spark = (
+    spark_builder = (
         SparkSession.builder.config("spark.app.name", "onetl")  # noqa: WPS221
         .config("spark.master", "local[*]")
         .config("spark.jars.packages", ",".join(maven_packages))
@@ -172,8 +182,17 @@ def spark(warehouse_dir, spark_metastore_dir, ivysettings_path, maven_packages, 
         )
         .config("spark.sql.warehouse.dir", warehouse_dir)
         .enableHiveSupport()
-        .getOrCreate()
     )
+
+    if worker_id == "master":
+        spark = spark_builder.getOrCreate()
+    else:
+        # https://pytest-xdist.readthedocs.io/en/stable/how-to.html#making-session-scoped-fixtures-execute-only-once
+        # Parallel start of Spark sessions can fail to write same files into ~/.ivy2 cache
+        # So we starting sessions one by one
+        root_tmp_dir = tmp_path_factory.getbasetemp().parent
+        with FileLock(root_tmp_dir / "spark_session.lock"):
+            spark = spark_builder.getOrCreate()
 
     yield spark
     spark.sparkContext.stop()
@@ -181,7 +200,9 @@ def spark(warehouse_dir, spark_metastore_dir, ivysettings_path, maven_packages, 
 
 
 @pytest.fixture(scope="session")
-def iceberg_warehouse_dir(tmp_path_factory):
-    path = tmp_path_factory.mktemp("iceberg-warehouse")
+def iceberg_warehouse_dir(tmp_path_factory, worker_id):
+    path = tmp_path_factory.mktemp("iceberg-warehouse") / worker_id
+    # Iceberg warehouse dir should be created beforehand
+    path.mkdir(exist_ok=True)
     yield path
     shutil.rmtree(path, ignore_errors=True)

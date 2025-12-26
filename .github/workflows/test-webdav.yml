@@ -67,7 +67,7 @@ jobs:
         run: |
           mkdir reports/ || echo "Directory exists"
           source .env.local
-          ./pytest_runner.sh -m webdav
+          ./pytest_runner.sh -n 2 -m webdav
 
       - name: Dump WebDAV logs on failure
         if: failure()

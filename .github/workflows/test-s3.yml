@@ -83,7 +83,7 @@ jobs:
         run: |
           mkdir reports/ || echo "Directory exists"
           source .env.local
-          ./pytest_runner.sh -m s3
+          ./pytest_runner.sh -n logical -m s3
 
       - name: Dump S3 logs on failure
         if: failure()

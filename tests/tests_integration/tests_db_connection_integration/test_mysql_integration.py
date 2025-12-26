@@ -122,10 +122,11 @@ def test_mysql_connection_fetch(spark, processing, load_table_data, suffix):
     )
 
     schema = load_table_data.schema
-    table = load_table_data.full_name
+    table = load_table_data.table
+    full_table = load_table_data.full_name
 
     # dataframe content is expected
-    df = mysql.fetch(f"SELECT * FROM {table}{suffix}")
+    df = mysql.fetch(f"SELECT * FROM {full_table}{suffix}")
     table_df = processing.get_expected_dataframe(
         schema=load_table_data.schema,
         table=load_table_data.table,
@@ -133,12 +134,12 @@ def test_mysql_connection_fetch(spark, processing, load_table_data, suffix):
     )
     processing.assert_equal_df(df=df, other_frame=table_df, order_by="id_int")
 
-    df = mysql.fetch(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
+    df = mysql.fetch(f"SELECT * FROM {full_table} WHERE id_int < 50{suffix}")
     filtered_df = table_df[table_df.id_int < 50]
     processing.assert_equal_df(df=df, other_frame=filtered_df, order_by="id_int")
 
-    df = mysql.fetch(f"SHOW TABLES{suffix}")
-    result_df = pandas.DataFrame([[load_table_data.table]], columns=[f"Tables_in_{schema}"])
+    df = mysql.fetch(f"SHOW TABLES IN {schema} LIKE '{table}'{suffix}")
+    result_df = pandas.DataFrame([[load_table_data.table]], columns=[f"Tables_in_{schema} ({table})"])
     processing.assert_equal_df(df=df, other_frame=result_df)
 
     # client info is expected
@@ -159,7 +160,7 @@ def test_mysql_connection_fetch(spark, processing, load_table_data, suffix):
 
     # fetch is always read-only
     with pytest.raises(Exception):
-        mysql.fetch(f"DROP TABLE {table}{suffix}")
+        mysql.fetch(f"DROP TABLE {full_table}{suffix}")
 
 
 @pytest.mark.parametrize("suffix", ["", ";"])

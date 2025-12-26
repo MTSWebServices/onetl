@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --extra files --extra spark --group dev
+          uv sync --extra files --group test-spark-3.5 --group dev
           uv pip install -U flake8-commas
 
           # Set the `CODEQL-PYTHON` environment variable to the Python executable

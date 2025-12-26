@@ -1,5 +1,4 @@
 import os
-import secrets
 import shutil
 from pathlib import Path
 
@@ -21,26 +20,33 @@ def local_fs_file_df_connection(spark):
 
 
 @pytest.fixture()
-def local_fs_file_df_connection_with_path(local_fs_file_df_connection, tmp_path_factory):
+def local_fs_file_df_connection_with_path(local_fs_file_df_connection, tmp_path_factory, worker_id):
     connection = local_fs_file_df_connection
-    root = tmp_path_factory.mktemp("local_fs")
-    return connection, root
+    root = tmp_path_factory.mktemp("local-fs") / worker_id
+    # Iceberg warehouse dir should be created beforehand
+    root.mkdir(exist_ok=True)
+    yield connection, root
+    shutil.rmtree(root, ignore_errors=True)
 
 
 @pytest.fixture()
 def local_fs_file_df_connection_with_path_and_files(
     local_fs_file_df_connection,
     tmp_path_factory,
+    worker_id,
     resource_path,
 ):
     connection = local_fs_file_df_connection
-    root = tmp_path_factory.mktemp("local_fs") / secrets.token_hex(5)
+    root = tmp_path_factory.mktemp("local-fs") / worker_id
     copy_from = resource_path / "file_df_connection"
 
+    # there is no dirs_exist_ok in python 3.7, so we don't create root dir before copy
     shutil.copytree(copy_from, root)
 
     files = []
     for directory, _, content in os.walk(root):
         for file in content:
             files.append(Path(directory) / file)
-    return connection, root, files
+
+    yield connection, root, files
+    shutil.rmtree(root, ignore_errors=True)
