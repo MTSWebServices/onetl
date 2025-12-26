@@ -80,7 +80,7 @@ jobs:
           mkdir reports/ || echo "Directory exists"
           source .env.local
           echo "127.0.0.1 hdfs" | sudo tee -a /etc/hosts
-          ./pytest_runner.sh -m hdfs
+          ./pytest_runner.sh -n logical -m hdfs
 
       - name: Dump HDFS logs on failure
         if: failure()

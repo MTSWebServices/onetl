@@ -92,8 +92,7 @@ def test_hdfs_connection_with_password():
 def test_hdfs_connection_with_keytab(request, tmp_path_factory):
     from onetl.connection import HDFS
 
-    folder: Path = tmp_path_factory.mktemp("keytab")
-    folder.mkdir(exist_ok=True, parents=True)
+    folder: Path = tmp_path_factory.mktemp("keytabs")
     keytab = folder / "user.keytab"
     keytab.touch()
     conn = HDFS(host="some-host.domain.com", user="some_user", keytab=keytab)
@@ -117,7 +116,7 @@ def test_hdfs_connection_keytab_does_not_exist():
 def test_hdfs_connection_keytab_is_directory(request, tmp_path_factory):
     from onetl.connection import HDFS
 
-    folder: Path = tmp_path_factory.mktemp("keytab")
+    folder: Path = tmp_path_factory.mktemp("keytabs")
     keytab = folder / "user.keytab"
     keytab.mkdir(exist_ok=True, parents=True)
 
@@ -141,7 +140,6 @@ def test_hdfs_connection_with_password_and_keytab(request, tmp_path_factory):
     from onetl.connection import HDFS
 
     folder: Path = tmp_path_factory.mktemp("keytab")
-    folder.mkdir(exist_ok=True, parents=True)
     keytab = folder / "user.keytab"
     keytab.touch()
 

@@ -43,23 +43,24 @@ def test_s3_file_connection_check_failed(s3_server):
 
 @pytest.mark.parametrize("path_prefix", ["/", ""])
 def test_s3_file_connection_list_dir(path_prefix, s3_file_connection_with_path_and_files):
-    s3, _, _ = s3_file_connection_with_path_and_files
+    s3, upload_to, _ = s3_file_connection_with_path_and_files
+
+    root = path_prefix + os.fspath(upload_to).lstrip("/")
 
     def dir_content(path):
         return sorted(os.fspath(file) for file in s3.list_dir(path))
 
-    assert dir_content(f"{path_prefix}data/exclude_dir") == [
-        "/data/exclude_dir/excluded1.txt",
-        "/data/exclude_dir/nested",
+    assert dir_content(f"{root}/exclude_dir") == [
+        f"{upload_to}/exclude_dir/excluded1.txt",
+        f"{upload_to}/exclude_dir/nested",
     ]
-    assert dir_content(f"{path_prefix}data") == [
-        "/data/ascii.txt",
-        "/data/exclude_dir",
-        "/data/nested",
-        "/data/some.csv",
-        "/data/utf-8.txt",
+    assert dir_content(root) == [
+        f"{upload_to}/ascii.txt",
+        f"{upload_to}/exclude_dir",
+        f"{upload_to}/nested",
+        f"{upload_to}/some.csv",
+        f"{upload_to}/utf-8.txt",
     ]
-    assert "/data" in dir_content(path_prefix)  # "tmp" could present
 
 
 def test_s3_file_connection_directory_marker(s3_file_connection_with_path):

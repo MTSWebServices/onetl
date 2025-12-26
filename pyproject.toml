@@ -175,8 +175,10 @@ test = [
     "pytest-lazy-fixture",
     "pytest-mock",
     "pytest-rerunfailures",
+    "pytest-xdist[psutil]",
     "requests",
     "responses",
+    "filelock",
 ]
 dev = [
     "black",

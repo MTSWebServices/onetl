@@ -42,11 +42,11 @@ def processing(request, spark):
 
 
 @pytest.fixture
-def get_schema_table(processing):
+def get_schema_table(processing, worker_id):
     schema = processing.schema
     processing.create_schema(schema=schema)
 
-    table = f"test_{secrets.token_hex(5)}"
+    table = f"test_{worker_id}_{secrets.token_hex(3)}"
     full_name = f"{schema}.{table}"
 
     yield PreparedDbInfo(full_name=full_name, schema=schema, table=table)

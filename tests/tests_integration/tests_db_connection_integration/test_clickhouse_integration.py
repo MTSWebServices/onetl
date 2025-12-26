@@ -116,10 +116,11 @@ def test_clickhouse_connection_fetch(spark, processing, load_table_data, suffix,
     )
 
     schema = load_table_data.schema
-    table = load_table_data.full_name
+    table = load_table_data.table
+    full_table = load_table_data.full_name
 
     with caplog.at_level(logging.INFO):
-        df = clickhouse.fetch(f"SELECT * FROM {table}{suffix}")
+        df = clickhouse.fetch(f"SELECT * FROM {full_table}{suffix}")
         assert "Detected dialect: 'org.apache.spark.sql.jdbc.NoopDialect'" in caplog.text
 
     table_df = processing.get_expected_dataframe(
@@ -131,11 +132,11 @@ def test_clickhouse_connection_fetch(spark, processing, load_table_data, suffix,
     clickhouse.close()
 
     # dataframe content is expected
-    df = clickhouse.fetch(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
+    df = clickhouse.fetch(f"SELECT * FROM {full_table} WHERE id_int < 50{suffix}")
     filtered_df = table_df[table_df.id_int < 50]
     processing.assert_equal_df(df=df, other_frame=filtered_df, order_by="id_int")
 
-    df = clickhouse.fetch(f"SHOW TABLES IN {schema}{suffix}")
+    df = clickhouse.fetch(f"SHOW TABLES FROM {schema} ILIKE '{table}'{suffix}")
     result_df = pandas.DataFrame([[load_table_data.table]], columns=["name"])
     processing.assert_equal_df(df=df, other_frame=result_df)
 
@@ -154,7 +155,7 @@ def test_clickhouse_connection_fetch(spark, processing, load_table_data, suffix,
 
     # fetch is always read-only
     with pytest.raises(Exception):
-        clickhouse.fetch(f"DROP TABLE {table}{suffix}")
+        clickhouse.fetch(f"DROP TABLE {full_table}{suffix}")
 
 
 @pytest.mark.parametrize("suffix", ["", ";"])

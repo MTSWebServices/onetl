@@ -35,7 +35,6 @@ def test_hdfs_file_connection_check_with_keytab(mocker, hdfs_server, caplog, req
     mocker.patch.object(connection, "kinit")
 
     folder: Path = tmp_path_factory.mktemp("keytab")
-    folder.mkdir(exist_ok=True, parents=True)
     keytab = folder / "user.keytab"
     keytab.touch()
     hdfs = HDFS(host="some_host", user="some_user", keytab=keytab)

@@ -48,7 +48,6 @@ def test_sftp_connection_with_key_file(request, tmp_path_factory):
     from onetl.connection import SFTP
 
     folder: Path = tmp_path_factory.mktemp("key_file")
-    folder.mkdir(exist_ok=True, parents=True)
     key_file = folder / "id_rsa"
     key_file.touch()
 

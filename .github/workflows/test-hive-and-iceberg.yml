@@ -71,8 +71,7 @@ jobs:
         run: |
           mkdir reports/ || echo "Directory exists"
           source .env.local
-          ./pytest_runner.sh -m hive
-          ./pytest_runner.sh -m "iceberg and not s3 and not hdfs"
+          ./pytest_runner.sh -m "hive or (iceberg and local_fs)"
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v6

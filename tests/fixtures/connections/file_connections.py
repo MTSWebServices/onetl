@@ -1,4 +1,3 @@
-import secrets
 import shutil
 
 import pytest
@@ -51,10 +50,11 @@ def file_connection_with_path_and_files(request):
 
 
 @pytest.fixture()
-def file_connection_resource_path(resource_path, tmp_path_factory):
-    temp_dir = tmp_path_factory.mktemp("test_files") / secrets.token_hex(5)
+def file_connection_resource_path(resource_path, tmp_path_factory, worker_id):
+    temp_dir = tmp_path_factory.mktemp("test_files") / worker_id
     shutil.copytree(resource_path / "file_connection", temp_dir)
-    return temp_dir
+    yield temp_dir
+    shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 @pytest.fixture()

@@ -4,15 +4,13 @@ import pytest
 
 
 @pytest.fixture
-def kafka_topic(processing, request):
-    topic = secrets.token_hex(6)
+def kafka_topic(processing, worker_id):
+    topic = f"{worker_id}_topic_{secrets.token_hex(5)}"
     processing.create_topic(topic, num_partitions=1)
 
-    def delete_topic():
-        processing.delete_topic([topic])
+    yield topic
 
-    request.addfinalizer(delete_topic)
-    return topic
+    processing.delete_topic([topic])
 
 
 @pytest.fixture

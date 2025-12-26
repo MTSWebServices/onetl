@@ -37,19 +37,16 @@ def sftp_file_connection(sftp_server):
 
 
 @pytest.fixture()
-def sftp_file_connection_with_path(request, sftp_file_connection):
+def sftp_file_connection_with_path(sftp_file_connection, worker_id):
     connection = sftp_file_connection
-    root = PurePosixPath("/app/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/app/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
     connection.create_dir(root)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

@@ -1,5 +1,6 @@
 import os
 from collections import namedtuple
+from contextlib import suppress
 from pathlib import PurePosixPath
 
 import pytest
@@ -34,6 +35,8 @@ def s3_server():
     ],
 )
 def s3_file_connection(s3_server):
+    from minio.error import S3Error
+
     from onetl.connection import S3
 
     s3 = S3(
@@ -45,25 +48,22 @@ def s3_file_connection(s3_server):
         protocol=s3_server.protocol,
     )
 
-    if not s3.client.bucket_exists(bucket_name=s3_server.bucket):
+    with suppress(S3Error):
         s3.client.make_bucket(bucket_name=s3_server.bucket)
 
     return s3
 
 
 @pytest.fixture()
-def s3_file_connection_with_path(request, s3_file_connection):
+def s3_file_connection_with_path(s3_file_connection, worker_id):
     connection = s3_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

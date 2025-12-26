@@ -28,10 +28,12 @@ def test_hive_connection_sql(spark, processing, load_table_data, suffix):
     database_table_column = database_name_column = "namespace"
 
     hive = Hive(cluster="rnd-dwh", spark=spark)
-    schema = load_table_data.schema
-    table = load_table_data.full_name
 
-    df = hive.sql(f"SELECT * FROM {table}{suffix}")
+    schema = load_table_data.schema
+    table = load_table_data.table
+    full_table = load_table_data.full_name
+
+    df = hive.sql(f"SELECT * FROM {full_table}{suffix}")
     table_df = processing.get_expected_dataframe(
         schema=load_table_data.schema,
         table=load_table_data.table,
@@ -39,7 +41,7 @@ def test_hive_connection_sql(spark, processing, load_table_data, suffix):
     )
     processing.assert_equal_df(df=df, other_frame=table_df, order_by="id_int")
 
-    df = hive.sql(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
+    df = hive.sql(f"SELECT * FROM {full_table} WHERE id_int < 50{suffix}")
     filtered_df = table_df[table_df.id_int < 50]
     processing.assert_equal_df(df=df, other_frame=filtered_df, order_by="id_int")
 
@@ -47,7 +49,7 @@ def test_hive_connection_sql(spark, processing, load_table_data, suffix):
     result_df = pandas.DataFrame([["default"], [schema]], columns=[database_table_column])
     processing.assert_equal_df(df=df, other_frame=result_df)
 
-    df = hive.sql(f"SHOW TABLES IN {schema}")
+    df = hive.sql(f"SHOW TABLES IN {schema} LIKE '{table}'")
     result_df = pandas.DataFrame(
         [[schema, load_table_data.table, False]],
         columns=[database_name_column, "tableName", "isTemporary"],
