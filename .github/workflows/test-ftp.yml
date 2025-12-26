@@ -45,7 +45,8 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          cache-suffix: tests-ftp-pydantic-${{ inputs.pydantic-version }}
+          save-cache: "false"
+          cache-suffix: tests-pydantic-${{ inputs.pydantic-version }}
 
       - name: Install dependencies
         run: |
