@@ -1,5 +1,0 @@
-numpy>=1.16
-pandas>=1.0
-pyarrow>=4.0
-pyspark==3.5.7
-sqlalchemy

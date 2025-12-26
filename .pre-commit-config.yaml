@@ -14,8 +14,6 @@ repos:
       - id: check-vcs-permalinks
       - id: check-yaml
         args: [--unsafe]
-      - id: requirements-txt-fixer
-        files: ^(requirements/.*\.txt)$
       - id: end-of-file-fixer
         exclude: ^(.*/VERSION|tests/resources/.*/.*)$
       - id: fix-byte-order-marker
@@ -121,10 +119,10 @@ repos:
           - -ll
         require_serial: true
 
-  - repo: meta
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.9.18
     hooks:
-      - id: check-hooks-apply
-      - id: check-useless-excludes
+      - id: uv-lock
 
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.3.1
@@ -155,6 +153,11 @@ repos:
         language: system
         types: [rst]
         pass_filenames: false
+
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
 
 ci:
   skip:

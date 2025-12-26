@@ -12,11 +12,10 @@
 
 
 import os
-import subprocess
 import sys
 from pathlib import Path
 
-from packaging.version import Version
+from packaging import version as Version
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.resolve()
 
@@ -34,7 +33,9 @@ author = "MWS Data Bridge"
 #
 # The short X.Y version.
 
-ver = Version(subprocess.check_output("python ../setup.py --version", shell=True, text=True).strip())
+VERSION_FILE = PROJECT_ROOT_DIR / "onetl" / "VERSION"
+ver = Version.parse(VERSION_FILE.read_text())
+
 version = ver.base_version
 # The full version, including alpha/beta/rc tags.
 release = ver.public

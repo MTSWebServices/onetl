@@ -4,7 +4,7 @@
   # https://github.com/bitnami/containers/blob/9db9064668365cac89bff58259f63eb78bb97e79/bitnami/kafka/README.md?plain=1#L933
   kafka-version: 3.2.3
   pydantic-version: 1
-  spark-version: 3.2.4
+  spark-version: "3.2"
   python-version: '3.7'
   java-version: 8
   os: ubuntu-22.04
@@ -13,7 +13,7 @@
 3_5_x: &3_5_x
   kafka-version: 3.9.0
   pydantic-version: 2
-  spark-version: 3.5.7
+  spark-version: "3.5"
   python-version: '3.13'
   java-version: 20
   os: ubuntu-latest
@@ -21,21 +21,12 @@
 4_0_x: &4_0_x
   kafka-version: 3.9.0
   pydantic-version: 2
-  spark-version: 4.0.1
+  spark-version: "4.0"
   python-version: '3.13'
   # https://stackoverflow.com/a/79017758/23601543
   java-version: 22
   os: ubuntu-latest
 
-latest: &latest
-  kafka-version: 3.9.0
-  pydantic-version: latest
-  spark-version: latest
-  python-version: '3.13'
-  java-version: 20
-  os: ubuntu-latest
-
 matrix:
   small: [*3_5_x]
   full: [*3_2_x, *3_5_x, *4_0_x]
-  nightly: [*latest]

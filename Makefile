@@ -3,6 +3,8 @@
 include .env.local
 
 VERSION = develop
+SPARK_VERSION ?= 3.5
+PYDANTIC_VERSION ?= 2
 VIRTUAL_ENV ?= .venv
 PYTHON = ${VIRTUAL_ENV}/bin/python
 PIP = ${VIRTUAL_ENV}/bin/pip
@@ -38,7 +40,23 @@ venv-cleanup: ##@Env Cleanup venv
 	${PIP} install uv
 
 venv-install: ##@Env Install requirements to venv
-	${UV} sync --all-extras --group "test-spark3.5" --group test --group dev --group docs $(ARGS)
+	${UV} sync \
+		--inexact \
+		--no-install-project \
+		--all-extras \
+		--group dev \
+		--group docs \
+		--group test \
+		--group test-clickhouse \
+		--group test-mongodb \
+		--group test-mssql \
+		--group test-mysql \
+		--group test-oracle \
+		--group test-postgres \
+		--group test-pydantic-${PYDANTIC_VERSION} \
+		--group test-spark-${SPARK_VERSION} \
+		$(ARGS)
+
 	${UV} pip install --no-deps sphinx-plantuml
 
 

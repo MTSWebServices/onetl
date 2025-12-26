@@ -1,3 +1,232 @@
+[build-system]
+requires = [ "setuptools>=41", "wheel", "setuptools-git-versioning>=2.0,<3", ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+version_file = "onetl/VERSION"
+count_commits_from_version_file = true
+dev_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}"
+dirty_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}.dirty"
+
+
+[project]
+name = "onetl"
+license = { file = "LICENSE.txt" }
+description = "MWS Data Bridge"
+authors = [{name= "MWS Data Bridge", email = "onetools@mts.ru"}]
+readme = "README.rst"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 1",
+    "Framework :: Pydantic :: 2",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Java Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Distributed Computing",
+    "Typing :: Typed",
+]
+keywords = ["Spark", "ETL", "JDBC", "HWM"]
+requires-python = ">=3.7"
+dependencies = [
+    "etl-entities>=2.5,<2.7",
+    "evacuator>=1.0,<1.1",
+    "frozendict",
+    "humanize",
+    # 3.5.0 fails with "entry_points() got an unexpected keyword argument 'group'"
+    "importlib_metadata>=3.6.0",
+    "ordered-set",
+    "platformdirs",
+    # https://github.com/pydantic/pydantic/issues/4092
+    # https://github.com/pydantic/pydantic/issues/4498
+    "pydantic>=1.9.2,!=1.10.2,<3",
+    "pyyaml",
+    # https://github.com/python/typing_extensions/pull/188
+    "typing_extensions>=4.5.0,!=4.6.1; python_version == '3.7'",
+    "typing_extensions>=4.5.0; python_version > '3.7'",
+]
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+include = ["onetl*"]
+exclude = ["docs", "tests"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed", "*.yml",  "*.ini", "VERSION"]
+
+[project.urls]  # Optional
+"Homepage" = "https://github.com/MobileTeleSystems/onetl"
+"Documentation" = "https://onetl.readthedocs.io/"
+"Source" = "https://github.com/MobileTeleSystems/onetl"
+"CI/CD" = "https://github.com/MobileTeleSystems/onetl/actions"
+"Tracker" = "https://github.com/MobileTeleSystems/onetl/issues"
+
+[project.entry-points."tricoder_package_spy.register"]
+onetl = "onetl"
+
+
+[project.optional-dependencies]
+# pyspark package is heavy, make it optional dependency
+spark = ["pyspark"]
+
+# same as hdfs[kerberos], but without including hdfs itself
+kerberos = ["requests-kerberos>=0.7.0"]
+
+# https://todo.sr.ht/~sschwarzer/ftputil/150
+ftp = ["ftputil>=5.0.4"]
+ftps = ["ftputil>=5.0.4"]
+hdfs = ["hdfs>2"]
+# https://github.com/minio/minio-py/pull/1530
+s3 = ["minio<8"]
+samba = ["pysmb"]
+sftp = ["paramiko"]
+webdav = ["webdavclient3"]
+
+# all file dependencies from above
+files = [
+    "ftputil>=5.0.4",
+    "hdfs>2",
+    "minio<8",
+    "pysmb",
+    "paramiko",
+    "webdavclient3",
+]
+
+# spark + kerberos + files
+all = [
+    "pyspark",
+    "ftputil>=5.0.4",
+    "hdfs>2",
+    "minio<8",
+    "pysmb",
+    "paramiko",
+    "webdavclient3",
+    "requests-kerberos>=0.7.0",
+]
+
+
+[dependency-groups]
+test-clickhouse = ["clickhouse-driver"]
+test-kafka = ["confluent-kafka"]
+test-mongodb = ["pymongo"]
+test-mssql = ["pymssql"]
+test-mysql = ["pymysql[rsa]"]
+test-oracle = ["cx_Oracle"]
+test-postgres = ["psycopg2-binary"]
+test-pydantic-1 = ["pydantic<2"]
+test-pydantic-2 = ["pydantic<3"]
+test-samba = ["pysmb"]
+"test-spark-3.2" = [
+    "pyspark==3.2.4",
+    "numpy>=1.16,<1.24",
+    "pandas>=1.0,<2",
+    "pyarrow>=1.0",
+    "sqlalchemy<2.0",
+    "setuptools",
+]
+"test-spark-3.3" = [
+    "pyspark==3.3.4",
+    "numpy>=1.16,<1.24",
+    "pandas>=1.0,<2",
+    "pyarrow>=1.0",
+    "sqlalchemy<2.0",
+    "setuptools",
+]
+"test-spark-3.4" = [
+    "pyspark==3.4.4",
+    "numpy>=1.16",
+    "pandas>=1.0",
+    "pyarrow>=1.0",
+    "sqlalchemy",
+    "setuptools",
+]
+"test-spark-3.5" = [
+    "pyspark==3.5.7",
+    "numpy>=1.16",
+    "pandas>=1.0",
+    "pyarrow>=4.0",
+    "sqlalchemy",
+    "setuptools",
+]
+"test-spark-4.0" = [
+    "pyspark==4.0.1",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=11.0",
+    "sqlalchemy",
+    "setuptools",
+]
+test = [
+    "coverage",
+    "omegaconf",
+    "pytest<8",
+    "pytest-lazy-fixture",
+    "pytest-mock",
+    "pytest-rerunfailures",
+    "requests",
+    "responses",
+]
+dev = [
+    "black",
+    "mypy",
+    "pre-commit",
+    "pygments-csv-lexer",
+    "types-Deprecated",
+    "types-PyYAML",
+    "wemake-python-styleguide",
+]
+docs = [
+    # TODO: remove version limit after upgrading all Pydantic models to v2
+    "autodoc-pydantic<2",
+    "furo",
+    "importlib-resources<6",
+    "numpydoc",
+    "pygments-csv-lexer",
+    # TODO: remove version limit after upgrading autodoc-pydantic to v2
+    "sphinx<8",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-favicon",
+    # https://github.com/mgeier/sphinx-last-updated-by-git/pull/77
+    "sphinx-last-updated-by-git>=0.3.8",
+    # TODO: uncomment after https://github.com/zqmillet/sphinx-plantuml/pull/4
+    # sphinx-plantuml",
+    "sphinx-tabs",
+    "sphinx-toolbox",
+    "sphinx_substitution_extensions",
+    "sphinxcontrib-towncrier",
+    "towncrier",
+]
+
+[tool.uv]
+default-groups = []
+conflicts = [
+    [
+        { group = "test-spark-3.2" },
+        { group = "test-spark-3.3" },
+        { group = "test-spark-3.4" },
+        { group = "test-spark-3.5" },
+        { group = "test-spark-4.0" },
+    ],
+]
+
+[tool.uv.dependency-groups]
+"test-spark-3.5" = {requires-python = ">=3.8"}
+"test-spark-4.0" = {requires-python = ">=3.9"}
+
+
 [tool.isort]
 profile = "black"
 multi_line_output = 3

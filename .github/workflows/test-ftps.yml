@@ -46,20 +46,14 @@ jobs:
         with:
           activate-environment: "true"
           cache-suffix: tests-ftp-pydantic-${{ inputs.pydantic-version }}
-          cache-dependency-glob: |
-            requirements/core.txt
-            requirements/ftp.txt
-            requirements/tests/base.txt
-            requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
 
       - name: Install dependencies
         run: |
-          uv pip install \
-            setuptools \
-            -r requirements/core.txt \
-            -r requirements/ftp.txt \
-            -r requirements/tests/base.txt \
-            -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          uv sync \
+            --no-install-project \
+            --extra ftps \
+            --group test \
+            --group test-pydantic-${{ inputs.pydantic-version }}
 
       - name: Run tests
         run: |

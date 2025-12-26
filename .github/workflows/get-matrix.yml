@@ -1,11 +1,6 @@
 name: Get version matrix for tests
 on:
   workflow_call:
-    inputs:
-      nightly:
-        required: false
-        type: boolean
-        default: false
     outputs:
       matrix-core:
         value: ${{ jobs.get-matrix.outputs.matrix-core }}
@@ -139,9 +134,7 @@ jobs:
       - name: Calculate Core matrix key
         id: key-core
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-core.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-core.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -169,9 +162,7 @@ jobs:
       - name: Calculate Clickhouse matrix key
         id: key-clickhouse
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-clickhouse.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-clickhouse.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -199,9 +190,7 @@ jobs:
       - name: Calculate Greenplum matrix key
         id: key-greenplum
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-greenplum.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-greenplum.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -229,9 +218,7 @@ jobs:
       - name: Calculate Hive matrix key
         id: key-hive
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-hive.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-hive.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -259,9 +246,7 @@ jobs:
       - name: Calculate Kafka matrix key
         id: key-kafka
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-kafka.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-kafka.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -289,9 +274,7 @@ jobs:
       - name: Calculate LocalFS matrix key
         id: key-local-fs
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file-df.outputs.any_changed }} || ${{ steps.changed-local-fs.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file-df.outputs.any_changed }} || ${{ steps.changed-local-fs.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -319,9 +302,7 @@ jobs:
       - name: Calculate MongoDB matrix key
         id: key-mongodb
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-mongodb.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-mongodb.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -349,9 +330,7 @@ jobs:
       - name: Calculate MSSQL matrix key
         id: key-mssql
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-mssql.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-mssql.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -379,9 +358,7 @@ jobs:
       - name: Calculate MySQL matrix key
         id: key-mysql
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-mysql.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-mysql.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -409,9 +386,7 @@ jobs:
       - name: Calculate Oracle matrix key
         id: key-oracle
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-oracle.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-oracle.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -439,9 +414,7 @@ jobs:
       - name: Calculate Postgres matrix key
         id: key-postgres
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-postgres.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-db.outputs.any_changed }} || ${{ steps.changed-postgres.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -469,9 +442,7 @@ jobs:
       - name: Calculate FTP matrix key
         id: key-ftp
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-ftp.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-ftp.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -499,9 +470,7 @@ jobs:
       - name: Calculate FTPS matrix key
         id: key-ftps
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-ftps.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-ftps.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -529,9 +498,7 @@ jobs:
       - name: Calculate HDFS matrix key
         id: key-hdfs
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-hdfs.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-hdfs.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -559,9 +526,7 @@ jobs:
       - name: Calculate S3 matrix key
         id: key-s3
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-s3.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-s3.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -589,9 +554,7 @@ jobs:
       - name: Calculate SFTP matrix key
         id: key-sftp
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-sftp.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-sftp.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -619,9 +582,7 @@ jobs:
       - name: Calculate Samba matrix key
         id: key-samba
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-samba.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-samba.outputs.any_changed }}; then
             key=full
           else
             key=small
@@ -649,9 +610,7 @@ jobs:
       - name: Calculate WebDAV matrix key
         id: key-webdav
         run: |
-          if ${{ inputs.nightly }}; then
-            key=nightly
-          elif ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-webdav.outputs.any_changed }}; then
+          if ${{ steps.changed-base.outputs.any_changed }} || ${{ steps.changed-file.outputs.any_changed }} || ${{ steps.changed-webdav.outputs.any_changed }}; then
             key=full
           else
             key=small

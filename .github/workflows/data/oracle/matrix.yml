@@ -2,7 +2,7 @@
   oracle-image: gvenzl/oracle-xe
   oracle-version: 11.2.0.2-slim-faststart
   db-name: XE
-  spark-version: 3.2.4
+  spark-version: "3.2"
   pydantic-version: 1
   python-version: '3.7'
   java-version: 8
@@ -12,7 +12,7 @@
   oracle-image: gvenzl/oracle-free
   oracle-version: 23.26.0-slim-faststart
   db-name: FREEPDB1
-  spark-version: 3.5.7
+  spark-version: "3.5"
   pydantic-version: 2
   python-version: '3.13'
   java-version: 20
@@ -22,24 +22,13 @@
   oracle-image: gvenzl/oracle-free
   oracle-version: 23.26.0-slim-faststart
   db-name: FREEPDB1
-  spark-version: 4.0.1
+  spark-version: "4.0"
   pydantic-version: 2
   python-version: '3.13'
   # https://stackoverflow.com/a/79017758/23601543
   java-version: 22
   os: ubuntu-latest
 
-latest: &latest
-  oracle-image: gvenzl/oracle-free
-  oracle-version: slim-faststart
-  db-name: FREEPDB1
-  spark-version: latest
-  pydantic-version: latest
-  python-version: '3.13'
-  java-version: 20
-  os: ubuntu-latest
-
 matrix:
   small: [*3_5_x]
   full: [*3_2_x, *3_5_x, *4_0_x]
-  nightly: [*latest]
