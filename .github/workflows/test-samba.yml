@@ -45,22 +45,15 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          save-cache: false
           cache-suffix: tests-samba-pydantic-${{ inputs.pydantic-version }}
-          cache-dependency-glob: |
-            requirements/core.txt
-            requirements/samba.txt
-            requirements/tests/base.txt
-            requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
 
       - name: Install dependencies
         run: |
-          uv pip install \
-            setuptools \
-            -r requirements/core.txt \
-            -r requirements/samba.txt \
-            -r requirements/tests/base.txt \
-            -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          uv sync \
+            --no-install-project \
+            --extra samba \
+            --group test \
+            --group test-pydantic-${{ inputs.pydantic-version }}
 
       - name: Run tests
         run: |

@@ -74,23 +74,17 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          cache-suffix: tests-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}
-          cache-dependency-glob: |
-            requirements/core.txt
-            requirements/tests/base.txt
-            requirements/tests/mssql.txt
-            requirements/tests/spark-${{ inputs.spark-version }}.txt
-            requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          save-cache: "false"
+          cache-suffix: test-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}
 
       - name: Install dependencies
         run: |
-          uv pip install \
-            setuptools \
-            -r requirements/core.txt \
-            -r requirements/tests/base.txt \
-            -r requirements/tests/mssql.txt \
-            -r requirements/tests/spark-${{ inputs.spark-version }}.txt \
-            -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          uv sync \
+            --no-install-project \
+            --group test \
+            --group test-mssql \
+            --group test-spark-${{ inputs.spark-version }} \
+            --group test-pydantic-${{ inputs.pydantic-version }}
 
       - name: Run tests
         run: |

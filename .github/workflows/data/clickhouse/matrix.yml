@@ -2,7 +2,7 @@
   # Clickhouse version with proper DateTime > DateTime64 comparison
   clickhouse-image: yandex/clickhouse-server
   clickhouse-version: '21.1-alpine'
-  spark-version: 3.2.4
+  spark-version: "3.2"
   pydantic-version: 1
   python-version: '3.7'
   java-version: 8
@@ -11,7 +11,7 @@
 3_5_x: &3_5_x
   clickhouse-image: clickhouse/clickhouse-server
   clickhouse-version: 25.9-alpine
-  spark-version: 3.5.7
+  spark-version: "3.5"
   pydantic-version: 2
   python-version: '3.13'
   java-version: 20
@@ -20,23 +20,13 @@
 4_0_x: &4_0_x
   clickhouse-image: clickhouse/clickhouse-server
   clickhouse-version: 25.9-alpine
-  spark-version: 4.0.1
+  spark-version: "4.0"
   pydantic-version: 2
   python-version: '3.13'
   # https://stackoverflow.com/a/79017758/23601543
   java-version: 22
   os: ubuntu-latest
 
-latest: &latest
-  clickhouse-image: clickhouse/clickhouse-server
-  clickhouse-version: latest-alpine
-  spark-version: latest
-  pydantic-version: latest
-  python-version: '3.13'
-  java-version: 20
-  os: ubuntu-latest
-
 matrix:
   small: [*3_5_x]
   full: [*3_2_x, *3_5_x, *4_0_x]
-  nightly: [*latest]

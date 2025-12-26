@@ -365,9 +365,10 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
+          save-cache: "false"
 
       - name: Install dependencies
-        run: uv pip install coverage pytest
+        run: uv sync --only-group test
 
       - name: Download all coverage reports
         uses: actions/download-artifact@v7

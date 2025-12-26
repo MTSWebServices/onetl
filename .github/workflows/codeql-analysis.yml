@@ -40,29 +40,10 @@ jobs:
         with:
           activate-environment: "true"
           cache-suffix: codeql
-          cache-dependency-glob: |
-            requirements/core.txt
-            requirements/dev.txt
-            requirements/ftp.txt
-            requirements/hdfs.txt
-            requirements/s3.txt
-            requirements/sftp.txt
-            requirements/spark.txt
-            requirements/webdav.txt
 
       - name: Install dependencies
         run: |
-          uv pip install \
-            setuptools \
-            -r requirements/core.txt \
-            -r requirements/dev.txt \
-            -r requirements/ftp.txt \
-            -r requirements/hdfs.txt \
-            -r requirements/s3.txt \
-            -r requirements/sftp.txt \
-            -r requirements/spark.txt \
-            -r requirements/webdav.txt
-
+          uv sync --extra files --extra spark --group dev
           uv pip install -U flake8-commas
 
           # Set the `CODEQL-PYTHON` environment variable to the Python executable
