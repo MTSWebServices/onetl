@@ -33,30 +33,33 @@ jobs:
           docker compose --profile all down -v --remove-orphans
           docker compose --profile ftps pull
           docker compose --profile ftps up -d --wait --wait-timeout 200
+        env:
+          FTPS_IMAGE: chonjay21/ftps:${{ inputs.ftps-version }}
 
       - name: Set up Python ${{ inputs.python-version }}
         uses: actions/setup-python@v6
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache pip
-        uses: actions/cache@v5
-        if: inputs.with-cache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-ftps-${{ hashFiles('requirements/core.txt', 'requirements/ftp.txt', 'requirements/tests/base.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-ftps-${{ hashFiles('requirements/core.txt', 'requirements/ftp.txt', 'requirements/tests/base.txt') }}
-            ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-ftps-
-
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
+          activate-environment: "true"
+          cache-suffix: tests-ftp-pydantic-${{ inputs.pydantic-version }}
+          cache-dependency-glob: |
+            requirements/core.txt
+            requirements/ftp.txt
+            requirements/tests/base.txt
+            requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
 
       - name: Install dependencies
         run: |
-          pip install -I -r requirements/core.txt -r requirements/ftp.txt -r requirements/tests/base.txt -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
-        env:
-          FTPS_IMAGE: chonjay21/ftps:${{ inputs.ftps-version }}
+          uv pip install \
+            setuptools \
+            -r requirements/core.txt \
+            -r requirements/ftp.txt \
+            -r requirements/tests/base.txt \
+            -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
 
       - name: Run tests
         run: |

@@ -11,12 +11,14 @@ build:
     post_checkout:
       - git fetch --unshallow || true
     post_create_environment:
-      - python -m pip install --exists-action=w --no-cache-dir --no-deps sphinx-plantuml # remove after https://github.com/zqmillet/sphinx-plantuml/pull/4
-      - python -m pip install --exists-action=w --no-cache-dir -r requirements/docs.txt
-      - python -m pip install --exists-action=w --upgrade --upgrade-strategy only-if-needed --no-cache-dir .[ftp,ftps,hdfs,samba,s3,sftp,webdav,spark]
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH python -m pip install uv
+      # remove after https://github.com/zqmillet/sphinx-plantuml/pull/4
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv pip install --no-cache-dir --no-deps sphinx-plantuml
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv pip install --no-cache-dir .[ftp,ftps,hdfs,samba,s3,sftp,webdav,spark] -r requirements/docs.txt
     post_install:
       # TODO: remove after upgrading autodoc-pydantic to v2
-      - python -m pip install --exists-action=w --no-cache-dir "sphinx<8"
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv pip install --no-cache-dir "sphinx<8"
+      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH python -m pip list -v
 
 # TODO: uncomment after https://github.com/zqmillet/sphinx-plantuml/pull/4
 #python:

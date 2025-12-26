@@ -52,22 +52,25 @@ jobs:
             ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-hive-and-iceberg-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
             ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-hive-and-iceberg-
 
-      - name: Cache pip
-        uses: actions/cache@v5
-        if: inputs.with-cache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-${{ hashFiles('requirements/core.txt', 'requirements/tests/base.txt', 'requirements/tests/spark-*.txt', 'requirements/tests/pydantic-*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-${{ hashFiles('requirements/core.txt', 'requirements/tests/base.txt', 'requirements/tests/spark-*.txt', 'requirements/tests/pydantic-*.txt') }}
-            ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-
-
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
+          activate-environment: "true"
+          cache-suffix: tests-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}
+          cache-dependency-glob: |
+            requirements/core.txt
+            requirements/tests/base.txt
+            requirements/tests/spark-${{ inputs.spark-version }}.txt
+            requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
 
       - name: Install dependencies
         run: |
-          pip install -I -r requirements/core.txt -r requirements/tests/base.txt -r requirements/tests/spark-${{ inputs.spark-version }}.txt -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          uv pip install \
+            setuptools \
+            -r requirements/core.txt \
+            -r requirements/tests/base.txt \
+            -r requirements/tests/spark-${{ inputs.spark-version }}.txt \
+            -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
 
       - name: Run tests
         run: |
