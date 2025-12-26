@@ -34,20 +34,8 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
-      - name: Cache pip
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-release-${{ hashFiles('requirements/core.txt', 'requirements/docs.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-release-${{ hashFiles('requirements/core.txt', 'requirements/docs.txt') }}
-            ${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-release-
-
       - name: Upgrade pip
         run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install dependencies
-        run: pip install -I  -r requirements/core.txt -r requirements/docs.txt
 
       - name: Fix logo in Readme
         run: |
