@@ -18,9 +18,10 @@ class SupportWhereStr:
             return None
 
         if not isinstance(where, str):
-            raise TypeError(
+            msg = (
                 f"{self.connection.__class__.__name__} requires 'where' parameter type to be 'str', "
-                f"got {where.__class__.__name__!r}",
+                f"got {where.__class__.__name__!r}"
             )
+            raise TypeError(msg)
 
         return where

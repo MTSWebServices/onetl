@@ -17,7 +17,7 @@ from onetl.connection.db_connection.jdbc_connection.options import JDBCReadOptio
 try:
     from pydantic.v1 import SecretStr, validator
 except (ImportError, AttributeError):
-    from pydantic import validator, SecretStr  # type: ignore[no-redef, assignment]
+    from pydantic import SecretStr, validator  # type: ignore[no-redef, assignment]
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
@@ -41,13 +41,11 @@ from onetl.connection.db_connection.greenplum.options import (
     GreenplumTableExistBehavior,
     GreenplumWriteOptions,
 )
-from onetl.connection.db_connection.jdbc_mixin import JDBCMixin
-from onetl.connection.db_connection.jdbc_mixin.options import (
+from onetl.connection.db_connection.jdbc_mixin import (
     JDBCExecuteOptions,
     JDBCFetchOptions,
-)
-from onetl.connection.db_connection.jdbc_mixin.options import (
-    JDBCOptions as JDBCMixinOptions,
+    JDBCMixin,
+    JDBCMixinOptions,
 )
 from onetl.exception import MISSING_JVM_CLASS_MSG, TooManyParallelJobsError
 from onetl.hooks import slot, support_hooks
@@ -73,7 +71,7 @@ EXTRA_OPTIONS = frozenset(
 class GreenplumExtra(GenericOptions):
     # avoid closing connections from server side
     # while connector is moving data to executors before insert
-    tcpKeepAlive: str = "true"  # noqa: N815
+    tcpKeepAlive: str = "true"
 
     class Config:
         extra = "allow"
@@ -81,7 +79,7 @@ class GreenplumExtra(GenericOptions):
 
 
 @support_hooks
-class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
+class Greenplum(JDBCMixin, DBConnection):
     """Greenplum connection. |support_hooks|
 
     Based on package ``io.pivotal:greenplum-spark:2.2.0``
@@ -122,7 +120,8 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
 
         Supported options are:
             * All `Postgres JDBC driver properties <https://jdbc.postgresql.org/documentation/use/>`_
-            * Properties from `Greenplum connector for Spark documentation <https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html>`_ page, but only starting with ``server.`` or ``pool.``
+            * Properties from `Greenplum connector for Spark documentation <https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html>`_ page,
+              but only starting with ``server.`` or ``pool.``
 
     Examples
     --------
@@ -162,7 +161,7 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
             extra=extra,
             spark=spark,
         ).check()
-    """
+    """  # noqa: E501
 
     host: Host
     user: str
@@ -239,27 +238,29 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
         """
 
         # Connector version is fixed, so we can perform checks for Scala/Spark version
-        if package_version:
-            package_ver = Version(package_version)
-        else:
-            package_ver = Version("2.2.0")
+        package_ver = Version(package_version or "2.2.0")
 
         if scala_version:
             scala_ver = Version(scala_version).min_digits(2)
         elif spark_version:
             spark_ver = Version(spark_version).min_digits(2)
             if spark_ver >= Version("3.3"):
-                raise ValueError(f"Spark version must be 3.2.x or less, got {spark_ver}")
+                msg = f"Spark version must be 3.2.x or less, got {spark_ver}"
+                raise ValueError(msg)
             scala_ver = get_default_scala_version(spark_ver)
         else:
-            raise ValueError("You should pass either `scala_version` or `spark_version`")
+            msg = "You should pass either `scala_version` or `spark_version`"
+            raise ValueError(msg)
 
         return [f"io.pivotal:greenplum-spark_{scala_ver.format('{0}.{1}')}:{package_ver}"]
 
     @classproperty
     def package_spark_3_2(cls) -> str:
         """Get package name to be downloaded by Spark 3.2."""
-        msg = "`Greenplum.package_3_2` will be removed in 1.0.0, use `Greenplum.get_packages(spark_version='3.2')` instead"
+        msg = (
+            "`Greenplum.package_3_2` will be removed in 1.0.0, "
+            "use `Greenplum.get_packages(spark_version='3.2')` instead"
+        )
         warnings.warn(msg, UserWarning, stacklevel=3)
         return "io.pivotal:greenplum-spark_2.12:2.2.0"
 
@@ -279,7 +280,7 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
         result = {
             key: value
             for key, value in self.extra.dict(by_alias=True).items()
-            if not (key.startswith("server.") or key.startswith("pool."))
+            if not key.startswith(("server.", "pool."))
         }
         # https://www.postgresql.org/docs/current/runtime-config-logging.html#GUC-APPLICATION-NAME
         result["ApplicationName"] = result.get("ApplicationName", get_client_info(self.spark, limit=64))
@@ -294,7 +295,7 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
     @slot
     def check(self):
         log.info("|%s| Checking connection availability...", self.__class__.__name__)
-        self._log_parameters()  # type: ignore
+        self._log_parameters()
 
         log.debug("|%s| Executing SQL query:", self.__class__.__name__)
         log_lines(log, self._CHECK_QUERY, level=logging.DEBUG)
@@ -313,12 +314,13 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
     @slot
-    def read_source_as_df(
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,
@@ -458,10 +460,10 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
         self,
         table: str,
     ) -> dict:
-        schema, table_name = table.split(".")  # noqa: WPS414
+        schema, table_name = table.split(".")
         extra = self.extra.dict(by_alias=True, exclude_none=True)
         greenplum_connector_options = {
-            key: value for key, value in extra.items() if key.startswith("server.") or key.startswith("pool.")
+            key: value for key, value in extra.items() if key.startswith(("server.", "pool."))
         }
 
         # Greenplum connector requires all JDBC params to be passed via JDBC URL:
@@ -481,23 +483,27 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
             **greenplum_connector_options,
         }
 
-    def _get_jdbc_connection(self, options: JDBCFetchOptions | JDBCExecuteOptions, read_only: bool):
+    def _get_jdbc_connection(
+        self,
+        options: JDBCFetchOptions | JDBCExecuteOptions,
+        *,
+        read_only: bool,
+    ):
         if read_only:
             # To properly support pgbouncer, we have to create connection with readOnly option set.
             # See https://github.com/pgjdbc/pgjdbc/issues/848
             options = options.copy(update={"readOnly": True})
 
         connection_properties = self._options_to_connection_properties(options)
-        driver_manager = self.spark._jvm.java.sql.DriverManager  # type: ignore
-        # avoid calling .setReadOnly(True) here
-        return driver_manager.getConnection(self.jdbc_url, connection_properties)
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        return jvm.java.sql.DriverManager.getConnection(self.jdbc_url, connection_properties)  # type: ignore[union-attr]
 
     def _get_server_setting(self, name: str) -> Any:
         query = f"""
                 SELECT setting
                 FROM   pg_settings
                 WHERE  name = '{name}'
-                """
+                """  # noqa: S608
         log.debug("|%s| Executing SQL query (on driver):")
         log_lines(log, query, level=logging.DEBUG)
 
@@ -506,6 +512,7 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
 
         log.debug(
             "|%s| Query succeeded, resulting in-memory dataframe contains %d rows",
+            self.__class__.__name__,
             len(result),
         )
         if result:
@@ -527,6 +534,7 @@ class Greenplum(JDBCMixin, DBConnection):  # noqa: WPS338
 
         log.debug(
             "|%s| Query succeeded, resulting in-memory dataframe contains %d rows",
+            self.__class__.__name__,
             len(result),
         )
         return int(result[0][0])

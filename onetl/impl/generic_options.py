@@ -12,6 +12,8 @@ try:
 except (ImportError, AttributeError):
     from pydantic import root_validator  # type: ignore[no-redef, assignment]
 
+from typing_extensions import Self
+
 from onetl.impl.frozen_model import FrozenModel
 
 log = logging.getLogger(__name__)
@@ -20,15 +22,15 @@ T = TypeVar("T", bound="GenericOptions")
 
 class GenericOptions(FrozenModel):
     class Config:
-        strip_prefixes: list[str | re.Pattern] = []
+        strip_prefixes: tuple[str | re.Pattern, ...] = ()
         known_options: frozenset[str] | None = None
         prohibited_options: frozenset[str] = frozenset()
 
     @classmethod
     def parse(
-        cls: type[T],
+        cls,
         options: GenericOptions | dict | None,
-    ) -> T:
+    ) -> Self:
         """
         If a parameter inherited from the ReadOptions class was passed, then it will be returned unchanged.
         If a Dict object was passed it will be converted to ReadOptions.
@@ -43,9 +45,8 @@ class GenericOptions(FrozenModel):
             return cls.parse_obj(options)
 
         if not isinstance(options, cls):
-            raise TypeError(
-                f"{options.__class__.__name__} is not a {cls.__name__} instance",
-            )
+            msg = f"{options.__class__.__name__} is not a {cls.__name__} instance"
+            raise TypeError(msg)
 
         return options
 
@@ -67,16 +68,16 @@ class GenericOptions(FrozenModel):
                         new_key,
                     )
                     if new_key in values:
-                        log.warning("Overwriting existing value of key %r with %r", key, new_key)  # noqa: WPS220
+                        log.warning("Overwriting existing value of key %r with %r", key, new_key)
                     values[new_key] = value
-                    key = new_key
+                key = new_key  # noqa: PLW2901
         return values
 
     @staticmethod
     def _strip_prefix(key: str, prefix: str | re.Pattern) -> tuple[str, str | None]:
         if isinstance(prefix, str) and key.startswith(prefix):
             return key.replace(prefix, "", 1), prefix
-        elif isinstance(prefix, re.Pattern) and prefix.match(key):
+        if isinstance(prefix, re.Pattern) and prefix.match(key):
             return prefix.sub("", key, 1), prefix.pattern
         return key, None
 
@@ -96,7 +97,8 @@ class GenericOptions(FrozenModel):
         matching_options = sorted(cls._get_matching_options(unknown_options, prohibited))
         if matching_options:
             class_name = cls.__name__  # type: ignore[attr-defined]
-            raise ValueError(f"Options {matching_options!r} are not allowed to use in a {class_name}")
+            msg = f"Options {matching_options!r} are not allowed to use in a {class_name}"
+            raise ValueError(msg)
 
         return values
 

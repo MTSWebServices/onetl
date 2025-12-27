@@ -80,7 +80,8 @@ class XML(ReadWriteFileFormat):
 
             .. warning::
 
-                Due to `bug <https://github.com/databricks/spark-xml/issues/664>`_ written files currently does not have ``.xml`` extension.
+                Due to `bug <https://github.com/databricks/spark-xml/issues/664>`_ written files
+                currently do not have ``.xml`` extension.
 
             .. code:: python
 
@@ -336,7 +337,7 @@ class XML(ReadWriteFileFormat):
 
     @slot
     @classmethod
-    def get_packages(  # noqa: WPS231
+    def get_packages(
         cls,
         spark_version: str,
         scala_version: str | None = None,
@@ -393,14 +394,15 @@ class XML(ReadWriteFileFormat):
 
         """
         spark_ver = Version(spark_version)
-        if spark_ver.major >= 4:
+        if spark_ver.major >= 4:  # noqa: PLR2004
             # since Spark 4.0, XML is bundled with Spark
             return []
 
         if package_version:
             version = Version(package_version).min_digits(3)
             if version < Version("0.14"):
-                raise ValueError(f"Package version must be above 0.13, got {version}")
+                msg = f"Package version must be above 0.13, got {version}"
+                raise ValueError(msg)
             log.warning("Passed custom package version %r, it is not guaranteed to be supported", package_version)
         else:
             version = Version("0.18.0")
@@ -411,7 +413,7 @@ class XML(ReadWriteFileFormat):
     @slot
     def check_if_supported(self, spark: SparkSession) -> None:
         version = get_spark_version(spark)
-        if version.major >= 4:
+        if version.major >= 4:  # noqa: PLR2004
             # since Spark 4.0, XML is bundled with Spark
             return
 
@@ -439,8 +441,11 @@ class XML(ReadWriteFileFormat):
 
         .. note::
 
-            This method parses each DataFrame row individually. Therefore, for a specific column, each row must contain exactly one occurrence of the ``rowTag`` specified.
-            If your XML data includes a root tag that encapsulates multiple row tags, you can adjust the schema to use an ``ArrayType`` to keep all child elements under the single root.
+            This method parses each DataFrame row individually. Therefore, for a specific column,
+            each row must contain exactly one occurrence of the ``rowTag`` specified.
+
+            If your XML data includes a root tag that encapsulates multiple row tags, you can adjust the schema
+            to use an ``ArrayType`` to keep all child elements under the single root.
 
             .. code-block:: xml
 
@@ -484,11 +489,13 @@ class XML(ReadWriteFileFormat):
             The name of the column or the column object containing XML strings/bytes to parse.
 
         schema : StructType
-            The schema to apply when parsing the XML data. This defines the structure of the output DataFrame column.
+            The schema to apply when parsing the XML data.
+            This defines the structure of the output DataFrame column.
 
         Returns
         -------
-        Column with deserialized data, with the same structure as the provided schema. Column name is the same as input column.
+        Column with deserialized data, with the same structure as the provided schema.
+        Column name is the same as input column.
 
         Examples
         --------
@@ -528,34 +535,34 @@ class XML(ReadWriteFileFormat):
         |    |-- name: string (nullable = true)
         |    |-- age: integer (nullable = true)
         """
-        from pyspark.sql import Column, SparkSession  # noqa: WPS442
+        from pyspark.sql import Column, SparkSession
 
-        spark = SparkSession._instantiatedSession  # noqa: WPS437
+        spark = SparkSession._instantiatedSession  # noqa: SLF001
         self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.functions import col
 
         if isinstance(column, Column):
-            column_name, column = column._jc.toString(), column.cast("string")  # noqa: WPS437
+            column_name, column = column._jc.toString(), column.cast("string")  # noqa: SLF001
         else:
             column_name, column = column, col(column).cast("string")
 
         options = self.dict(by_alias=True, exclude_none=True)
         version = get_spark_version(spark)
-        if version.major >= 4:
-            from pyspark.sql.functions import from_xml  # noqa: WPS450
+        if version.major >= 4:  # noqa: PLR2004
+            from pyspark.sql.functions import from_xml
 
             return from_xml(column, schema, stringify(options)).alias(column_name)
 
-        from pyspark.sql.column import _to_java_column  # noqa: WPS450
+        from pyspark.sql.column import _to_java_column
 
         java_column = _to_java_column(column)
-        java_schema = spark._jsparkSession.parseDataType(schema.json())  # noqa: WPS437
-        scala_options = spark._jvm.org.apache.spark.api.python.PythonUtils.toScalaMap(  # noqa: WPS219, WPS437
+        java_schema = spark._jsparkSession.parseDataType(schema.json())  # noqa: SLF001
+        scala_options = spark._jvm.org.apache.spark.api.python.PythonUtils.toScalaMap(  # noqa: SLF001
             stringify(options),
         )
-        jc = spark._jvm.com.databricks.spark.xml.functions.from_xml(  # noqa: WPS219, WPS437
+        jc = spark._jvm.com.databricks.spark.xml.functions.from_xml(  # noqa: SLF001
             java_column,
             java_schema,
             scala_options,

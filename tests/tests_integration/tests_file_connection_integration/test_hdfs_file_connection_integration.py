@@ -102,12 +102,12 @@ def test_hdfs_file_connection_check_with_hooks(request, hdfs_server):
 
     HDFS(host=hdfs_server.host, webhdfs_port=hdfs_server.webhdfs_port).check()  # no exception
 
-    with pytest.raises(RuntimeError, match="Host 'some-node2.domain.com' is not an active namenode"):
+    with pytest.raises(RuntimeError, match=r"Host 'some-node2\.domain\.com' is not an active namenode"):
         HDFS(host="some-node2.domain.com").check()
 
     with pytest.raises(
         RuntimeError,
-        match="Host 'some-node2.domain.com' is not an active namenode of cluster 'rnd-dwh'",
+        match=r"Host 'some-node2\.domain\.com' is not an active namenode of cluster 'rnd-dwh'",
     ):
         HDFS(host="some-node2.domain.com", cluster="rnd-dwh").check()
 

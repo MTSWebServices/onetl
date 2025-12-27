@@ -20,7 +20,7 @@ def test_total_files_size_repr():
 
 
 @pytest.mark.parametrize(
-    ["input", "expected"],
+    ("input", "expected"),
     [
         ("10", 10),
         ("10B", 10),

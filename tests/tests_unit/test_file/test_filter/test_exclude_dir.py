@@ -5,7 +5,7 @@ from onetl.impl import RemoteDirectory, RemoteFile, RemotePathStat
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (False, RemoteFile(path="exclude1/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),
@@ -25,7 +25,7 @@ def test_exclude_dir_match_relative(matched, path):
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="exclude1/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),

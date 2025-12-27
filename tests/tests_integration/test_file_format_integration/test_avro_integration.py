@@ -40,7 +40,7 @@ def avro_schema():
 
 
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_compression", {}),
         ("with_compression", {"compression": "snappy"}),
@@ -148,7 +148,7 @@ def test_avro_serialize_and_parse_no_schema(
 
     with pytest.raises(
         ValueError,
-        match="Avro.parse_column can be used only with defined `avroSchema` or `avroSchemaUrl`",
+        match=r"Avro\.parse_column can be used only with defined `avroSchema` or `avroSchemaUrl`",
     ):
         serialized_df.select(avro.parse_column(column_type("combined")))
 

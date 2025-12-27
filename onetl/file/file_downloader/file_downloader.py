@@ -138,13 +138,15 @@ class FileDownloader(FrozenModel):
             Renamed ``limit`` → ``limits``
 
     options : :obj:`~FileDownloader.Options`  | dict | None, default: ``None``
-        File downloading options. See :obj:`FileDownloader.Options <onetl.file.file_downloader.options.FileDownloaderOptions>`
+        File downloading options.
+        See :obj:`FileDownloader.Options <onetl.file.file_downloader.options.FileDownloaderOptions>`
 
         .. versionadded:: 0.3.0
 
     hwm : type[HWM] | None, default: ``None``
 
-        HWM class to detect changes in incremental run. See :etl-entities:`File HWM <hwm/file/index.html>`
+        HWM class to detect changes in incremental run.
+        See :etl-entities:`File HWM <hwm/file/index.html>`
 
         .. warning ::
             Used only in :obj:`IncrementalStrategy <onetl.strategy.incremental_strategy.IncrementalStrategy>`.
@@ -271,7 +273,7 @@ class FileDownloader(FrozenModel):
     _connection_checked: bool = PrivateAttr(default=False)
 
     @slot
-    def run(self, files: Iterable[str | os.PathLike] | None = None) -> DownloadResult:  # noqa: WPS231
+    def run(self, files: Iterable[str | os.PathLike] | None = None) -> DownloadResult:  # noqa: C901
         """
         Method for downloading files from source to local directory. |support_hooks|
 
@@ -394,7 +396,8 @@ class FileDownloader(FrozenModel):
         self._check_strategy()
 
         if files is None and not self.source_path:
-            raise ValueError("Neither file list nor `source_path` are passed")
+            msg = "Neither file list nor `source_path` are passed"
+            raise ValueError(msg)
 
         # Check everything
         if not self._connection_checked:
@@ -480,7 +483,8 @@ class FileDownloader(FrozenModel):
         """
 
         if not self.source_path:
-            raise ValueError("Cannot call `.view_files()` without `source_path`")
+            msg = "Cannot call `.view_files()` without `source_path`"
+            raise ValueError(msg)
 
         log.debug("|%s| Getting files list from path '%s'", self.connection.__class__.__name__, self.source_path)
 
@@ -498,9 +502,8 @@ class FileDownloader(FrozenModel):
                     result.append(file)
 
         except Exception as e:
-            raise RuntimeError(
-                f"Couldn't read directory tree from remote dir '{self.source_path}'",
-            ) from e
+            msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
+            raise RuntimeError(msg) from e
 
         return result
 
@@ -524,7 +527,8 @@ class FileDownloader(FrozenModel):
         hwm = values.get("hwm")
 
         if (hwm or hwm_type) and not source_path:
-            raise ValueError("If `hwm` is passed, `source_path` must be specified")
+            msg = "If `hwm` is passed, `source_path` must be specified"
+            raise ValueError(msg)
 
         if hwm_type and (hwm_type == "file_list" or issubclass(hwm_type, OldFileListHWM)):
             remote_file_folder = RemoteFolder(name=source_path, instance=connection.instance_url)
@@ -617,14 +621,17 @@ class FileDownloader(FrozenModel):
 
         if self.hwm:
             if not isinstance(strategy, HWMStrategy):
-                raise ValueError(f"{class_name}(hwm=...) cannot be used with {strategy_name}")
+                msg = f"{class_name}(hwm=...) cannot be used with {strategy_name}"
+                raise ValueError(msg)
 
             offset = getattr(strategy, "offset", None)
             if offset is not None:
-                raise ValueError(f"{class_name}(hwm=...) cannot be used with {strategy_name}(offset={offset}, ...)")
+                msg = f"{class_name}(hwm=...) cannot be used with {strategy_name}(offset={offset}, ...)"
+                raise ValueError(msg)
 
             if isinstance(strategy, BatchHWMStrategy):
-                raise ValueError(f"{class_name}(hwm=...) cannot be used with {strategy_name}")
+                msg = f"{class_name}(hwm=...) cannot be used with {strategy_name}"
+                raise ValueError(msg)
 
     def _init_hwm(self, hwm: FileHWM) -> FileHWM:
         strategy: HWMStrategy = StrategyManager.get_current()
@@ -687,7 +694,7 @@ class FileDownloader(FrozenModel):
                 self.__class__.__name__,
             )
 
-    def _validate_files(  # noqa: WPS231
+    def _validate_files(
         self,
         remote_files: Iterable[os.PathLike | str],
         current_temp_dir: LocalPath | None,
@@ -702,29 +709,30 @@ class FileDownloader(FrozenModel):
             if not self.source_path:
                 # Download into a flat structure
                 if not remote_file_path.is_absolute():
-                    raise ValueError("Cannot pass relative file path with empty `source_path`")
+                    msg = "Cannot pass relative file path with empty `source_path`"
+                    raise ValueError(msg)
 
                 filename = remote_file_path.name
                 local_file = self.local_path / filename
                 if current_temp_dir:
-                    tmp_file = current_temp_dir / filename  # noqa: WPS220
-            else:
-                # Download according to source folder structure
-                if self.source_path in remote_file_path.parents:
-                    # Make relative local path
-                    local_file = self.local_path / remote_file_path.relative_to(self.source_path)
-                    if current_temp_dir:
-                        tmp_file = current_temp_dir / remote_file_path.relative_to(self.source_path)  # noqa: WPS220
+                    tmp_file = current_temp_dir / filename
+            # Download according to source folder structure
+            elif self.source_path in remote_file_path.parents:
+                # Make relative local path
+                local_file = self.local_path / remote_file_path.relative_to(self.source_path)
+                if current_temp_dir:
+                    tmp_file = current_temp_dir / remote_file_path.relative_to(self.source_path)
 
-                elif not remote_file_path.is_absolute():
-                    # Passed path is already relative
-                    local_file = self.local_path / remote_file_path
-                    remote_file = self.source_path / remote_file_path
-                    if current_temp_dir:
-                        tmp_file = current_temp_dir / remote_file_path  # noqa: WPS220
-                else:
-                    # Wrong path (not relative path and source path not in the path to the file)
-                    raise ValueError(f"File path '{remote_file}' does not match source_path '{self.source_path}'")
+            elif not remote_file_path.is_absolute():
+                # Passed path is already relative
+                local_file = self.local_path / remote_file_path
+                remote_file = self.source_path / remote_file_path
+                if current_temp_dir:
+                    tmp_file = current_temp_dir / remote_file_path
+            else:
+                # Wrong path (not relative path and source path not in the path to the file)
+                msg = f"File path '{remote_file}' does not match source_path '{self.source_path}'"
+                raise ValueError(msg)
 
             if not isinstance(remote_file, PathProtocol) and self.connection.path_exists(remote_file):
                 remote_file = self.connection.resolve_file(remote_file)
@@ -738,11 +746,12 @@ class FileDownloader(FrozenModel):
 
     def _check_local_path(self):
         if self.local_path.exists() and not self.local_path.is_dir():
-            raise NotADirectoryError(f"{path_repr(self.local_path)} is not a directory")
+            msg = f"{path_repr(self.local_path)} is not a directory"
+            raise NotADirectoryError(msg)
 
         self.local_path.mkdir(exist_ok=True, parents=True)
 
-    def _download_files(  # noqa: WPS231
+    def _download_files(
         self,
         to_download: DOWNLOAD_ITEMS_TYPE,
     ) -> DownloadResult:
@@ -757,7 +766,7 @@ class FileDownloader(FrozenModel):
         strategy = StrategyManager.get_current()
         result = DownloadResult()
         source_files: list[RemotePath] = []
-        try:  # noqa: WPS501, WPS243
+        try:
             for status, source_file, target_file in self._bulk_download(to_download):
                 if status == FileDownloadStatus.SUCCESSFUL:
                     result.successful.add(target_file)
@@ -827,7 +836,7 @@ class FileDownloader(FrozenModel):
                 for source_file, target_file, tmp_file in to_download
             )
 
-    def _download_file(  # noqa: WPS231, WPS213
+    def _download_file(  # noqa: PLR0912, C901
         self,
         source_file: RemotePath,
         local_file: LocalPath,
@@ -854,7 +863,8 @@ class FileDownloader(FrozenModel):
             replace = False
             if local_file.exists():
                 if self.options.if_exists == FileExistBehavior.ERROR:
-                    raise FileExistsError(f"File {path_repr(local_file)} already exists")
+                    msg = f"File {path_repr(local_file)} already exists"
+                    raise FileExistsError(msg)  # noqa: TRY301
 
                 if self.options.if_exists == FileExistBehavior.IGNORE:
                     log.warning("|Local FS| File %s already exists, skipping", path_repr(local_file))
@@ -884,8 +894,6 @@ class FileDownloader(FrozenModel):
             if self.options.delete_source:
                 self.connection.remove_file(remote_file)
 
-            return FileDownloadStatus.SUCCESSFUL, remote_file, local_file
-
         except Exception as e:
             if log.isEnabledFor(logging.DEBUG):
                 log.exception(
@@ -894,10 +902,10 @@ class FileDownloader(FrozenModel):
                     exc_info=e,
                 )
             else:
-                log.exception(
+                log.exception(  # noqa: LOG007
                     "|%s| Couldn't download file from source dir: %s",
                     self.__class__.__name__,
-                    e,
+                    e,  # noqa: TRY401
                     exc_info=False,
                 )
             failed_file = FailedRemoteFile(
@@ -906,6 +914,9 @@ class FileDownloader(FrozenModel):
                 exception=e,
             )
             return FileDownloadStatus.FAILED, failed_file, None
+
+        else:
+            return FileDownloadStatus.SUCCESSFUL, remote_file, local_file
 
     def _remove_temp_dir(self, temp_dir: LocalPath) -> None:
         log.info("|Local FS| Removing temp directory '%s'", temp_dir)

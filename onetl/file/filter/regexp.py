@@ -58,7 +58,7 @@ class Regexp(BaseFileFilter, FrozenModel):
 
     def __init__(self, pattern: str):
         # this is only to allow passing regexp as positional argument
-        super().__init__(pattern=pattern)  # type: ignore
+        super().__init__(pattern=pattern)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.pattern!r})"
@@ -75,6 +75,7 @@ class Regexp(BaseFileFilter, FrozenModel):
             try:
                 return re.compile(value, re.IGNORECASE | re.DOTALL)
             except re.error as e:
-                raise ValueError(f"Invalid regexp: {value!r}") from e
+                msg = f"Invalid regexp: {value!r}"
+                raise ValueError(msg) from e
 
         return value

@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -14,7 +14,13 @@ from tests.util.upload_files import upload_files
     ],
 )
 def samba_server():
-    SambaServer = namedtuple("SambaServer", ["host", "protocol", "port", "share", "user", "password"])
+    class SambaServer(NamedTuple):
+        host: str
+        protocol: str
+        port: str
+        share: str
+        user: str
+        password: str
 
     return SambaServer(
         host=os.getenv("ONETL_SAMBA_HOST"),

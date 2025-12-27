@@ -33,9 +33,8 @@ def test_spark_hdfs_file_connection_check_failed(spark):
         spark=spark,
     )
 
-    with wrong_hdfs:
-        with pytest.raises(RuntimeError, match="Connection is unavailable"):
-            wrong_hdfs.check()
+    with wrong_hdfs, pytest.raises(RuntimeError, match="Connection is unavailable"):
+        wrong_hdfs.check()
 
 
 def test_spark_hdfs_file_connection_check_with_hooks(spark, request, hdfs_server):
@@ -58,7 +57,7 @@ def test_spark_hdfs_file_connection_check_with_hooks(spark, request, hdfs_server
 
     with pytest.raises(
         RuntimeError,
-        match="Host 'some-node2.domain.com' is not an active namenode of cluster 'rnd-dwh'",
+        match=r"Host 'some-node2\.domain\.com' is not an active namenode of cluster 'rnd-dwh'",
     ):
         SparkHDFS(
             cluster="rnd-dwh",

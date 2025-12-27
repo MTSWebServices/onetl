@@ -170,7 +170,7 @@ class S3(FileConnection):
         return RemoteDirectory(path=remote_directory, stats=RemotePathStat())
 
     @slot
-    def remove_dir(self, path: os.PathLike | str, recursive: bool = False) -> bool:  # noqa: WPS321
+    def remove_dir(self, path: os.PathLike | str, *, recursive: bool = False) -> bool:
         # optimize S3 directory recursive removal by using batch object deletion
         description = "RECURSIVELY" if recursive else "NON-recursively"
         log.debug("|%s| %s removing directory '%s'", self.__class__.__name__, description, path)
@@ -179,7 +179,7 @@ class S3(FileConnection):
 
         is_empty = True
 
-        def _scan_entries_recursive(root: RemotePath) -> Iterable[Object]:  # noqa: WPS430
+        def _scan_entries_recursive(root: RemotePath) -> Iterable[Object]:
             nonlocal is_empty
             directory_path_str = self._delete_absolute_path_slash(root) + "/"
             entries = self.client.list_objects(
@@ -188,7 +188,7 @@ class S3(FileConnection):
                 recursive=True,
             )
             for entry in entries:
-                is_empty = False  # noqa: WPS442
+                is_empty = False
 
                 name = self._extract_name_from_entry(entry)
                 stat = self._extract_stat_from_entry(root, entry)
@@ -208,9 +208,10 @@ class S3(FileConnection):
         if not recursive:
             # self.list_dir may return large list
             # self._scan_entries return an iterator, which have to be iterated at least once
-            for _entry in self._scan_entries(remote_dir):  # noqa: WPS122, WPS328
+            for _entry in self._scan_entries(remote_dir):
+                msg = "|%s| Cannot delete non-empty directory %s"
                 raise DirectoryNotEmptyError(
-                    "|%s| Cannot delete non-empty directory %s",
+                    msg,
                     self.__class__.__name__,
                     directory_info,
                 )
@@ -251,7 +252,7 @@ class S3(FileConnection):
             return True
 
         remote_path_str = self._delete_absolute_path_slash(remote_path)
-        for component in self.client.list_objects(  # noqa: WPS352
+        for component in self.client.list_objects(
             bucket_name=self.bucket,
             prefix=remote_path_str,
         ):
@@ -454,9 +455,10 @@ class S3(FileConnection):
                     prefix=directory_path_str,
                 ),
             )
-            return True
         except StopIteration:
             return False
+        else:
+            return True
 
     def _is_file(self, path: RemotePath) -> bool:
         path_str = self._delete_absolute_path_slash(path)
@@ -465,8 +467,9 @@ class S3(FileConnection):
                 bucket_name=self.bucket,
                 object_name=path_str,
             )
-            return True
         except S3Error as err:
             if err.code == "NoSuchKey":
                 return False
             raise
+        else:
+            return True

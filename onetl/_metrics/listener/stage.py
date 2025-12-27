@@ -29,10 +29,7 @@ class SparkListenerStage:
 
     @property
     def tasks(self) -> list[SparkListenerTask]:
-        result = []
-        for task_id in sorted(self._tasks.keys()):
-            result.append(self._tasks[task_id])
-        return result
+        return [self._tasks[task_id] for task_id in sorted(self._tasks.keys())]
 
     @classmethod
     def create(cls, stage_info):

@@ -8,7 +8,7 @@ from onetl.impl import RemoteDirectory, RemoteFile, RemotePathStat
 
 
 @pytest.mark.parametrize(
-    "failed_filters, path",
+    ("failed_filters", "path"),
     [
         (None, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (None, RemoteFile(path="exclude1/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),

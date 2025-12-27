@@ -5,3 +5,9 @@ from onetl.connection.db_connection.iceberg.catalog.filesystem import (
     IcebergFilesystemCatalog,
 )
 from onetl.connection.db_connection.iceberg.catalog.rest import IcebergRESTCatalog
+
+__all__ = [
+    "IcebergCatalog",
+    "IcebergFilesystemCatalog",
+    "IcebergRESTCatalog",
+]

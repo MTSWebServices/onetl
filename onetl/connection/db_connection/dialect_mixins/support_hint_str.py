@@ -18,9 +18,10 @@ class SupportHintStr:
             return None
 
         if not isinstance(hint, str):
-            raise TypeError(
+            msg = (
                 f"{self.connection.__class__.__name__} requires 'hint' parameter type to be 'str', "
-                f"got {hint.__class__.__name__!r}",
+                f"got {hint.__class__.__name__!r}"
             )
+            raise TypeError(msg)
 
         return hint

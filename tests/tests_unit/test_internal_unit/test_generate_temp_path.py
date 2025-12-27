@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import PurePath
 
 import pytest
@@ -13,7 +13,7 @@ def test_generate_temp_path():
 
     root = PurePath("/path")
 
-    dt_prefix = datetime.now().strftime("%Y%m%d%H%M")  # up to minutes, not seconds
+    dt_prefix = datetime.now(tz=timezone.utc).strftime("%Y%m%d%H%M")  # up to minutes, not seconds
 
     with Process(name="me", host="currenthost"):
         temp_path = os.fspath(generate_temp_path(root))

@@ -63,7 +63,7 @@ def import_plugin(entrypoint: EntryPoint):
         raise ImportError(error_msg) from e
 
 
-def import_plugins(group: str, whitelist: list[str] | None = None, blacklist: list[str] | None = None):  # noqa: WPS213
+def import_plugins(group: str, whitelist: list[str] | None = None, blacklist: list[str] | None = None):
     """
     Import all plugins registered for onETL
     """

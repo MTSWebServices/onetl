@@ -66,7 +66,8 @@ class KafkaReadOptions(GenericOptions):
             * ``subscribe``
             * ``subscribePattern``
 
-        are populated from connection attributes, and cannot be overridden by the user in ``ReadOptions`` to avoid issues.
+        are populated from connection attributes,
+        and cannot be overridden by the user in ``ReadOptions`` to avoid issues.
 
     .. versionadded:: 0.9.0
 
@@ -113,7 +114,8 @@ class KafkaWriteOptions(GenericOptions):
             * ``kafka.*``
             * ``topic``
 
-        are populated from connection attributes, and cannot be overridden by the user in ``WriteOptions`` to avoid issues.
+        are populated from connection attributes,
+        and cannot be overridden by the user in ``WriteOptions`` to avoid issues.
 
     .. versionadded:: 0.9.0
 
@@ -163,5 +165,6 @@ class KafkaWriteOptions(GenericOptions):
     @root_validator(pre=True)
     def _mode_is_restricted(cls, values):
         if "mode" in values:
-            raise ValueError("Parameter `mode` is not allowed. Please use `if_exists` parameter instead.")
+            msg = "Parameter `mode` is not allowed. Please use `if_exists` parameter instead."
+            raise ValueError(msg)
         return values

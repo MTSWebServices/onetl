@@ -29,7 +29,7 @@ NON_BYTE_SIZE = re.compile(r"^[^\d.]+|\(.*\)", flags=re.DOTALL)
 def _get_int(data: dict[SparkSQLMetricNames, list[str]], key: Any) -> int | None:
     try:
         return int(data[key][0])
-    except Exception:
+    except (IndexError, KeyError, ValueError, TypeError):
         return None
 
 
@@ -38,7 +38,7 @@ def _get_bytes(data: dict[SparkSQLMetricNames, list[str]], key: Any) -> int | No
         raw_value = data[key][0]
         normalized_value = NON_BYTE_SIZE.sub("", raw_value)
         return int(ByteSize.validate(normalized_value))
-    except Exception:
+    except (IndexError, KeyError, ValueError, TypeError):
         return None
 
 

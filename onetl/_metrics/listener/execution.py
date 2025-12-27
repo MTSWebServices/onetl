@@ -18,7 +18,7 @@ class SparkListenerExecutionStatus(str, Enum):
         return self.value
 
 
-class SparkSQLMetricNames(str, Enum):  # noqa: WPS338
+class SparkSQLMetricNames(str, Enum):
     # Metric names passed to SQLMetrics.createMetric(...)
     # But only those we're interested in.
 
@@ -60,10 +60,7 @@ class SparkListenerExecution:
 
     @property
     def jobs(self) -> list[SparkListenerJob]:
-        result = []
-        for job_id in sorted(self._jobs.keys()):
-            result.append(self._jobs[job_id])
-        return result
+        return [self._jobs[job_id] for job_id in sorted(self._jobs.keys())]
 
     def on_execution_start(self, event):
         # https://github.com/apache/spark/blob/v3.5.7/sql/core/src/main/scala/org/apache/spark/sql/execution/ui/SQLListener.scala#L44-L58

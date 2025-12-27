@@ -389,7 +389,7 @@ def test_oracle_reader_snapshot_with_columns_duplicated(spark, processing, prepa
         ],
     )
     # https://stackoverflow.com/questions/27965130/how-to-select-column-from-table-in-oracle
-    with pytest.raises(Exception, match="java.sql.SQLSyntaxErrorException"):
+    with pytest.raises(Exception, match=r"java\.sql\.SQLSyntaxErrorException"):
         reader.run()
 
 

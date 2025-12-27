@@ -32,7 +32,7 @@ def ivysettings_path():
 
 
 @pytest.fixture(scope="session")
-def maven_packages(request):
+def maven_packages(request):  # noqa: C901, PLR0912
     import pyspark
 
     from onetl.connection import (
@@ -163,7 +163,7 @@ def spark(
     from pyspark.sql import SparkSession
 
     spark_builder = (
-        SparkSession.builder.config("spark.app.name", "onetl")  # noqa: WPS221
+        SparkSession.builder.config("spark.app.name", "onetl")
         .config("spark.master", "local[*]")
         .config("spark.jars.packages", ",".join(maven_packages))
         .config("spark.jars.excludes", ",".join(excluded_packages))

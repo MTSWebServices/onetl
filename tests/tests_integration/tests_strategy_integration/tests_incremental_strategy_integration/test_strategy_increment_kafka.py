@@ -231,7 +231,7 @@ def test_kafka_strategy_incremental_nothing_to_read(
 
 
 @pytest.mark.parametrize(
-    "initial_partitions, new_partitions",
+    ("initial_partitions", "new_partitions"),
     [
         (3, 5),
         (5, 6),
@@ -280,8 +280,10 @@ def test_kafka_strategy_incremental_with_new_partition(
     with IncrementalStrategy():
         first_df = reader.run()
 
-    # it is crucial to save dataframe after reading as if number of partitions is altered before executing any subsequent operations, Spark fails to run them due to
-    # Caused by: java.lang.AssertionError: assertion failed: If startingOffsets contains specific offsets, you must specify all TopicPartitions.
+    # it is crucial to save dataframe after reading, as if number of partitions is altered before executing
+    # any subsequent operations, Spark fails to run them due to
+    # Caused by: java.lang.AssertionError: assertion failed:
+    #   If startingOffsets contains specific offsets, you must specify all TopicPartitions.
     # Use -1 for latest, -2 for earliest.
     # Specified: Set(topic1, topic2) Assigned: Set(topic1, topic2, additional_topic3, additional_topic4)
     first_df.cache()

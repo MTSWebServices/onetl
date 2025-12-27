@@ -12,4 +12,4 @@ def get_hadoop_config(spark_session: SparkSession):
     """
     Get ``org.apache.hadoop.conf.Configuration`` object
     """
-    return spark_session.sparkContext._jsc.hadoopConfiguration()  # type: ignore[attr-defined]
+    return spark_session.sparkContext._jsc.hadoopConfiguration()  # type: ignore[attr-defined]  # noqa: SLF001

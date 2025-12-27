@@ -13,7 +13,7 @@ pytestmark = pytest.mark.postgres
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_type, hwm_column",
+    ("hwm_type", "hwm_column"),
     [
         (ColumnIntHWM, "hwm_int"),
         (ColumnDateHWM, "hwm_date"),
@@ -21,7 +21,7 @@ pytestmark = pytest.mark.postgres
     ],
 )
 @pytest.mark.parametrize(
-    "span_gap, span_length",
+    ("span_gap", "span_length"),
     [
         (10, 100),
         (10, 50),
@@ -114,7 +114,7 @@ def test_postgres_strategy_incremental(
 
 
 @pytest.mark.parametrize(
-    "hwm_source, hwm_expr, hwm_type, func",
+    ("hwm_source", "hwm_expr", "hwm_type", "func"),
     [
         (
             "hwm_int",
@@ -312,7 +312,7 @@ def test_postgres_strategy_incremental_nothing_to_read(spark, processing, prepar
 
 # Fail if HWM is Numeric, or Decimal with fractional part, or string
 @pytest.mark.parametrize(
-    "hwm_column, exception_type, error_message",
+    ("hwm_column", "exception_type", "error_message"),
     [
         ("float_value", ValueError, "Expression 'float_value' returned values"),
         ("text_string", RuntimeError, "Cannot detect HWM type for"),
@@ -385,6 +385,5 @@ def test_postgres_strategy_incremental_explicit_hwm_type(
     )
 
     # incremental run
-    with pytest.raises(Exception, match="operator does not exist: text <= integer"):
-        with IncrementalStrategy():
-            reader.run()
+    with pytest.raises(Exception, match="operator does not exist: text <= integer"), IncrementalStrategy():
+        reader.run()

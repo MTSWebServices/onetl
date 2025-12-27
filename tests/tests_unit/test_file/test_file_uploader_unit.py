@@ -26,7 +26,7 @@ def test_file_uploader_deprecated_import():
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, FileExistBehavior.ERROR),
         ({"if_exists": "error"}, FileExistBehavior.ERROR),
@@ -40,7 +40,7 @@ def test_file_uploader_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, value, message",
+    ("options", "value", "message"),
     [
         (
             {"mode": "replace_file"},

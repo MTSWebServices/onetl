@@ -58,7 +58,7 @@ def test_csv_reader_with_infer_schema(
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("header", True),
         ("delimiter", ";"),
@@ -91,7 +91,7 @@ def test_csv_reader_with_options(
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("header", "True"),
         ("delimiter", ";"),
@@ -133,7 +133,7 @@ def test_csv_writer_with_options(
 
 
 @pytest.mark.parametrize(
-    "csv_string, schema, options, expected",
+    ("csv_string", "schema", "options", "expected"),
     [
         (
             "1,Anne",
@@ -167,7 +167,7 @@ def test_csv_parse_column(spark, csv_string, schema, options, expected, column_t
 
 
 @pytest.mark.parametrize(
-    "data, schema, options, expected_csv",
+    ("data", "schema", "options", "expected_csv"),
     [
         (
             Row(id=1, name="Alice"),

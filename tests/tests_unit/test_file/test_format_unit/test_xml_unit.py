@@ -8,7 +8,7 @@ pytestmark = [pytest.mark.xml]
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package_version, expected_packages",
+    ("spark_version", "scala_version", "package_version", "expected_packages"),
     [
         ("3.2.4", None, None, ["com.databricks:spark-xml_2.12:0.18.0"]),
         ("3.4.1", "2.12", "0.18.0", ["com.databricks:spark-xml_2.12:0.18.0"]),
@@ -26,17 +26,22 @@ pytestmark = [pytest.mark.xml]
         ("3.2.4", "2.12.1", "0.15.0", ["com.databricks:spark-xml_2.12:0.15.0"]),
     ],
 )
-def test_xml_get_packages(spark_version, scala_version, package_version, expected_packages):
-    result = XML.get_packages(
-        spark_version=spark_version,
-        scala_version=scala_version,
-        package_version=package_version,
-    )
+def test_xml_get_packages(caplog, spark_version, scala_version, package_version, expected_packages):
+    with caplog.at_level(level=logging.WARNING):
+        result = XML.get_packages(
+            spark_version=spark_version,
+            scala_version=scala_version,
+            package_version=package_version,
+        )
+
+        if package_version:
+            msg = f"Passed custom package version '{package_version}', it is not guaranteed to be supported"
+            assert msg in caplog.text
     assert result == expected_packages
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package_version",
+    ("spark_version", "scala_version", "package_version"),
     [
         ("3.2.4", "2.12", "0.13.0"),
         ("3.4.1", "2.12", "0.10.0"),
@@ -60,7 +65,7 @@ def test_xml_options_row_tag_case():
 
 
 @pytest.mark.parametrize(
-    "known_option, raw_value, expected_value",
+    ("known_option", "raw_value", "expected_value"),
     [
         ("samplingRatio", 0.1, 0.1),
         ("excludeAttribute", True, True),

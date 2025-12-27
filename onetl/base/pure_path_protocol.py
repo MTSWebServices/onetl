@@ -6,7 +6,7 @@ from typing import Sequence, TypeVar
 
 from typing_extensions import Protocol, runtime_checkable
 
-T = TypeVar("T", bound="PurePathProtocol", covariant=True)
+T = TypeVar("T", bound="PurePathProtocol", covariant=True)  # noqa: PLC0105
 
 
 @runtime_checkable

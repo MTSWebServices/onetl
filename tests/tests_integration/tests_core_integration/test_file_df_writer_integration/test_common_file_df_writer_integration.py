@@ -257,7 +257,7 @@ def test_file_df_writer_run_if_exists_replace_overlapping_partitions_to_overlapp
 
 
 @pytest.mark.parametrize(
-    "original_options, new_options, real_df_schema",
+    ("original_options", "new_options", "real_df_schema"),
     [
         pytest.param(
             {},
@@ -512,5 +512,7 @@ def test_file_df_writer_with_streaming_df(
 
     streaming_df = spark.readStream.format("rate").load()
     assert streaming_df.isStreaming
-    with pytest.raises(ValueError, match="DataFrame is streaming. FileDFWriter supports only batch DataFrames."):
+
+    msg = r"DataFrame is streaming\. FileDFWriter supports only batch DataFrames\."
+    with pytest.raises(ValueError, match=msg):
         writer.run(streaming_df)

@@ -203,7 +203,9 @@ class Oracle(JDBCConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. Allows specifying custom JDBC driver versions for Oracle. |support_hooks|
+        Get package names to be downloaded by Spark. |support_hooks|
+
+        Allows specifying custom JDBC driver versions for Oracle.
 
         Parameters
         ----------
@@ -229,10 +231,11 @@ class Oracle(JDBCConnection):
         default_package_version = "23.26.0.0.0"
 
         java_ver = Version(java_version or default_java_version)
-        if java_ver.major < 8:
-            raise ValueError(f"Java version must be at least 8, got {java_ver.major}")
+        if java_ver.major < 8:  # noqa: PLR2004
+            msg = f"Java version must be at least 8, got {java_ver.major}"
+            raise ValueError(msg)
 
-        jre_ver = "8" if java_ver.major < 11 else "11"
+        jre_ver = "8" if java_ver.major < 11 else "11"  # noqa: PLR2004
         jdbc_version = Version(package_version or default_package_version).min_digits(4)
 
         return [f"com.oracle.database.jdbc:ojdbc{jre_ver}:{jdbc_version}"]
@@ -302,10 +305,12 @@ class Oracle(JDBCConnection):
         service_name = values.get("service_name")
 
         if sid and service_name:
-            raise ValueError("Only one of parameters ``sid``, ``service_name`` can be set, got both")
+            msg = "Only one of parameters ``sid``, ``service_name`` can be set, got both"
+            raise ValueError(msg)
 
         if not sid and not service_name:
-            raise ValueError("One of parameters ``sid``, ``service_name`` should be set, got none")
+            msg = "One of parameters ``sid``, ``service_name`` should be set, got none"
+            raise ValueError(msg)
 
         return values
 
@@ -367,7 +372,7 @@ class Oracle(JDBCConnection):
                 SEQUENCE,
                 LINE,
                 POSITION
-        """
+        """  # noqa: S608
         errors = self._query_on_driver(show_errors, options).collect()
         if not errors:
             return []

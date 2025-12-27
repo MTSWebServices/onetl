@@ -121,7 +121,7 @@ class BaseDBConnection(BaseConnection):
     # Some implementations may have a different number of parameters.
     # For example, the 'options' parameter may be present. This is fine.
     @abstractmethod
-    def read_source_as_df(
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,

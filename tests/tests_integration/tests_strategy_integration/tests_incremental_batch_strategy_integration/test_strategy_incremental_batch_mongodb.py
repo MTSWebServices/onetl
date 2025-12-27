@@ -36,7 +36,7 @@ def df_schema():
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_type, hwm_column, step, per_iter",
+    ("hwm_type", "hwm_column", "step", "per_iter"),
     [
         (ColumnIntHWM, "hwm_int", 20, 30),  # step <  per_iter
         (ColumnIntHWM, "hwm_int", 30, 30),  # step == per_iter
@@ -44,7 +44,7 @@ def df_schema():
     ],
 )
 @pytest.mark.parametrize(
-    "span_gap, span_length",
+    ("span_gap", "span_length"),
     [
         (50, 100),  # step < gap < span_length
         (50, 40),  # step < gap > span_length

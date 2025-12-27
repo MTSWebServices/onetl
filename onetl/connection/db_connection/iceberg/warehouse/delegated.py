@@ -67,7 +67,7 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
                 # other params passed to S3 client (optional)
                 extra={"client.region": "us-east-1"},
             )
-    """
+    """  # noqa: E501
 
     name: Optional[str] = None
     access_delegation: Literal["vended-credentials", "remote-signing"]

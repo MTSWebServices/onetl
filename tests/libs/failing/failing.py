@@ -1,1 +1,2 @@
-raise RuntimeError("something went wrong")
+msg = "something went wrong"
+raise RuntimeError(msg)

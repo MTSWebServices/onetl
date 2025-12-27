@@ -238,7 +238,7 @@ def test_file_downloader_limit_legacy(file_limit):
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, FileExistBehavior.ERROR),
         ({"if_exists": "error"}, FileExistBehavior.ERROR),
@@ -252,7 +252,7 @@ def test_file_downloader_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, value, message",
+    ("options", "value", "message"),
     [
         (
             {"mode": "replace_file"},

@@ -70,7 +70,7 @@ class PathRepr:
                 # try to detect mode based on stats
                 for detector, file_kind in FILE_TYPE_DETECTORS.items():
                     if detector(mode):
-                        return file_kind  # noqa: WPS220
+                        return file_kind
 
         if path.is_dir():
             return "directory"
@@ -126,8 +126,9 @@ class PathRepr:
         exception_formatted = textwrap.indent(exception, prefix)
         return os.linesep + exception_formatted + os.linesep
 
-    def info(
+    def info(  # noqa: PLR0913
         self,
+        *,
         with_kind: bool = True,
         with_size: bool = True,
         with_mode: bool = True,
@@ -163,8 +164,9 @@ class PathRepr:
         return result_str
 
 
-def path_repr(
+def path_repr(  # noqa: PLR0913
     path: os.PathLike | str,
+    *,
     with_kind: bool = True,
     with_size: bool = True,
     with_mode: bool = True,

@@ -23,5 +23,7 @@ def test_mongodb_writer_with_streaming_df(spark, processing, prepare_schema_tabl
 
     streaming_df = spark.readStream.format("rate").load()
     assert streaming_df.isStreaming
-    with pytest.raises(ValueError, match="DataFrame is streaming. DBWriter supports only batch DataFrames."):
+
+    msg = r"DataFrame is streaming\. DBWriter supports only batch DataFrames\."
+    with pytest.raises(ValueError, match=msg):
         writer.run(streaming_df)

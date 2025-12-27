@@ -18,7 +18,7 @@ pytestmark = [pytest.mark.local_fs, pytest.mark.file_df_connection, pytest.mark.
 
 
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_compression", {}),
         ("with_compression", {"compression": "snappy"}),

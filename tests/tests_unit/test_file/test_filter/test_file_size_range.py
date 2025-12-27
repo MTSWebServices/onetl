@@ -28,7 +28,7 @@ def test_file_size_range_repr():
 
 
 @pytest.mark.parametrize(
-    ["input", "expected"],
+    ("input", "expected"),
     [
         ("10", 10),
         ("10B", 10),
@@ -50,7 +50,7 @@ def test_file_size_range_parse(input: str, expected: int):
 
 
 @pytest.mark.parametrize(
-    "matched, size",
+    ("matched", "size"),
     [
         (False, 1024),
         (True, 10 * 1024),

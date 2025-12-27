@@ -68,7 +68,7 @@ def setup_notebook_logging(level: int | str = logging.INFO) -> None:
     setup_logging(level)
 
 
-def setup_logging(level: int | str = logging.INFO, enable_clients: bool = False) -> None:
+def setup_logging(level: int | str = logging.INFO, *, enable_clients: bool = False) -> None:
     """Set up onETL logging.
 
     What this function does:
@@ -174,7 +174,7 @@ def set_default_logging_format() -> None:
 def _log(logger: logging.Logger, msg: str, *args, level: int = logging.INFO, stacklevel: int = 1, **kwargs) -> None:
     if sys.version_info >= (3, 8):
         # https://github.com/python/cpython/pull/7424
-        logger.log(level, msg, *args, stacklevel=stacklevel + 1, **kwargs)  # noqa: WPS204
+        logger.log(level, msg, *args, stacklevel=stacklevel + 1, **kwargs)
     else:
         logger.log(level, msg, *args, **kwargs)
 
@@ -215,7 +215,7 @@ def log_with_indent(
     _log(logger, "%s" + inp, " " * (BASE_LOG_INDENT + indent), *args, level=level, stacklevel=stacklevel + 1, **kwargs)
 
 
-def log_lines(
+def log_lines(  # noqa: PLR0913
     logger: logging.Logger,
     inp: str,
     name: str | None = None,
@@ -257,7 +257,7 @@ def log_lines(
             _log(logger, "%s%s", base_indent, line, level=level, stacklevel=stacklevel)
 
 
-def log_json(
+def log_json(  # noqa: PLR0913
     logger: logging.Logger,
     inp: Any,
     name: str | None = None,
@@ -295,7 +295,7 @@ def log_json(
     log_lines(logger, json.dumps(inp, indent=4), name, indent, level, stacklevel=stacklevel + 1)
 
 
-def log_collection(
+def log_collection(  # noqa: PLR0913
     logger: logging.Logger,
     name: str,
     collection: Iterable,

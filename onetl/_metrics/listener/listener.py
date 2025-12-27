@@ -50,14 +50,14 @@ class SparkMetricsListener(BaseSparkListener):
         self.reset()
         return super().__enter__()
 
-    def onOtherEvent(self, event):
+    def onOtherEvent(self, event):  # noqa: N802
         class_name = event.getClass().getName()
         if class_name == self.SQL_START_CLASS_NAME:
             self.onExecutionStart(event)
         elif class_name == self.SQL_STOP_CLASS_NAME:
             self.onExecutionEnd(event)
 
-    def onExecutionStart(self, event):
+    def onExecutionStart(self, event):  # noqa: N802
         execution_id = event.executionId()
         description = event.description()
         execution = SparkListenerExecution(
@@ -67,7 +67,7 @@ class SparkMetricsListener(BaseSparkListener):
         self._recorded_executions[execution_id] = execution
         execution.on_execution_start(event)
 
-    def onExecutionEnd(self, event):
+    def onExecutionEnd(self, event):  # noqa: N802
         execution_id = event.executionId()
         execution = self._recorded_executions.get(execution_id)
         if execution:
@@ -76,7 +76,7 @@ class SparkMetricsListener(BaseSparkListener):
             # Get execution metrics from SQLAppStatusStore,
             # as SparkListenerSQLExecutionEnd event does not provide them:
             # https://github.com/apache/spark/blob/v3.5.7/sql/core/src/main/scala/org/apache/spark/sql/execution/ui/SQLAppStatusStore.scala
-            session_status_store = self.spark._jsparkSession.sharedState().statusStore()  # noqa: WPS437
+            session_status_store = self.spark._jsparkSession.sharedState().statusStore()  # noqa: SLF001
             raw_execution = session_status_store.execution(execution.id).get()
             metrics = raw_execution.metrics()
             metric_values = session_status_store.executionMetrics(execution.id)
@@ -90,7 +90,7 @@ class SparkMetricsListener(BaseSparkListener):
                     continue
                 execution.metrics[SparkSQLMetricNames(metric_name)].append(metric_value.get())
 
-    def onJobStart(self, event):
+    def onJobStart(self, event):  # noqa: N802
         execution_id = event.properties().get("spark.sql.execution.id")
         execution_thread_id = event.properties().get(self.THREAD_ID_KEY)
         if execution_id is None:
@@ -114,22 +114,22 @@ class SparkMetricsListener(BaseSparkListener):
 
         execution.on_job_start(event)
 
-    def onJobEnd(self, event):
+    def onJobEnd(self, event):  # noqa: N802
         for execution in self._recorded_executions.values():
             execution.on_job_end(event)
 
-    def onStageSubmitted(self, event):
+    def onStageSubmitted(self, event):  # noqa: N802
         for execution in self._recorded_executions.values():
             execution.on_stage_start(event)
 
-    def onStageCompleted(self, event):
+    def onStageCompleted(self, event):  # noqa: N802
         for execution in self._recorded_executions.values():
             execution.on_stage_end(event)
 
-    def onTaskStart(self, event):
+    def onTaskStart(self, event):  # noqa: N802
         for execution in self._recorded_executions.values():
             execution.on_task_start(event)
 
-    def onTaskEnd(self, event):
+    def onTaskEnd(self, event):  # noqa: N802
         for execution in self._recorded_executions.values():
             execution.on_task_end(event)

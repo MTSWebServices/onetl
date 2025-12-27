@@ -19,4 +19,5 @@ class RequiresDFSchema:
     ) -> StructType:
         if df_schema:
             return df_schema
-        raise ValueError(f"'df_schema' parameter is mandatory for {self.connection.__class__.__name__}")
+        msg = f"'df_schema' parameter is mandatory for {self.connection.__class__.__name__}"
+        raise ValueError(msg)

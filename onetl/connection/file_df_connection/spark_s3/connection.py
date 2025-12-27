@@ -358,7 +358,7 @@ class SparkS3(SparkFileDFConnection):
     def read_files_as_df(
         self,
         paths: list[PurePathProtocol],
-        format: BaseReadableFileFormat,  # noqa: WPS125
+        format: BaseReadableFileFormat,
         root: PurePathProtocol | None = None,
         df_schema: StructType | None = None,
         options: FileDFReadOptions | None = None,
@@ -371,7 +371,7 @@ class SparkS3(SparkFileDFConnection):
         self,
         df: DataFrame,
         path: PurePathProtocol,
-        format: BaseWritableFileFormat,  # noqa: WPS125
+        format: BaseWritableFileFormat,
         options: FileDFWriteOptions | None = None,
     ) -> None:
         self._patch_hadoop_conf()
@@ -509,7 +509,7 @@ class SparkS3(SparkFileDFConnection):
             self._get_spark_fs().close()
 
             log.debug("Set Hadoop configuration")
-            for key in real_values.keys():
+            for key in real_values:
                 hadoop_config.unset(key)
 
             for key, value in expected_values.items():

@@ -12,7 +12,7 @@ def test_regep_invalid():
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (False, RemoteFile(path="file.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
@@ -35,7 +35,7 @@ def test_regexp_match_str(matched, path):
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (False, RemoteFile(path="file.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),

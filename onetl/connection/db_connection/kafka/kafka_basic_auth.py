@@ -43,7 +43,7 @@ class KafkaBasicAuth(KafkaAuth, GenericOptions):
     user: str = Field(alias="username")
     password: SecretStr
 
-    def get_jaas_conf(self) -> str:  # noqa: WPS473
+    def get_jaas_conf(self) -> str:
         return (
             "org.apache.kafka.common.security.plain.PlainLoginModule required "
             f'username="{self.user}" '

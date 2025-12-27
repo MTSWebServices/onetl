@@ -105,7 +105,7 @@ def test_kafka_reader_invalid_hwm_column(spark_mock, hwm_expression):
 
 
 @pytest.mark.parametrize(
-    "topic, error_message",
+    ("topic", "error_message"),
     [
         ("*", r"source/target=\* is not supported by Kafka. Provide a singular topic."),
         ("topic1, topic2", "source/target=topic1, topic2 is not supported by Kafka. Provide a singular topic."),

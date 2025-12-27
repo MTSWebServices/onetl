@@ -23,7 +23,7 @@ def kafka_schema():
         TimestampType,
     )
 
-    schema = StructType(
+    return StructType(
         [
             StructField("key", BinaryType(), nullable=True),
             StructField("value", BinaryType(), nullable=True),
@@ -34,7 +34,6 @@ def kafka_schema():
             StructField("timestampType", IntegerType(), nullable=True),
         ],
     )
-    return schema  # noqa:  WPS331
 
 
 @pytest.fixture
@@ -50,7 +49,7 @@ def kafka_schema_with_headers():
         TimestampType,
     )
 
-    schema = StructType(
+    return StructType(
         [
             StructField("key", BinaryType(), nullable=True),
             StructField("value", BinaryType(), nullable=True),
@@ -73,7 +72,6 @@ def kafka_schema_with_headers():
             ),
         ],
     )
-    return schema  # noqa:  WPS331
 
 
 def test_kafka_reader(spark, processing, kafka_dataframe_schema, kafka_topic):

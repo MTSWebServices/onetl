@@ -6,7 +6,7 @@ from onetl.file import FileDFWriter
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("if_exists", "append"),
         ("partition_by", "month"),
@@ -26,7 +26,7 @@ def test_file_df_writer_options_mode_prohibited():
 
 
 @pytest.mark.parametrize(
-    "mode, recommended",
+    ("mode", "recommended"),
     [
         ("dynamic", "replace_overlapping_partitions"),
         ("static", "replace_entire_directory"),

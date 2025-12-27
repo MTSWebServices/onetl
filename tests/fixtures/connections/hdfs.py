@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -14,7 +14,11 @@ from tests.util.upload_files import upload_files
     ],
 )
 def hdfs_server():
-    HDFSServer = namedtuple("HDFSServer", ["host", "webhdfs_port", "ipc_port"])
+    class HDFSServer(NamedTuple):
+        host: str
+        webhdfs_port: str
+        ipc_port: str
+
     return HDFSServer(
         host=os.getenv("ONETL_HDFS_HOST"),
         webhdfs_port=os.getenv("ONETL_HDFS_WEBHDFS_PORT"),

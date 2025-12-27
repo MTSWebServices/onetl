@@ -997,7 +997,7 @@ def test_postgres_connection_execute_function_dml(
 
 
 @pytest.mark.parametrize(
-    "options_class, options_kwargs, expected_warning",
+    ("options_class", "options_kwargs", "expected_warning"),
     [
         (Postgres.ReadOptions, {"fetchsize": 5000, "sessionInitStatement": "SET timezone TO 'UTC'"}, UserWarning),
         (Postgres.SQLOptions, {"fetchsize": 5000, "sessionInitStatement": "SET timezone TO 'UTC'"}, None),

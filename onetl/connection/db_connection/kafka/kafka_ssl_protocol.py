@@ -56,10 +56,10 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
 
         protocol = Kafka.SSLProtocol(
             keystore_type="PEM",
-            keystore_certificate_chain="-----BEGIN CERTIFICATE-----\\nMIIDZjC...\\n-----END CERTIFICATE-----",
-            keystore_key="-----BEGIN PRIVATE KEY-----\\nMIIEvg..\\n-----END PRIVATE KEY-----",
+            keystore_certificate_chain="-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
+            keystore_key="-----BEGIN PRIVATE KEY-----\\...\\n-----END PRIVATE KEY-----",
             truststore_type="PEM",
-            truststore_certificates="-----BEGIN CERTIFICATE-----\\nMICC...\\n-----END CERTIFICATE-----",
+            truststore_certificates="-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
         )
 
     Pass custom options:
@@ -70,10 +70,10 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             {
                 # Just the same options as above, but using Kafka config naming with dots
                 "ssl.keystore.type": "PEM",
-                "ssl.keystore.certificate_chain": "-----BEGIN CERTIFICATE-----\\nMIIDZjC...\\n-----END CERTIFICATE-----",
-                "ssl.keystore.key": "-----BEGIN PRIVATE KEY-----\\nMIIEvg..\\n-----END PRIVATE KEY-----",
+                "ssl.keystore.certificate_chain": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
+                "ssl.keystore.key": "-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----",
                 "ssl.truststore.type": "PEM",
-                "ssl.truststore.certificates": "-----BEGIN CERTIFICATE-----\\nMICC...\\n-----END CERTIFICATE-----",
+                "ssl.truststore.certificates": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
                 # Any option starting from "ssl." is passed to Kafka client as-is
                 "ssl.protocol": "TLSv1.3",
             }
@@ -133,8 +133,8 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
     truststore_certificates: Optional[str] = Field(default=None, alias="ssl.truststore.certificates", repr=False)
 
     class Config:
-        known_options = {"ssl.*"}
-        strip_prefixes = ["kafka."]
+        known_options = frozenset(("ssl.*",))
+        strip_prefixes = ("kafka.",)
         extra = "allow"
 
     def get_options(self, kafka: Kafka) -> dict:

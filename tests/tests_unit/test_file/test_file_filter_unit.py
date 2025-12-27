@@ -18,7 +18,7 @@ def test_file_filter_both_glob_and_regexp():
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="nested/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),
@@ -55,7 +55,7 @@ def test_file_filter_glob(matched, path):
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (False, RemoteFile(path="exclude1/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),
@@ -91,7 +91,7 @@ def test_file_filter_exclude_dirs_relative(matched, path):
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="exclude1/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),
@@ -111,7 +111,7 @@ def test_file_filter_exclude_dirs_absolute(matched, path):
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (False, RemoteFile(path="file.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
@@ -150,7 +150,7 @@ def test_file_filter_regexp_str(matched, path):
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (False, RemoteFile(path="file.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),

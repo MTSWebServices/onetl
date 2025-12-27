@@ -15,4 +15,5 @@ class NotSupportHint:
         hint: Any,
     ) -> None:
         if hint is not None:
-            raise TypeError(f"'hint' parameter is not supported by {self.connection.__class__.__name__}")
+            msg = f"'hint' parameter is not supported by {self.connection.__class__.__name__}"
+            raise TypeError(msg)

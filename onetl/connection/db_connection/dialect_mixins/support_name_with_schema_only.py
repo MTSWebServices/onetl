@@ -6,8 +6,7 @@ from __future__ import annotations
 class SupportNameWithSchemaOnly:
     def validate_name(self, value: str) -> str:
         if "." not in value:
-            raise ValueError(
-                f"Name should be passed in `schema.name` format, got '{value}'",
-            )
+            msg = f"Name should be passed in `schema.name` format, got '{value}'"
+            raise ValueError(msg)
 
         return value

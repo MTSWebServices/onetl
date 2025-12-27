@@ -70,7 +70,7 @@ def test_reader_invalid_columns(spark_mock, columns):
 
 
 @pytest.mark.parametrize(
-    "columns, real_columns",
+    ("columns", "real_columns"),
     [
         (None, ["*"]),
         (["*"], ["*"]),
@@ -89,7 +89,7 @@ def test_reader_valid_columns(spark_mock, columns, real_columns):
 
 
 @pytest.mark.parametrize(
-    "column, real_columns, msg",
+    ("column", "real_columns", "msg"),
     [
         (
             "*",
@@ -118,7 +118,7 @@ def test_reader_legacy_columns(spark_mock, column, real_columns, msg):
 
 
 @pytest.mark.parametrize(
-    "hwm_column, real_hwm_expression",
+    ("hwm_column", "real_hwm_expression"),
     [
         ("hwm_column", "hwm_column"),
         (("hwm_column", "expression"), "expression"),
@@ -126,7 +126,7 @@ def test_reader_legacy_columns(spark_mock, column, real_columns, msg):
     ],
 )
 def test_reader_deprecated_hwm_column(spark_mock, hwm_column, real_hwm_expression):
-    error_msg = 'Passing "hwm_column" in DBReader class is deprecated since version 0.10.0'
+    error_msg = r'Passing "hwm_column" in DBReader class is deprecated since version 0\.10\.0'
     with pytest.warns(UserWarning, match=error_msg):
         reader = DBReader(
             connection=Hive(cluster="rnd-dwh", spark=spark_mock),
@@ -169,7 +169,7 @@ def test_reader_hwm_has_same_source(spark_mock):
 
 
 def test_reader_hwm_has_different_source(spark_mock):
-    error_msg = "Passed `hwm.source` is different from `source`"
+    error_msg = r"Passed `hwm\.source` is different from `source`"
     with pytest.raises(ValueError, match=error_msg):
         DBReader(
             connection=Hive(cluster="rnd-dwh", spark=spark_mock),
@@ -183,7 +183,7 @@ def test_reader_hwm_has_different_source(spark_mock):
 
 
 def test_reader_no_hwm_expression(spark_mock):
-    with pytest.raises(ValueError, match="`hwm.expression` cannot be None"):
+    with pytest.raises(ValueError, match=r"`hwm\.expression` cannot be None"):
         DBReader(
             connection=Hive(cluster="rnd-dwh", spark=spark_mock),
             source="schema.table",
@@ -192,7 +192,7 @@ def test_reader_no_hwm_expression(spark_mock):
 
 
 @pytest.mark.parametrize(
-    "alias_key, alias_value",
+    ("alias_key", "alias_value"),
     [
         ("source", "test_source"),
         ("topic", "test_topic"),

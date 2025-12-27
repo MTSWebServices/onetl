@@ -33,8 +33,8 @@ def assert_equal_df(
         left_df = left_df.sort_values(by=order_by.lower())
         right_df = right_df.sort_values(by=order_by.lower())
 
-        left_df.reset_index(inplace=True, drop=True)
-        right_df.reset_index(inplace=True, drop=True)
+        left_df.reset_index(inplace=True, drop=True)  # noqa: PD002
+        right_df.reset_index(inplace=True, drop=True)  # noqa: PD002
 
     # ignore columns order
     left_df = left_df.sort_index(axis=1)
@@ -65,7 +65,7 @@ def assert_subset_df(
     else:
         columns = [column.lower() for column in columns]
 
-    for column in columns:  # noqa: WPS528
+    for column in columns:
         small_column = small_pdf[column]
         large_column = large_pdf[column]
         different_indices = ~small_column.isin(large_column)

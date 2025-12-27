@@ -133,7 +133,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
     class Config:
         prohibited_options = PROHIBITED_OPTIONS
         known_options = KNOWN_OPTIONS
-        strip_prefixes = ["kafka."]
+        strip_prefixes = ("kafka.",)
         extra = "allow"
 
     def get_jaas_conf(self, kafka: Kafka) -> str:
@@ -180,7 +180,8 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
         keytab = values.get("keytab")
         use_keytab = values.get("use_keytab")
         if use_keytab and not keytab:
-            raise ValueError("keytab is required if useKeytab is True")
+            msg = "keytab is required if useKeytab is True"
+            raise ValueError(msg)
         return values
 
     def _prepare_keytab(self, kafka: Kafka) -> str:

@@ -137,7 +137,7 @@ class JDBCMixin:
     def __enter__(self):
         return self
 
-    def __exit__(self, _exc_type, _exc_value, _traceback):  # noqa: U101
+    def __exit__(self, _exc_type, _exc_value, _traceback):
         self.close()
 
     @slot
@@ -186,7 +186,7 @@ class JDBCMixin:
         log_lines(log, query)
 
         call_options = (
-            self.FetchOptions.parse(options.dict())  # type: ignore
+            self.FetchOptions.parse(options.dict())
             if isinstance(options, JDBCMixinOptions)
             else self.FetchOptions.parse(options)
         )
@@ -195,7 +195,7 @@ class JDBCMixin:
             try:
                 df = self._query_on_driver(query, call_options)
             except Exception:
-                log.error("|%s| Query failed!", self.__class__.__name__)
+                log.exception("|%s| Query failed!", self.__class__.__name__)
                 raise
 
             log.info("|%s| Query succeeded, created in-memory dataframe.", self.__class__.__name__)
@@ -254,7 +254,7 @@ class JDBCMixin:
         log_lines(log, statement)
 
         call_options = (
-            self.ExecuteOptions.parse(options.dict())  # type: ignore
+            self.ExecuteOptions.parse(options.dict())
             if isinstance(options, JDBCMixinOptions)
             else self.ExecuteOptions.parse(options)
         )
@@ -263,7 +263,7 @@ class JDBCMixin:
             try:
                 df = self._call_on_driver(statement, call_options)
             except Exception:
-                log.error("|%s| Execution failed!", self.__class__.__name__)
+                log.exception("|%s| Execution failed!", self.__class__.__name__)
                 raise
 
             if not df:
@@ -344,20 +344,26 @@ class JDBCMixin:
         """
 
         jdbc_properties = self._get_jdbc_properties(options, exclude_none=True)
-        jdbc_utils_package = self.spark._jvm.org.apache.spark.sql.execution.datasources.jdbc  # type: ignore
-        jdbc_options = jdbc_utils_package.JDBCOptions(
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        JdbcUtils = jvm.org.apache.spark.sql.execution.datasources.jdbc  # type: ignore[union-attr]  # noqa: N806
+        jdbc_options = JdbcUtils.JDBCOptions(
             self.jdbc_url,
             # JDBCOptions class requires `table` argument to be passed, but it is not used in asConnectionProperties
             "table",
-            self.spark._jvm.PythonUtils.toScalaMap(jdbc_properties),  # type: ignore
+            jvm.PythonUtils.toScalaMap(jdbc_properties),  # type: ignore[union-attr]
         )
         return jdbc_options.asConnectionProperties()
 
-    def _get_jdbc_connection(self, options: JDBCFetchOptions | JDBCExecuteOptions, read_only: bool):
+    def _get_jdbc_connection(
+        self,
+        options: JDBCFetchOptions | JDBCExecuteOptions,
+        *,
+        read_only: bool,
+    ):
         connection_properties = self._options_to_connection_properties(options)
-        driver_manager = self.spark._jvm.java.sql.DriverManager  # type: ignore
-        connection = driver_manager.getConnection(self.jdbc_url, connection_properties)
-        connection.setReadOnly(read_only)  # type: ignore
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        connection = jvm.java.sql.DriverManager.getConnection(self.jdbc_url, connection_properties)  # type: ignore[union-attr]
+        connection.setReadOnly(read_only)
         return connection
 
     def _get_spark_dialect_class_name(self) -> str:
@@ -372,11 +378,11 @@ class JDBCMixin:
         return dialect.getCanonicalName().split("$")[0]
 
     def _get_spark_dialect(self):
-        jdbc_dialects_package = self.spark._jvm.org.apache.spark.sql.jdbc  # type: ignore
-        return jdbc_dialects_package.JdbcDialects.get(self.jdbc_url)
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        return jvm.org.apache.spark.sql.jdbc.JdbcDialects.get(self.jdbc_url)
 
     def _get_statement_args(self) -> tuple[int, ...]:
-        resultset = self.spark._jvm.java.sql.ResultSet  # type: ignore
+        resultset = self.spark._jvm.java.sql.ResultSet  # type: ignore[attr-defined, union-attr]  # noqa: SLF001
         return resultset.TYPE_FORWARD_ONLY, resultset.CONCUR_READ_ONLY
 
     def _execute_on_driver(
@@ -385,7 +391,7 @@ class JDBCMixin:
         statement_type: JDBCStatementType,
         callback: Callable[..., T],
         options: JDBCFetchOptions | JDBCExecuteOptions,
-        read_only: bool,
+        read_only: bool,  # noqa: FBT001
     ) -> T:
         """
         Actually execute statement on driver.
@@ -397,19 +403,19 @@ class JDBCMixin:
         """
 
         statement_args = self._get_statement_args()
-        jdbc_connection = self._get_jdbc_connection(options, read_only)
+        jdbc_connection = self._get_jdbc_connection(options, read_only=read_only)
         with closing(jdbc_connection):
             jdbc_statement = self._build_statement(statement, statement_type, jdbc_connection, statement_args)
             return self._execute_statement(jdbc_connection, jdbc_statement, statement, options, callback, read_only)
 
-    def _execute_statement(
+    def _execute_statement(  # noqa: PLR0913
         self,
         jdbc_connection,
         jdbc_statement,
         statement: str,
         options: JDBCFetchOptions | JDBCExecuteOptions,
         callback: Callable[..., T],
-        read_only: bool,
+        read_only: bool,  # noqa: FBT001
     ) -> T:
         """
         Executes ``java.sql.Statement`` or child class and passes it into the callback function.
@@ -422,8 +428,10 @@ class JDBCMixin:
         from py4j.java_gateway import is_instance_of
 
         gateway = get_java_gateway(self.spark)
-        prepared_statement = self.spark._jvm.java.sql.PreparedStatement  # type: ignore
-        callable_statement = self.spark._jvm.java.sql.CallableStatement  # type: ignore
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+
+        is_prepared = is_instance_of(gateway, jdbc_statement, jvm.java.sql.PreparedStatement)  # type: ignore[union-attr]
+        is_callable = is_instance_of(gateway, jdbc_statement, jvm.java.sql.CallableStatement)  # type: ignore[union-attr]
 
         with closing(jdbc_statement):
             if options.fetchsize is not None:
@@ -433,9 +441,7 @@ class JDBCMixin:
                 jdbc_statement.setQueryTimeout(options.query_timeout)
 
             # Java SQL classes are not consistent..
-            if is_instance_of(gateway, jdbc_statement, prepared_statement):
-                jdbc_statement.execute()
-            elif is_instance_of(gateway, jdbc_statement, callable_statement):
+            if is_prepared or is_callable:
                 jdbc_statement.execute()
             elif read_only:
                 jdbc_statement.executeQuery(statement)
@@ -505,37 +511,36 @@ class JDBCMixin:
         * https://github.com/apache/spark/blob/v3.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L337-L343
         """
 
-        from pyspark.sql import DataFrame  # noqa: WPS442
+        from pyspark.sql import DataFrame
 
         jdbc_dialect = self._get_spark_dialect()
-        jdbc_utils_package = self.spark._jvm.org.apache.spark.sql.execution.datasources.jdbc  # type: ignore
-        jdbc_utils = jdbc_utils_package.JdbcUtils
-
-        java_converters = self.spark._jvm.scala.collection.JavaConverters  # type: ignore
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        JdbcUtils = jvm.org.apache.spark.sql.execution.datasources.jdbc.JdbcUtils  # type: ignore[union-attr]  # noqa: N806
+        JavaConverters = jvm.scala.collection.JavaConverters  # type: ignore[union-attr]  # noqa: N806
 
         spark_version = get_spark_version(self.spark)
 
         if spark_version >= Version("4.0"):
-            result_schema = jdbc_utils.getSchema(
+            result_schema = JdbcUtils.getSchema(
                 jdbc_connection,
                 result_set,
                 jdbc_dialect,
-                False,  # noqa: WPS425
-                False,  # noqa: WPS425
+                False,  # noqa: FBT003
+                False,  # noqa: FBT003
             )
         elif spark_version >= Version("3.4"):
             # https://github.com/apache/spark/commit/2349175e1b81b0a61e1ed90c2d051c01cf78de9b
-            result_schema = jdbc_utils.getSchema(result_set, jdbc_dialect, False, False)  # noqa: WPS425
+            result_schema = JdbcUtils.getSchema(result_set, jdbc_dialect, False, False)  # noqa: FBT003
         else:
-            result_schema = jdbc_utils.getSchema(result_set, jdbc_dialect, False)  # noqa: WPS425
+            result_schema = JdbcUtils.getSchema(result_set, jdbc_dialect, False)  # noqa: FBT003
 
-        if spark_version.major >= 4:
-            result_iterator = jdbc_utils.resultSetToRows(result_set, result_schema, jdbc_dialect)
+        if spark_version.major >= 4:  # noqa: PLR2004
+            result_iterator = JdbcUtils.resultSetToRows(result_set, result_schema, jdbc_dialect)
         else:
-            result_iterator = jdbc_utils.resultSetToRows(result_set, result_schema)
+            result_iterator = JdbcUtils.resultSetToRows(result_set, result_schema)
 
-        result_list = java_converters.seqAsJavaListConverter(result_iterator.toSeq()).asJava()
-        jdf = self.spark._jsparkSession.createDataFrame(result_list, result_schema)  # type: ignore
+        result_list = JavaConverters.seqAsJavaListConverter(result_iterator.toSeq()).asJava()
+        jdf = self.spark._jsparkSession.createDataFrame(result_list, result_schema)  # type: ignore[attr-defined]  # noqa: SLF001
 
         # DataFrame constructor in Spark 2.3 and 2.4 required second argument to be a SQLContext class
         # E.g. spark._wrapped = SQLContext(spark).
@@ -543,4 +548,4 @@ class JDBCMixin:
         # attribute was removed from SparkSession
         spark_context = getattr(self.spark, "_wrapped", self.spark)
 
-        return DataFrame(jdf, spark_context)  # type: ignore
+        return DataFrame(jdf, spark_context)

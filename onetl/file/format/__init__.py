@@ -10,12 +10,12 @@ from onetl.file.format.parquet import Parquet
 from onetl.file.format.xml import XML
 
 __all__ = [
-    "Avro",
     "CSV",
-    "Excel",
     "JSON",
-    "JSONLine",
     "ORC",
-    "Parquet",
     "XML",
+    "Avro",
+    "Excel",
+    "JSONLine",
+    "Parquet",
 ]

@@ -102,11 +102,10 @@ def bind_hook(method: Callable, inp=None):
         obj.method(1)  # will call both callable(obj, 1) and another_callable(obj, 1)
     """
 
-    def inner_wrapper(hook):  # noqa: WPS430
+    def inner_wrapper(hook):
         if not isinstance(hook, Hook):
-            raise TypeError(
-                f"@{method.__qualname__}.bind decorator can be used only on top function marked with @hook",
-            )
+            msg = f"@{method.__qualname__}.bind decorator can be used only on top function marked with @hook"
+            raise TypeError(msg)
 
         method.__hooks__.add(hook)
 
@@ -248,7 +247,7 @@ def _handle_context_result(result: Any, context: CanProcessResult, hook: Hook):
         raise
 
 
-def register_slot(cls: type, method_name: str):  # noqa: WPS231, WPS213, WPS212
+def register_slot(cls: type, method_name: str):  # noqa: C901, PLR0915
     """
     Internal callback to register ``SomeClass.some_method`` as a slot.
 
@@ -292,8 +291,8 @@ def register_slot(cls: type, method_name: str):  # noqa: WPS231, WPS213, WPS212
     # <function MyClass.static_method>
     original_method = _unwrap_method(method_or_descriptor)
 
-    @wraps(original_method)  # noqa: WPS231, WPS213
-    def wrapper(*args, **kwargs):  # noqa: WPS231, WPS213
+    @wraps(original_method)
+    def wrapper(*args, **kwargs):  # noqa: C901
         with MethodInheritanceStack(cls, method_name) as stack_manager, ExitStack() as context_stack:
             if not HooksState.enabled():
                 logger.log(NOTICE, "|Hooks| All hooks are disabled")
@@ -422,14 +421,14 @@ def register_slot(cls: type, method_name: str):  # noqa: WPS231, WPS213, WPS212
                     )
 
                     if context_result is not None:
-                        call_result = "(None)" if result is None else "(*NOT* None)"  # noqa: WPS220
-                        logger.log(  # noqa: WPS220
+                        call_result = "(None)" if result is None else "(*NOT* None)"
+                        logger.log(
                             NOTICE,
                             "|Hooks| %sMethod call result %s is modified by hook!",
                             " " * indent,
                             call_result,
                         )
-                        result = context_result  # noqa: WPS220
+                        result = context_result
                 indent += 2
 
             return result
@@ -445,7 +444,7 @@ def register_slot(cls: type, method_name: str):  # noqa: WPS231, WPS213, WPS212
     # wrap result back to @classmethod and @staticmethod, if was used
     if isinstance(method_or_descriptor, classmethod):
         return classmethod(wrapper)
-    elif isinstance(method_or_descriptor, staticmethod):
+    if isinstance(method_or_descriptor, staticmethod):
         return staticmethod(wrapper)
 
     return wrapper
@@ -690,15 +689,18 @@ def slot(method: Method) -> Method:
     """
 
     if hasattr(method, "__hooks__"):
-        raise SyntaxError("Cannot place @slot hook twice on the same method")
+        msg = "Cannot place @slot hook twice on the same method"
+        raise SyntaxError(msg)
 
     original_method = getattr(method, "__wrapped__", method)
 
     if not _is_method(original_method):
-        raise TypeError(f"@slot decorator could be applied to only to methods of class, got {type(original_method)}")
+        msg = f"@slot decorator could be applied to only to methods of class, got {type(original_method)}"
+        raise TypeError(msg)
 
     if _is_private(original_method):
-        raise ValueError(f"@slot decorator could be applied to public methods only, got '{original_method.__name__}'")
+        msg = f"@slot decorator could be applied to public methods only, got '{original_method.__name__}'"
+        raise ValueError(msg)
 
     method.__hooks__ = HookCollection()  # type: ignore[attr-defined]
     return method

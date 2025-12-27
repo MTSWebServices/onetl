@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import logging
 from contextlib import contextmanager
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
-from onetl.hooks.hook import Hook
 from onetl.log import NOTICE
+
+if TYPE_CHECKING:
+    from onetl.hooks.hook import Hook
 
 logger = logging.getLogger(__name__)
 

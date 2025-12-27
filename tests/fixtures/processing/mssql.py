@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from logging import getLogger
+from typing import ClassVar
 from urllib.parse import quote
 
 import pandas
@@ -15,7 +16,7 @@ logger = getLogger(__name__)
 
 
 class MSSQLProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "id_int": "INT",
         "text_string": "VARCHAR(50)",
         "hwm_int": "INT",

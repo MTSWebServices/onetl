@@ -23,7 +23,7 @@ def test_jsonline_options_timezone_alias():
 
 
 @pytest.mark.parametrize(
-    "known_option, value, expected",
+    ("known_option", "value", "expected"),
     [
         ("encoding", "value", "value"),
         ("lineSep", "\r\n", "\r\n"),

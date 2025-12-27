@@ -15,4 +15,5 @@ class NotSupportDFSchema:
         df_schema: Any,
     ) -> None:
         if df_schema:
-            raise ValueError(f"'df_schema' parameter is not supported by {self.connection.__class__.__name__}")
+            msg = f"'df_schema' parameter is not supported by {self.connection.__class__.__name__}"
+            raise ValueError(msg)

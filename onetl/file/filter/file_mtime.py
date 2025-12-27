@@ -74,11 +74,13 @@ class FileModifiedTime(BaseFileFilter, FrozenModel):
         until = values.get("until")
 
         if since is None and until is None:
-            raise ValueError("Either since or until must be specified")
+            msg = "Either since or until must be specified"
+            raise ValueError(msg)
 
         # since and until can be tz-naive and tz-aware, which are cannot be compared.
         if since and until and since.timestamp() > until.timestamp():
-            raise ValueError("since cannot be greater than until")
+            msg = "since cannot be greater than until"
+            raise ValueError(msg)
 
         return values
 

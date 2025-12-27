@@ -10,7 +10,7 @@ def test_glob_invalid():
 
 
 @pytest.mark.parametrize(
-    "matched, path",
+    ("matched", "path"),
     [
         (True, RemoteFile(path="file1.csv", stats=RemotePathStat(st_size=10 * 1024, st_mtime=50))),
         (True, RemoteFile(path="nested/file3.csv", stats=RemotePathStat(st_size=20 * 1024, st_mtime=50))),

@@ -267,7 +267,8 @@ class FileUploader(FrozenModel):
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
 
         if files is None and not self.local_path:
-            raise ValueError("Neither file list nor `local_path` are passed")
+            msg = "Neither file list nor `local_path` are passed"
+            raise ValueError(msg)
 
         if not self._connection_checked:
             self._log_parameters(files)
@@ -348,7 +349,8 @@ class FileUploader(FrozenModel):
         """
 
         if not self.local_path:
-            raise ValueError("Cannot call `.view_files()` without `local_path`")
+            msg = "Cannot call `.view_files()` without `local_path`"
+            raise ValueError(msg)
 
         log.debug("|Local FS| Getting files list from path '%s'", self.local_path)
 
@@ -362,9 +364,8 @@ class FileUploader(FrozenModel):
                 log.debug("|Local FS| Listing dir '%s': %d dirs, %d files", root, len(dirs), len(files))
                 result.update(LocalPath(root) / file for file in files)
         except Exception as e:
-            raise RuntimeError(
-                f"Couldn't read directory tree from local dir '{self.local_path}'",
-            ) from e
+            msg = f"Couldn't read directory tree from local dir '{self.local_path}'"
+            raise RuntimeError(msg) from e
 
         return result
 
@@ -399,7 +400,7 @@ class FileUploader(FrozenModel):
                 self.__class__.__name__,
             )
 
-    def _validate_files(  # noqa: WPS231
+    def _validate_files(
         self,
         local_files: Iterable[os.PathLike | str],
         current_temp_dir: RemotePath | None,
@@ -414,31 +415,33 @@ class FileUploader(FrozenModel):
             if not self.local_path:
                 # Upload into a flat structure
                 if not local_file_path.is_absolute():
-                    raise ValueError("Cannot pass relative file path with empty `local_path`")
+                    msg = "Cannot pass relative file path with empty `local_path`"
+                    raise ValueError(msg)
 
                 filename = local_file_path.name
                 target_file = self.target_path / filename
                 if current_temp_dir:
-                    tmp_file = current_temp_dir / filename  # noqa: WPS220
+                    tmp_file = current_temp_dir / filename
+            # Upload according to source folder structure
+            elif self.local_path in local_file_path.parents:
+                # Make relative remote path
+                target_file = self.target_path / local_file_path.relative_to(self.local_path)
+                if current_temp_dir:
+                    tmp_file = current_temp_dir / local_file_path.relative_to(self.local_path)
+            elif not local_file_path.is_absolute():
+                # Passed path is already relative
+                local_file = self.local_path / local_file_path
+                target_file = self.target_path / local_file_path
+                if current_temp_dir:
+                    tmp_file = current_temp_dir / local_file_path
             else:
-                # Upload according to source folder structure
-                if self.local_path in local_file_path.parents:
-                    # Make relative remote path
-                    target_file = self.target_path / local_file_path.relative_to(self.local_path)
-                    if current_temp_dir:
-                        tmp_file = current_temp_dir / local_file_path.relative_to(self.local_path)  # noqa: WPS220
-                elif not local_file_path.is_absolute():
-                    # Passed path is already relative
-                    local_file = self.local_path / local_file_path
-                    target_file = self.target_path / local_file_path
-                    if current_temp_dir:
-                        tmp_file = current_temp_dir / local_file_path  # noqa: WPS220
-                else:
-                    # Wrong path (not relative path and source path not in the path to the file)
-                    raise ValueError(f"File path '{local_file}' does not match source_path '{self.local_path}'")
+                # Wrong path (not relative path and source path not in the path to the file)
+                msg = f"File path '{local_file}' does not match source_path '{self.local_path}'"
+                raise ValueError(msg)
 
             if local_file.exists() and not local_file.is_file():
-                raise NotAFileError(f"{path_repr(local_file)} is not a file")
+                msg = f"{path_repr(local_file)} is not a file"
+                raise NotAFileError(msg)
 
             result.add((local_file, target_file, tmp_file))
 
@@ -446,10 +449,12 @@ class FileUploader(FrozenModel):
 
     def _check_local_path(self):
         if not self.local_path.exists():
-            raise DirectoryNotFoundError(f"'{self.local_path}' does not exist")
+            msg = f"'{self.local_path}' does not exist"
+            raise DirectoryNotFoundError(msg)
 
         if not self.local_path.is_dir():
-            raise NotADirectoryError(f"{path_repr(self.local_path)} is not a directory")
+            msg = f"{path_repr(self.local_path)} is not a directory"
+            raise NotADirectoryError(msg)
 
     def _upload_files(self, to_upload: UPLOAD_ITEMS_TYPE) -> UploadResult:
         files = FileSet(item[0] for item in to_upload)
@@ -518,8 +523,7 @@ class FileUploader(FrozenModel):
                     executor.submit(self._upload_file, local_file, target_file, tmp_file)
                     for local_file, target_file, tmp_file in to_upload
                 ]
-                for future in as_completed(futures):
-                    result.append(future.result())
+                result = [future.result() for future in as_completed(futures)]
         else:
             log.debug("|%s| Using plain old for-loop", self.__class__.__name__)
             for local_file, target_file, tmp_file in to_upload:
@@ -533,7 +537,7 @@ class FileUploader(FrozenModel):
 
         return result
 
-    def _upload_file(  # noqa: WPS231
+    def _upload_file(  # noqa: PLR0912, C901
         self,
         local_file: LocalPath,
         target_file: RemotePath,
@@ -559,7 +563,8 @@ class FileUploader(FrozenModel):
             if self.connection.path_exists(target_file):
                 file = self.connection.resolve_file(target_file)
                 if self.options.if_exists == FileExistBehavior.ERROR:
-                    raise FileExistsError(f"File {path_repr(file)} already exists")
+                    msg = f"File {path_repr(file)} already exists"
+                    raise FileExistsError(msg)  # noqa: TRY301
 
                 if self.options.if_exists == FileExistBehavior.IGNORE:
                     log.warning("|%s| File %s already exists, skipping", self.__class__.__name__, path_repr(file))
@@ -581,15 +586,21 @@ class FileUploader(FrozenModel):
                 local_file.unlink()
                 log.warning("|Local FS| Successfully removed file %s", local_file)
 
-            return FileUploadStatus.SUCCESSFUL, uploaded_file
-
         except Exception as e:
             if log.isEnabledFor(logging.DEBUG):
                 log.exception("|%s| Couldn't upload file to target dir", self.__class__.__name__, exc_info=e)
             else:
-                log.exception("|%s| Couldn't upload file to target dir: %s", self.__class__.__name__, e, exc_info=False)
+                log.exception(  # noqa: LOG007
+                    "|%s| Couldn't upload file to target dir: %s",
+                    self.__class__.__name__,
+                    e,  # noqa: TRY401
+                    exc_info=False,
+                )
 
             return FileUploadStatus.FAILED, FailedLocalFile(path=local_file, exception=e)
+
+        else:
+            return FileUploadStatus.SUCCESSFUL, uploaded_file
 
     def _remove_temp_dir(self, temp_dir: RemotePath) -> None:
         try:

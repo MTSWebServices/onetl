@@ -17,11 +17,12 @@ if TYPE_CHECKING:
 
 class DBDialect(BaseDBDialect):
     def detect_hwm_class(self, field: StructField) -> type[HWM] | None:
-        return SparkTypeToHWM.get(field.dataType)  # type: ignore
+        return SparkTypeToHWM.get(field.dataType)
 
-    def get_sql_query(
+    def get_sql_query(  # noqa: PLR0913
         self,
         table: str,
+        *,
         columns: list[str] | None = None,
         where: str | list[str] | None = None,
         hint: str | None = None,
@@ -32,11 +33,7 @@ class DBDialect(BaseDBDialect):
         Generates a SQL query using input arguments
         """
 
-        if compact:
-            indent = " "
-        else:
-            indent = os.linesep + " " * 7
-
+        indent = " " if compact else (os.linesep + " " * 7)
         hint = f" /*+ {hint} */" if hint else ""
 
         columns_str = indent + "*"

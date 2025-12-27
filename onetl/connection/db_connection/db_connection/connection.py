@@ -31,7 +31,7 @@ class DBConnection(BaseDBConnection, FrozenModel):
     def _forward_refs(cls) -> dict[str, type]:
         try_import_pyspark()
 
-        from pyspark.sql import SparkSession  # noqa: WPS442
+        from pyspark.sql import SparkSession
 
         # avoid importing pyspark unless user called the constructor,
         # as we allow user to use `Connection.get_packages()` for creating Spark session
@@ -44,7 +44,7 @@ class DBConnection(BaseDBConnection, FrozenModel):
         # https://stackoverflow.com/a/36044685
         msg = "Spark session is stopped. Please recreate Spark session."
         try:
-            if not spark._jsc.sc().isStopped():
+            if not spark._jsc.sc().isStopped():  # noqa: SLF001
                 return spark
         except Exception as e:
             # None has no attribute "something"

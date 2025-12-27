@@ -124,7 +124,7 @@ def test_file_stat():
     assert file_stat.st_size == 10
     assert file_stat.st_mtime == 50
 
-    assert file_stat == file_stat  # noqa: WPS312 NOSONAR
+    assert file_stat == file_stat  # noqa: PLR0124
     assert RemotePathStat(st_size=10, st_mtime=50) == RemotePathStat(st_size=10, st_mtime=50)
 
     assert RemotePathStat(st_size=10, st_mtime=50) != RemotePathStat(st_size=20, st_mtime=50)
@@ -138,7 +138,7 @@ def test_file_stat():
 
 
 @pytest.mark.parametrize(
-    "item1, item2",
+    ("item1", "item2"),
     [
         (RemotePath("a/b/c"), RemoteDirectory(path="a/b/c")),
         (LocalPath("a/b/c"), FailedLocalFile(path="a/b/c", exception=FileNotFoundError("abc"))),
@@ -161,21 +161,21 @@ def test_path_compat(item1, item2):
     assert bytes(item1) == bytes(item2)
     assert os.fspath(item1) == os.fspath(item2)
 
-    assert item1 in {item1}  # noqa: WPS525
-    assert item2 in {item2}  # noqa: WPS525
+    assert item1 in {item1}
+    assert item2 in {item2}
     assert {item1} == {item2} == {item1, item2}
     assert len({item1, item2}) == 1
-    assert item1 in {item2}  # noqa: WPS525
-    assert item2 in {item1}  # noqa: WPS525
+    assert item1 in {item2}
+    assert item2 in {item1}
 
     assert item1 == item2
     assert item2 == item1
-    assert item1 in [item1]  # noqa: WPS525, WPS510
-    assert item2 in [item2]  # noqa: WPS525, WPS510
+    assert item1 in [item1]
+    assert item2 in [item2]
 
     assert [item1] == [item2]
-    assert item1 in [item2]  # noqa: WPS525, WPS510
-    assert item2 in [item1]  # noqa: WPS525, WPS510
+    assert item1 in [item2]
+    assert item2 in [item1]
 
     assert item1 / "d" == item2 / "d"
     assert "d" / item1 == "d" / item2
@@ -185,7 +185,7 @@ def test_path_compat(item1, item2):
 
 
 @pytest.mark.parametrize(
-    "item1, item2",
+    ("item1", "item2"),
     [
         (RemotePath("a/b/c"), RemoteDirectory(path="a/b/c")),
         (LocalPath("a/b/c"), FailedLocalFile(path="a/b/c", exception=FileNotFoundError("abc"))),
@@ -277,7 +277,7 @@ def test_failed_remote_file_eq():
 
 
 @pytest.mark.parametrize(
-    "kwargs, kind",
+    ("kwargs", "kind"),
     [
         ({}, None),
         ({"st_mode": stat.S_IFSOCK}, "socket"),
@@ -315,7 +315,7 @@ def test_path_repr_stats_with_kind(kwargs, kind):
 
 
 @pytest.mark.parametrize(
-    "st_size, details",
+    ("st_size", "details"),
     [
         (0, ", size='0 Bytes'"),
         (10, ", size='10 Bytes'"),
@@ -335,7 +335,7 @@ def test_path_repr_stats_with_size(st_size, details):
 
 
 @pytest.mark.parametrize(
-    "path_class, kind",
+    ("path_class", "kind"),
     [
         (RemoteFile, "file"),
         (RemoteDirectory, "directory"),
@@ -358,7 +358,7 @@ def test_path_repr_stats_with_mtime(path_class, kind):
 
 
 @pytest.mark.parametrize(
-    "mode, mode_str",
+    ("mode", "mode_str"),
     [
         (0o777, "rwxrwxrwx"),
         (0o666, "rw-rw-rw-"),
@@ -376,7 +376,7 @@ def test_path_repr_stats_with_mtime(path_class, kind):
     ],
 )
 @pytest.mark.parametrize(
-    "path_class, kind",
+    ("path_class", "kind"),
     [
         (RemoteFile, "file"),
         (RemoteDirectory, "directory"),
@@ -396,21 +396,21 @@ def test_path_repr_stats_with_mode(path_class, kind, mode, mode_str):
 
 
 @pytest.mark.parametrize(
-    "user, user_str",
+    ("user", "user_str"),
     [
         (123, ", uid=123"),
         ("me", ", uid='me'"),
     ],
 )
 @pytest.mark.parametrize(
-    "group, group_str",
+    ("group", "group_str"),
     [
         (123, ", gid=123"),
         ("me", ", gid='me'"),
     ],
 )
 @pytest.mark.parametrize(
-    "path_class, kind",
+    ("path_class", "kind"),
     [
         (RemoteFile, "file"),
         (RemoteDirectory, "directory"),
@@ -430,7 +430,7 @@ def test_path_repr_stats_with_owner(path_class, kind, user, user_str, group, gro
 
 
 @pytest.mark.parametrize(
-    "exception, exception_str",
+    ("exception", "exception_str"),
     [
         (
             FileNotFoundError("abc"),

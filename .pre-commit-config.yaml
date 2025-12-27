@@ -116,24 +116,19 @@ repos:
     hooks:
       - id: ruff-format
         priority: 8
+      - id: ruff
+        args: [--fix]
+        priority: 9
 
   - repo: local
     hooks:
-      - id: flake8
-        name: flake8
-        entry: python3 -m flake8
-        language: system
-        types: [python]
-        files: ^(onetl|tests)/.*$
-        pass_filenames: true
-        priority: 9
       - id: mypy
         name: mypy
-        entry: python3 -m mypy --config-file setup.cfg onetl
+        entry: python3 -m mypy onetl
         language: system
         types: [python]
         pass_filenames: false
-        priority: 9
+        priority: 10
       - id: towncrier
         name: towncrier
         entry: towncrier build --draft
@@ -153,6 +148,5 @@ ci:
   skip:
     - chmod # failing in pre-commit.ci
     - docker-compose-check # cannot run on pre-commit.ci
-    - flake8 # checked with Github Actions
     - mypy # checked with Github Actions
     - towncrier # checked with Github Actions

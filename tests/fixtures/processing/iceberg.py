@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from collections import defaultdict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pandas
 from pytest import FixtureRequest
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class IcebergProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "id_int": "int",
         "text_string": "string",
         "hwm_int": "int",
@@ -35,8 +35,9 @@ class IcebergProcessing(BaseProcessing):
             if catalog in markers:
                 return f"my_{catalog}"
 
+        msg = f"One of possible catalog types should be in markers: {self._supported_catalog_types}"
         raise ValueError(
-            f"One of possible catalog types should be in markers: {self._supported_catalog_types}",
+            msg,
         )
 
     @property

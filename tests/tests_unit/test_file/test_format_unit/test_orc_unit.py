@@ -8,7 +8,7 @@ pytestmark = [pytest.mark.orc]
 
 
 @pytest.mark.parametrize(
-    "known_option, value, expected_value",
+    ("known_option", "value", "expected_value"),
     [
         ("mergeSchema", True, True),
         ("compression", "snappy", "snappy"),

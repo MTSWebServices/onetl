@@ -109,7 +109,7 @@ def test_file_connection_rename_dir(file_connection_with_path_and_files, path_ty
 
 
 def test_file_connection_rename_dir_already_exists(request, file_connection_with_path_and_files):
-    file_connection, remote_path, upload_files = file_connection_with_path_and_files
+    file_connection, remote_path, _ = file_connection_with_path_and_files
     if not isinstance(file_connection, SupportsRenameDir):
         # S3 does not have directories
         return
@@ -195,7 +195,7 @@ def test_file_connection_read_bytes(file_connection_with_path_and_files):
 
 
 @pytest.mark.parametrize(
-    "pass_real_path, exception",
+    ("pass_real_path", "exception"),
     [(True, NotAFileError), (False, FileNotFoundError)],
 )
 def test_file_connection_read_text_negative(
@@ -211,7 +211,7 @@ def test_file_connection_read_text_negative(
 
 
 @pytest.mark.parametrize(
-    "pass_real_path, exception",
+    ("pass_real_path", "exception"),
     [(True, NotAFileError), (False, FileNotFoundError)],
 )
 def test_file_connection_read_bytes_negative(
@@ -345,7 +345,7 @@ def test_file_connection_upload_file(file_connection, file_connection_test_files
 
 
 @pytest.mark.parametrize(
-    "path,exception",
+    ("path", "exception"),
     [
         ("exclude_dir/", NotAFileError),
         ("exclude_dir/file_not_exists", FileNotFoundError),
@@ -385,7 +385,7 @@ def test_file_connection_download_file_wrong_target_type(
 
 
 @pytest.mark.parametrize(
-    "source,exception",
+    ("source", "exception"),
     [("exclude_dir", NotAFileError), ("missing", FileNotFoundError)],
     ids=["directory", "missing"],
 )

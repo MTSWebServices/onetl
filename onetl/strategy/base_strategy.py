@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 class BaseStrategy(BaseModel):
     def __enter__(self):
-        # hack to avoid circular imports
+        # avoid circular imports
         from onetl.strategy.strategy_manager import StrategyManager
 
         log.debug("|%s| Entered stack at level %d", self.__class__.__name__, StrategyManager.get_current_level())
@@ -49,7 +49,7 @@ class BaseStrategy(BaseModel):
     def enter_hook(self) -> None:
         pass
 
-    def exit_hook(self, failed: bool = False) -> None:
+    def exit_hook(self, *, failed: bool = False) -> None:
         pass
 
     def _log_parameters(self) -> None:

@@ -56,7 +56,7 @@ def test_excel_reader_with_infer_schema(
 
 @pytest.mark.parametrize("format", ["xlsx", "xls"])
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_header", {}),
         ("with_header", {"header": True}),

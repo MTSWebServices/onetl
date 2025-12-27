@@ -2,10 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
-from onetl.base.path_stat_protocol import PathStatProtocol
 from onetl.impl.frozen_model import FrozenModel
+
+if TYPE_CHECKING:
+    from onetl.base.path_stat_protocol import PathStatProtocol
 
 
 class RemotePathStat(FrozenModel):

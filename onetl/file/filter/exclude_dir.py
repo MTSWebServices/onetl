@@ -45,7 +45,7 @@ class ExcludeDir(BaseFileFilter, FrozenModel):
 
     def __init__(self, path: str | os.PathLike):
         # this is only to allow passing glob as positional argument
-        super().__init__(path=path)  # type: ignore
+        super().__init__(path=path)
 
     def __repr__(self):
         return f"{self.__class__.__name__}('{self.path}')"

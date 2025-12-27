@@ -15,9 +15,10 @@ class SupportHWMExpressionStr:
             return hwm
 
         if not isinstance(hwm.expression, str):
-            raise TypeError(
+            msg = (
                 f"{self.connection.__class__.__name__} requires 'hwm.expression' parameter type to be 'str', "
-                f"got {hwm.expression.__class__.__name__!r}",
+                f"got {hwm.expression.__class__.__name__!r}"
             )
+            raise TypeError(msg)
 
         return hwm

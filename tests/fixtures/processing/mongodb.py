@@ -6,6 +6,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from logging import getLogger
 from random import randint
+from typing import ClassVar
 from urllib.parse import quote
 
 import pandas
@@ -17,7 +18,7 @@ logger = getLogger(__name__)
 
 
 class MongoDBProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "_id": "",
         "text_string": "",
         "hwm_int": "",
@@ -28,7 +29,7 @@ class MongoDBProcessing(BaseProcessing):
         "float_value": "",
     }
 
-    column_names: list = ["_id", "text_string", "hwm_int", "hwm_datetime", "float_value"]
+    column_names: ClassVar[list] = ["_id", "text_string", "hwm_int", "hwm_datetime", "float_value"]
 
     def __enter__(self):
         self.connection = self.get_conn()
@@ -137,13 +138,13 @@ class MongoDBProcessing(BaseProcessing):
         return datetime.now()
 
     def create_pandas_df(self, min_id: int = 1, max_id: int | None = None) -> pandas.DataFrame:
-        max_id = self._df_max_length if not max_id else max_id
+        max_id = max_id if max_id else self._df_max_length
         time_multiplier = 100000
 
         values = defaultdict(list)
         for i in range(min_id, max_id + 1):
-            for column_name in self.column_names:
-                column_name = column_name.lower()
+            for raw_column_name in self.column_names:
+                column_name = raw_column_name.lower()
 
                 if column_name == "_id" or "int" in column_name:
                     values[column_name].append(i)
@@ -152,7 +153,7 @@ class MongoDBProcessing(BaseProcessing):
                 elif "text" in column_name:
                     values[column_name].append(secrets.token_hex(16))
                 elif "datetime" in column_name:
-                    rand_second = randint(0, i * time_multiplier)  # noqa: S311
+                    rand_second = randint(0, i * time_multiplier)
                     now = self.current_datetime() + timedelta(seconds=rand_second)
                     # In the case that after rounding the result
                     # will not be in the range from 0 to 999999

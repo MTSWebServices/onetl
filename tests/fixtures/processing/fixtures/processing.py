@@ -1,10 +1,15 @@
 import secrets
-from collections import namedtuple
+from contextlib import suppress
 from importlib import import_module
+from typing import NamedTuple
 
 import pytest
 
-PreparedDbInfo = namedtuple("PreparedDbInfo", ["full_name", "schema", "table"])
+
+class PreparedDbInfo(NamedTuple):
+    full_name: str
+    schema: str
+    table: str
 
 
 @pytest.fixture()
@@ -25,8 +30,12 @@ def processing(request, spark):
     test_name_parts = set(request.function.__name__.split("_"))
     matches = set(processing_classes.keys()) & test_name_parts
     if not matches or len(matches) > 1:
+        msg = (
+            f"Test name {request.function.__name__} should have one "
+            "of these components: {list(processing_classes.keys())}"
+        )
         raise ValueError(
-            f"Test name {request.function.__name__} should have one of these components: {list(processing_classes.keys())}",
+            msg,
         )
 
     db_storage_name = matches.pop()
@@ -51,13 +60,11 @@ def get_schema_table(processing, worker_id):
 
     yield PreparedDbInfo(full_name=full_name, schema=schema, table=table)
 
-    try:
+    with suppress(Exception):
         processing.drop_table(
             table=table,
             schema=schema,
         )
-    except Exception:  # noqa: S110
-        pass
 
 
 @pytest.fixture

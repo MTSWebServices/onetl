@@ -77,17 +77,20 @@ class FileSizeRange(BaseFileFilter, FrozenModel):
         max_value = values.get("max")
 
         if min_value is None and max_value is None:
-            raise ValueError("Either min or max must be specified")
+            msg = "Either min or max must be specified"
+            raise ValueError(msg)
 
         if min_value and max_value and min_value > max_value:
-            raise ValueError("Min size cannot be greater than max size")
+            msg = "Min size cannot be greater than max size"
+            raise ValueError(msg)
 
         return values
 
     @validator("min", "max")
     def _validate_min(cls, value):
         if value is not None and value < 0:
-            raise ValueError("size cannot be negative")
+            msg = "size cannot be negative"
+            raise ValueError(msg)
         return value
 
     def __repr__(self):

@@ -20,7 +20,14 @@ try:
         validator,
     )
 except (ImportError, AttributeError):
-    from pydantic import Field, FilePath, SecretStr, PrivateAttr, root_validator, validator  # type: ignore[no-redef, assignment]
+    from pydantic import (  # type: ignore[no-redef, assignment]
+        Field,
+        FilePath,
+        PrivateAttr,
+        SecretStr,
+        root_validator,
+        validator,
+    )
 
 from onetl._util.alias import avoid_alias
 from onetl.base import PathStatProtocol
@@ -32,10 +39,10 @@ from onetl.hooks import slot, support_hooks
 from onetl.impl import LocalPath, RemotePath, RemotePathStat
 
 try:
-    from hdfs import Client, InsecureClient
+    from hdfs import Client, InsecureClient  # noqa: F401
 
     if TYPE_CHECKING:
-        from hdfs.ext.kerberos import KerberosClient
+        from hdfs.ext.kerberos import KerberosClient  # noqa: F401
 except (ImportError, NameError) as err:
     raise ImportError(
         textwrap.dedent(
@@ -191,7 +198,7 @@ class HDFS(FileConnection, RenameDirMixin):
                     user="someuser",
                     password="*****",
                 ).check()
-    """
+    """  # noqa: E501
 
     cluster: Optional[Cluster] = None
     host: Optional[Host] = None
@@ -245,10 +252,11 @@ class HDFS(FileConnection, RenameDirMixin):
         log.info("|%s| Detecting current cluster...", cls.__name__)
         current_cluster = cls.Slots.get_current_cluster()
         if not current_cluster:
-            raise RuntimeError(
+            msg = (
                 f"{cls.__name__}.get_current() can be used only if there are "
-                f"some hooks bound to {cls.__name__}.Slots.get_current_cluster",
+                f"some hooks bound to {cls.__name__}.Slots.get_current_cluster"
             )
+            raise RuntimeError(msg)
 
         log.info("|%s|   Got %r", cls.__name__, current_cluster)
         return cls(cluster=current_cluster, **kwargs)
@@ -280,7 +288,7 @@ class HDFS(FileConnection, RenameDirMixin):
     def _validate_packages(cls, user):
         if user:
             try:
-                from hdfs.ext.kerberos import KerberosClient as CheckForKerberosSupport
+                from hdfs.ext.kerberos import KerberosClient as CheckForKerberosSupport  # noqa: F401
             except (ImportError, NameError) as e:
                 raise ImportError(
                     textwrap.dedent(
@@ -304,7 +312,8 @@ class HDFS(FileConnection, RenameDirMixin):
         cluster = values.get("cluster")
 
         if not cluster and not host:
-            raise ValueError("You should pass either host or cluster name")
+            msg = "You should pass either host or cluster name"
+            raise ValueError(msg)
 
         return values
 
@@ -318,9 +327,8 @@ class HDFS(FileConnection, RenameDirMixin):
         log.debug("|%s| Checking if cluster %r is a known cluster...", cls.__name__, validated_cluster)
         known_clusters = cls.Slots.get_known_clusters()
         if known_clusters and validated_cluster not in known_clusters:
-            raise ValueError(
-                f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}",
-            )
+            msg = f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}"
+            raise ValueError(msg)
 
         return validated_cluster
 
@@ -337,9 +345,12 @@ class HDFS(FileConnection, RenameDirMixin):
             log.debug("|%s| Checking if %r is a known namenode of cluster %r ...", cls.__name__, namenode, cluster)
             known_namenodes = cls.Slots.get_cluster_namenodes(cluster)
             if known_namenodes and namenode not in known_namenodes:
-                raise ValueError(
+                msg = (
                     f"Namenode {namenode!r} is not in the known nodes list of cluster {cluster!r}: "
-                    f"{sorted(known_namenodes)!r}",
+                    f"{sorted(known_namenodes)!r}"
+                )
+                raise ValueError(
+                    msg,
                 )
 
         return namenode
@@ -362,10 +373,12 @@ class HDFS(FileConnection, RenameDirMixin):
         password = values.get("password")
         keytab = values.get("keytab")
         if password and keytab:
-            raise ValueError("Please provide either `keytab` or `password` for kinit, not both")
+            msg = "Please provide either `keytab` or `password` for kinit, not both"
+            raise ValueError(msg)
 
         if (password or keytab) and not user:
-            raise ValueError("`keytab` or `password` should be used only with `user`")
+            msg = "`keytab` or `password` should be used only with `user`"
+            raise ValueError(msg)
 
         return values
 
@@ -375,7 +388,8 @@ class HDFS(FileConnection, RenameDirMixin):
 
         namenodes = self.Slots.get_cluster_namenodes(self.cluster)
         if not namenodes:
-            raise RuntimeError(f"Cannot get list of namenodes for a cluster {self.cluster!r}")
+            msg = f"Cannot get list of namenodes for a cluster {self.cluster!r}"
+            raise RuntimeError(msg)
 
         nodes_len = len(namenodes)
         for i, namenode in enumerate(namenodes, start=1):
@@ -385,7 +399,8 @@ class HDFS(FileConnection, RenameDirMixin):
                 return namenode
             log.debug("|%s|     Node %r is not active, skipping", class_name, namenode)
 
-        raise RuntimeError(f"Cannot detect active namenode for cluster {self.cluster!r}")
+        msg = f"Cannot detect active namenode for cluster {self.cluster!r}"
+        raise RuntimeError(msg)
 
     def _get_host(self) -> str:
         if not self.host and self.cluster:
@@ -408,9 +423,11 @@ class HDFS(FileConnection, RenameDirMixin):
             return self.host
 
         if self.cluster:
-            raise RuntimeError(f"Host {self.host!r} is not an active namenode of cluster {self.cluster!r}")
+            msg = f"Host {self.host!r} is not an active namenode of cluster {self.cluster!r}"
+            raise RuntimeError(msg)
 
-        raise RuntimeError(f"Host {self.host!r} is not an active namenode")
+        msg = f"Host {self.host!r} is not an active namenode"
+        raise RuntimeError(msg)
 
     def _get_conn_str(self) -> str:
         # cache active host to reduce number of requests.
@@ -420,7 +437,7 @@ class HDFS(FileConnection, RenameDirMixin):
 
     def _get_client(self) -> Client:
         if self.user and (self.keytab or self.password):
-            from hdfs.ext.kerberos import KerberosClient  # noqa: F811
+            from hdfs.ext.kerberos import KerberosClient
 
             kinit(
                 self.user,
@@ -431,7 +448,7 @@ class HDFS(FileConnection, RenameDirMixin):
             conn_str = self._get_conn_str()
             client = KerberosClient(conn_str, timeout=self.timeout)
         else:
-            from hdfs import InsecureClient  # noqa: F401, WPS442, F811
+            from hdfs import InsecureClient
 
             conn_str = self._get_conn_str()
             client = InsecureClient(conn_str, user=self.user)

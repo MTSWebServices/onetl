@@ -466,7 +466,7 @@ def test_iceberg_spark_stopped(iceberg_mock, spark_stopped):
 
 
 @pytest.mark.parametrize(
-    "package_version,spark_version,scala_version,package",
+    ("package_version", "spark_version", "scala_version", "package"),
     [
         ("1.4.0", "3.3", None, "org.apache.iceberg:iceberg-spark-runtime-3.3_2.12:1.4.0"),
         ("1.10.0", "3.5", "2.12", "org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.10.0"),

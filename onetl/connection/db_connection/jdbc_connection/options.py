@@ -89,8 +89,8 @@ class JDBCTableExistBehavior(str, Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    @classmethod  # noqa: WPS120
-    def _missing_(cls, value: object):  # noqa: WPS120
+    @classmethod
+    def _missing_(cls, value: object):
         if str(value) == "overwrite":
             warnings.warn(
                 "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. "
@@ -99,6 +99,7 @@ class JDBCTableExistBehavior(str, Enum):
                 stacklevel=4,
             )
             return cls.REPLACE_ENTIRE_TABLE
+        return None
 
 
 class JDBCPartitioningMode(str, Enum):
@@ -155,7 +156,8 @@ class JDBCReadOptions(JDBCFetchOptions):
     .. note::
         Column type depends on :obj:`~partitioning_mode`.
 
-        * ``partitioning_mode="range"`` requires column to be an integer, date or timestamp (can be NULL, but not recommended).
+        * ``partitioning_mode="range"`` requires column to be an integer,
+          date or timestamp (can be NULL, but not recommended).
         * ``partitioning_mode="hash"`` accepts any column type (NOT NULL).
         * ``partitioning_mode="mod"`` requires column to be an integer (NOT NULL).
 
@@ -166,10 +168,10 @@ class JDBCReadOptions(JDBCFetchOptions):
     See documentation for :obj:`~partitioning_mode` for more details"""
 
     lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
-    """See documentation for :obj:`~partitioning_mode` for more details"""  # noqa: WPS322
+    """See documentation for :obj:`~partitioning_mode` for more details"""
 
     upper_bound: Optional[int] = Field(default=None, alias="upperBound")
-    """See documentation for :obj:`~partitioning_mode` for more details"""  # noqa: WPS322
+    """See documentation for :obj:`~partitioning_mode` for more details"""
 
     session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
@@ -386,10 +388,12 @@ class JDBCReadOptions(JDBCFetchOptions):
             if num_partitions == 1:
                 return values
 
-            raise ValueError("You should set partition_column to enable partitioning")
+            msg = "You should set partition_column to enable partitioning"
+            raise ValueError(msg)
 
-        elif num_partitions == 1:
-            raise ValueError("You should set num_partitions > 1 to enable partitioning")
+        if num_partitions == 1:
+            msg = "You should set num_partitions > 1 to enable partitioning"
+            raise ValueError(msg)
 
         if mode == JDBCPartitioningMode.RANGE:
             return values
@@ -626,13 +630,13 @@ class JDBCSQLOptions(GenericOptions):
     """
 
     num_partitions: Optional[int] = Field(default=None, alias="numPartitions")
-    """Number of jobs created by Spark to read the table content in parallel."""  # noqa: WPS322
+    """Number of jobs created by Spark to read the table content in parallel."""
 
     lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
-    """Defines the starting boundary for partitioning the query's data. Mandatory if :obj:`~partition_column` is set"""  # noqa: WPS322
+    """Defines the starting boundary for partitioning the query's data. Mandatory if :obj:`~partition_column` is set"""
 
     upper_bound: Optional[int] = Field(default=None, alias="upperBound")
-    """Sets the ending boundary for data partitioning. Mandatory if :obj:`~partition_column` is set"""  # noqa: WPS322
+    """Sets the ending boundary for data partitioning. Mandatory if :obj:`~partition_column` is set"""
 
     session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
@@ -690,9 +694,9 @@ class JDBCSQLOptions(GenericOptions):
         lower_bound = values.get("lower_bound")
         upper_bound = values.get("upper_bound")
 
-        if num_partitions is not None and num_partitions > 1:
-            if lower_bound is None or upper_bound is None:
-                raise ValueError("lowerBound and upperBound must be set if numPartitions > 1")
+        if num_partitions is not None and num_partitions > 1 and (lower_bound is None or upper_bound is None):
+            msg = "lowerBound and upperBound must be set if numPartitions > 1"
+            raise ValueError(msg)
         return values
 
 

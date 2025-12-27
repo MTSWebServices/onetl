@@ -29,14 +29,14 @@ class BaseModel(PydanticBaseModel):
             # when first object instance is being created
             refs = self._forward_refs()
             self.__class__.update_forward_refs(**refs)
-            self.__class__._forward_refs_updated = True  # noqa: WPS437
+            self.__class__._forward_refs_updated = True  # noqa: SLF001
         super().__init__(**kwargs)
 
     @classmethod
     def _forward_refs(cls) -> dict[str, type]:
         refs: dict[str, type] = {}
         for item in dir(cls):
-            if item.startswith("_") or item.startswith("package"):
+            if item.startswith(("_", "package")):
                 continue
 
             value = getattr(cls, item)
