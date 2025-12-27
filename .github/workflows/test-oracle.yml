@@ -65,10 +65,10 @@ jobs:
         if: inputs.with-cache
         with:
           path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-oracle-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
+          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-oracle-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
           restore-keys: |
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-oracle-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-oracle-
+            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-oracle-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
+            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-oracle-
 
       - name: Set up Oracle instantclient
         if: runner.os == 'Linux'

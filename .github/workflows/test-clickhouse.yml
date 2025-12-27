@@ -56,15 +56,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache Ivy
-        uses: actions/cache@v5
-        if: inputs.with-cache
-        with:
-          path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-clickhouse-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-clickhouse-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-clickhouse-
+      # no caching of ~/.ivy2 because Clickhouse JDBC driver is just a few MB
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -83,13 +75,6 @@ jobs:
             ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
             ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-
             ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          activate-environment: "true"
-          save-cache: "false"
-          cache-suffix: test-spark${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}
 
       - name: Install dependencies
         run: |

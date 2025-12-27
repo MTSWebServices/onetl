@@ -47,10 +47,10 @@ jobs:
         if: inputs.with-cache
         with:
           path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
+          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
           restore-keys: |
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-tests-local-fs-
+            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
+            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-tests-local-fs-
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7

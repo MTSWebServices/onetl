@@ -60,15 +60,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends freetds-dev libkrb5-dev gcc
 
-      - name: Cache Ivy
-        uses: actions/cache@v5
-        if: inputs.with-cache
-        with:
-          path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-mssql-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-mssql-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-mssql-
+      # no caching of ~/.ivy2 because MSSQL JDBC driver is just a few MB
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7

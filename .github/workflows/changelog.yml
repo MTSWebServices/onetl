@@ -37,7 +37,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          cache-suffix: changelog
+          enable-cache: "false"
 
       - name: Install dependencies
         run: |
