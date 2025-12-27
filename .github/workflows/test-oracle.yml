@@ -60,15 +60,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache Ivy
-        uses: actions/cache@v5
-        if: inputs.with-cache
-        with:
-          path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-oracle-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-oracle-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-oracle-
+      # no caching of ~/.ivy2 because Clickhouse JDBC driver is just a few MB
 
       - name: Set up Oracle instantclient
         if: runner.os == 'Linux'

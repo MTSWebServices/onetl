@@ -39,6 +39,8 @@ jobs:
           activate-environment: "true"
           enable-cache: "false"
 
+      # no uv cache here because fresh install takes about 1 second
+
       - name: Install dependencies
         run: |
           uv sync --only-group docs
