@@ -37,7 +37,7 @@ jobs:
       - name: Start HDFS
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile hdfs up -d --pull always &
+          docker compose --profile hdfs up -d --pull always
         env:
           HDFS_IMAGE: mtsrus/hadoop:${{ inputs.hadoop-version }}
 

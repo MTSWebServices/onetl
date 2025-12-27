@@ -37,7 +37,7 @@ jobs:
       - name: Start MongoDB
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile mongodb up -d --pull always &
+          docker compose --profile mongodb up -d --pull always
         env:
           MONGODB_IMAGE: mongo:${{ inputs.mongodb-version }}
 

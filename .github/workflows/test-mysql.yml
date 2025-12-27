@@ -37,7 +37,7 @@ jobs:
       - name: Start MySQL
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile mysql up -d --pull always &
+          docker compose --profile mysql up -d --pull always
         env:
           MYSQL_IMAGE: mysql:${{ inputs.mysql-version }}
 

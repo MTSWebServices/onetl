@@ -40,7 +40,7 @@ jobs:
       - name: Start Clickhouse
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile clickhouse up -d --pull always &
+          docker compose --profile clickhouse up -d --pull always
         env:
           CLICKHOUSE_IMAGE: ${{ inputs.clickhouse-image }}:${{ inputs.clickhouse-version }}
 

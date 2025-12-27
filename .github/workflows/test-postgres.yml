@@ -37,7 +37,7 @@ jobs:
       - name: Start Postgres
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile postgres up -d --pull always &
+          docker compose --profile postgres up -d --pull always
         env:
           POSTGRES_IMAGE: postgres:${{ inputs.postgres-version }}
 

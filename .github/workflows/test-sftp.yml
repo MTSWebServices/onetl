@@ -31,7 +31,7 @@ jobs:
       - name: Start SFTP
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile sftp up -d --pull always &
+          docker compose --profile sftp up -d --pull always
         env:
           SFTP_IMAGE: linuxserver/openssh-server:${{ inputs.openssh-version }}
 

@@ -31,7 +31,7 @@ jobs:
       - name: Start WebDAV
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile webdav up -d --pull always &
+          docker compose --profile webdav up -d --pull always
         env:
           WEBDAV_IMAGE: chonjay21/webdav:${{ inputs.webdav-version }}
 
