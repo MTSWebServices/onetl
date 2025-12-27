@@ -47,17 +47,28 @@ jobs:
         if: inputs.with-cache
         with:
           path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
+          key: ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
           restore-keys: |
-            ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-local-fs-
+            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-tests-local-fs-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
+            ${{ runner.os }}-ivy-spark${{ inputs.spark-version }}-pydantic${{ inputs.pydantic-version }}-tests-local-fs-
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          save-cache: "false"
-          cache-suffix: test-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}
+          enable-cache: "false"
+
+      # astral-sh/setup-uv cannot restore multiple keys
+      - name: Cache uv
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-
 
       - name: Install dependencies
         run: |
@@ -76,7 +87,7 @@ jobs:
       - name: Upload coverage results
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-local-fs-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-local-fs-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

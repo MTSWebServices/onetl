@@ -45,8 +45,18 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          save-cache: "false"
-          cache-suffix: tests-pydantic-${{ inputs.pydantic-version }}
+          enable-cache: "false"
+
+      # astral-sh/setup-uv cannot restore multiple keys
+      - name: Cache uv
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-${{ hashFiles('uv.lock') }}
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-
 
       - name: Install dependencies
         run: |

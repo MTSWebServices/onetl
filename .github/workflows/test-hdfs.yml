@@ -63,7 +63,19 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           activate-environment: "true"
-          cache-suffix: tests-hdfs-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}
+          enable-cache: "false"
+
+      # astral-sh/setup-uv cannot restore multiple keys
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-
+            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-
 
       - name: Install dependencies
         run: |
@@ -93,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: container-logs-hdfs-${{ inputs.hadoop-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-hdfs-${{ inputs.hadoop-version }}-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
           path: logs/*
 
       - name: Shutdown HDFS
@@ -104,7 +116,7 @@ jobs:
       - name: Upload coverage results
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-hdfs-${{ inputs.hadoop-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-hdfs-${{ inputs.hadoop-version }}-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true
