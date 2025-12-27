@@ -66,7 +66,8 @@ class FileSet(OrderedSet[T], Generic[T]):
         """
 
         if not self:
-            raise EmptyFilesError("There are no files in the set")
+            msg = "There are no files in the set"
+            raise EmptyFilesError(msg)
 
     def raise_if_contains_zero_size(self) -> None:
         """
@@ -145,7 +146,7 @@ class FileSet(OrderedSet[T], Generic[T]):
         return f"{file_number_str} (size='{naturalsize(self.total_size)}')"
 
     @property
-    def details(self) -> str:  # noqa: WPS473
+    def details(self) -> str:
         """
         Return detailed information about files in the set
 

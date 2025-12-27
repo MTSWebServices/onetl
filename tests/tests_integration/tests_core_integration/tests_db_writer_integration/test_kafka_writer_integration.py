@@ -111,7 +111,7 @@ def test_kafka_writer_no_value_column_error(spark, kafka_processing, kafka_spark
 
 
 @pytest.mark.parametrize(
-    "column, value",
+    ("column", "value"),
     [
         ("offset", 0),
         ("timestamp", 10000),

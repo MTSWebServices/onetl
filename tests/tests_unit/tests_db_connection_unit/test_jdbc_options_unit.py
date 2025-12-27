@@ -35,7 +35,7 @@ def test_jdbc_options_default():
 
 
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("table", "mytable"),
         ("dbtable", "mytable"),
@@ -44,7 +44,7 @@ def test_jdbc_options_default():
     ],
 )
 @pytest.mark.parametrize(
-    "options_class, read_write_restriction",
+    ("options_class", "read_write_restriction"),
     [
         (Postgres.FetchOptions, False),
         (Postgres.ExecuteOptions, False),
@@ -80,7 +80,7 @@ def test_jdbc_read_write_options_populated_by_connection_class(arg, value, optio
 
 
 @pytest.mark.parametrize(
-    "options_class, options_class_name",
+    ("options_class", "options_class_name"),
     [
         (Postgres.ReadOptions, "PostgresReadOptions"),
         (Clickhouse.ReadOptions, "ClickhouseReadOptions"),
@@ -90,7 +90,7 @@ def test_jdbc_read_write_options_populated_by_connection_class(arg, value, optio
     ],
 )
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("column", "some"),
         ("mode", "append"),
@@ -110,7 +110,7 @@ def test_jdbc_write_options_cannot_be_used_in_read_options(arg, value, options_c
 
 
 @pytest.mark.parametrize(
-    "options_class, options_class_name",
+    ("options_class", "options_class_name"),
     [
         (Postgres.WriteOptions, "PostgresWriteOptions"),
         (Clickhouse.WriteOptions, "ClickhouseWriteOptions"),
@@ -120,7 +120,7 @@ def test_jdbc_write_options_cannot_be_used_in_read_options(arg, value, options_c
     ],
 )
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("column", "some"),
         ("partitionColumn", "part"),
@@ -148,7 +148,7 @@ def test_jdbc_read_options_cannot_be_used_in_write_options(options_class, option
 
 
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("mode", "append"),
         ("batchsize", 10),
@@ -250,7 +250,7 @@ def test_jdbc_write_options_case():
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, JDBCTableExistBehavior.APPEND),
         ({"if_exists": "append"}, JDBCTableExistBehavior.APPEND),
@@ -264,7 +264,7 @@ def test_jdbc_write_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, value, message",
+    ("options", "value", "message"),
     [
         (
             {"mode": "append"},
@@ -305,7 +305,7 @@ def test_jdbc_write_options_mode_deprecated(options, value, message):
 
 
 @pytest.mark.parametrize(
-    "options_class, options",
+    ("options_class", "options"),
     [
         (Postgres.WriteOptions, {"if_exists": "wrong_mode"}),
         (Clickhouse.WriteOptions, {"if_exists": "wrong_mode"}),
@@ -320,7 +320,7 @@ def test_jdbc_write_options_mode_wrong(options_class, options):
 
 
 @pytest.mark.parametrize(
-    "options, expected_message",
+    ("options", "expected_message"),
     [
         ({"numPartitions": 2}, "lowerBound and upperBound must be set if numPartitions > 1"),
         ({"numPartitions": 2, "lowerBound": 0}, "lowerBound and upperBound must be set if numPartitions > 1"),

@@ -46,8 +46,10 @@ class Parquet(ReadWriteFileFormat):
 
         The set of supported options depends on Spark version.
 
-        You may also set options mentioned `parquet-hadoop documentation <https://github.com/apache/parquet-java/blob/master/parquet-hadoop/README.md>`_.
-        They are prefixed with ``parquet.`` with dots in names, so instead of calling constructor ``Parquet(parquet.option=True)`` (invalid in Python)
+        You may also set options mentioned
+        `parquet-hadoop documentation <https://github.com/apache/parquet-java/blob/master/parquet-hadoop/README.md>`_.
+        They are prefixed with ``parquet.`` with dots in names,
+        so instead of calling constructor ``Parquet(parquet.option=True)`` (invalid in Python)
         you should call method ``Parquet.parse({"parquet.option": True})``.
 
     .. tabs::
@@ -115,7 +117,7 @@ class Parquet(ReadWriteFileFormat):
     def __repr__(self):
         options_dict = self.dict(by_alias=True, exclude_none=True)
         options_dict = dict(sorted(options_dict.items()))
-        if any("." in field for field in options_dict.keys()):
+        if any("." in field for field in options_dict):
             return f"{self.__class__.__name__}.parse({options_dict})"
 
         options_kwargs = ", ".join(f"{k}={v!r}" for k, v in options_dict.items())

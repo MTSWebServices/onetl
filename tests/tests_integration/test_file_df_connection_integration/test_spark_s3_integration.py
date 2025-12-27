@@ -42,9 +42,8 @@ def test_spark_s3_check_failed(spark, s3_server):
         spark=spark,
     )
 
-    with wrong_s3:
-        with pytest.raises(RuntimeError, match="Connection is unavailable"):
-            wrong_s3.check()
+    with wrong_s3, pytest.raises(RuntimeError, match="Connection is unavailable"):
+        wrong_s3.check()
 
 
 def test_spark_s3_check_hadoop_config_reset(spark, s3_server, caplog):

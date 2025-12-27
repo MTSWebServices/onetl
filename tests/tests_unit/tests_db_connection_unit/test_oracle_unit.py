@@ -23,7 +23,7 @@ def test_oracle_get_packages_no_input():
 
 
 @pytest.mark.parametrize(
-    "java_version, package_version, expected_packages",
+    ("java_version", "package_version", "expected_packages"),
     [
         (None, None, ["com.oracle.database.jdbc:ojdbc8:23.26.0.0.0"]),
         ("8", None, ["com.oracle.database.jdbc:ojdbc8:23.26.0.0.0"]),
@@ -42,7 +42,7 @@ def test_oracle_get_packages(java_version, package_version, expected_packages):
 
 
 @pytest.mark.parametrize(
-    "java_version, package_version",
+    ("java_version", "package_version"),
     [
         ("8", "23.3.0"),
         ("11", "23.3"),
@@ -52,7 +52,10 @@ def test_oracle_get_packages(java_version, package_version, expected_packages):
 def test_oracle_get_packages_invalid_version(java_version, package_version):
     with pytest.raises(
         ValueError,
-        match=rf"Version '{package_version}' does not have enough numeric components for requested format \(expected at least 4\).",
+        match=(
+            f"Version '{package_version}' does not have enough numeric components "
+            r"for requested format \(expected at least 4\)."
+        ),
     ):
         Oracle.get_packages(java_version=java_version, package_version=package_version)
 

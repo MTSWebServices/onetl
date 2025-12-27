@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -17,7 +17,13 @@ from tests.util.upload_files import upload_files
     ],
 )
 def webdav_server():
-    WebDAVServer = namedtuple("WebDAVServer", ["host", "port", "user", "password", "ssl_verify", "protocol"])
+    class WebDAVServer(NamedTuple):
+        host: str
+        port: str
+        user: str
+        password: str
+        ssl_verify: bool
+        protocol: str
 
     return WebDAVServer(
         host=os.getenv("ONETL_WEBDAV_HOST"),

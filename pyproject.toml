@@ -185,7 +185,6 @@ dev = [
     "prek~=0.2.25",
     "types-Deprecated~=1.3.1",
     "types-PyYAML~=6.0.12",
-    "wemake-python-styleguide~=1.5.0",
 ]
 docs = [
     # TODO: remove version limit after upgrading all Pydantic models to v2
@@ -231,6 +230,67 @@ docs = {requires-python = ">=3.12"}
 target-version = "py37"
 line-length = 120
 extend-exclude = ["docs/", "Makefile"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A002",
+    "ANN",
+    "ARG",
+    "COM812",
+    "D",
+    "FIX002",
+    "N805",
+    "N815",
+    "PLC0415",
+    "PYI051",
+    "TC001",
+    "TC002",
+    "TC003",
+    "TD",
+    "UP006",
+    "UP007",
+    "UP045",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"onetl/connection/file_connection/*" = ["ERA001"]
+
+"tests/*" = [
+    "S",
+    "A",
+    "PLC0415",
+    "TC",
+    "ICN001",
+    "PT",
+    "PLR2004",
+    "PLR0913",
+    "SLF001",
+    "FBT",
+    "SIM117",
+    "SIM108",
+    "PLR0915",
+    "DTZ",
+    "B017",
+    "PERF401",
+    "BLE001",
+    "PERF203",
+]
+"tests/tests_unit/test_hooks/*" = ["C901"]
+"tests/libs/*" = ["INP001"]
+
+[tool.mypy]
+python_version = "3.7"
+plugins = ["pydantic.mypy"]
+exclude = "^(?=.*file).*"
+strict_optional = true
+ignore_missing_imports = true
+follow_imports = "silent"
+show_error_codes = true
+
+[tool.codespell]
+ignore-words-list = ["INOUT", "inout", "thirdparty"]
+
 
 [tool.towncrier]
 name = "onETL"

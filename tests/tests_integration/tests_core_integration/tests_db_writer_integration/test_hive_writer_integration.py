@@ -71,7 +71,7 @@ def test_hive_writer_with_options(spark, processing, get_schema_table, options):
 
 
 @pytest.mark.parametrize(
-    "options, format",
+    ("options", "format"),
     [
         (Hive.WriteOptions(), "orc"),  # default
         (Hive.WriteOptions(format="orc"), "orc"),
@@ -99,7 +99,7 @@ def test_hive_writer_with_format(spark, processing, get_schema_table, options, f
 
 
 @pytest.mark.parametrize(
-    "bucket_number, bucket_columns",
+    ("bucket_number", "bucket_columns"),
     [
         (10, "id_int"),
         (5, ["id_int", "hwm_int"]),
@@ -261,7 +261,7 @@ def test_hive_writer_create_table_if_exists(spark, processing, get_schema_table,
 
 
 @pytest.mark.parametrize(
-    "options, option_kv",
+    ("options", "option_kv"),
     [
         (Hive.WriteOptions(partitionBy="str"), "{'partitionBy': 'str'}"),
         (Hive.WriteOptions(bucketBy=(10, "id_int")), "{'bucketBy': (10, 'id_int')}"),
@@ -334,7 +334,7 @@ def test_hive_writer_insert_into_with_options_ignored(spark, processing, get_sch
     ],
 )
 @pytest.mark.parametrize(
-    "original_options, new_options",
+    ("original_options", "new_options"),
     [
         pytest.param({}, {"partitionBy": "id_int"}, id="table_not_partitioned_dataframe_is"),
         pytest.param({"partitionBy": "text_string"}, {}, id="table_partitioned_dataframe_is_not"),
@@ -403,7 +403,7 @@ def test_hive_writer_insert_into_append(
     ],
 )
 @pytest.mark.parametrize(
-    "original_options, new_options",
+    ("original_options", "new_options"),
     [
         pytest.param({}, {"partitionBy": "id_int"}, id="table_not_partitioned_dataframe_is"),
         pytest.param({"partitionBy": "text_string"}, {}, id="table_partitioned_dataframe_is_not"),
@@ -471,7 +471,7 @@ def test_hive_writer_insert_into_ignore(
     ],
 )
 @pytest.mark.parametrize(
-    "original_options, new_options",
+    ("original_options", "new_options"),
     [
         pytest.param({}, {"partitionBy": "id_int"}, id="table_not_partitioned_dataframe_is"),
         pytest.param({"partitionBy": "text_string"}, {}, id="table_partitioned_dataframe_is_not"),
@@ -535,7 +535,7 @@ def test_hive_writer_insert_into_error(
     ],
 )
 @pytest.mark.parametrize(
-    "original_options, new_options",
+    ("original_options", "new_options"),
     [
         pytest.param({}, {"partitionBy": "id_int"}, id="table_not_partitioned_dataframe_is"),
         pytest.param({"partitionBy": "text_string"}, {}, id="table_partitioned_dataframe_is_not"),

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict
 
 
 class IcebergRESTCatalogAuth(ABC):
@@ -14,5 +13,5 @@ class IcebergRESTCatalogAuth(ABC):
     """
 
     @abstractmethod
-    def get_config(self) -> Dict[str, str]:
+    def get_config(self) -> dict[str, str]:
         """Return REST catalog auth configuration."""

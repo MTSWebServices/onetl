@@ -10,8 +10,8 @@ from onetl._metrics.recorder import SparkMetricsRecorder
 __all__ = [
     "SparkCommandMetrics",
     "SparkDriverMetrics",
-    "SparkMetricsRecorder",
     "SparkExecutorMetrics",
     "SparkInputMetrics",
+    "SparkMetricsRecorder",
     "SparkOutputMetrics",
 ]

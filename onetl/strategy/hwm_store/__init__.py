@@ -11,13 +11,11 @@ if TYPE_CHECKING:
     from etl_entities.hwm_store import (
         BaseHWMStore,
         HWMStoreClassRegistry,
-    )
-    from etl_entities.hwm_store import HWMStoreStackManager as HWMStoreManager
-    from etl_entities.hwm_store import (
         MemoryHWMStore,
         detect_hwm_store,
         register_hwm_store_class,
     )
+    from etl_entities.hwm_store import HWMStoreStackManager as HWMStoreManager
 
     from onetl.hwm.store import (
         SparkTypeToHWM,
@@ -28,15 +26,15 @@ if TYPE_CHECKING:
 
 __all__ = [
     "BaseHWMStore",
-    "SparkTypeToHWM",
-    "register_spark_type_to_hwm_type_mapping",
     "HWMStoreClassRegistry",
+    "HWMStoreManager",
+    "MemoryHWMStore",
+    "SparkTypeToHWM",
+    "YAMLHWMStore",
     "default_hwm_store_class",
     "detect_hwm_store",
     "register_hwm_store_class",
-    "HWMStoreManager",
-    "MemoryHWMStore",
-    "YAMLHWMStore",
+    "register_spark_type_to_hwm_type_mapping",
 ]
 
 

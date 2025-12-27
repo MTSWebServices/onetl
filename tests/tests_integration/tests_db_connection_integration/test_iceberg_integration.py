@@ -68,7 +68,7 @@ def test_iceberg_connection_execute_ddl(
     suffix,
 ):
     connection = iceberg_connection_fs_catalog_local_fs_warehouse
-    table_name, schema, table = get_schema_table
+    _table_name, schema, table = get_schema_table
     fields = {
         column_name: processing.get_column_type(column_name)
         for column_name in processing.column_names

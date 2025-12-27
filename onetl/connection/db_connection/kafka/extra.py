@@ -33,6 +33,6 @@ class KafkaExtra(GenericOptions):
     """
 
     class Config:
-        strip_prefixes = ["kafka."]
+        strip_prefixes = ("kafka.",)
         prohibited_options = PROHIBITED_OPTIONS
         extra = "allow"

@@ -23,7 +23,7 @@ def test_mongodb_get_packages_no_input():
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package_version, package",
+    ("spark_version", "scala_version", "package_version", "package"),
     [
         (None, "2.12", "10.5.0", "org.mongodb.spark:mongo-spark-connector_2.12:10.5.0"),
         (None, "2.13", "10.5.0", "org.mongodb.spark:mongo-spark-connector_2.13:10.5.0"),
@@ -55,7 +55,10 @@ def test_mongodb_get_packages(spark_version, scala_version, package_version, pac
 def test_mongodb_get_packages_invalid_package_version(package_version):
     with pytest.raises(
         ValueError,
-        match=rf"Version '{package_version}' does not have enough numeric components for requested format \(expected at least 2\).",
+        match=(
+            f"Version '{package_version}' does not have enough numeric components "
+            r"for requested format \(expected at least 2\)."
+        ),
     ):
         MongoDB.get_packages(scala_version="2.12", package_version=package_version)
 
@@ -117,7 +120,7 @@ def test_mongodb(spark_mock):
     ],
 )
 def test_mongodb_prohibited_options_error(prohibited_options):
-    with pytest.raises(ValueError):  # noqa: PT011
+    with pytest.raises(ValueError):
         MongoDB.PipelineOptions(**prohibited_options)
 
 
@@ -264,7 +267,7 @@ def test_mongodb_convert_dict_to_str(spark_mock):
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, MongoDBCollectionExistBehavior.APPEND),
         ({"if_exists": "append"}, MongoDBCollectionExistBehavior.APPEND),
@@ -278,7 +281,7 @@ def test_mongodb_write_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, value, message",
+    ("options", "value", "message"),
     [
         (
             {"mode": "append"},

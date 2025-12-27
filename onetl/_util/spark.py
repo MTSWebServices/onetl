@@ -23,7 +23,7 @@ SPARK_JOB_DESCRIPTION_PROPERTY = "spark.job.description"
 SPARK_JOB_GROUP_PROPERTY = "spark.jobGroup.id"
 
 
-def stringify(value: Any, quote: bool = False) -> Any:  # noqa: WPS212
+def stringify(value: Any, *, quote: bool = False) -> Any:
     """
     Convert values to strings.
 
@@ -57,10 +57,10 @@ def stringify(value: Any, quote: bool = False) -> Any:  # noqa: WPS212
     """
 
     if isinstance(value, dict):
-        return {stringify(k): stringify(v, quote) for k, v in value.items()}
+        return {stringify(k): stringify(v, quote=quote) for k, v in value.items()}
 
     if isinstance(value, list):
-        return [stringify(v, quote) for v in value]
+        return [stringify(v, quote=quote) for v in value]
 
     if value is None:
         return "null"
@@ -89,7 +89,7 @@ def inject_spark_param(conf: RuntimeConfig, name: str, value: Any):
     """
     original_value = conf.get(name, None)
 
-    try:  # noqa: WPS243
+    try:
         conf.unset(name)
         if value is not None:
             conf.set(name, value)
@@ -137,16 +137,15 @@ def estimate_dataframe_size(df: DataFrame) -> int:
     """
 
     try:
-        spark_context = df._sc
-        size_estimator = spark_context._jvm.org.apache.spark.util.SizeEstimator  # type: ignore[union-attr]
-        return size_estimator.estimate(df._jdf)
-    except Exception:
+        jvm = df._sc._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        return jvm.org.apache.spark.util.SizeEstimator.estimate(df._jdf)  # type: ignore[union-attr] # noqa: SLF001
+    except Exception:  # noqa: BLE001
         # SizeEstimator uses Java reflection which may behave differently in different Java versions,
         # and also may be prohibited.
         return 0
 
 
-def get_executor_total_cores(spark_session: SparkSession, include_driver: bool = False) -> tuple[float, dict]:
+def get_executor_total_cores(spark_session: SparkSession, *, include_driver: bool = False) -> tuple[float, dict]:
     """
     Calculate maximum number of cores which can be used by Spark on all executors.
 
@@ -165,8 +164,8 @@ def get_executor_total_cores(spark_session: SparkSession, include_driver: bool =
     expected_cores: float
     if master.startswith("local"):
         # no executors, only driver
-        scheduler = spark_session._jsc.sc().schedulerBackend()  # type: ignore
-        expected_cores = scheduler.totalCores()  # type: ignore
+        scheduler = spark_session._jsc.sc().schedulerBackend()  # type: ignore[attr-defined]  # noqa: SLF001
+        expected_cores = scheduler.totalCores()
         config["spark.master"] = f"local[{expected_cores}]"
     else:
         cores = int(conf.get("spark.executor.cores", "1"))
@@ -180,8 +179,8 @@ def get_executor_total_cores(spark_session: SparkSession, include_driver: bool =
             # If user haven't executed anything in current session, number of executors will be 0.
             #
             # Yes, scheduler can refuse to provide executors == maxExecutors:
-            # On Yarn - queue size limit is reached, or other application has higher priority, so executors were preempted.
-            # on K8S - namespace has not enough resources.
+            # On Yarn - queue size limit is reached, or other application has higher priority,
+            # so executors were preempted. on K8S - namespace has not enough resources.
             # So pessimistic approach is preferred.
 
             dynamic_executors = conf.get("spark.dynamicAllocation.maxExecutors", "infinity")

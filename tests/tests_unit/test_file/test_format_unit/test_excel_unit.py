@@ -13,12 +13,12 @@ pytestmark = [pytest.mark.excel]
 
 
 def test_excel_get_packages_package_version_not_supported():
-    with pytest.raises(ValueError, match="Package version should be at least 0.30, got 0.20.4"):
+    with pytest.raises(ValueError, match=r"Package version should be at least 0\.30, got 0\.20\.4"):
         Excel.get_packages(package_version="0.20.4", spark_version="3.2.4")
 
 
 @pytest.mark.parametrize(
-    "package_version, spark_version, scala_version, packages",
+    ("package_version", "spark_version", "scala_version", "packages"),
     [
         # Detect Scala version by Spark version
         ("0.31.2", "3.2.4", None, ["dev.mauch:spark-excel_2.12:3.2.4_0.31.2"]),
@@ -35,17 +35,12 @@ def test_excel_get_packages_package_version_not_supported():
         ("0.31.2", "3.5.6", "2.12.1", ["dev.mauch:spark-excel_2.12:3.5.6_0.31.2"]),
     ],
 )
-def test_excel_get_packages(caplog, spark_version, scala_version, package_version, packages):
-    with caplog.at_level(level=logging.WARNING):
-        result = Excel.get_packages(
-            spark_version=spark_version,
-            scala_version=scala_version,
-            package_version=package_version,
-        )
-
-        if package_version:
-            assert f"Passed custom package version '{package_version}', it is not guaranteed to be supported"
-
+def test_excel_get_packages(spark_version, scala_version, package_version, packages):
+    result = Excel.get_packages(
+        spark_version=spark_version,
+        scala_version=scala_version,
+        package_version=package_version,
+    )
     assert result == packages
 
 
@@ -60,7 +55,7 @@ def test_excel_options_default_override():
 
 
 @pytest.mark.parametrize(
-    "known_option, value, expected_value",
+    ("known_option", "value", "expected_value"),
     [
         ("dataAddress", "value", "value"),
         ("treatEmptyValuesAsNulls", True, True),

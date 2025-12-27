@@ -129,9 +129,10 @@ class SFTP(FileConnection, RenameDirMixin):
     def path_exists(self, path: os.PathLike | str) -> bool:
         try:
             self.client.stat(os.fspath(path))
-            return True
         except FileNotFoundError:
             return False
+        else:
+            return True
 
     def _get_client(self) -> SFTPClient:
         host_proxy, key_file = self._parse_user_ssh_config()
@@ -185,11 +186,11 @@ class SFTP(FileConnection, RenameDirMixin):
     def _create_dir(self, path: RemotePath) -> None:
         try:
             self.client.stat(os.fspath(path))
-        except Exception:
+        except OSError:
             for parent in reversed(path.parents):
-                try:  # noqa: WPS505
+                try:
                     self.client.stat(os.fspath(parent))
-                except Exception:
+                except OSError:  # noqa: PERF203
                     self.client.mkdir(os.fspath(parent))
 
             self.client.mkdir(os.fspath(path))

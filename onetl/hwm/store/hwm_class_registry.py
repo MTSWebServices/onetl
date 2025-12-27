@@ -34,7 +34,7 @@ class SparkTypeToHWM:
     @classmethod
     def get(cls, spark_type: DataType) -> type[HWM] | None:
         # avoid importing pyspark in the module
-        from pyspark.sql.types import (  # noqa: WPS235
+        from pyspark.sql.types import (
             ByteType,
             DateType,
             DecimalType,

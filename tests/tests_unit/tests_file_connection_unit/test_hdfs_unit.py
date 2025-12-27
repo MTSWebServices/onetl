@@ -149,7 +149,7 @@ def test_hdfs_connection_with_password_and_keytab(request, tmp_path_factory):
     request.addfinalizer(finalizer)
 
     with pytest.raises(ValueError, match="Please provide either `keytab` or `password` for kinit, not both"):
-        HDFS(host="hdfs2", webhdfs_port=50070, user="usr", password="pwd", keytab=keytab)  # noqa: F841
+        HDFS(host="hdfs2", webhdfs_port=50070, user="usr", password="pwd", keytab=keytab)
 
 
 def test_hdfs_get_known_clusters_hook(request):
@@ -213,9 +213,8 @@ def test_hdfs_normalize_namenode_host_hook(request):
     @hook
     def normalize_namenode_host(host: str, cluster: str | None) -> str:
         host = host.lower()
-        if cluster == "rnd-dwh":
-            if not host.endswith(".domain.com"):
-                host += ".domain.com"
+        if cluster == "rnd-dwh" and not host.endswith(".domain.com"):
+            host += ".domain.com"
         return host
 
     request.addfinalizer(normalize_namenode_host.disable)

@@ -8,11 +8,10 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 class LocalPath(Path):
     def __new__(cls, *args, **kwargs):
         if cls is LocalPath:
-            cls = LocalWindowsPath if os.name == "nt" else LocalPosixPath
+            cls = LocalWindowsPath if os.name == "nt" else LocalPosixPath  # noqa: PLW0642
         if sys.version_info < (3, 12):
             return cls._from_parts(args)
-        else:
-            return object.__new__(cls)  # noqa: WPS503
+        return object.__new__(cls)
 
 
 class LocalPosixPath(LocalPath, PurePosixPath):

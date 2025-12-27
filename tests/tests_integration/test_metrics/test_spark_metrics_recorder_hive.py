@@ -166,7 +166,8 @@ def test_spark_metrics_recorder_hive_write_executor_failed(spark, processing, ge
 
     @udf(returnType=IntegerType())
     def raise_exception():
-        raise ValueError("Force task failure")
+        msg = "Force task failure"
+        raise ValueError(msg)
 
     failing_df = df.select(raise_exception().alias("some"))
 

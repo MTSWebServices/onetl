@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from typing import Dict
+from __future__ import annotations
 
 try:
     from pydantic.v1 import SecretStr
@@ -39,7 +39,7 @@ class IcebergRESTCatalogBearerAuth(IcebergRESTCatalogAuth, FrozenModel):
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Properties.java#L24-L25
     access_token: SecretStr
 
-    def get_config(self) -> Dict[str, str]:
+    def get_config(self) -> dict[str, str]:
         return {
             "rest.auth.type": "oauth2",
             "token": self.access_token.get_secret_value(),

@@ -21,5 +21,6 @@ class SupportsRenameDir(Protocol):
         self,
         source_dir_path: str | os.PathLike,
         target_dir_path: str | os.PathLike,
+        *,
         replace: bool = False,
     ) -> PathWithStatsProtocol: ...

@@ -19,7 +19,7 @@ def test_mssql_package():
 
 
 @pytest.mark.parametrize(
-    "java_version, package_version, expected_packages",
+    ("java_version", "package_version", "expected_packages"),
     [
         (None, None, ["com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre8"]),
         ("8", None, ["com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre8"]),
@@ -48,7 +48,10 @@ def test_mssql_get_packages(java_version, package_version, expected_packages):
 def test_mssql_get_packages_invalid_version(package_version):
     with pytest.raises(
         ValueError,
-        match=rf"Version '{package_version}' does not have enough numeric components for requested format \(expected at least 3\).",
+        match=(
+            f"Version '{package_version}' does not have enough numeric components "
+            r"for requested format \(expected at least 3\)."
+        ),
     ):
         MSSQL.get_packages(package_version=package_version)
 

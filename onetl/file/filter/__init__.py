@@ -14,6 +14,6 @@ __all__ = [
     "FileModifiedTime",
     "FileSizeRange",
     "Glob",
-    "match_all_filters",
     "Regexp",
+    "match_all_filters",
 ]

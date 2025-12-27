@@ -64,13 +64,13 @@ class KafkaScramAuth(KafkaAuth, GenericOptions):
     digest: Literal["SHA-256", "SHA-512"]
 
     class Config:
-        strip_prefixes = ["kafka."]
+        strip_prefixes = ("kafka.",)
         # https://kafka.apache.org/documentation/#producerconfigs_sasl.login.class
-        known_options = {"sasl.login.*"}
-        prohibited_options = {"sasl.mechanism", "sasl.jaas.config"}
+        known_options = frozenset(("sasl.login.*",))
+        prohibited_options = frozenset(("sasl.mechanism", "sasl.jaas.config"))
         extra = "allow"
 
-    def get_jaas_conf(self) -> str:  # noqa: WPS473
+    def get_jaas_conf(self) -> str:
         return (
             "org.apache.kafka.common.security.scram.ScramLoginModule required "
             f'username="{self.user}" '

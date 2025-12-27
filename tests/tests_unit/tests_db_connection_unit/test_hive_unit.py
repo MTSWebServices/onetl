@@ -121,7 +121,7 @@ def test_hive_write_options_sort_by_without_bucket_by(sort_by):
 
 
 @pytest.mark.parametrize(
-    "mode, recommended",
+    ("mode", "recommended"),
     [
         ("dynamic", "replace_overlapping_partitions"),
         ("static", "replace_entire_table"),
@@ -151,7 +151,7 @@ def test_hive_write_options_unsupported_insert_into(insert_into):
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, HiveTableExistBehavior.APPEND),
         ({"if_exists": "append"}, HiveTableExistBehavior.APPEND),
@@ -166,7 +166,7 @@ def test_hive_write_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, value, message",
+    ("options", "value", "message"),
     [
         (
             {"mode": "append"},

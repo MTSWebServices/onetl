@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 import logging
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
-from onetl.strategy.base_strategy import BaseStrategy
 from onetl.strategy.snapshot_strategy import SnapshotStrategy
+
+if TYPE_CHECKING:
+    from onetl.strategy.base_strategy import BaseStrategy
 
 log = logging.getLogger(__name__)
 
 
 class StrategyManager:
-    default_strategy: ClassVar[type] = SnapshotStrategy
+    default_strategy: ClassVar[type[BaseStrategy]] = SnapshotStrategy
 
     _stack: ClassVar[list[BaseStrategy]] = []
 

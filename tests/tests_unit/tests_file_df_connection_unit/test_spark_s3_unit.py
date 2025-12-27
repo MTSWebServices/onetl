@@ -8,7 +8,7 @@ pytestmark = [pytest.mark.s3, pytest.mark.file_df_connection, pytest.mark.connec
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package",
+    ("spark_version", "scala_version", "package"),
     [
         ("3.5.7", None, "org.apache.spark:spark-hadoop-cloud_2.12:3.5.7"),
         ("3.5.7", "2.12", "org.apache.spark:spark-hadoop-cloud_2.12:3.5.7"),
@@ -161,7 +161,7 @@ def test_spark_s3_without_path_style_access(spark_mock_hadoop_3):
 
 
 @pytest.mark.parametrize(
-    "name, value",
+    ("name", "value"),
     [
         ("attempts.maximum", 1),
         ("connection.establish.timeout", 300000),
@@ -180,7 +180,7 @@ def test_spark_s3_extra_allowed_options(name, value, prefix):
 
 
 @pytest.mark.parametrize(
-    "name, value",
+    ("name", "value"),
     [
         ("impl", "org.apache.hadoop.fs.s3a.S3AFileSystem"),
         ("endpoint", "http://localhost:9010"),

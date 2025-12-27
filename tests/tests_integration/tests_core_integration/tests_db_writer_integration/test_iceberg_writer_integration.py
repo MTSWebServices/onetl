@@ -41,7 +41,7 @@ def test_iceberg_writer_with_custom_location(
     connection = iceberg_connection_rest_catalog_s3_warehouse
     df = processing.create_spark_df(spark)
     table = f"{connection.catalog_name}.{get_schema_table.full_name}"
-    location = "s3a://" + os.path.join(
+    location = "s3a://" + os.path.join(  # noqa: PTH118
         connection.warehouse.bucket,
         connection.warehouse.path.as_posix().lstrip("/"),
         get_schema_table.schema,

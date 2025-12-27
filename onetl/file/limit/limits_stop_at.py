@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
-from onetl.base import BaseFileLimit, PathProtocol
+if TYPE_CHECKING:
+    from onetl.base import BaseFileLimit, PathProtocol
 
 log = logging.getLogger(__name__)
 
@@ -43,10 +44,7 @@ def limits_stop_at(path: PathProtocol, limits: Iterable[BaseFileLimit]) -> bool:
     >>> limits_stop_at(LocalPath("/path/to/file3.csv"), limits)
     True
     """
-    reached = []
-    for limit in limits:
-        if limit.stops_at(path):
-            reached.append(limit)
+    reached = [limit for limit in limits if limit.stops_at(path)]
 
     if reached:
         log.debug("|FileLimit| Limits %r are reached", reached)

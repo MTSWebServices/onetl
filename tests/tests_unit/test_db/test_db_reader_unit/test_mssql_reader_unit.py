@@ -39,7 +39,7 @@ def test_mssql_reader_snapshot_error_pass_df_schema(spark_mock):
 def test_mssql_reader_wrong_table_name(spark_mock):
     mssql = MSSQL(host="some_host", user="user", database="database", password="passwd", spark=spark_mock)
 
-    with pytest.raises(ValueError, match="Name should be passed in `schema.name` format"):
+    with pytest.raises(ValueError, match=r"Name should be passed in `schema\.name` format"):
         DBReader(
             connection=mssql,
             source="table",  # Required format: source="schema.table"

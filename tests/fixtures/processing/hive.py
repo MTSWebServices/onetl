@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from collections import defaultdict
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pandas
 from pytest import FixtureRequest
@@ -17,7 +17,7 @@ logger = getLogger(__name__)
 
 
 class HiveProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "id_int": "int",
         "text_string": "string",
         "hwm_int": "int",

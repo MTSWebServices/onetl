@@ -146,7 +146,9 @@ class MongoDB(DBConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. Allows specifying custom MongoDB Spark connector versions. |support_hooks|
+        Get package names to be downloaded by Spark. |support_hooks|
+
+        Allows specifying custom MongoDB Spark connector versions.
 
         .. versionadded:: 0.9.0
 
@@ -185,7 +187,8 @@ class MongoDB(DBConnection):
             spark_ver = Version(spark_version)
             scala_ver = get_default_scala_version(spark_ver)
         else:
-            raise ValueError("You should pass either `scala_version` or `spark_version`")
+            msg = "You should pass either `scala_version` or `spark_version`"
+            raise ValueError(msg)
 
         connector_ver = Version(package_version or default_package_version).min_digits(2)
         return [f"org.mongodb.spark:mongo-spark-connector_{scala_ver.format('{0}.{1}')}:{connector_ver}"]
@@ -261,7 +264,8 @@ class MongoDB(DBConnection):
             Schema describing the resulting DataFrame.
 
         options : PipelineOptions | dict, optional
-            Additional pipeline options, see :obj:`MongoDB.PipelineOptions <onetl.connection.db_connection.mongodb.options.MongoDBPipelineOptions>`.
+            Additional pipeline options,
+            see :obj:`MongoDB.PipelineOptions <onetl.connection.db_connection.mongodb.options.MongoDBPipelineOptions>`.
 
         Examples
         --------
@@ -371,7 +375,7 @@ class MongoDB(DBConnection):
         self._log_parameters()
 
         try:
-            jvm = self.spark._jvm  # type: ignore
+            jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
             client = jvm.com.mongodb.client.MongoClients.create(self.connection_url)
             list(client.listDatabaseNames().iterator())
 
@@ -382,7 +386,8 @@ class MongoDB(DBConnection):
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
@@ -440,7 +445,7 @@ class MongoDB(DBConnection):
         return min_value, max_value
 
     @slot
-    def read_source_as_df(
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,
@@ -501,8 +506,9 @@ class MongoDB(DBConnection):
         if self._collection_exists(target):
             # MongoDB connector does not support mode=ignore and mode=error
             if write_options.if_exists == MongoDBCollectionExistBehavior.ERROR:
-                raise ValueError("Operation stopped due to MongoDB.WriteOptions(if_exists='error')")
-            elif write_options.if_exists == MongoDBCollectionExistBehavior.IGNORE:
+                msg = "Operation stopped due to MongoDB.WriteOptions(if_exists='error')"
+                raise ValueError(msg)
+            if write_options.if_exists == MongoDBCollectionExistBehavior.IGNORE:
                 log.info(
                     "|%s| Skip writing to existing collection because of MongoDB.WriteOptions(if_exists='ignore')",
                     self.__class__.__name__,
@@ -559,16 +565,16 @@ class MongoDB(DBConnection):
         if self._server_version:
             return self._server_version
 
-        jvm = self.spark._jvm  # type: ignore[attr-defined]
-        client = jvm.com.mongodb.client.MongoClients.create(self.connection_url)  # type: ignore
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        client = jvm.com.mongodb.client.MongoClients.create(self.connection_url)  # type: ignore[union-attr]
         db = client.getDatabase(self.database)
-        command = jvm.org.bson.BsonDocument("buildinfo", jvm.org.bson.BsonString(""))  # type: ignore
+        command = jvm.org.bson.BsonDocument("buildinfo", jvm.org.bson.BsonString(""))  # type: ignore[union-attr]
         self._server_version = Version(db.runCommand(command).get("version"))
         return self._server_version
 
     def _collection_exists(self, source: str) -> bool:
-        jvm = self.spark._jvm  # type: ignore[attr-defined]
-        client = jvm.com.mongodb.client.MongoClients.create(self.connection_url)  # type: ignore
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
+        client = jvm.com.mongodb.client.MongoClients.create(self.connection_url)  # type: ignore[union-attr]
         collections = set(client.getDatabase(self.database).listCollectionNames().iterator())
         if source in collections:
             log.info("|%s| Collection %r exists", self.__class__.__name__, source)

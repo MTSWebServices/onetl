@@ -53,13 +53,14 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
                 fs.exists(path)
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
     def check_if_format_supported(
         self,
-        format: BaseReadableFileFormat | BaseWritableFileFormat,  # noqa: WPS125
+        format: BaseReadableFileFormat | BaseWritableFileFormat,
     ) -> None:
         format.check_if_supported(self.spark)
 
@@ -67,7 +68,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
     def read_files_as_df(
         self,
         paths: list[PurePathProtocol],
-        format: BaseReadableFileFormat,  # noqa: WPS125
+        format: BaseReadableFileFormat,
         root: PurePathProtocol | None = None,
         df_schema: StructType | None = None,
         options: FileDFReadOptions | None = None,
@@ -96,14 +97,14 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
             df = reader.load(urls)
 
         log.info("|%s| DataFrame successfully created", self.__class__.__name__)
-        return df  # type: ignore
+        return df
 
     @slot
     def write_df_as_files(
         self,
         df: DataFrame,
         path: PurePathProtocol,
-        format: BaseWritableFileFormat,  # noqa: WPS125
+        format: BaseWritableFileFormat,
         options: FileDFWriteOptions | None = None,
     ) -> None:
         log.info("|%s| Saving data to '%s' ...", self.__class__.__name__, path)
@@ -144,7 +145,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
         Return object of ``org.apache.hadoop.fs.Path`` class for :obj:`~_get_default_path`.
         """
         url = self._convert_to_url(self._get_default_path())
-        jvm = self.spark._jvm  # noqa: WPS437
+        jvm = self.spark._jvm  # noqa: SLF001
         return jvm.org.apache.hadoop.fs.Path(url)  # type: ignore[union-attr]
 
     def _get_spark_fs(self):
@@ -159,7 +160,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
     def _forward_refs(cls) -> dict[str, type]:
         try_import_pyspark()
 
-        from pyspark.sql import SparkSession  # noqa: WPS442
+        from pyspark.sql import SparkSession
 
         # avoid importing pyspark unless user called the constructor,
         # as we allow user to use `Connection.get_packages()` for creating Spark session
@@ -172,7 +173,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
         # https://stackoverflow.com/a/36044685
         msg = "Spark session is stopped. Please recreate Spark session."
         try:
-            if not spark._jsc.sc().isStopped():
+            if not spark._jsc.sc().isStopped():  # noqa: SLF001
                 return spark
         except Exception as e:
             # None has no attribute "something"

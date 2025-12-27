@@ -327,7 +327,9 @@ class JSON(ReadOnlyFileFormat):
 
     def parse_column(self, column: str | Column, schema: StructType | ArrayType | MapType) -> Column:
         """
-        Parses a JSON string column to a structured Spark SQL column using Spark's `from_json <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.from_json.html>`_ function, based on the provided schema.
+        Parses a JSON string column to a structured Spark SQL column using Spark's
+        `from_json <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.from_json.html>`_
+        function, based on the provided schema.
 
         .. versionadded:: 0.11.0
 
@@ -337,11 +339,13 @@ class JSON(ReadOnlyFileFormat):
             The name of the column or the column object containing JSON strings/bytes to parse.
 
         schema : StructType | ArrayType | MapType
-            The schema to apply when parsing the JSON data. This defines the structure of the output DataFrame column.
+            The schema to apply when parsing the JSON data.
+            This defines the structure of the output DataFrame column.
 
         Returns
         -------
-        Column with deserialized data, with the same structure as the provided schema. Column name is the same as input column.
+        Column with deserialized data, with the same structure as the provided schema.
+        Column name is the same as input column.
 
         Examples
         --------
@@ -387,14 +391,14 @@ class JSON(ReadOnlyFileFormat):
         |    |-- name: string (nullable = true)
         |    |-- age: integer (nullable = true)
         """
-        from pyspark.sql import Column, SparkSession  # noqa:  WPS442
+        from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col, from_json
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa:  WPS437
+        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
         self._check_unsupported_serialization_options()
 
         if isinstance(column, Column):
-            column_name, column = column._jc.toString(), column.cast("string")  # noqa:  WPS437
+            column_name, column = column._jc.toString(), column.cast("string")  # noqa: SLF001
         else:
             column_name, column = column, col(column).cast("string")
 
@@ -449,15 +453,15 @@ class JSON(ReadOnlyFileFormat):
         root
         |-- key: string (nullable = true)
         |-- value: string (nullable = true)
-        """
-        from pyspark.sql import Column, SparkSession  # noqa:  WPS442
+        """  # noqa: E501
+        from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col, to_json
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa:  WPS437
+        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
         self._check_unsupported_serialization_options()
 
         if isinstance(column, Column):
-            column_name = column._jc.toString()  # noqa:  WPS437
+            column_name = column._jc.toString()  # noqa: SLF001
         else:
             column_name, column = column, col(column)
 

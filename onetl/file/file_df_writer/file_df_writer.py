@@ -121,7 +121,8 @@ class FileDFWriter(FrozenModel):
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
 
         if df.isStreaming:
-            raise ValueError(f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames.")
+            msg = f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames."
+            raise ValueError(msg)
 
         if not self._connection_checked:
             self._log_parameters(df)
@@ -143,12 +144,12 @@ class FileDFWriter(FrozenModel):
                 if metrics.output.is_empty:
                     # SparkListener is not a reliable source of information, metrics may or may not be present.
                     # Because of this we also do not return these metrics as method result
-                    log.error(
+                    log.error(  # noqa: TRY400
                         "|%s| Error while writing dataframe.",
                         self.__class__.__name__,
                     )
                 else:
-                    log.error(
+                    log.error(  # noqa: TRY400
                         "|%s| Error while writing dataframe. Target MAY contain partially written data!",
                         self.__class__.__name__,
                     )
@@ -181,7 +182,7 @@ class FileDFWriter(FrozenModel):
         return target_path
 
     @validator("format")
-    def _validate_format(cls, format, values):  # noqa: WPS125
+    def _validate_format(cls, format, values):
         connection = values.get("connection")
         if isinstance(connection, BaseFileDFConnection):
             connection.check_if_format_supported(format)

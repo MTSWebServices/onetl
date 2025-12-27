@@ -98,7 +98,7 @@ def test_iceberg_reader_snapshot_with_columns_duplicated(
     )
 
     df2 = reader2.run()
-    assert df2.columns == df1.columns + ["id_int"]
+    assert df2.columns == [*df1.columns, "id_int"]
 
 
 def test_iceberg_reader_snapshot_with_columns_mixed_naming(

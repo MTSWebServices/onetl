@@ -15,7 +15,7 @@ from onetl.connection.db_connection.dialect_mixins import (
 )
 
 
-class JDBCDialect(  # noqa: WPS215
+class JDBCDialect(
     SupportNameWithSchemaOnly,
     SupportColumns,
     NotSupportDFSchema,

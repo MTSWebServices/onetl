@@ -19,7 +19,7 @@ def test_clickhouse_package():
 
 
 @pytest.mark.parametrize(
-    "package_version, apache_http_client_version, expected_packages",
+    ("package_version", "apache_http_client_version", "expected_packages"),
     [
         (
             None,
@@ -96,7 +96,7 @@ def test_clickhouse_get_packages(package_version, apache_http_client_version, ex
 
 
 @pytest.mark.parametrize(
-    "package_version, apache_http_client_version",
+    ("package_version", "apache_http_client_version"),
     [
         ("0.7", "5.4.2"),
         ("1", "5.4.0"),
@@ -106,7 +106,10 @@ def test_clickhouse_get_packages(package_version, apache_http_client_version, ex
 def test_clickhouse_get_packages_invalid_version(package_version, apache_http_client_version):
     with pytest.raises(
         ValueError,
-        match=rf"Version '{package_version}' does not have enough numeric components for requested format \(expected at least 3\).",
+        match=(
+            f"Version '{package_version}' does not have enough numeric components "
+            r"for requested format \(expected at least 3\)."
+        ),
     ):
         Clickhouse.get_packages(package_version=package_version, apache_http_client_version=apache_http_client_version)
 

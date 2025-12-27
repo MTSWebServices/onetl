@@ -21,7 +21,7 @@ def test_file_modified_time_invalid():
 
 # values always timezone-aware
 @pytest.mark.parametrize(
-    ["input", "expected"],
+    ("input", "expected"),
     [
         (
             datetime(2025, 1, 1),
@@ -76,7 +76,7 @@ def test_file_modified_time_repr():
 
 # only POSIX timestamps are compared, so all values are in UTC
 @pytest.mark.parametrize(
-    "matched, mtime",
+    ("matched", "mtime"),
     [
         (False, datetime(2025, 1, 1, 11, 22, 33, 456788, tzinfo=timezone.utc)),  # since-1ms
         (True, datetime(2025, 1, 1, 11, 22, 33, 456789, tzinfo=timezone.utc)),

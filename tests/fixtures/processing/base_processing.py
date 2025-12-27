@@ -6,7 +6,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from logging import getLogger
 from random import randint
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pandas
 
@@ -22,9 +22,9 @@ logger = getLogger(__name__)
 
 class BaseProcessing(ABC):
     _df_max_length: int = 100
-    _column_types_and_names_matching: dict[str, str] = {}
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {}
 
-    column_names: list[str] = ["id_int", "text_string", "hwm_int", "hwm_date", "hwm_datetime", "float_value"]
+    column_names: ClassVar[list[str]] = ["id_int", "text_string", "hwm_int", "hwm_date", "hwm_datetime", "float_value"]
 
     def create_schema_ddl(
         self,
@@ -140,10 +140,10 @@ class BaseProcessing(ABC):
                 elif "text" in column_name:
                     values[column].append(secrets.token_hex(16))
                 elif "datetime" in column_name:
-                    rand_second = randint(0, i * time_multiplier)  # noqa: S311
+                    rand_second = randint(0, i * time_multiplier)
                     values[column].append(self.current_datetime() + timedelta(seconds=rand_second))
                 elif "date" in column_name:
-                    rand_second = randint(0, i * time_multiplier)  # noqa: S311
+                    rand_second = randint(0, i * time_multiplier)
                     values[column].append(self.current_date() + timedelta(seconds=rand_second))
 
         return pandas.DataFrame(data=values)
@@ -175,7 +175,8 @@ class BaseProcessing(ABC):
 
         if other_frame is None:
             if schema is None or table is None:
-                raise TypeError("Cannot use assert_equal_df without schema and table")
+                msg = "Cannot use assert_equal_df without schema and table"
+                raise TypeError(msg)
             other_frame = self.get_expected_dataframe(schema=schema, table=table, order_by=order_by)
 
         left_df = self.fix_pandas_df(to_pandas(df))
@@ -194,7 +195,8 @@ class BaseProcessing(ABC):
 
         if other_frame is None:
             if schema is None or table is None:
-                raise TypeError("Cannot use assert_equal_df without schema and table")
+                msg = "Cannot use assert_equal_df without schema and table"
+                raise TypeError(msg)
             other_frame = self.get_expected_dataframe(schema=schema, table=table)
 
         small_df = self.fix_pandas_df(to_pandas(df))

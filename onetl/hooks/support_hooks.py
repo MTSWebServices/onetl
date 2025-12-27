@@ -213,7 +213,8 @@ def support_hooks(cls: Klass) -> Klass:
             setattr(cls, method_name, register_slot(cls, method_name))
 
     if not has_slots:
-        raise SyntaxError("@support_hooks can be used only with @slot decorator on some of class methods")
+        msg = "@support_hooks can be used only with @slot decorator on some of class methods"
+        raise SyntaxError(msg)
 
     cls.skip_hooks = partial(skip_hooks, cls)  # type: ignore[attr-defined]
     cls.suspend_hooks = partial(suspend_hooks, cls)  # type: ignore[attr-defined]

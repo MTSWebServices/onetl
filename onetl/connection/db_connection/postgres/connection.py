@@ -35,7 +35,7 @@ class PostgresExtra(GenericOptions):
 
     # avoid closing connections from server side
     # while connector is moving data to executors before insert
-    tcpKeepAlive: str = "true"  # noqa: N815
+    tcpKeepAlive: str = "true"
 
     class Config:
         extra = "allow"
@@ -202,13 +202,18 @@ class Postgres(JDBCConnection):
     def __str__(self):
         return f"{self.__class__.__name__}[{self.host}:{self.port}/{self.database}]"
 
-    def _get_jdbc_connection(self, options: JDBCFetchOptions | JDBCExecuteOptions, read_only: bool):
+    def _get_jdbc_connection(
+        self,
+        options: JDBCFetchOptions | JDBCExecuteOptions,
+        *,
+        read_only: bool,
+    ):
         if read_only:
             # To properly support pgbouncer, we have to create connection with readOnly option set.
             # See https://github.com/pgjdbc/pgjdbc/issues/848
             options = options.copy(update={"readOnly": True})
 
         connection_properties = self._options_to_connection_properties(options)
-        driver_manager = self.spark._jvm.java.sql.DriverManager  # type: ignore
+        driver_manager = self.spark._jvm.java.sql.DriverManager  # type: ignore[attr-defined, union-attr] # noqa: SLF001
         # avoid calling .setReadOnly(True) here
         return driver_manager.getConnection(self.jdbc_url, connection_properties)

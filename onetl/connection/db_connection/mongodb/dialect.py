@@ -14,7 +14,7 @@ from onetl.connection.db_connection.dialect_mixins import (
 )
 from onetl.hwm import Edge, Window
 
-_upper_level_operators = frozenset(  # noqa: WPS527
+_upper_level_operators = frozenset(
     [
         "$addFields",
         "$bucket",
@@ -58,7 +58,7 @@ _upper_level_operators = frozenset(  # noqa: WPS527
 )
 
 
-class MongoDBDialect(  # noqa: WPS215
+class MongoDBDialect(
     SupportNameAny,
     NotSupportColumns,
     RequiresDFSchema,
@@ -73,10 +73,11 @@ class MongoDBDialect(  # noqa: WPS215
             return None
 
         if not isinstance(where, dict):
-            raise ValueError(
+            msg = (
                 f"{self.connection.__class__.__name__} requires 'where' parameter type to be 'dict', "
-                f"got {where.__class__.__name__!r}",
+                f"got {where.__class__.__name__!r}"
             )
+            raise TypeError(msg)
 
         for key in where:
             self._validate_top_level_keys_in_where_parameter(key)
@@ -90,10 +91,11 @@ class MongoDBDialect(  # noqa: WPS215
             return None
 
         if not isinstance(hint, dict):
-            raise ValueError(
+            msg = (
                 f"{self.connection.__class__.__name__} requires 'hint' parameter type to be 'dict', "
-                f"got {hint.__class__.__name__!r}",
+                f"got {hint.__class__.__name__!r}"
             )
+            raise TypeError(msg)
         return hint
 
     def prepare_pipeline(
@@ -166,14 +168,20 @@ class MongoDBDialect(  # noqa: WPS215
         """
         if key.startswith("$"):
             if key == "$match":
-                raise ValueError(
+                msg = (
                     "'$match' operator not allowed at the top level of the 'where' parameter dictionary. "
                     "This error most likely occurred due to the fact that you used the MongoDB format for the "
                     "pipeline {'$match': {'column': ...}}. In the onETL paradigm, you do not need to specify the "
-                    "'$match' keyword, but write the filtering condition right away, like {'column': ...}",
+                    "'$match' keyword, but write the filtering condition right away, like {'column': ...}"
                 )
-            if key in _upper_level_operators:  # noqa: WPS220
-                raise ValueError(  # noqa: WPS220
+                raise ValueError(
+                    msg,
+                )
+            if key in _upper_level_operators:
+                msg = (
                     f"An invalid parameter {key!r} was specified in the 'where' "
-                    "field. You cannot use aggregations or 'groupBy' clauses in 'where'",
+                    "field. You cannot use aggregations or 'groupBy' clauses in 'where'"
+                )
+                raise ValueError(
+                    msg,
                 )

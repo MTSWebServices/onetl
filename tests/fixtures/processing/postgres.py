@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from logging import getLogger
+from typing import ClassVar
 from urllib.parse import quote
 
 import pandas
@@ -15,7 +16,7 @@ logger = getLogger(__name__)
 
 
 class PostgresProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "id_int": "serial primary key",
         "text_string": "text",
         "hwm_int": "bigint",

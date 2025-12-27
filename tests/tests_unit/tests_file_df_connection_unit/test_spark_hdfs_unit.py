@@ -110,9 +110,8 @@ def test_spark_hdfs_normalize_namenode_host_hook(request, spark_mock):
     @hook
     def normalize_namenode_host(host: str, cluster: str) -> str:
         host = host.lower()
-        if cluster == "rnd-dwh":
-            if not host.endswith(".domain.com"):
-                host += ".domain.com"
+        if cluster == "rnd-dwh" and not host.endswith(".domain.com"):
+            host += ".domain.com"
         return host
 
     request.addfinalizer(normalize_namenode_host.disable)

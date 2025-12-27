@@ -206,7 +206,8 @@ def test_spark_metrics_recorder_postgres_write_executor_failed(spark, processing
 
     @udf(returnType=IntegerType())
     def raise_exception():
-        raise ValueError("Force task failure")
+        msg = "Force task failure"
+        raise ValueError(msg)
 
     df = processing.create_spark_df(spark).limit(0)
     failing_df = df.select(raise_exception().alias("some"))

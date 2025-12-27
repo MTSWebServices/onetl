@@ -38,7 +38,7 @@ def test_oracle_reader_error_df_schema(spark_mock):
 
 def test_oracle_reader_wrong_table_name(spark_mock):
     oracle = Oracle(host="some_host", user="user", sid="sid", password="passwd", spark=spark_mock)
-    with pytest.raises(ValueError, match="Name should be passed in `schema.name` format"):
+    with pytest.raises(ValueError, match=r"Name should be passed in `schema\.name` format"):
         DBReader(
             connection=oracle,
             source="table",  # Required format: source="schema.table"

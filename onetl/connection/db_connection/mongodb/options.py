@@ -80,8 +80,8 @@ class MongoDBCollectionExistBehavior(str, Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    @classmethod  # noqa: WPS120
-    def _missing_(cls, value: object):  # noqa: WPS120
+    @classmethod
+    def _missing_(cls, value: object):
         if str(value) == "overwrite":
             warnings.warn(
                 "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. "
@@ -90,12 +90,14 @@ class MongoDBCollectionExistBehavior(str, Enum):
                 stacklevel=4,
             )
             return cls.REPLACE_ENTIRE_COLLECTION
+        return None
 
 
 class MongoDBPipelineOptions(GenericOptions):
     """Aggregation pipeline options for MongoDB connector.
 
-    The only difference from :obj:`MongoDB.ReadOptions <MongoDBReadOptions>` that latter does not allow to pass the ``hint`` parameter.
+    The only difference from :obj:`MongoDB.ReadOptions <MongoDBReadOptions>`
+    that latter does not allow to pass the ``hint`` parameter.
 
     .. warning::
 

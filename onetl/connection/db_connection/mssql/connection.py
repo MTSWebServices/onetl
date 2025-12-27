@@ -162,8 +162,10 @@ class MSSQL(JDBCConnection):
                 user="user",
                 password="*****",
                 extra={
-                    "applicationIntent": "ReadOnly",  # driver will open read-only connection, to avoid writing to the database
-                    "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
+                    # driver will open read-only connection, to avoid writing to the database
+                    "applicationIntent": "ReadOnly",
+                    # add this to avoid SSL certificate issues
+                    "trustServerCertificate": "true",
                 },
                 spark=spark,
             ).check()
@@ -194,7 +196,9 @@ class MSSQL(JDBCConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. Allows specifying custom JDBC driver versions for MSSQL.  |support_hooks|
+        Get package names to be downloaded by Spark. |support_hooks|
+
+        Allows specifying custom JDBC driver versions for MSSQL.
 
         .. versionadded:: 0.9.0
 
@@ -220,10 +224,11 @@ class MSSQL(JDBCConnection):
         default_package_version = "13.2.1"
 
         java_ver = Version(java_version or default_java_version)
-        if java_ver.major < 8:
-            raise ValueError(f"Java version must be at least 8, got {java_ver}")
+        if java_ver.major < 8:  # noqa: PLR2004
+            msg = f"Java version must be at least 8, got {java_ver}"
+            raise ValueError(msg)
 
-        jre_ver = "8" if java_ver.major < 11 else "11"
+        jre_ver = "8" if java_ver.major < 11 else "11"  # noqa: PLR2004
         full_package_version = Version(package_version or default_package_version).min_digits(3)
 
         # check if a JRE suffix is already included
@@ -278,7 +283,12 @@ class MSSQL(JDBCConnection):
         port = self.port or 1433
         return f"{self.__class__.__name__}[{self.host}:{port}/{self.database}]"
 
-    def _get_jdbc_connection(self, options: JDBCFetchOptions | JDBCExecuteOptions, read_only: bool):
+    def _get_jdbc_connection(
+        self,
+        options: JDBCFetchOptions | JDBCExecuteOptions,
+        *,
+        read_only: bool,
+    ):
         if read_only:
             # connection.setReadOnly() is no-op in MSSQL:
             # https://learn.microsoft.com/en-us/sql/connect/jdbc/reference/setreadonly-method-sqlserverconnection?view=sql-server-ver16
@@ -286,4 +296,4 @@ class MSSQL(JDBCConnection):
             # https://github.com/microsoft/mssql-jdbc/issues/484
             options = options.copy(update={"ApplicationIntent": "ReadOnly"})
 
-        return super()._get_jdbc_connection(options, read_only)
+        return super()._get_jdbc_connection(options, read_only=read_only)

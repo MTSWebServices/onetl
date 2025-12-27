@@ -82,7 +82,8 @@ class SparkLocalFS(SparkFileDFConnection):
     def _validate_spark(cls, spark):
         master = spark.conf.get("spark.master")
         if not master.startswith("local"):
-            raise ValueError(f"Currently supports only spark.master='local', got {master!r}")
+            msg = f"Currently supports only spark.master='local', got {master!r}"
+            raise ValueError(msg)
         return spark
 
     def _convert_to_url(self, path: PurePathProtocol) -> str:
@@ -92,4 +93,4 @@ class SparkLocalFS(SparkFileDFConnection):
         return "file:///" + path.as_posix().lstrip("/")
 
     def _get_default_path(self):
-        return LocalPath(os.getcwd())
+        return LocalPath.cwd()

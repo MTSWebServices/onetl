@@ -243,7 +243,8 @@ class BaseFileConnection(BaseConnection):
 
         .. warning::
 
-            Supports only one file removal per call. Directory removal is **NOT** supported, use :obj:`~remove_dir` instead.
+            Supports only one file removal per call.
+            Directory removal is **NOT** supported, use :obj:`~remove_dir` instead.
 
         .. versionadded:: 0.8.0
 
@@ -273,7 +274,7 @@ class BaseFileConnection(BaseConnection):
         """
 
     @abstractmethod
-    def remove_dir(self, path: os.PathLike | str, recursive: bool = False) -> bool:
+    def remove_dir(self, path: os.PathLike | str, *, recursive: bool = False) -> bool:
         """
         Remove directory or directory tree. |support_hooks|
 
@@ -325,6 +326,7 @@ class BaseFileConnection(BaseConnection):
         self,
         source_file_path: os.PathLike | str,
         target_file_path: os.PathLike | str,
+        *,
         replace: bool = False,
     ) -> PathWithStatsProtocol:
         """
@@ -427,6 +429,7 @@ class BaseFileConnection(BaseConnection):
     def walk(
         self,
         root: os.PathLike | str,
+        *,
         topdown: bool = True,
         filters: Iterable[BaseFileFilter] | None = None,
         limits: Iterable[BaseFileLimit] | None = None,
@@ -490,6 +493,7 @@ class BaseFileConnection(BaseConnection):
         self,
         remote_file_path: os.PathLike | str,
         local_file_path: os.PathLike | str,
+        *,
         replace: bool = True,
     ) -> PathWithStatsProtocol:
         """
@@ -497,7 +501,8 @@ class BaseFileConnection(BaseConnection):
 
         .. warning::
 
-            Supports only one file download per call. Directory download is **NOT** supported, use :ref:`file-downloader` instead.
+            Supports only one file download per call.
+            Directory download is **NOT** supported, use :ref:`file-downloader` instead.
 
         .. versionadded:: 0.8.0
 
@@ -552,6 +557,7 @@ class BaseFileConnection(BaseConnection):
         self,
         local_file_path: os.PathLike | str,
         remote_file_path: os.PathLike | str,
+        *,
         replace: bool = False,
     ) -> PathWithStatsProtocol:
         """
@@ -559,7 +565,8 @@ class BaseFileConnection(BaseConnection):
 
         .. warning::
 
-            Supports only one file upload per call. Directory upload is **NOT** supported, use :ref:`file-uploader` instead.
+            Supports only one file upload per call.
+            Directory upload is **NOT** supported, use :ref:`file-uploader` instead.
 
         .. versionadded:: 0.8.0
 

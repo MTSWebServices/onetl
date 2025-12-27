@@ -30,7 +30,7 @@ def expected_xml_attributes_df(file_df_dataframe):
 
 
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_compression", {"rowTag": "item"}),
         ("with_compression", {"rowTag": "item", "compression": "gzip"}),
@@ -82,7 +82,8 @@ def test_xml_reader_with_infer_schema(
 
     assert read_df.count()
     assert read_df.schema != df.schema
-    # "DataFrames have different column types: StructField('id', IntegerType(), True), StructField('id', LongType(), True), etc."
+    # "DataFrames have different column types:
+    # StructField('id', IntegerType(), True), StructField('id', LongType(), True), etc."
     assert set(read_df.columns) == set(expected_xml_attributes_df.columns)
     assert_equal_df(read_df, expected_xml_attributes_df, order_by="id")
 

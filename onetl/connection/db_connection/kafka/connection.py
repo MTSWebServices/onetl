@@ -202,8 +202,7 @@ class Kafka(DBConnection):
                 extra={"max.request.size": 1024 * 1024},  # <--
                 spark=spark,
             ).check()
-
-    """
+    """  # noqa: E501
 
     BasicAuth = KafkaBasicAuth
     KerberosAuth = KafkaKerberosAuth
@@ -239,11 +238,12 @@ class Kafka(DBConnection):
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
         return self
 
     @slot
-    def read_source_as_df(  # noqa:  WPS231
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,
@@ -252,14 +252,16 @@ class Kafka(DBConnection):
         df_schema: StructType | None = None,
         window: Window | None = None,
         limit: int | None = None,
-        options: KafkaReadOptions = KafkaReadOptions(),  # noqa: B008, WPS404
+        options: KafkaReadOptions | None = None,
     ) -> DataFrame:
         log.info("|%s| Reading data from topic %r", self.__class__.__name__, source)
         if source not in self._get_topics():
-            raise ValueError(f"Topic {source!r} doesn't exist")
+            msg = f"Topic {source!r} doesn't exist"
+            raise ValueError(msg)
 
         result_options = {f"kafka.{key}": value for key, value in self._get_connection_properties().items()}
-        result_options.update(options.dict(by_alias=True, exclude_none=True))
+        if options:
+            result_options.update(options.dict(by_alias=True, exclude_none=True))
         result_options["subscribe"] = source
 
         if window and window.expression == "offset":
@@ -293,7 +295,7 @@ class Kafka(DBConnection):
         self,
         df: DataFrame,
         target: str,
-        options: KafkaWriteOptions = KafkaWriteOptions(),  # noqa: B008, WPS404
+        options: KafkaWriteOptions | None = None,
     ) -> None:
         # Check that the DataFrame doesn't contain any columns not in the schema
         required_columns = {"value"}
@@ -302,15 +304,19 @@ class Kafka(DBConnection):
         df_columns = set(df.columns)
         if not df_columns.issubset(allowed_columns):
             invalid_columns = df_columns - allowed_columns
-            raise ValueError(
+            msg = (
                 f"Invalid column names: {sorted(invalid_columns)}. "
                 f"Expected columns: {sorted(required_columns)} (required),"
-                f" {sorted(optional_columns)} (optional)",
+                f" {sorted(optional_columns)} (optional)"
             )
+            raise ValueError(msg)
+
+        options = options or KafkaWriteOptions()
 
         # Check that the DataFrame doesn't contain a 'headers' column with includeHeaders=False
         if not options.include_headers and "headers" in df.columns:
-            raise ValueError("Cannot write 'headers' column with kafka.WriteOptions(include_headers=False)")
+            msg = "Cannot write 'headers' column with kafka.WriteOptions(include_headers=False)"
+            raise ValueError(msg)
 
         if "topic" in df.columns:
             log.warning("The 'topic' column in the DataFrame will be overridden with value %r", target)
@@ -324,7 +330,8 @@ class Kafka(DBConnection):
         # https://issues.apache.org/jira/browse/SPARK-44774
         mode = options.if_exists
         if mode == KafkaTopicExistBehaviorKafka.ERROR and target in self._get_topics():
-            raise TargetAlreadyExistsError(f"Topic {target} already exists")
+            msg = f"Topic {target} already exists"
+            raise TargetAlreadyExistsError(msg)
 
         log.info("|%s| Saving data to a topic %r", self.__class__.__name__, target)
         df.write.format("kafka").mode(mode).options(**write_options).save()
@@ -335,9 +342,9 @@ class Kafka(DBConnection):
         self,
         source: str,
         columns: list[str] | None = None,
-        options: KafkaReadOptions = KafkaReadOptions(),  # noqa:  WPS404
+        options: KafkaReadOptions | None = None,
     ) -> StructType:
-        from pyspark.sql.types import (  # noqa:  WPS442
+        from pyspark.sql.types import (
             ArrayType,
             BinaryType,
             IntegerType,
@@ -510,7 +517,7 @@ class Kafka(DBConnection):
             # https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#partitionsFor-java.lang.String-
             partition_infos = consumer.partitionsFor(source)
 
-            jvm = self.spark._jvm  # type: ignore[attr-defined]
+            jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
             topic_partitions = [
                 jvm.org.apache.kafka.common.TopicPartition(source, p.partition())  # type: ignore[union-attr]
                 for p in partition_infos
@@ -569,7 +576,8 @@ class Kafka(DBConnection):
                 log.debug("|%s| Set cluster %r addresses: %r", cls.__name__, cluster, cluster_addresses)
                 values["addresses"] = cluster_addresses
             else:
-                raise ValueError("Passed empty parameter 'addresses'")
+                msg = "Passed empty parameter 'addresses'"
+                raise ValueError(msg)
         return values
 
     @validator("cluster")
@@ -582,9 +590,8 @@ class Kafka(DBConnection):
         log.debug("|%s| Checking if cluster %r is a known cluster...", cls.__name__, validated_cluster)
         known_clusters = cls.Slots.get_known_clusters()
         if known_clusters and validated_cluster not in known_clusters:
-            raise ValueError(
-                f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}",
-            )
+            msg = f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}"
+            raise ValueError(msg)
 
         return validated_cluster
 
@@ -601,7 +608,8 @@ class Kafka(DBConnection):
         cluster_addresses = set(cls.Slots.get_cluster_addresses(cluster) or [])
         unknown_addresses = set(validated_addresses) - cluster_addresses
         if cluster_addresses and unknown_addresses:
-            raise ValueError(f"Cluster {cluster!r} does not contain addresses {unknown_addresses!r}")
+            msg = f"Cluster {cluster!r} does not contain addresses {unknown_addresses!r}"
+            raise ValueError(msg)
 
         return validated_addresses
 
@@ -641,12 +649,12 @@ class Kafka(DBConnection):
                 "value.deserializer": "org.apache.kafka.common.serialization.ByteArrayDeserializer",
             },
         )
-        jvm = self.spark._jvm
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
         consumer_class = jvm.org.apache.kafka.clients.consumer.KafkaConsumer
         return consumer_class(connection_properties)
 
     def _get_topics(self, timeout: int = 10) -> set[str]:
-        jvm = self.spark._jvm  # type: ignore[attr-defined]
+        jvm = self.spark._jvm  # type: ignore[attr-defined]  # noqa: SLF001
         # Maybe we should not pass explicit timeout at all,
         # and instead use default.api.timeout.ms which is configurable via self.extra.
         # Think about this next time if someone see issues in real use

@@ -130,7 +130,8 @@ def test_hooks_slot_resume_and_stop(caplog):
     def callback3(self, arg: int):
         # stop & resume does not change hook state
         # they also have higher priority
-        raise AssertionError("Never called")
+        msg = "Never called"
+        raise AssertionError(msg)
 
     with caplog.at_level(logging.INFO):
         Calculator.plus.suspend_hooks()

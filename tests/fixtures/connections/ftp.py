@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -14,7 +14,11 @@ from tests.util.upload_files import upload_files
     ],
 )
 def ftp_server():
-    FTPServer = namedtuple("FTPServer", ["host", "port", "user", "password"])
+    class FTPServer(NamedTuple):
+        host: str
+        port: str
+        user: str
+        password: str
 
     return FTPServer(
         host=os.getenv("ONETL_FTP_HOST"),

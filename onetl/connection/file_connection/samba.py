@@ -7,7 +7,7 @@ import textwrap
 from io import BytesIO
 from logging import getLogger
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 from etl_entities.instance import Host
 from typing_extensions import Literal
@@ -113,10 +113,10 @@ class Samba(FileConnection):
 
     host: Host
     share: str
-    protocol: Union[Literal["SMB"], Literal["NetBIOS"]] = "SMB"
+    protocol: Literal["SMB", "NetBIOS"] = "SMB"
     port: Optional[int] = None
     domain: str = ""
-    auth_type: Union[Literal["NTLMv1"], Literal["NTLMv2"]] = "NTLMv2"
+    auth_type: Literal["NTLMv1", "NTLMv2"] = "NTLMv2"
     user: Optional[str] = None
     password: Optional[SecretStr] = None
 
@@ -142,10 +142,12 @@ class Samba(FileConnection):
                     self.share,
                     available_shares,
                 )
-                raise ConnectionError("Failed to connect to the Samba server.")
+                msg = "Failed to connect to the Samba server."
+                raise ConnectionError(msg)  # noqa: TRY301
         except Exception as exc:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from exc
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from exc
 
         return self
 
@@ -153,9 +155,10 @@ class Samba(FileConnection):
     def path_exists(self, path: os.PathLike | str) -> bool:
         try:
             self.client.getAttributes(self.share, os.fspath(path))
-            return True
         except OperationFailure:
             return False
+        else:
+            return True
 
     def _scan_entries(self, path: RemotePath) -> list:
         if self._is_dir(path):
@@ -228,7 +231,7 @@ class Samba(FileConnection):
         client.close()
 
     def _download_file(self, remote_file_path: RemotePath, local_file_path: LocalPath) -> None:
-        with open(local_file_path, "wb") as local_file:
+        with local_file_path.open("wb") as local_file:
             self.client.retrieveFile(
                 self.share,
                 os.fspath(remote_file_path),
@@ -241,13 +244,13 @@ class Samba(FileConnection):
             # create dirs sequentially as .createDirectory(...) cannot create nested dirs
             try:
                 self.client.getAttributes(self.share, os.fspath(parent))
-            except OperationFailure:
+            except OperationFailure:  # noqa: PERF203
                 self.client.createDirectory(self.share, os.fspath(parent))
 
         self.client.createDirectory(self.share, os.fspath(path))
 
     def _upload_file(self, local_file_path: LocalPath, remote_file_path: RemotePath) -> None:
-        with open(local_file_path, "rb") as file_obj:
+        with local_file_path.open("rb") as file_obj:
             self.client.storeFile(
                 self.share,
                 os.fspath(remote_file_path),

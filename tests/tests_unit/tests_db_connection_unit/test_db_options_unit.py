@@ -45,7 +45,7 @@ pytestmark = [pytest.mark.postgres]
     ],
 )
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("url", "jdbc:postgresql://localhost:5432/postgres"),
         ("driver", "org.postgresql.Driver"),
@@ -59,7 +59,7 @@ def test_db_options_connection_parameters_cannot_be_passed(options_class, arg, v
 
 
 @pytest.mark.parametrize(
-    "options_class, options_class_name, known_options",
+    ("options_class", "options_class_name", "known_options"),
     [
         (Hive.WriteOptions, "HiveWriteOptions", {"if_exists": "replace_overlapping_partitions"}),
         (Hive.Options, "HiveLegacyOptions", {"if_exists": "replace_overlapping_partitions"}),
@@ -95,7 +95,7 @@ def test_db_options_warn_for_unknown(options_class, options_class_name, known_op
 
 
 @pytest.mark.parametrize(
-    "options_class,options",
+    ("options_class", "options"),
     [
         (Postgres.ReadOptions, Postgres.WriteOptions()),
         (Postgres.WriteOptions, Postgres.ReadOptions()),
@@ -117,7 +117,7 @@ def test_db_options_parse_mismatch_class(options_class, options):
 
 
 @pytest.mark.parametrize(
-    "connection,options",
+    ("connection", "options"),
     [
         (
             Postgres,

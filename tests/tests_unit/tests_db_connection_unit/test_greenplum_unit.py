@@ -32,7 +32,7 @@ def test_greenplum_get_packages_spark_version_not_supported(spark_version):
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package",
+    ("spark_version", "scala_version", "package"),
     [
         # use Scala version directly
         (None, "2.12", "io.pivotal:greenplum-spark_2.12:2.2.0"),
@@ -49,7 +49,7 @@ def test_greenplum_get_packages(spark_version, scala_version, package):
 
 
 @pytest.mark.parametrize(
-    "package_version, scala_version, package",
+    ("package_version", "scala_version", "package"),
     [
         (None, "2.12", "io.pivotal:greenplum-spark_2.12:2.2.0"),
         ("2.3.0", "2.12", "io.pivotal:greenplum-spark_2.12:2.3.0"),
@@ -248,7 +248,7 @@ def test_greenplum_write_options_default():
 
 
 @pytest.mark.parametrize(
-    "klass, name",
+    ("klass", "name"),
     [
         (Greenplum.ReadOptions, "GreenplumReadOptions"),
         (Greenplum.WriteOptions, "GreenplumWriteOptions"),
@@ -280,7 +280,7 @@ def test_greenplum_read_write_options_populated_by_connection_class(options_clas
 
 
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("mode", "append"),
         ("truncate", "true"),
@@ -295,7 +295,7 @@ def test_greenplum_write_options_cannot_be_used_in_read_options(arg, value):
 
 
 @pytest.mark.parametrize(
-    "arg, value",
+    ("arg", "value"),
     [
         ("partitions", 10),
         ("numPartitions", 10),
@@ -310,7 +310,7 @@ def test_greenplum_read_options_cannot_be_used_in_write_options(arg, value):
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, GreenplumTableExistBehavior.APPEND),
         ({"if_exists": "append"}, GreenplumTableExistBehavior.APPEND),
@@ -324,7 +324,7 @@ def test_greenplum_write_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, value, message",
+    ("options", "value", "message"),
     [
         (
             {"mode": "append"},

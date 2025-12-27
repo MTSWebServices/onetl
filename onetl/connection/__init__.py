@@ -62,6 +62,32 @@ file_df_connections_modules = {
     "SparkS3": "spark_s3",
 }
 
+__all__ = [
+    "FTP",
+    "FTPS",
+    "HDFS",
+    "MSSQL",
+    "S3",
+    "SFTP",
+    "Clickhouse",
+    "DBConnection",
+    "FileConnection",
+    "Greenplum",
+    "Hive",
+    "Iceberg",
+    "Kafka",
+    "MongoDB",
+    "MySQL",
+    "Oracle",
+    "Postgres",
+    "Samba",
+    "SparkFileDFConnection",
+    "SparkHDFS",
+    "SparkLocalFS",
+    "SparkS3",
+    "WebDAV",
+]
+
 
 def __getattr__(name: str):
     if name in db_connection_modules:

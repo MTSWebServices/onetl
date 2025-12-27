@@ -19,7 +19,7 @@ def test_postgres_package():
 
 
 @pytest.mark.parametrize(
-    "package_version, expected_packages",
+    ("package_version", "expected_packages"),
     [
         (None, ["org.postgresql:postgresql:42.7.8"]),
         ("42.7.8", ["org.postgresql:postgresql:42.7.8"]),
@@ -41,7 +41,10 @@ def test_postgres_get_packages(package_version, expected_packages):
 def test_postgres_get_packages_invalid_version(package_version):
     with pytest.raises(
         ValueError,
-        match=rf"Version '{package_version}' does not have enough numeric components for requested format \(expected at least 3\).",
+        match=(
+            f"Version '{package_version}' does not have enough numeric components "
+            r"for requested format \(expected at least 3\)."
+        ),
     ):
         Postgres.get_packages(package_version=package_version)
 

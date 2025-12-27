@@ -4,6 +4,7 @@ from onetl.connection.db_connection.iceberg.connection import Iceberg
 from onetl.connection.db_connection.iceberg.dialect import IcebergDialect
 from onetl.connection.db_connection.iceberg.extra import IcebergExtra
 from onetl.connection.db_connection.iceberg.options import (
+    IcebergTableExistBehavior,
     IcebergWriteOptions,
 )
 
@@ -11,5 +12,6 @@ __all__ = [
     "Iceberg",
     "IcebergDialect",
     "IcebergExtra",
+    "IcebergTableExistBehavior",
     "IcebergWriteOptions",
 ]

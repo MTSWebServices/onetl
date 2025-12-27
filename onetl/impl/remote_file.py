@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from onetl.base import PathStatProtocol
 from onetl.impl.path_container import PathContainer
 from onetl.impl.remote_directory import RemoteDirectory
 from onetl.impl.remote_path import RemotePath
+
+if TYPE_CHECKING:
+    from onetl.base import PathStatProtocol
 
 
 @dataclass(eq=False, frozen=True)
@@ -21,7 +24,7 @@ class RemoteFile(PathContainer[RemotePath]):
 
     def __post_init__(self):
         # frozen=True does not allow to change any field in __post_init__, small hack here
-        object.__setattr__(self, "path", RemotePath(self.path))  # noqa: WPS609
+        object.__setattr__(self, "path", RemotePath(self.path))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({os.fspath(self.path)!r})"

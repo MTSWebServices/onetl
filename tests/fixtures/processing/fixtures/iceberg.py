@@ -1,5 +1,5 @@
 import os
-from collections import namedtuple
+from typing import NamedTuple
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
@@ -48,7 +48,9 @@ def iceberg_connection_fs_catalog_hdfs_warehouse(spark, iceberg_warehouse_dir, h
     ],
 )
 def iceberg_rest_catalog_server():
-    IcebergRESTCatalogServer = namedtuple("IcebergRESTCatalogServer", ["host", "port"])
+    class IcebergRESTCatalogServer(NamedTuple):
+        host: str
+        port: str
 
     return IcebergRESTCatalogServer(
         host=os.getenv("ONETL_ICEBERG_REST_CATALOG_HOST"),

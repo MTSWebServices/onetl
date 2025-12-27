@@ -420,7 +420,8 @@ class FileResult(BaseModel):
         """
 
         if self.is_empty:
-            raise EmptyFilesError("There are no files in the result")
+            msg = "There are no files in the result"
+            raise EmptyFilesError(msg)
 
     @property
     def details(self) -> str:

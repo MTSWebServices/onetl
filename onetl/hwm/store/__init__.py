@@ -19,6 +19,13 @@ deprecated_imports = {
     "register_hwm_store_class",
 }
 
+__all__ = [
+    "SparkTypeToHWM",
+    "YAMLHWMStore",
+    "default_hwm_store_class",
+    "register_spark_type_to_hwm_type_mapping",
+]
+
 
 def __getattr__(name: str):
     if name in deprecated_imports:

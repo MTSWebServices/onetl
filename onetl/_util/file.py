@@ -22,7 +22,7 @@ def get_file_hash(
 ) -> hashlib._Hash:
     """Get file hash by path and algorithm"""
     digest = hashlib.new(algorithm)
-    with open(path, "rb") as file:
+    with Path(path).open("rb") as file:
         chunk = file.read(chunk_size)
         while chunk:
             digest.update(chunk)
@@ -36,13 +36,16 @@ def is_file_readable(path: str | os.PathLike) -> Path:
     path = Path(os.path.expandvars(path)).expanduser().resolve()
 
     if not path.exists():
-        raise FileNotFoundError(f"File '{path}' does not exist")
+        msg = f"File '{path}' does not exist"
+        raise FileNotFoundError(msg)
 
     if not path.is_file():
-        raise NotAFileError(f"{path_repr(path)} is not a file")
+        msg = f"{path_repr(path)} is not a file"
+        raise NotAFileError(msg)
 
     if not os.access(path, os.R_OK):
-        raise OSError(f"No read access to file {path_repr(path)}")
+        msg = f"No read access to file {path_repr(path)}"
+        raise OSError(msg)
 
     return path
 
@@ -71,5 +74,5 @@ def generate_temp_path(root: PurePath) -> PurePath:
     from etl_entities.process import ProcessStackManager
 
     current_process = ProcessStackManager.get_current()
-    current_dt = datetime.now().strftime(DATETIME_FORMAT)
+    current_dt = datetime.now().strftime(DATETIME_FORMAT)  # noqa: DTZ005
     return root / "onetl" / current_process.host / current_process.full_name / current_dt

@@ -1,7 +1,7 @@
 import os
-from collections import namedtuple
 from contextlib import suppress
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -15,7 +15,14 @@ from tests.util.upload_files import upload_files
     ],
 )
 def s3_server():
-    S3Server = namedtuple("S3Server", ["host", "port", "bucket", "access_key", "secret_key", "protocol", "region"])
+    class S3Server(NamedTuple):
+        host: str
+        port: str
+        bucket: str
+        access_key: str
+        secret_key: str
+        protocol: str
+        region: str
 
     return S3Server(
         host=os.getenv("ONETL_S3_HOST"),

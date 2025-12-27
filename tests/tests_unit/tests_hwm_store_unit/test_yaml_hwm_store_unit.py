@@ -89,9 +89,8 @@ def test_hwm_store_yaml_context_manager(caplog):
     assert hwm_store.path
     assert hwm_store.encoding == "utf-8"
 
-    with caplog.at_level(logging.INFO):
-        with hwm_store as store:
-            assert HWMStoreStackManager.get_current() == store
+    with caplog.at_level(logging.INFO), hwm_store as store:
+        assert HWMStoreStackManager.get_current() == store
 
     assert "Using YAMLHWMStore as HWM Store" in caplog.text
     assert "path = " in caplog.text
@@ -113,9 +112,8 @@ def test_hwm_store_yaml_context_manager_with_path(caplog, request, tmp_path_fact
     assert hwm_store.path == path
     assert hwm_store.encoding == "utf-8"
 
-    with caplog.at_level(logging.INFO):
-        with hwm_store as store:
-            assert HWMStoreStackManager.get_current() == store
+    with caplog.at_level(logging.INFO), hwm_store as store:
+        assert HWMStoreStackManager.get_current() == store
 
     assert "Using YAMLHWMStore as HWM Store" in caplog.text
     assert str(path) in caplog.text
@@ -138,9 +136,8 @@ def test_hwm_store_yaml_context_manager_with_encoding(caplog, request, tmp_path_
     assert hwm_store.path == path
     assert hwm_store.encoding == "cp-1251"
 
-    with caplog.at_level(logging.INFO):
-        with hwm_store as store:
-            assert HWMStoreStackManager.get_current() == store
+    with caplog.at_level(logging.INFO), hwm_store as store:
+        assert HWMStoreStackManager.get_current() == store
 
     assert "Using YAMLHWMStore as HWM Store" in caplog.text
     assert str(path) in caplog.text
@@ -151,7 +148,7 @@ def test_hwm_store_yaml_context_manager_with_encoding(caplog, request, tmp_path_
 
 
 @pytest.mark.parametrize(
-    "qualified_name, file_name",
+    ("qualified_name", "file_name"),
     [
         (
             "id|partition=abc/another=cde#mydb.mytable@dbtype://host.name:1234/schema#dag.task.myprocess@myhost",
@@ -198,7 +195,7 @@ def test_hwm_store_no_deprecation_warning_yaml_hwm_store():
 
 
 @pytest.mark.parametrize(
-    "import_name, original_import",
+    ("import_name", "original_import"),
     [
         ("MemoryHWMStore", OriginalMemoryHWMStore),
         ("BaseHWMStore", OriginalBaseHWMStore),

@@ -107,7 +107,8 @@ class FileFilter(BaseFileFilter, FrozenModel):
     @validator("glob", pre=True)
     def check_glob(cls, value: str) -> str:
         if not glob.has_magic(value):
-            raise ValueError("Invalid glob")
+            msg = "Invalid glob"
+            raise ValueError(msg)
 
         return value
 
@@ -125,14 +126,16 @@ class FileFilter(BaseFileFilter, FrozenModel):
     @root_validator
     def disallow_empty_fields(cls, value: dict) -> dict:
         if value.get("glob") is None and value.get("regexp") is None and not value.get("exclude_dirs"):
-            raise ValueError("One of the following fields must be set: `glob`, `regexp`, `exclude_dirs`")
+            msg = "One of the following fields must be set: `glob`, `regexp`, `exclude_dirs`"
+            raise ValueError(msg)
 
         return value
 
     @root_validator
     def disallow_both_glob_and_regexp(cls, value: dict) -> dict:
         if value.get("glob") and value.get("regexp"):
-            raise ValueError("Only one of `glob`, `regexp` fields can passed, not both")
+            msg = "Only one of `glob`, `regexp` fields can passed, not both"
+            raise ValueError(msg)
 
         return value
 
@@ -141,7 +144,7 @@ class FileFilter(BaseFileFilter, FrozenModel):
         imports = []
         old_filters = []
         new_filters = []
-        glob = value.get("glob")  # noqa: WPS442
+        glob = value.get("glob")
         if glob is not None:
             imports.append("Glob")
             old_filters.append(f"glob={glob!r}")

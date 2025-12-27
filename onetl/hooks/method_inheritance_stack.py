@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from typing import ClassVar
 
 
 class MethodInheritanceStack:
@@ -44,7 +45,7 @@ class MethodInheritanceStack:
     BaseClass 1
     """
 
-    _stack: dict[type, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    _stack: ClassVar[dict[type, dict[str, int]]] = defaultdict(lambda: defaultdict(int))
 
     def __init__(self, klass: type, method_name: str):
         self.klass = klass
@@ -52,16 +53,15 @@ class MethodInheritanceStack:
 
     def __enter__(self):
         for cls in self.klass.mro():
-            self.__class__._stack[cls][self.method_name] += 1  # noqa: WPS437
+            self._stack[cls][self.method_name] += 1
         return self
 
     def __exit__(self, _exc_type, _exc_value, _traceback):
         for cls in self.klass.mro():
-            self.__class__._stack[cls][self.method_name] -= 1  # noqa: WPS437
+            self._stack[cls][self.method_name] -= 1
         return False
 
     @property
     def level(self) -> int:
         """Get level of inheritance"""
-        stack = self.__class__._stack  # noqa: WPS437
-        return stack[self.klass][self.method_name] - 1  # exclude current class
+        return self._stack[self.klass][self.method_name] - 1  # exclude current class

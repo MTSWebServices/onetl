@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
+
 from datetime import timedelta
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 try:
     from pydantic.v1 import AnyUrl, Field, SecretStr
 except (ImportError, AttributeError):
-    from pydantic import Field, SecretStr, AnyUrl  # type: ignore[no-redef, assignment]
+    from pydantic import AnyUrl, Field, SecretStr  # type: ignore[no-redef, assignment]
 
 from onetl._util.spark import stringify
 from onetl.connection.db_connection.iceberg.catalog.auth import IcebergRESTCatalogAuth
@@ -101,7 +103,7 @@ class IcebergRESTCatalogOAuth2ClientCredentials(IcebergRESTCatalogAuth, FrozenMo
     audience: Optional[str] = None
     resource: Optional[str] = None
 
-    def get_config(self) -> Dict[str, str]:
+    def get_config(self) -> dict[str, str]:
         config = {
             "rest.auth.type": "oauth2",
             "token-exchange-enabled": "false",

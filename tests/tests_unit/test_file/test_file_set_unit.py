@@ -69,7 +69,7 @@ def test_file_set():
 
     empty_file_set = FileSet()
     assert not empty_file_set
-    assert len(empty_file_set) == 0  # noqa: WPS507
+    assert len(empty_file_set) == 0
 
 
 def test_file_set_details():

@@ -782,7 +782,7 @@ def test_file_mover_mode_replace_entire_directory(
     remote_dir_exist,
     caplog,
 ):
-    file_connection, source_path, uploaded_files = file_connection_with_path_and_files
+    file_connection, source_path, _ = file_connection_with_path_and_files
     target_path = RemotePath(f"/tmp/test_move_{secrets.token_hex(5)}")
 
     def finalizer():
@@ -836,7 +836,7 @@ def test_file_mover_run_missing_file(request, file_connection_with_path_and_file
     missing_file = target_path / "missing"
 
     with caplog.at_level(logging.WARNING):
-        move_result = mover.run(uploaded_files + [missing_file])
+        move_result = mover.run([*uploaded_files, missing_file])
 
         assert f"Missing file '{missing_file}', skipping" in caplog.text
 
@@ -946,7 +946,7 @@ def test_file_mover_run_input_is_not_file(request, file_connection):
 
 
 def test_file_mover_file_limit_custom(file_connection_with_path_and_files, caplog):
-    file_connection, source_path, uploaded_files = file_connection_with_path_and_files
+    file_connection, source_path, _ = file_connection_with_path_and_files
     limit = 2
     target_path = f"/tmp/test_move_{secrets.token_hex(5)}"
 
