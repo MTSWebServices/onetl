@@ -46,8 +46,7 @@ jobs:
       - name: Start Grenplum
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile greenplum pull
-          docker compose --profile greenplum up -d --wait --wait-timeout 200
+          docker compose --profile greenplum up -d --pull &
         env:
           GREENPLUM_IMAGE: andruche/greenplum:${{ inputs.greenplum-version }}
 
@@ -96,6 +95,12 @@ jobs:
             --group test-postgres \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for Grenplum to be ready
+        run: |
+          docker compose --profile greenplum up -d --wait --wait-timeout 200
+        env:
+          GREENPLUM_IMAGE: andruche/greenplum:${{ inputs.greenplum-version }}
 
       - name: Run tests
         run: |

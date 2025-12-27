@@ -31,8 +31,7 @@ jobs:
       - name: Start Samba
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile samba pull
-          docker compose --profile samba up -d --wait --wait-timeout 200
+          docker compose --profile samba up -d --pull &
         env:
           SAMBA_IMAGE: elswork/samba:${{ inputs.server-version }}
 
@@ -65,6 +64,12 @@ jobs:
             --extra samba \
             --group test \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for Samba to be ready
+        run: |
+          docker compose --profile samba up -d --wait --wait-timeout 200
+        env:
+          SAMBA_IMAGE: elswork/samba:${{ inputs.server-version }}
 
       - name: Run tests
         run: |

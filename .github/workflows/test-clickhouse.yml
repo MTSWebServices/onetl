@@ -40,8 +40,7 @@ jobs:
       - name: Start Clickhouse
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile clickhouse pull
-          docker compose --profile clickhouse up -d --wait --wait-timeout 200
+          docker compose --profile clickhouse up -d --pull &
         env:
           CLICKHOUSE_IMAGE: ${{ inputs.clickhouse-image }}:${{ inputs.clickhouse-version }}
 
@@ -84,6 +83,12 @@ jobs:
             --group test-clickhouse \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for Clickhouse to be ready
+        run: |
+          docker compose --profile clickhouse up -d --wait --wait-timeout 200
+        env:
+          CLICKHOUSE_IMAGE: ${{ inputs.clickhouse-image }}:${{ inputs.clickhouse-version }}
 
       - name: Run tests
         run: |

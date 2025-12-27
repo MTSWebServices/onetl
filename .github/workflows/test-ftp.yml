@@ -31,8 +31,7 @@ jobs:
       - name: Start FTP
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile ftp pull
-          docker compose --profile ftp up -d --wait --wait-timeout 200
+          docker compose --profile ftp up -d --pull &
         env:
           FTP_IMAGE: chonjay21/ftps:${{ inputs.ftp-version }}
 
@@ -56,6 +55,12 @@ jobs:
             --extra ftp \
             --group test \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for FTP to be ready
+        run: |
+          docker compose --profile ftp up -d --wait --wait-timeout 200
+        env:
+          FTP_IMAGE: chonjay21/ftps:${{ inputs.ftp-version }}
 
       - name: Run tests
         run: |

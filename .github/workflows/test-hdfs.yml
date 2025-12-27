@@ -37,8 +37,7 @@ jobs:
       - name: Start HDFS
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile hdfs pull
-          docker compose --profile hdfs up -d --wait --wait-timeout 200
+          docker compose --profile hdfs up -d --pull &
         env:
           HDFS_IMAGE: mtsrus/hadoop:${{ inputs.hadoop-version }}
 
@@ -86,6 +85,12 @@ jobs:
             --group test \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for HDFS to be ready
+        run: |
+          docker compose --profile hdfs up -d --wait --wait-timeout 200
+        env:
+          HDFS_IMAGE: mtsrus/hadoop:${{ inputs.hadoop-version }}
 
       - name: Run tests
         run: |

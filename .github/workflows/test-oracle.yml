@@ -44,8 +44,7 @@ jobs:
       - name: Start Oracle
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile oracle pull
-          docker compose --profile oracle up -d --wait --wait-timeout 200
+          docker compose --profile oracle up -d --pull &
         env:
           ORACLE_IMAGE: ${{ inputs.oracle-image }}:${{ inputs.oracle-version }}
 
@@ -100,6 +99,12 @@ jobs:
             --group test-oracle \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for Oracle to be ready
+        run: |
+          docker compose --profile oracle up -d --wait --wait-timeout 200
+        env:
+          ORACLE_IMAGE: ${{ inputs.oracle-image }}:${{ inputs.oracle-version }}
 
       - name: Run tests
         run: |

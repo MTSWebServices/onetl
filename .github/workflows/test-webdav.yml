@@ -31,8 +31,7 @@ jobs:
       - name: Start WebDAV
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile webdav pull
-          docker compose --profile webdav up -d --wait --wait-timeout 200
+          docker compose --profile webdav up -d --pull &
         env:
           WEBDAV_IMAGE: chonjay21/webdav:${{ inputs.webdav-version }}
 
@@ -62,6 +61,12 @@ jobs:
             --extra webdav \
             --group test \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for WebDAV to be ready
+        run: |
+          docker compose --profile webdav up -d --wait --wait-timeout 200
+        env:
+          WEBDAV_IMAGE: chonjay21/webdav:${{ inputs.webdav-version }}
 
       - name: Run tests
         run: |

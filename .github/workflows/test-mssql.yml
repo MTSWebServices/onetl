@@ -37,8 +37,7 @@ jobs:
       - name: Start MSSQL
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile mssql pull
-          docker compose --profile mssql up -d --wait --wait-timeout 200
+          docker compose --profile mssql up -d --pull &
         env:
           MSSQL_IMAGE: mcr.microsoft.com/mssql/server:${{ inputs.mssql-version }}
 
@@ -88,6 +87,12 @@ jobs:
             --group test-mssql \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for MSSQL to be ready
+        run: |
+          docker compose --profile mssql up -d --wait --wait-timeout 200
+        env:
+          MSSQL_IMAGE: mcr.microsoft.com/mssql/server:${{ inputs.mssql-version }}
 
       - name: Run tests
         run: |

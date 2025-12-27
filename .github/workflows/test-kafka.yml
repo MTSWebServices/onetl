@@ -37,8 +37,7 @@ jobs:
       - name: Start Kafka
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile kafka pull
-          docker compose --profile kafka up -d --wait --wait-timeout 200
+          docker compose --profile kafka up -d --pull &
         env:
           KAFKA_IMAGE: bitnamilegacy/kafka:${{ inputs.kafka-version }}
 
@@ -81,6 +80,12 @@ jobs:
             --group test-kafka \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for Kafka to be ready
+        run: |
+          docker compose --profile kafka up -d --wait --wait-timeout 200
+        env:
+          KAFKA_IMAGE: bitnamilegacy/kafka:${{ inputs.kafka-version }}
 
       - name: Run tests
         run: |

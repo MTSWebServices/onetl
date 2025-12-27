@@ -31,8 +31,7 @@ jobs:
       - name: Start SFTP
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile sftp pull
-          docker compose --profile sftp up -d --wait --wait-timeout 200
+          docker compose --profile sftp up -d --pull &
         env:
           SFTP_IMAGE: linuxserver/openssh-server:${{ inputs.openssh-version }}
 
@@ -56,6 +55,12 @@ jobs:
             --extra sftp \
             --group test \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for SFTP to be ready
+        run: |
+          docker compose --profile sftp up -d --wait --wait-timeout 200
+        env:
+          SFTP_IMAGE: linuxserver/openssh-server:${{ inputs.openssh-version }}
 
       - name: Run tests
         run: |

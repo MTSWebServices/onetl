@@ -37,8 +37,7 @@ jobs:
       - name: Start MySQL
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile mysql pull
-          docker compose --profile mysql up -d --wait --wait-timeout 200
+          docker compose --profile mysql up -d --pull &
         env:
           MYSQL_IMAGE: mysql:${{ inputs.mysql-version }}
 
@@ -81,6 +80,12 @@ jobs:
             --group test-mysql \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for MySQL to be ready
+        run: |
+          docker compose --profile mysql up -d --wait --wait-timeout 200
+        env:
+          MYSQL_IMAGE: mysql:${{ inputs.mysql-version }}
 
       - name: Run tests
         run: |

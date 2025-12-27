@@ -37,8 +37,7 @@ jobs:
       - name: Start MongoDB
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile mongodb pull
-          docker compose --profile mongodb up -d --wait --wait-timeout 200
+          docker compose --profile mongodb up -d --pull &
         env:
           MONGODB_IMAGE: mongo:${{ inputs.mongodb-version }}
 
@@ -81,6 +80,12 @@ jobs:
             --group test-mongodb \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          docker compose --profile mongodb up -d --wait --wait-timeout 200
+        env:
+          MONGODB_IMAGE: mongo:${{ inputs.mongodb-version }}
 
       - name: Run tests
         run: |

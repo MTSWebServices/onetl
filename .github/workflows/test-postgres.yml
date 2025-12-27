@@ -37,8 +37,7 @@ jobs:
       - name: Start Postgres
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile postgres pull
-          docker compose --profile postgres up -d --wait --wait-timeout 200
+          docker compose --profile postgres up -d --pull &
         env:
           POSTGRES_IMAGE: postgres:${{ inputs.postgres-version }}
 
@@ -81,6 +80,12 @@ jobs:
             --group test-postgres \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
+
+      - name: Wait for Postgres to be ready
+        run: |
+          docker compose --profile postgres up -d --wait --wait-timeout 200
+        env:
+          POSTGRES_IMAGE: postgres:${{ inputs.postgres-version }}
 
       - name: Run tests
         run: |
