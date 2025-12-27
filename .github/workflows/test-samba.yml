@@ -31,7 +31,7 @@ jobs:
       - name: Start Samba
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile samba up -d --pull &
+          docker compose --profile samba up -d --pull always &
         env:
           SAMBA_IMAGE: elswork/samba:${{ inputs.server-version }}
 

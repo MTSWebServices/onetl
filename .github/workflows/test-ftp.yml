@@ -31,7 +31,7 @@ jobs:
       - name: Start FTP
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile ftp up -d --pull &
+          docker compose --profile ftp up -d --pull always &
         env:
           FTP_IMAGE: chonjay21/ftps:${{ inputs.ftp-version }}
 

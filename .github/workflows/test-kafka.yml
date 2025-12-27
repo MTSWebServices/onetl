@@ -37,7 +37,7 @@ jobs:
       - name: Start Kafka
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile kafka up -d --pull &
+          docker compose --profile kafka up -d --pull always &
         env:
           KAFKA_IMAGE: bitnamilegacy/kafka:${{ inputs.kafka-version }}
 

@@ -37,7 +37,7 @@ jobs:
       - name: Start S3
         run: |  # s3 & iceberg-rest combined due to parallel workflows limit
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile iceberg up -d --pull &
+          docker compose --profile iceberg up -d --pull always &
         env:
           S3_IMAGE: bitnamilegacy/minio:${{ inputs.minio-version }}
 

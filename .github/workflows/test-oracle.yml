@@ -44,7 +44,7 @@ jobs:
       - name: Start Oracle
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile oracle up -d --pull &
+          docker compose --profile oracle up -d --pull always &
         env:
           ORACLE_IMAGE: ${{ inputs.oracle-image }}:${{ inputs.oracle-version }}
 

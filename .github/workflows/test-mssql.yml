@@ -37,7 +37,7 @@ jobs:
       - name: Start MSSQL
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile mssql up -d --pull &
+          docker compose --profile mssql up -d --pull always &
         env:
           MSSQL_IMAGE: mcr.microsoft.com/mssql/server:${{ inputs.mssql-version }}
 

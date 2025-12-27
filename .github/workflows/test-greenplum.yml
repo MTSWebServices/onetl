@@ -46,7 +46,7 @@ jobs:
       - name: Start Grenplum
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile greenplum up -d --pull &
+          docker compose --profile greenplum up -d --pull always &
         env:
           GREENPLUM_IMAGE: andruche/greenplum:${{ inputs.greenplum-version }}
 
