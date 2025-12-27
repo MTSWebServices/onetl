@@ -138,8 +138,7 @@ def test_json_serialize_column_unsupported_options_warning(spark):
         lineSep="\r\n",
     )
     msg = (
-        "Options `['encoding', 'lineSep']` are set "
-        "but not supported in `JSON.parse_column` or `JSON.serialize_column`."
+        "Options `['encoding', 'lineSep']` are set but not supported in `JSON.parse_column` or `JSON.serialize_column`."
     )
 
     with pytest.warns(UserWarning) as record:

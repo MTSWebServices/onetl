@@ -412,7 +412,7 @@ class SparkS3(SparkFileDFConnection):
     def _region_is_recommended(cls, value):
         if not value:
             warnings.warn(
-                f"It is highly recommended to specify {cls.__name__}(region=...)" " to avoid potential access errors",
+                f"It is highly recommended to specify {cls.__name__}(region=...) to avoid potential access errors",
                 category=UserWarning,
                 stacklevel=3,
             )

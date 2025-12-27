@@ -20,8 +20,7 @@ class FileExistBehavior(str, Enum):
     def _missing_(cls, value: object):  # noqa: WPS120
         if str(value) == "overwrite":
             warnings.warn(
-                "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. "
-                "Use `replace_file` instead",
+                "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. Use `replace_file` instead",
                 category=UserWarning,
                 stacklevel=4,
             )

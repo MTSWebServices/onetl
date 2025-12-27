@@ -169,12 +169,12 @@ class FileFilter(BaseFileFilter, FrozenModel):
             Please replace:
                 from onetl.core import FileFilter
 
-                filter=FileFilter({', '.join(old_filters)})
+                filter=FileFilter({", ".join(old_filters)})
 
             With:
-                from onetl.file.filter import {', '.join(imports)}
+                from onetl.file.filter import {", ".join(imports)}
 
-                filters=[{', '.join(new_filters)}]
+                filters=[{", ".join(new_filters)}]
         """
 
         warnings.warn(

@@ -141,7 +141,7 @@ class S3(FileConnection):
     def _region_is_recommended(cls, value):
         if not value:
             warnings.warn(
-                f"It is highly recommended to specify {cls.__name__}(region=...)" " to avoid potential access errors",
+                f"It is highly recommended to specify {cls.__name__}(region=...) to avoid potential access errors",
                 category=UserWarning,
                 stacklevel=3,
             )
@@ -222,7 +222,8 @@ class S3(FileConnection):
 
         log.debug("|%s| Directory to remove: %s", self.__class__.__name__, directory_info)
         objects_to_delete = (
-            DeleteObject(obj.object_name) for obj in _scan_entries_recursive(remote_dir)  # type: ignore[arg-type]
+            DeleteObject(obj.object_name)
+            for obj in _scan_entries_recursive(remote_dir)  # type: ignore[arg-type]
         )
         errors = list(
             self.client.remove_objects(

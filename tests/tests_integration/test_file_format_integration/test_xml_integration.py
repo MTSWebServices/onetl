@@ -82,9 +82,8 @@ def test_xml_reader_with_infer_schema(
 
     assert read_df.count()
     assert read_df.schema != df.schema
-    assert set(read_df.columns) == set(
-        expected_xml_attributes_df.columns,
-    )  # "DataFrames have different column types: StructField('id', IntegerType(), True), StructField('id', LongType(), True), etc."
+    # "DataFrames have different column types: StructField('id', IntegerType(), True), StructField('id', LongType(), True), etc."
+    assert set(read_df.columns) == set(expected_xml_attributes_df.columns)
     assert_equal_df(read_df, expected_xml_attributes_df, order_by="id")
 
 
@@ -211,7 +210,7 @@ def test_xml_parse_column_unsupported_options_warning(spark, file_df_schema):
 
     xml = XML(rowTag="item", inferSchema=True, samplingRatio=0.1)
 
-    msg = "Options `['inferSchema', 'samplingRatio']` " "are set but not supported in `XML.parse_column`."
+    msg = "Options `['inferSchema', 'samplingRatio']` are set but not supported in `XML.parse_column`."
 
     with pytest.warns(UserWarning) as record:
         df.select(xml.parse_column(df.xml_string, file_df_schema)).collect()

@@ -269,7 +269,7 @@ def test_file_downloader_options_if_exists(options, value):
         (
             {"mode": "overwrite"},
             FileExistBehavior.REPLACE_FILE,
-            "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. " "Use `replace_file` instead",
+            "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. Use `replace_file` instead",
         ),
         (
             {"mode": "delete_all"},

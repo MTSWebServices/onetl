@@ -356,9 +356,7 @@ def test_kafka_basic_auth(spark_mock):
         assert conf == {
             "sasl.mechanism": "PLAIN",
             "sasl.jaas.config": (
-                "org.apache.kafka.common.security.plain.PlainLoginModule required "
-                'username="user" '
-                'password="password";'
+                'org.apache.kafka.common.security.plain.PlainLoginModule required username="user" password="password";'
             ),
         }
 
@@ -391,9 +389,7 @@ def test_kafka_scram_auth_get_jaas_conf(spark_mock, digest):
     assert conf == {
         "sasl.mechanism": f"SCRAM-{digest}",
         "sasl.jaas.config": (
-            "org.apache.kafka.common.security.scram.ScramLoginModule required "
-            'username="user" '
-            'password="password";'
+            'org.apache.kafka.common.security.scram.ScramLoginModule required username="user" password="password";'
         ),
     }
 
@@ -419,9 +415,7 @@ def test_kafka_scram_auth_get_jaas_conf_custom_properties(spark_mock, digest):
     assert conf == {
         "sasl.mechanism": f"SCRAM-{digest}",
         "sasl.jaas.config": (
-            "org.apache.kafka.common.security.scram.ScramLoginModule required "
-            'username="user" '
-            'password="password";'
+            'org.apache.kafka.common.security.scram.ScramLoginModule required username="user" password="password";'
         ),
         "sasl.login.class": "com.example.CustomScramLogin",
         "sasl.login.some.option": "1",
