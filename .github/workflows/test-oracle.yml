@@ -93,12 +93,12 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ~/.cache/uv
-          key: ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+          key: ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
-            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
-            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-pydantic${{ inputs.pydantic-version }}-
-            ${{ runner.os }}-python${{ env.DEFAULT_PYTHON }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-
 
       - name: Install dependencies
         run: |
