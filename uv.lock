@@ -1169,15 +1169,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cfgv"
-version = "3.5.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4e/b5/721b8799b04bf9afe054a3899c6cf4e880fcf8563cc71c15610242490a0c/cfgv-3.5.0.tar.gz", hash = "sha256:d5b1034354820651caa73ede66a6294d6e95c1b00acc5e9b098e917404669132", size = 7334, upload-time = "2025-11-19T20:55:51.612Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/3c/33bac158f8ab7f89b2e59426d5fe2e4f63f7ed25df84c036890172b412b5/cfgv-3.5.0-py2.py3-none-any.whl", hash = "sha256:a8dc6b26ad22ff227d2634a65cb388215ce6cc96bbcc5cfde7641ae87e8dacc0", size = 7445, upload-time = "2025-11-19T20:55:50.744Z" },
-]
-
-[[package]]
 name = "charset-normalizer"
 version = "3.4.4"
 source = { registry = "https://pypi.org/simple" }
@@ -2557,15 +2548,6 @@ wheels = [
 ]
 
 [[package]]
-name = "distlib"
-version = "0.4.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/96/8e/709914eb2b5749865801041647dc7f4e6d00b549cfe88b65ca192995f07c/distlib-0.4.0.tar.gz", hash = "sha256:feec40075be03a04501a973d81f633735b4b69f98b05450592310c0f401a4e0d", size = 614605, upload-time = "2025-07-17T16:52:00.465Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl", hash = "sha256:9659f7d87e46584a30b5780e43ac7a2143098441670ff0a49d5f9034c54a6c16", size = 469047, upload-time = "2025-07-17T16:51:58.613Z" },
-]
-
-[[package]]
 name = "dnspython"
 version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3596,15 +3578,6 @@ resolution-markers = [
 sdist = { url = "https://files.pythonhosted.org/packages/ba/66/a3921783d54be8a6870ac4ccffcd15c4dc0dd7fcce51c6d63b8c63935276/humanize-4.15.0.tar.gz", hash = "sha256:1dd098483eb1c7ee8e32eb2e99ad1910baefa4b75c3aff3a82f4d78688993b10", size = 83599, upload-time = "2025-12-20T20:16:13.19Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c5/7b/bca5613a0c3b542420cf92bd5e5fb8ebd5435ce1011a091f66bb7693285e/humanize-4.15.0-py3-none-any.whl", hash = "sha256:b1186eb9f5a9749cd9cb8565aee77919dd7c8d076161cf44d70e59e3301e1769", size = 132203, upload-time = "2025-12-20T20:16:11.67Z" },
-]
-
-[[package]]
-name = "identify"
-version = "2.6.15"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ff/e7/685de97986c916a6d93b3876139e00eef26ad5bbbd61925d670ae8013449/identify-2.6.15.tar.gz", hash = "sha256:e4f4864b96c6557ef2a1e1c951771838f4edc9df3a72ec7118b338801b11c7bf", size = 99311, upload-time = "2025-10-02T17:43:40.631Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0f/1c/e5fd8f973d4f375adb21565739498e2e9a1e54c858a97b9a8ccfdc81da9b/identify-2.6.15-py2.py3-none-any.whl", hash = "sha256:1181ef7608e00704db228516541eb83a88a9f94433a8c80bb9b5bd54b1d81757", size = 99183, upload-time = "2025-10-02T17:43:39.137Z" },
 ]
 
 [[package]]
@@ -4960,15 +4933,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nodeenv"
-version = "1.10.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/24/bf/d1bda4f6168e0b2e9e5958945e01910052158313224ada5ce1fb2e1113b8/nodeenv-1.10.0.tar.gz", hash = "sha256:996c191ad80897d076bdfba80a41994c2b47c68e224c542b48feba42ba00f8bb", size = 55611, upload-time = "2025-12-20T14:08:54.006Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl", hash = "sha256:5bb13e3eed2923615535339b3c620e76779af4cb4c6a90deccc9e36b274d3827", size = 23438, upload-time = "2025-12-20T14:08:52.782Z" },
-]
-
-[[package]]
 name = "numpy"
 version = "1.21.6"
 source = { registry = "https://pypi.org/simple" }
@@ -5395,7 +5359,7 @@ webdav = [
 dev = [
     { name = "black", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
     { name = "mypy", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "pre-commit", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
+    { name = "prek", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
     { name = "types-deprecated", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
     { name = "types-pyyaml", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
     { name = "wemake-python-styleguide", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
@@ -5601,7 +5565,7 @@ provides-extras = ["spark", "kerberos", "ftp", "ftps", "hdfs", "s3", "samba", "s
 dev = [
     { name = "black", marker = "python_full_version >= '3.12'", specifier = "~=25.12.0" },
     { name = "mypy", marker = "python_full_version >= '3.12'", specifier = "~=1.19.0" },
-    { name = "pre-commit", marker = "python_full_version >= '3.12'", specifier = "~=4.5.1" },
+    { name = "prek", marker = "python_full_version >= '3.12'", specifier = "~=0.2.25" },
     { name = "types-deprecated", marker = "python_full_version >= '3.12'", specifier = "~=1.3.1" },
     { name = "types-pyyaml", marker = "python_full_version >= '3.12'", specifier = "~=6.0.12" },
     { name = "wemake-python-styleguide", marker = "python_full_version >= '3.12'", specifier = "~=1.5.0" },
@@ -6349,19 +6313,29 @@ wheels = [
 ]
 
 [[package]]
-name = "pre-commit"
-version = "4.5.1"
+name = "prek"
+version = "0.2.25"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "cfgv", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "identify", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "nodeenv", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "pyyaml", version = "6.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "virtualenv", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/40/f1/6d86a29246dfd2e9b6237f0b5823717f60cad94d47ddc26afa916d21f525/pre_commit-4.5.1.tar.gz", hash = "sha256:eb545fcff725875197837263e977ea257a402056661f09dae08e4b149b030a61", size = 198232, upload-time = "2025-12-16T21:14:33.552Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/9c/839712da131cbbb8727f55a3908efac93db81cb25769ba9a9e3a3f0ec864/prek-0.2.25.tar.gz", hash = "sha256:0ec0d67d1df64b34f071acee7bb1507d062f0231049c0b6587ec60f3bc761ee6", size = 281000, upload-time = "2025-12-26T16:47:27.413Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/19/fd3ef348460c80af7bb4669ea7926651d1f95c23ff2df18b9d24bab4f3fa/pre_commit-4.5.1-py2.py3-none-any.whl", hash = "sha256:3b3afd891e97337708c1674210f8eba659b52a38ea5f822ff142d10786221f77", size = 226437, upload-time = "2025-12-16T21:14:32.409Z" },
+    { url = "https://files.pythonhosted.org/packages/01/64/16ac112dbcc96579324e6053dd182d1383703b776e3eaaf9ce105e3d854f/prek-0.2.25-py3-none-linux_armv6l.whl", hash = "sha256:a85edf16c9a8aca13842c365be62911fbca38cd27ea7c9c54b6d3168a5b21703", size = 4796650, upload-time = "2025-12-26T16:47:14.548Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/87/adf8840b12135dab0dc3c3f6689569db13f273cf4df1d4fd009d117fc8a0/prek-0.2.25-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:c6ca24d8ab728f0d5b116576114df1c679bed59501c1ab71d9f2c78230f6b38c", size = 4895083, upload-time = "2025-12-26T16:47:16.531Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/4d/37b144b975c15901459761692c1090ab5112346157a8cd4326ce68ee3e09/prek-0.2.25-py3-none-macosx_11_0_arm64.whl", hash = "sha256:470373eba87baffe68bbbe18a4c4a85acba2709a8e834adad0c6147977ccdfb3", size = 4621901, upload-time = "2025-12-26T16:47:01.354Z" },
+    { url = "https://files.pythonhosted.org/packages/fc/14/ff1d57e7322f08048ee9117497814a8ab47e10ec4f00f77bdf9880509ffe/prek-0.2.25-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:9f50ae59fd33a45a58af0197a91c9a207a7f8f49e18e24ca6ca3f5d5cf88a4ac", size = 4820856, upload-time = "2025-12-26T16:47:22.075Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/9c/78c00fd51bf0038cb8e828418640e98e300db81d3215f28eb699cb9a0e60/prek-0.2.25-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:0e74c8ebc4cc07000b588b05df22086e3ef5ce9843c7332b9cf52bdb734378b8", size = 4717602, upload-time = "2025-12-26T16:47:20.352Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/50/9e9af1a0f25d280c53ef386eca035ea4b12eaeadf9419bbc69e430c840df/prek-0.2.25-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6da53de6119ec176673c4e3843abe4b6cc7190adc005564ad9e2d8b2924b3934", size = 5039527, upload-time = "2025-12-26T16:47:06.873Z" },
+    { url = "https://files.pythonhosted.org/packages/89/6b/22e87200b1888cb8fc92c48996a4c03149bedddd864db7418b326c6ebfd9/prek-0.2.25-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:442994797aee8a1563f7236b54bb1d99578143b30cc4559011d59a112cdf43f3", size = 5449809, upload-time = "2025-12-26T16:47:03.379Z" },
+    { url = "https://files.pythonhosted.org/packages/6f/ed/ebb63821f6c2307219bc49c914b13c89e79850c1be6d9a35fc440227666f/prek-0.2.25-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:35b3d8543969a03775f5963b8f6e957e9eb23bf191c76d47238557308e7b6bf6", size = 5408252, upload-time = "2025-12-26T16:47:18.713Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/9c/1638891243b4682daf790aaa7d9ec16d63dde9ab39a0a0191a3f83647e60/prek-0.2.25-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:7809d7f6119be8870a2a76c15d28a122efb1f356909f355461b856619f7456fb", size = 5503319, upload-time = "2025-12-26T16:47:10.927Z" },
+    { url = "https://files.pythonhosted.org/packages/ca/f0/5924037622520463f016356f5d6e9c140478bc8fb9b0230b38eeb5eea183/prek-0.2.25-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:57db60d6e7882e1b0d6b0a2e6e4b8c240977b9309b4be0793b2d7151021f3767", size = 5092919, upload-time = "2025-12-26T16:47:12.921Z" },
+    { url = "https://files.pythonhosted.org/packages/17/d6/1ca7f639866a04d8b7b01e8e46da214b27e8dece98a8d854c43b41e50f90/prek-0.2.25-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:2cdedc528e935f01b97a7459b68b4f7584f8efcfc1b69d271a2a1bc3d6a60d36", size = 4826998, upload-time = "2025-12-26T16:47:05.058Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/de/9dd50fb437fa7c150e8c56468e7c103b0ddca0a1d11a4371785cdc96fa16/prek-0.2.25-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:68458ec5d8cadb18667d5126b6a98c0fd2214b624805935c90213d9205378dc8", size = 4835330, upload-time = "2025-12-26T16:47:25.809Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/e6/8a27781a1e88063afce9b9602833c210577261bbc53576bbec0e83a9a8f0/prek-0.2.25-py3-none-musllinux_1_1_armv7l.whl", hash = "sha256:7b8fa764a3665ab38884e2c909f3297e5c29137cafc9c409c1eaab734d7eefcd", size = 4703194, upload-time = "2025-12-26T16:47:34.503Z" },
+    { url = "https://files.pythonhosted.org/packages/22/43/03186172e33f235261e942549f3cda351dfe8fa564ca69ad065f6de39a7f/prek-0.2.25-py3-none-musllinux_1_1_i686.whl", hash = "sha256:4073a368e949a117d77fcdbce13ff14a001b71e797fa35ec921892714bcfb389", size = 4924956, upload-time = "2025-12-26T16:47:32.871Z" },
+    { url = "https://files.pythonhosted.org/packages/1f/cc/cbcecd7d6a3ccae74b9df3d14b2d4c92b9aa763eec3dc4349677f2219d3b/prek-0.2.25-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:401d33d1f54f62489b95e7aaacb9cdecac2ab61fe0bd607c8a6c11963e6ad2b9", size = 5200290, upload-time = "2025-12-26T16:47:08.751Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/ee/1779e94664cb0ffc0d751a04f0e4405084f38edfbdac2cde7d9bdf9353ab/prek-0.2.25-py3-none-win32.whl", hash = "sha256:3d0b9d5fb93cb679ef486f8e6c7ec091723d610d48a5430ef5ece22d649ae686", size = 4618371, upload-time = "2025-12-26T16:47:23.849Z" },
+    { url = "https://files.pythonhosted.org/packages/05/8c/d807f6a6914d4262fa29d8d3834f4f0600be44cb280b19c7777790de2bb3/prek-0.2.25-py3-none-win_amd64.whl", hash = "sha256:fbcdeb1d847a0e7ba6a250d4f71be2eb1773d54dd9bb14e35584b69a8d3ffce6", size = 5307946, upload-time = "2025-12-26T16:47:31.172Z" },
+    { url = "https://files.pythonhosted.org/packages/69/ff/5e2cb72168e9dd71282b8b0c58abd5c7bf0bf8635612d24fcf8273d2e306/prek-0.2.25-py3-none-win_arm64.whl", hash = "sha256:b2692991046cb32f0ef7e02e49842858c87e915cf811aa3c0f473b2c073d9c67", size = 4973841, upload-time = "2025-12-26T16:47:29.413Z" },
 ]
 
 [[package]]
@@ -10620,20 +10594,6 @@ resolution-markers = [
 sdist = { url = "https://files.pythonhosted.org/packages/1e/24/a2a2ed9addd907787d7aa0355ba36a6cadf1768b934c652ea78acbd59dcd/urllib3-2.6.2.tar.gz", hash = "sha256:016f9c98bb7e98085cb2b4b17b87d2c702975664e4f060c6532e64d1c1a5e797", size = 432930, upload-time = "2025-12-11T15:56:40.252Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6d/b9/4095b668ea3678bf6a0af005527f39de12fb026516fb3df17495a733b7f8/urllib3-2.6.2-py3-none-any.whl", hash = "sha256:ec21cddfe7724fc7cb4ba4bea7aa8e2ef36f607a4bab81aa6ce42a13dc3f03dd", size = 131182, upload-time = "2025-12-11T15:56:38.584Z" },
-]
-
-[[package]]
-name = "virtualenv"
-version = "20.35.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "distlib", marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "filelock", version = "3.20.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-    { name = "platformdirs", version = "4.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12' or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-3') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-2' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-4') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-3' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-3-5') or (extra == 'group-5-onetl-test-spark-3-4' and extra == 'group-5-onetl-test-spark-4-0') or (extra == 'group-5-onetl-test-spark-3-5' and extra == 'group-5-onetl-test-spark-4-0')" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/20/28/e6f1a6f655d620846bd9df527390ecc26b3805a0c5989048c210e22c5ca9/virtualenv-20.35.4.tar.gz", hash = "sha256:643d3914d73d3eeb0c552cbb12d7e82adf0e504dbf86a3182f8771a153a1971c", size = 6028799, upload-time = "2025-10-29T06:57:40.511Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/0c/c05523fa3181fdf0c9c52a6ba91a23fbf3246cc095f26f6516f9c60e6771/virtualenv-20.35.4-py3-none-any.whl", hash = "sha256:c21c9cede36c9753eeade68ba7d523529f228a403463376cf821eaae2b650f1b", size = 6005095, upload-time = "2025-10-29T06:57:37.598Z" },
 ]
 
 [[package]]

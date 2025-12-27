@@ -59,13 +59,13 @@ Install pre-commit hooks:
 
 .. code:: bash
 
-    pre-commit install --install-hooks
+    prek install --install-hooks
 
 Test pre-commit hooks run:
 
 .. code:: bash
 
-    pre-commit run
+    prek run
 
 How to
 ------
