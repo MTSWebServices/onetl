@@ -12,7 +12,7 @@ dirty_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}.dirty"
 [project]
 name = "onetl"
 description = "One ETL tool to rule them all"
-license = {text = "Apache-2.0", file = "LICENSE.txt"}
+license = {text = "Apache-2.0"}
 authors = [{name= "MWS Data Bridge", email = "onetools@mts.ru"}]
 classifiers = [
     "Development Status :: 4 - Beta",
