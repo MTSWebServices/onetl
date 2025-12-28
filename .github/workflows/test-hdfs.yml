@@ -85,7 +85,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export PYTEST=coverage run -m pytest
+          export "PYTEST=coverage run -m pytest"
           echo "127.0.0.1 hdfs" | sudo tee -a /etc/hosts
           make test-spark UV_ARGS="--extra hdfs --extra kerberos" PYTEST_ARGS="-n logical -m hdfs"
         env:

@@ -57,7 +57,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export PYTEST=coverage run -m pytest
+          export "PYTEST=coverage run -m pytest"
           make test-no-spark UV_ARGS="--extra ftp" PYTEST_ARGS="-m ftp"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}

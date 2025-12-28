@@ -81,7 +81,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export PYTEST=coverage run -m pytest
+          export "PYTEST=coverage run -m pytest"
           make test-spark UV_ARGS="--group test-mysql" PYTEST_ARGS="-m mysql"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
