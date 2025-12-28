@@ -80,7 +80,7 @@ jobs:
           SPARK_VERSION: ${{ inputs.spark-version }}
 
       - name: Upload coverage results
-        if: always()
+        if: success() || failure()
         uses: actions/upload-artifact@v6
         with:
           name: coverage-local-fs-spark${{ inputs.spark-version }}

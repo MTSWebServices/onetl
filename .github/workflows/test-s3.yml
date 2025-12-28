@@ -115,7 +115,7 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
-        if: always()
+        if: success() || failure()
         uses: actions/upload-artifact@v6
         with:
           name: coverage-s3-${{ inputs.minio-version }}-spark${{ inputs.spark-version }}

@@ -332,7 +332,12 @@ jobs:
     name: Tests done
     runs-on: ubuntu-latest
 
-    if: always()
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+
+    if: success() || failure()
     needs:
       - tests-core
       - tests-clickhouse
