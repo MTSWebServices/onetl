@@ -386,7 +386,9 @@ jobs:
           report_paths: reports/junit/*.xml
 
       - name: Generate coverage reports
-        run: ./combine_coverage.sh
+        run: |
+          uv run coverage combine
+          uv run coverage xml -o reports/coverage.xml -i
 
       - name: Coverage comment
         id: coverage
