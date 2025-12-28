@@ -66,7 +66,7 @@ test-spark: ##@Run tests with Spark
 		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 			${PYTEST} \
-				--junitxml=reports/junit/${GITHUB_JOB_NAME}.xml \
+				--junitxml="reports/junit/${GITHUB_JOB_NAME}.xml" \
 			$(PYTEST_ARGS)
 
 
@@ -76,7 +76,7 @@ test-no-spark: ##@Run tests without Spark installed
 		--group test \
 		--group test-pydantic-${PYDANTIC_VERSION} \
 			${PYTEST} \
-				--junitxml=reports/junit/${GITHUB_JOB_NAME}.xml \
+				--junitxml="reports/junit/${GITHUB_JOB_NAME}.xml" \
 				$(PYTEST_ARGS)
 
 
@@ -89,7 +89,7 @@ test-core: ##@Run core tests
 		--with-editable tests/libs/dummy \
 		--with-editable tests/libs/failing \
 			${PYTEST} \
-				--junitxml=reports/junit/${GITHUB_JOB_NAME}.xml \
+				--junitxml="reports/junit/${GITHUB_JOB_NAME}.xml" \
 				-m "not connection" \
 				$(PYTEST_ARGS)
 
