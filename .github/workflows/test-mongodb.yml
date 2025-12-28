@@ -81,7 +81,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/mongodb-${RANDOM}.xml"
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/mongodb-${RANDOM}.xml"
           make test-spark UV_ARGS="--group test-mongodb" PYTEST_ARGS="-m mongodb"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}

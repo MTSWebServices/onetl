@@ -57,7 +57,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/samba-${RANDOM}.xml"
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/samba-${RANDOM}.xml"
           make test-no-spark UV_ARGS="--extra samba" PYTEST_ARGS="-m samba"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}

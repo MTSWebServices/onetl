@@ -62,9 +62,9 @@ jobs:
 
       - name: Run tests
         run: |
-          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/core-${RANDOM}.xml"
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/core-${RANDOM}.xml"
           make test-core
-          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/doctest-${RANDOM}.xml"
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/doctest-${RANDOM}.xml"
           make test-doctest
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
