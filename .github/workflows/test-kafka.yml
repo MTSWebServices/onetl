@@ -34,6 +34,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - uses: qoomon/actions--context@v4
+
       - name: Start Kafka
         run: |
           docker compose --profile all down -v --remove-orphans

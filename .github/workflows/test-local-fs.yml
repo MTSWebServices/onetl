@@ -31,6 +31,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - uses: qoomon/actions--context@v4
+
       - name: Set up Java ${{ inputs.java-version }}
         uses: actions/setup-java@v5
         with:
@@ -70,17 +72,13 @@ jobs:
             ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
             ${{ runner.os }}-python${{ inputs.python-version }}-
 
-      - name: Install dependencies
-        run: |
-          uv sync \
-            --group test \
-            --group test-spark-${{ inputs.spark-version }} \
-            --group test-pydantic-${{ inputs.pydantic-version }}
-
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          uv run coverage run -m "local_fs and not iceberg" --junitxml=reports/junit/local-fs-spark${{ inputs.spark-version }}.xml
+          make test-spark PYTEST_ARGS="-m 'local_fs and not iceberg'"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
 
       - name: Upload coverage results
         if: always()

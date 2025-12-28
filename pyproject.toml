@@ -121,6 +121,7 @@ all = [
 
 [dependency-groups]
 test-clickhouse = ["clickhouse-driver"]
+test-greenplum = ["psycopg2-binary"]
 test-kafka = ["confluent-kafka"]
 test-mongodb = ["pymongo"]
 test-mssql = ["pymssql"]

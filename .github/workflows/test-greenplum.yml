@@ -43,6 +43,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - uses: qoomon/actions--context@v4
+
       - name: Start Grenplum
         run: |
           docker compose --profile all down -v --remove-orphans
