@@ -11,6 +11,7 @@ PYTHON = ${VIRTUAL_ENV}/bin/python
 PIP = ${VIRTUAL_ENV}/bin/pip
 UV ?= ${VIRTUAL_ENV}/bin/uv
 PYTEST ?= pytest
+RUN_ID = $$(bash -c 'echo ${RANDOM}')
 
 # Fix docker build and docker compose build using different backends
 COMPOSE_DOCKER_CLI_BUILD = 1
@@ -66,7 +67,7 @@ test-spark: ##@Run tests with Spark
 		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 			${PYTEST} \
-				--junitxml="reports/junit/${RANDOM}.xml" \
+				--junitxml="reports/junit/${RUN_ID}.xml" \
 			$(PYTEST_ARGS)
 
 
@@ -76,7 +77,7 @@ test-no-spark: ##@Run tests without Spark installed
 		--group test \
 		--group test-pydantic-${PYDANTIC_VERSION} \
 			${PYTEST} \
-				--junitxml="reports/junit/${RANDOM}.xml" \
+				--junitxml="reports/junit/${RUN_ID}.xml" \
 				$(PYTEST_ARGS)
 
 
@@ -89,7 +90,7 @@ test-core: ##@Run core tests
 		--with-editable tests/libs/dummy \
 		--with-editable tests/libs/failing \
 			${PYTEST} \
-				--junitxml="reports/junit/${RANDOM}.xml" \
+				--junitxml="reports/junit/${RUN_ID}.xml" \
 				-m "not connection" \
 				$(PYTEST_ARGS)
 
@@ -101,7 +102,7 @@ test-doctest: ##@Run documentation tests
 		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 			${PYTEST} \
-				--junitxml="reports/junit/${RANDOM}.xml" \
+				--junitxml="reports/junit/${RUN_ID}.xml" \
 				--doctest-modules onetl/_util onetl/hooks onetl/file/filter onetl/file/limit onetl/hwm/store/hwm_class_registry.py \
 				$(PYTEST_ARGS)
 
