@@ -2,6 +2,7 @@
 
 include .env.local
 
+SPARK_EXTERNAL_IP=$$(docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
 VERSION = develop
 SPARK_VERSION ?= 3.5
 PYDANTIC_VERSION ?= 2
@@ -91,6 +92,18 @@ test-core: ##@Run core tests
 			${PYTEST} \
 				--junitxml="reports/junit/${GITHUB_RUN_ID}.xml" \
 				-m "not connection" \
+				$(PYTEST_ARGS)
+
+
+test-doctest: ##@Run documentation tests
+	uv run \
+		$(UV_ARGS) \
+		--group test \
+		--group test-pydantic-${PYDANTIC_VERSION} \
+		--group test-spark-${SPARK_VERSION} \
+			${PYTEST} \
+				--junitxml="reports/junit/${GITHUB_RUN_ID}.xml" \
+				--doctest-modules onetl/_util onetl/hooks onetl/file/filter onetl/file/limit onetl/hwm/store/hwm_class_registry.py \
 				$(PYTEST_ARGS)
 
 

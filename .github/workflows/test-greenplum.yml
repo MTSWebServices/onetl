@@ -96,11 +96,11 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export ONETL_GP_PACKAGE_VERSION=${{ inputs.package-version }}
           make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
           SPARK_VERSION: ${{ inputs.spark-version }}
+          ONETL_GP_PACKAGE_VERSION: ${{ inputs.package-version }}
           GREENPLUM_PACKAGES_USER: ${{ secrets.GREENPLUM_PACKAGES_USER }}
           GREENPLUM_PACKAGES_PASSWORD: ${{ secrets.GREENPLUM_PACKAGES_PASSWORD }}
 
@@ -109,6 +109,8 @@ jobs:
           mkdir reports/ || echo "Directory exists"
           make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum -k 'tests_core_integration or tests_db_connection_integration'"
         env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
           ONETL_GP_PACKAGE_VERSION: ${{ inputs.package-version }}
           ONETL_GP_PORT: 6433
           GREENPLUM_PACKAGES_USER: ${{ secrets.GREENPLUM_PACKAGES_USER }}
