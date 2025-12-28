@@ -388,7 +388,7 @@ jobs:
       - name: Generate coverage reports
         run: |
           uv run coverage combine
-          uv run coverage xml -o reports/coverage.xml -i
+          uv run coverage xml -o reports/coverage.xml
 
       - name: Coverage comment
         id: coverage
