@@ -346,18 +346,23 @@ data_file = "reports/.coverage"
 [tool.coverage.report]
 precision = 2
 exclude_lines = [
-  "pragma: no cover",
-  "def __repr__",
-  "if .*debug",
-  "raise AssertionError",
-  "raise NotImplementedError",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-  "if logger.isEnabledFor",
-  "if sys.version_info",
-  "@(abc\\.)?abstractmethod",
-  "\\.\\.\\.",
-  "def downgrade\\(\\)",
+    "pragma: no cover",
+    "no cover: start(?s:.)*?no cover: stop",
+    "def __repr__",
+    "if .*debug",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if logger.isEnabledFor",
+    "class .*\bProtocol:",
+    "@(abc\\.)?abstractmethod",
+    "if pyspark_version",
+    "if spark_version",
+    "spark = SparkSession._instantiatedSession",
+    "if sys.version_info",
+    "except .*ImportError",
+    "\\.\\.\\.",
 ]
 
 [tool.towncrier]
