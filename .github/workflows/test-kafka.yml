@@ -81,6 +81,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
+          export PYTEST=coverage run -m pytest
           make test-spark UV_ARGS="--group test-kafka" PYTEST_ARGS="-m kafka"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}

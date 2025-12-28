@@ -73,6 +73,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
+          export PYTEST=coverage run -m pytest
           make test-spark PYTEST_ARGS="-n logical -m 'hive or (iceberg and local_fs)'"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}

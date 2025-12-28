@@ -63,6 +63,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
+          export PYTEST=coverage run -m pytest
           make test-no-spark UV_ARGS="--extra webdav" PYTEST_ARGS="-m webdav"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
