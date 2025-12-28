@@ -106,7 +106,7 @@ jobs:
           mkdir reports/ || echo "Directory exists"
           make test-spark UV_ARGS="--group test-oracle" PYTEST_ARGS="-m oracle"
         env:
-          ONETL_ORA_SERVICE_NAME: ${{ inputs.db-name }}"
+          ONETL_ORA_SERVICE_NAME: ${{ inputs.db-name }}
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
           SPARK_VERSION: ${{ inputs.spark-version }}
 
