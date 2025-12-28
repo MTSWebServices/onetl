@@ -356,6 +356,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Download all coverage reports
+        uses: actions/download-artifact@v7
+        with:
+          path: reports/
+          pattern: coverage-*
+          merge-multiple: true
+
+      - name: Show test results
+        uses: mikepenz/action-junit-report@v5
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: reports/junit/*.xml
+
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
         uses: actions/setup-python@v6
         with:
@@ -370,20 +383,7 @@ jobs:
       # no uv cache here because fresh install takes about 1 second
 
       - name: Install dependencies
-        run: uv sync --only-group test
-
-      - name: Download all coverage reports
-        uses: actions/download-artifact@v7
-        with:
-          path: reports/
-          pattern: coverage-*
-          merge-multiple: true
-
-      - name: Show test results
-        uses: mikepenz/action-junit-report@v5
-        if: success() || failure() # always run even if the previous step fails
-        with:
-          report_paths: reports/junit/*.xml
+        run: uv sync --group test
 
       - name: Generate coverage reports
         run: |
