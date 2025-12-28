@@ -111,13 +111,13 @@ Run tests:
 
 .. code:: bash
 
-    docker-compose run --rm onetl ./run_tests.sh
+    docker-compose run --rm onetl pytest
 
 You can pass additional arguments, they will be passed to pytest:
 
 .. code:: bash
 
-    docker-compose run --rm onetl ./run_tests.sh -m mongodb -lsx -vvvv --log-cli-level=INFO
+    docker-compose run --rm onetl pytest -m mongodb -lsx -vvvv --log-cli-level=INFO
 
 You can run interactive bash session and use it:
 
@@ -125,7 +125,7 @@ You can run interactive bash session and use it:
 
     docker-compose run --rm onetl bash
 
-    ./run_tests.sh -m mongodb -lsx -vvvv --log-cli-level=INFO
+    pytest -m mongodb -lsx -vvvv --log-cli-level=INFO
 
 See logs of test container:
 
@@ -179,23 +179,24 @@ You can run limited set of dependencies:
 
     docker-compose --profile mongodb up -d
 
-Load environment variables with connection properties:
+Run core tests:
 
 .. code:: bash
 
-    source .env.local
+    make test-core
 
-Run tests:
+Run specific connection tests:
 
 .. code:: bash
 
-    ./run_tests.sh
+    make test-spark PYTEST_ARGS="-m mongodb"
+    make test-no-spark PYTEST_ARGS="-m ftp"
 
 You can pass additional arguments, they will be passed to pytest:
 
 .. code:: bash
 
-    ./run_tests.sh -m mongodb -lsx -vvvv --log-cli-level=INFO
+    make test-spark PYTEST_ARGS="-m mongodb -lsx -vvvv --log-cli-level=INFO"
 
 Stop all containers and remove created volumes:
 

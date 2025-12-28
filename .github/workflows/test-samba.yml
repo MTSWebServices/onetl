@@ -46,24 +46,7 @@ jobs:
           activate-environment: "true"
           enable-cache: "false"
 
-      # astral-sh/setup-uv cannot restore multiple keys
-      - name: Cache uv
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-${{ hashFiles('uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-${{ hashFiles('uv.lock') }}
-            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
-            ${{ runner.os }}-python${{ inputs.python-version }}-
-
-      - name: Install dependencies
-        run: |
-          uv sync \
-            --no-install-project \
-            --extra samba \
-            --group test \
-            --group test-pydantic-${{ inputs.pydantic-version }}
+      # no uv cache here because fresh install takes about 1 second
 
       - name: Wait for Samba to be ready
         run: |
@@ -74,8 +57,9 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -m samba
+          make test-no-spark UV_ARGS="--extra samba" PYTEST_ARGS="-m samba"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
 
       - name: Dump Samba logs on failure
         if: failure()
@@ -88,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: container-logs-samba-${{ inputs.server-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-samba-${{ inputs.server-version }}-python-${{ inputs.python-version }}
           path: logs/*
 
       - name: Shutdown Samba
@@ -97,9 +81,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-samba-${{ inputs.server-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-samba-${{ inputs.server-version }}-python-${{ inputs.python-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

@@ -9,8 +9,8 @@ VIRTUAL_ENV ?= .venv
 PYTHON = ${VIRTUAL_ENV}/bin/python
 PIP = ${VIRTUAL_ENV}/bin/pip
 UV ?= ${VIRTUAL_ENV}/bin/uv
-PYTEST = ${VIRTUAL_ENV}/bin/pytest
-COVERAGE = ${VIRTUAL_ENV}/bin/coverage
+PYTEST ?= pytest
+GITHUB_JOB_NAME ?= something
 
 # Fix docker build and docker compose build using different backends
 COMPOSE_DOCKER_CLI_BUILD = 1
@@ -42,7 +42,6 @@ venv-cleanup: ##@Env Cleanup venv
 venv-install: ##@Env Install requirements to venv
 	${UV} sync \
 		--inexact \
-		--no-install-project \
 		--all-extras \
 		--group dev \
 		--group docs \
@@ -55,9 +54,44 @@ venv-install: ##@Env Install requirements to venv
 		--group test-postgres \
 		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
-		$(ARGS)
+		$(UV_ARGS)
 
 	${UV} pip install --no-deps sphinx-plantuml
+
+
+test-spark: ##@Run tests with Spark
+	uv run \
+		$(UV_ARGS) \
+		--group test \
+		--group test-pydantic-${PYDANTIC_VERSION} \
+		--group test-spark-${SPARK_VERSION} \
+			${PYTEST} \
+				--junitxml=reports/junit/${GITHUB_JOB_NAME}.xml \
+			$(PYTEST_ARGS)
+
+
+test-no-spark: ##@Run tests without Spark installed
+	uv run \
+		$(UV_ARGS) \
+		--group test \
+		--group test-pydantic-${PYDANTIC_VERSION} \
+			${PYTEST} \
+				--junitxml=reports/junit/${GITHUB_JOB_NAME}.xml \
+				$(PYTEST_ARGS)
+
+
+test-core: ##@Run core tests
+	uv run \
+		$(UV_ARGS) \
+		--group test \
+		--group test-pydantic-${PYDANTIC_VERSION} \
+		--group test-spark-${SPARK_VERSION} \
+		--with-editable tests/libs/dummy \
+		--with-editable tests/libs/failing \
+			${PYTEST} \
+				--junitxml=reports/junit/${GITHUB_JOB_NAME}.xml \
+				-m "not connection" \
+				$(PYTEST_ARGS)
 
 
 .PHONY: docs

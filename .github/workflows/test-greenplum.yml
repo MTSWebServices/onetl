@@ -87,15 +87,6 @@ jobs:
             ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
             ${{ runner.os }}-python${{ inputs.python-version }}-
 
-      - name: Install dependencies
-        run: |
-          uv sync \
-            --no-install-project \
-            --group test \
-            --group test-postgres \
-            --group test-spark-${{ inputs.spark-version }} \
-            --group test-pydantic-${{ inputs.pydantic-version }}
-
       - name: Wait for Grenplum to be ready
         run: |
           docker compose --profile greenplum up -d --wait --wait-timeout 200
@@ -105,22 +96,21 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
           export ONETL_GP_PACKAGE_VERSION=${{ inputs.package-version }}
-          ./pytest_runner.sh -m greenplum
+          make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum"
         env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
           GREENPLUM_PACKAGES_USER: ${{ secrets.GREENPLUM_PACKAGES_USER }}
           GREENPLUM_PACKAGES_PASSWORD: ${{ secrets.GREENPLUM_PACKAGES_PASSWORD }}
 
       - name: Run tests with PGBouncer
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          export ONETL_GP_PACKAGE_VERSION=${{ inputs.package-version }}
-          export ONETL_GP_PORT=6433
-          # Run only some basic tests
-          ./pytest_runner.sh -m greenplum  -k "tests_core_integration or tests_db_connection_integration"
+          make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum -k 'tests_core_integration or tests_db_connection_integration'"
         env:
+          ONETL_GP_PACKAGE_VERSION: ${{ inputs.package-version }}
+          ONETL_GP_PORT: 6433
           GREENPLUM_PACKAGES_USER: ${{ secrets.GREENPLUM_PACKAGES_USER }}
           GREENPLUM_PACKAGES_PASSWORD: ${{ secrets.GREENPLUM_PACKAGES_PASSWORD }}
 
@@ -135,7 +125,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: container-logs-greenplum-${{ inputs.greenplum-version }}-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-greenplum-${{ inputs.greenplum-version }}-spark${{ inputs.spark-version }}
           path: logs/*
 
       - name: Shutdown Greenplum
@@ -144,9 +134,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-greenplum-${{ inputs.greenplum-version }}-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-greenplum-${{ inputs.greenplum-version }}-spark${{ inputs.spark-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

@@ -48,14 +48,6 @@ jobs:
 
       # no uv cache here because fresh install takes about 1 second
 
-      - name: Install dependencies
-        run: |
-          uv sync \
-            --no-install-project \
-            --extra ftps \
-            --group test \
-            --group test-pydantic-${{ inputs.pydantic-version }}
-
       - name: Wait for FTPS to be ready
         run: |
           docker compose --profile ftps up -d --wait --wait-timeout 200
@@ -65,8 +57,9 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -m ftps
+          make test-no-spark UV_ARGS="--extra ftps" PYTEST_ARGS="-m ftps"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
 
       - name: Dump FTPS logs on failure
         if: failure()
@@ -79,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: container-logs-ftps-${{ inputs.ftps-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-ftps-${{ inputs.ftps-version }}-python-${{ inputs.python-version }}
           path: logs/*
 
       - name: Shutdown FTPS
@@ -88,9 +81,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-ftps-${{ inputs.ftps-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-ftps-${{ inputs.ftps-version }}-python-${{ inputs.python-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

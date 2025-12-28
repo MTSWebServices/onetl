@@ -60,24 +60,19 @@ jobs:
             ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
             ${{ runner.os }}-python${{ inputs.python-version }}-
 
-      - name: Install dependencies
-        run: |
-          uv sync \
-            --no-install-project \
-            --group test \
-            --group test-spark-${{ inputs.spark-version }} \
-            --group test-pydantic-${{ inputs.pydantic-version }}
-          uv pip install pip
-
       - name: Run tests
         run: |
-          ./run_tests.sh -m 'not connection'
-          ./run_tests.sh onetl/_util onetl/hooks onetl/file/filter onetl/file/limit onetl/hwm/store/hwm_class_registry.py
+          make test-core PYTEST_ARGS="-m 'not connection'"
+          make test-no-spark PYTEST_ARGS="onetl/_util onetl/hooks onetl/file/filter onetl/file/limit onetl/hwm/store/hwm_class_registry.py"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
 
       - name: Upload coverage results
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-core-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-core-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

@@ -328,13 +328,11 @@ markers = [
     "xml: XML tests",
     "avro: Avro tests",
     "excel: Excel tests",
-    "iceberg: Icegerg tests",
+    "iceberg: Iceberg tests",
 ]
 
-[tool.coverage.paths]
-source = ["onetl"]
-
 [tool.coverage.run]
+source_pkg = ["onetl"]
 branch = true
 parallel = true
 relative_files = true

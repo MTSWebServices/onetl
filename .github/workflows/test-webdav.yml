@@ -54,14 +54,6 @@ jobs:
 
       # no uv cache here because fresh install takes about 1 second
 
-      - name: Install dependencies
-        run: |
-          uv sync \
-            --no-install-project \
-            --extra webdav \
-            --group test \
-            --group test-pydantic-${{ inputs.pydantic-version }}
-
       - name: Wait for WebDAV to be ready
         run: |
           docker compose --profile webdav up -d --wait --wait-timeout 200
@@ -71,8 +63,9 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -n 2 -m webdav
+          make test-no-spark UV_ARGS="--extra webdav" PYTEST_ARGS="-m webdav"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
 
       - name: Dump WebDAV logs on failure
         if: failure()
@@ -85,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: container-logs-webdav-${{ inputs.webdav-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-webdav-${{ inputs.webdav-version }}-python-${{ inputs.python-version }}
           path: logs/*
 
       - name: Shutdown WebDAV
@@ -94,9 +87,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-webdav-${{ inputs.webdav-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-webdav-${{ inputs.webdav-version }}-python-${{ inputs.python-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

@@ -73,7 +73,6 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync \
-            --no-install-project \
             --group test \
             --group test-spark-${{ inputs.spark-version }} \
             --group test-pydantic-${{ inputs.pydantic-version }}
@@ -81,13 +80,13 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -m "local_fs and not iceberg"
+          uv run coverage run -m "local_fs and not iceberg" --junitxml=reports/junit/local-fs-spark${{ inputs.spark-version }}.xml
 
       - name: Upload coverage results
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-local-fs-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-local-fs-spark${{ inputs.spark-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true
