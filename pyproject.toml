@@ -129,7 +129,7 @@ test-mysql = ["pymysql[rsa]"]
 test-oracle = ["cx_Oracle"]
 test-postgres = ["psycopg2-binary"]
 test-pydantic-1 = ["pydantic<2"]
-test-pydantic-2 = ["pydantic<3"]
+test-pydantic-2 = ["pydantic>=2,<3"]
 test-samba = ["pysmb"]
 "test-spark-3.2" = [
     "pyspark==3.2.4",
@@ -221,6 +221,11 @@ conflicts = [
         { group = "test-spark-3.5" },
         { group = "test-spark-4.0" },
     ],
+    [
+        { group = "docs" },
+        { group = "test-pydantic-1" },
+        { group = "test-pydantic-2" },
+    ]
 ]
 
 [tool.uv.dependency-groups]
