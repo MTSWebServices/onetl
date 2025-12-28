@@ -89,7 +89,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export "PYTEST=coverage run -m pytest"
+          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/s3-${RANDOM}.xml"
           make test-spark UV_ARGS="--extra s3" PYTEST_ARGS="-n logical -m s3"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}

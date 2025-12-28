@@ -81,7 +81,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export "PYTEST=coverage run -m pytest"
+          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/postgres-${RANDOM}.xml"
           make test-spark UV_ARGS="--group test-postgres" PYTEST_ARGS="-m postgres"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
@@ -90,6 +90,7 @@ jobs:
       - name: Run tests with PGBouncer
         run: |
           mkdir reports/ || echo "Directory exists"
+          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/postgres-pgbouncer-${RANDOM}.xml"
           make test-spark UV_ARGS="--group test-postgres" PYTEST_ARGS="-m postgres -k 'tests_core_integration or tests_db_connection_integration'"
         env:
           ONETL_PG_PORT: 6432

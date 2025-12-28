@@ -96,7 +96,7 @@ jobs:
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          export "PYTEST=coverage run -m pytest"
+          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/greenplum-${RANDOM}.xml"
           make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
@@ -108,6 +108,7 @@ jobs:
       - name: Run tests with PGBouncer
         run: |
           mkdir reports/ || echo "Directory exists"
+          export "PYTEST=coverage run -m pytest --junitxml="reports/junit/greenplum-pgbouncer-${RANDOM}.xml"
           make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum -k 'tests_core_integration or tests_db_connection_integration'"
         env:
           PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
