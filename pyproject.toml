@@ -333,7 +333,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source_pkg = ["onetl"]
+source_pkgs = ["onetl"]
 branch = true
 parallel = true
 relative_files = true
