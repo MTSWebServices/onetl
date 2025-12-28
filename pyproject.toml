@@ -1,5 +1,5 @@
 [build-system]
-requires = [ "setuptools>=41", "wheel", "setuptools-git-versioning>=2.0,<3", ]
+requires = [ "setuptools>=61.2", "setuptools-git-versioning>=2.0,<3"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools-git-versioning]
@@ -9,13 +9,11 @@ count_commits_from_version_file = true
 dev_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}"
 dirty_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}.dirty"
 
-
 [project]
 name = "onetl"
-license = { file = "LICENSE.txt" }
-description = "MWS Data Bridge"
+description = "One ETL tool to rule them all"
+license = {text = "Apache-2.0", file = "LICENSE.txt"}
 authors = [{name= "MWS Data Bridge", email = "onetools@mts.ru"}]
-readme = "README.rst"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Framework :: Pydantic",
@@ -58,6 +56,10 @@ dependencies = [
     "typing_extensions>=4.5.0; python_version > '3.7'",
 ]
 dynamic = ["version"]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
 
 [tool.setuptools.packages.find]
 include = ["onetl*"]
