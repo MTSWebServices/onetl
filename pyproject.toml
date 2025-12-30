@@ -191,7 +191,7 @@ dev = [
 ]
 docs = [
     # TODO: remove version limit after upgrading all Pydantic models to v2
-    "autodoc-pydantic~=1.9.1",
+    "autodoc-pydantic>=1.9.1,<2.3.0",
     "furo~=2025.12.19",
     "numpydoc~=1.10.0",
     "pygments-csv-lexer~=0.1.3",
