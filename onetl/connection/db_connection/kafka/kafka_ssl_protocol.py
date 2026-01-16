@@ -10,6 +10,7 @@ try:
 except (ImportError, AttributeError):
     from pydantic import Field, SecretStr, validator  # type: ignore[no-redef, assignment]
 
+from onetl._util.alias import avoid_alias
 from onetl._util.file import is_file_readable
 from onetl._util.spark import stringify
 from onetl.impl import GenericOptions, LocalPath
@@ -148,17 +149,25 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             )
     """
 
-    keystore_type: Optional[str] = Field(default=None, alias="ssl.keystore.type")
-    keystore_location: Optional[LocalPath] = Field(default=None, alias="ssl.keystore.location")
-    keystore_password: Optional[SecretStr] = Field(default=None, alias="ssl.keystore.password")
-    keystore_certificate_chain: Optional[str] = Field(default=None, alias="ssl.keystore.certificate.chain", repr=False)
-    keystore_key: Optional[SecretStr] = Field(default=None, alias="ssl.keystore.key")
+    keystore_type: Optional[str] = Field(default=None, alias=avoid_alias("ssl.keystore.type"))
+    keystore_location: Optional[LocalPath] = Field(default=None, alias=avoid_alias("ssl.keystore.location"))
+    keystore_password: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.keystore.password"))
+    keystore_certificate_chain: Optional[str] = Field(
+        default=None,
+        alias=avoid_alias("ssl.keystore.certificate.chain"),
+        repr=False,
+    )
+    keystore_key: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.keystore.key"))
     # https://knowledge.informatica.com/s/article/145442?language=en_US
-    key_password: Optional[SecretStr] = Field(default=None, alias="ssl.key.password")
-    truststore_type: str = Field(alias="ssl.truststore.type")
-    truststore_location: Optional[LocalPath] = Field(default=None, alias="ssl.truststore.location")
-    truststore_password: Optional[SecretStr] = Field(default=None, alias="ssl.truststore.password")
-    truststore_certificates: Optional[str] = Field(default=None, alias="ssl.truststore.certificates", repr=False)
+    key_password: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.key.password"))
+    truststore_type: str = Field(alias=avoid_alias("ssl.truststore.type"))
+    truststore_location: Optional[LocalPath] = Field(default=None, alias=avoid_alias("ssl.truststore.location"))
+    truststore_password: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.truststore.password"))
+    truststore_certificates: Optional[str] = Field(
+        default=None,
+        alias=avoid_alias("ssl.truststore.certificates"),
+        repr=False,
+    )
 
     class Config:
         known_options = frozenset(("ssl.*",))
