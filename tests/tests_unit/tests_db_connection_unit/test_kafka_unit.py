@@ -751,6 +751,26 @@ def test_kafka_ssl_protocol_with_raw_strings(spark_mock, prefix):
     }
 
 
+def test_kafka_ssl_protocol_with_no_keystore_params(spark_mock):
+    kafka = Kafka(
+        spark=spark_mock,
+        addresses=["some_address"],
+        cluster="cluster",
+        protocol=Kafka.SSLProtocol(
+            truststore_type="PEM",
+            truststore_certificates="<trusted-certificates>",
+        ),
+    )
+
+    options = kafka.protocol.get_options(kafka)
+
+    assert options == {
+        "ssl.truststore.type": "PEM",
+        "ssl.truststore.certificates": "<trusted-certificates>",
+        "security.protocol": "SSL",
+    }
+
+
 @pytest.mark.parametrize(
     ("keystore_type", "truststore_type"),
     [

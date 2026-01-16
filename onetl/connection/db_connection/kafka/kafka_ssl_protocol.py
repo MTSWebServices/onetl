@@ -35,49 +35,76 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
     Examples
     --------
 
-    Pass PEM key and certificates as files located on Spark driver host:
+    .. tabs::
 
-    .. code:: python
+        .. tab:: TLS (verify only server public certificate)
 
-        from pathlib import Path
+            Pass PEM certificate as files located on Spark driver host:
 
-        # Just read existing files located on host, and pass key and certificates as strings
-        protocol = Kafka.SSLProtocol(
-            keystore_type="PEM",
-            keystore_certificate_chain=Path("path/to/user.crt").read_text(),
-            keystore_key=Path("path/to/user.key").read_text(),
-            truststore_type="PEM",
-            truststore_certificates=Path("/path/to/server.crt").read_text(),
-        )
+            .. code:: python
 
-    Pass PEM key and certificates as raw strings:
+                from pathlib import Path
 
-    .. code:: python
+                # Just read existing files located on host, and pass key and certificates as strings
+                protocol = Kafka.SSLProtocol(
+                    truststore_type="PEM",
+                    truststore_certificates=Path("/path/to/server.crt").read_text(),
+                )
 
-        protocol = Kafka.SSLProtocol(
-            keystore_type="PEM",
-            keystore_certificate_chain="-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
-            keystore_key="-----BEGIN PRIVATE KEY-----\\...\\n-----END PRIVATE KEY-----",
-            truststore_type="PEM",
-            truststore_certificates="-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
-        )
+            Pass PEM certificate as raw string:
 
-    Pass custom options:
+            .. code:: python
 
-    .. code:: python
+                protocol = Kafka.SSLProtocol(
+                    truststore_type="PEM",
+                    truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                )
 
-        protocol = Kafka.SSLProtocol.parse(
-            {
-                # Just the same options as above, but using Kafka config naming with dots
-                "ssl.keystore.type": "PEM",
-                "ssl.keystore.certificate_chain": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
-                "ssl.keystore.key": "-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----",
-                "ssl.truststore.type": "PEM",
-                "ssl.truststore.certificates": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----",
-                # Any option starting from "ssl." is passed to Kafka client as-is
-                "ssl.protocol": "TLSv1.3",
-            }
-        )
+        .. tab:: mTLS (mutual certificate check of client and server)
+
+            Pass PEM key and certificates as files located on Spark driver host:
+
+            .. code:: python
+
+                from pathlib import Path
+
+                # Just read existing files located on host, and pass key and certificates as strings
+                protocol = Kafka.SSLProtocol(
+                    keystore_type="PEM",
+                    keystore_certificate_chain=Path("path/to/user.crt").read_text(),
+                    keystore_key=Path("path/to/user.key").read_text(),
+                    truststore_type="PEM",
+                    truststore_certificates=Path("/path/to/server.crt").read_text(),
+                )
+
+            Pass PEM key and certificates as raw strings:
+
+            .. code:: python
+
+                protocol = Kafka.SSLProtocol(
+                    keystore_type="PEM",
+                    keystore_certificate_chain="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                    keystore_key="-----BEGIN PRIVATE KEY...\\n...END PRIVATE KEY-----",
+                    truststore_type="PEM",
+                    truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                )
+
+        .. tab:: Custom Kafka client options
+
+            .. code:: python
+
+                protocol = Kafka.SSLProtocol.parse(
+                    {
+                        # Just the same options as above, but using Kafka config naming with dots
+                        "ssl.keystore.type": "PEM",
+                        "ssl.keystore.certificate_chain": "-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                        "ssl.keystore.key": "-----BEGIN PRIVATE KEY...\\n...END PRIVATE KEY-----",
+                        "ssl.truststore.type": "PEM",
+                        "ssl.truststore.certificates": "-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                        # Any option starting from "ssl." is passed to Kafka client as-is
+                        "ssl.protocol": "TLSv1.3",
+                    }
+                )
 
     .. dropdown:: Not recommended
 
@@ -85,7 +112,8 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
 
         Passing PEM certificates as files:
 
-        * ENCRYPT ``user.key`` file with password ``"some password"`` `using PKCS#8 scheme <https://www.mkssoftware.com/docs/man1/openssl_pkcs8.1.asp>`_.
+        * ENCRYPT ``user.key`` file with password ``"some password"`` `using
+          PKCS#8 scheme <https://www.mkssoftware.com/docs/man1/openssl_pkcs8.1.asp>`_.
         * Save encrypted key to file ``/path/to/user/encrypted_key_with_certificate_chain.pem``.
         * Then append user certificate to the end of this file.
         * Deploy this file (and server certificate too) to **EVERY** host Spark could run (both driver and executors).
@@ -120,7 +148,7 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             )
     """
 
-    keystore_type: str = Field(alias="ssl.keystore.type")
+    keystore_type: Optional[str] = Field(default=None, alias="ssl.keystore.type")
     keystore_location: Optional[LocalPath] = Field(default=None, alias="ssl.keystore.location")
     keystore_password: Optional[SecretStr] = Field(default=None, alias="ssl.keystore.password")
     keystore_certificate_chain: Optional[str] = Field(default=None, alias="ssl.keystore.certificate.chain", repr=False)
