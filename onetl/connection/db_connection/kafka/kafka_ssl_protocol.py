@@ -149,21 +149,43 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             )
     """
 
-    keystore_type: Optional[str] = Field(default=None, alias=avoid_alias("ssl.keystore.type"))
-    keystore_location: Optional[LocalPath] = Field(default=None, alias=avoid_alias("ssl.keystore.location"))
-    keystore_password: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.keystore.password"))
-    keystore_certificate_chain: Optional[str] = Field(
+    keystore_type: Optional[str] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.keystore.type"),
+    )
+    keystore_location: Optional[LocalPath] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.keystore.location"),
+    )
+    keystore_password: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.keystore.password"),
+    )
+    keystore_certificate_chain: Optional[str] = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.keystore.certificate.chain"),
         repr=False,
     )
-    keystore_key: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.keystore.key"))
+    keystore_key: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.keystore.key"),
+    )
+
     # https://knowledge.informatica.com/s/article/145442?language=en_US
-    key_password: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.key.password"))
-    truststore_type: str = Field(alias=avoid_alias("ssl.truststore.type"))
-    truststore_location: Optional[LocalPath] = Field(default=None, alias=avoid_alias("ssl.truststore.location"))
-    truststore_password: Optional[SecretStr] = Field(default=None, alias=avoid_alias("ssl.truststore.password"))
-    truststore_certificates: Optional[str] = Field(
+    key_password: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.key.password"),
+    )
+    truststore_type: str = Field(alias=avoid_alias("ssl.truststore.type"))  # type: ignore[literal-required]
+    truststore_location: Optional[LocalPath] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.truststore.location"),
+    )
+    truststore_password: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+        default=None,
+        alias=avoid_alias("ssl.truststore.password"),
+    )
+    truststore_certificates: Optional[str] = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.truststore.certificates"),
         repr=False,
