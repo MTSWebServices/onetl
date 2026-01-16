@@ -5,7 +5,7 @@ import pytest
 try:
     import pandas
 except ImportError:
-    pytest.skip("Missing pandas", allow_module_level=True)
+    pytest.skip("Missing pandas or pyspark", allow_module_level=True)
 
 from onetl import __version__ as onetl_version
 from onetl.connection import Clickhouse

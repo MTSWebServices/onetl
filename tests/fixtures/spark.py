@@ -50,6 +50,7 @@ def maven_packages(request):  # noqa: C901, PLR0912
     from onetl.file.format import XML, Avro, Excel
 
     pyspark_version = Version(pyspark.__version__)
+    version = (pyspark_version.major, pyspark_version.minor)
 
     # get markers from all downstream tests
     markers = set()
@@ -104,7 +105,6 @@ def maven_packages(request):  # noqa: C901, PLR0912
     if "excel" in markers:
         # There are package versions only for specific Spark versions,
         # see https://github.com/nightscape/spark-excel/issues/902
-        version = (pyspark_version.major, pyspark_version.minor)
         if version == (3, 2):
             packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="3.2.4"))
         elif version == (3, 3):
@@ -116,8 +116,8 @@ def maven_packages(request):  # noqa: C901, PLR0912
         elif version == (4, 0):
             packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="4.0.0"))
 
-    if "iceberg" in markers:
-        version = (pyspark_version.major, pyspark_version.minor)
+    # There is no package for Iceberg Runtime for Spark 4.1 for now
+    if "iceberg" in markers and version < (4, 1):
         iceberg_version = "1.4.3" if version == (3, 2) else "1.10.0"
         packages.extend(
             Iceberg.get_packages(

@@ -5,6 +5,8 @@ import pytest
 
 from onetl import __version__ as onetl_version
 from onetl._util.hadoop import get_hadoop_config
+from onetl._util.spark import get_spark_version
+from onetl._util.version import Version
 from onetl.connection import SparkS3
 
 pytestmark = [pytest.mark.s3, pytest.mark.file_df_connection, pytest.mark.connection]
@@ -86,8 +88,13 @@ def test_spark_s3_check_hadoop_config_reset(spark, s3_server, caplog):
         assert hadoop_conf.get(f"fs.s3a.bucket.{s3_server.bucket}.connection.timeout", None) is None
         assert hadoop_conf.get(f"fs.s3a.bucket.{s3_server.bucket}.committer.name", None) is None
         assert hadoop_conf.get(f"fs.s3a.bucket.{s3_server.bucket}.user.agent.prefix", None) is None
+
         # root config
-        assert hadoop_conf.get("fs.s3a.committer.name") == "file"
+        if get_spark_version(spark) >= Version("4.1"):
+            # https://issues.apache.org/jira/browse/SPARK-47618
+            assert hadoop_conf.get("fs.s3a.committer.name") == "magic"
+        else:
+            assert hadoop_conf.get("fs.s3a.committer.name") == "file"
         # fs.s3a.user.agent.prefix is set by wrong_s3.check() call
 
         # Hadoop configuration is reset, and new S3 connection uses valid options
