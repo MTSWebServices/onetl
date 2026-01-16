@@ -2,13 +2,13 @@ min: &min
   # elswork/samba image versions does not correlate with smbd version, it is always 4.x
   server-version: latest
   pydantic-version: 1
-  python-version: '3.7'
+  python-version: "3.7"
   os: ubuntu-22.04
 
 max: &max
   server-version: latest
   pydantic-version: 2
-  python-version: '3.13'
+  python-version: "3.13"
   os: ubuntu-latest
 
 matrix:

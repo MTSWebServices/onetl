@@ -1,11 +1,11 @@
 min: &min
   pydantic-version: 1
-  python-version: '3.7'
+  python-version: "3.7"
   os: ubuntu-22.04
 
 max: &max
   pydantic-version: 2
-  python-version: '3.14'
+  python-version: "3.14"
   os: ubuntu-latest
 
 matrix:

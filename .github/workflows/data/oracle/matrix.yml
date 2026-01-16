@@ -4,7 +4,7 @@
   db-name: XE
   spark-version: "3.2"
   pydantic-version: 1
-  python-version: '3.7'
+  python-version: "3.7"
   java-version: 8
   os: ubuntu-22.04
 
@@ -14,7 +14,7 @@
   db-name: FREEPDB1
   spark-version: "3.5"
   pydantic-version: 2
-  python-version: '3.13'
+  python-version: "3.13"
   java-version: 20
   os: ubuntu-latest
 
@@ -24,7 +24,7 @@
   db-name: FREEPDB1
   spark-version: "4.0"
   pydantic-version: 2
-  python-version: '3.14'
+  python-version: "3.14"
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest
@@ -35,7 +35,7 @@
   db-name: FREEPDB1
   spark-version: "4.1"
   pydantic-version: 2
-  python-version: '3.14'
+  python-version: "3.14"
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest
