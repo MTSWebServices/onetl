@@ -101,10 +101,12 @@ class Kafka(DBConnection):
 
         .. code:: python
 
-            extra = {
-                "group.id": "myGroup",
-                "request.timeout.ms": 120000,
-            }
+            Kafka(
+                extra={
+                    "group.id": "myGroup",
+                    "request.timeout.ms": 120000,
+                },
+            )
 
         .. warning::
 

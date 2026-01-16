@@ -42,7 +42,6 @@ All the topics messages have the same set of fields, see structure below:
 
 ``headers`` field is present in the dataframe only if ``Kafka.ReadOptions(include_headers=True)`` is passed (compatibility with Kafka 1.x).
 
-
 Value deserialization
 ---------------------
 
@@ -53,6 +52,17 @@ This could be done using following methods:
     * :obj:`JSON.parse_column <onetl.file.format.json.JSON.parse_column>`
     * :obj:`CSV.parse_column <onetl.file.format.csv.CSV.parse_column>`
     * :obj:`XML.parse_column <onetl.file.format.xml.XML.parse_column>`
+
+Or any other method provided by Spark or third-larty libraries which can parse ``BinaryType()`` column into useful data.
+
+GroupIds and offsets
+--------------------
+
+Regular Kafka consumers use ``subscrube(topic)`` method to notify Kafka that some new data from Kafka should be send to consumer if available.
+Offsets read by group are committed to Kafka, to guarantee at-least-once even if consumer failed somethere.
+
+Spark connector for Kafka is very different. It uses ``assign(topic)`` to read data manually from a topic.
+It doesn't commit offsets to Kafka, as the same data can be read multiple times, e.g. task failed and lost all its memory, new task will read this data again.
 
 Examples
 --------
