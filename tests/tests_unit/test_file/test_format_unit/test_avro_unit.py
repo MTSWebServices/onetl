@@ -12,14 +12,14 @@ pytestmark = [pytest.mark.avro]
     [
         # Detect Scala version by Spark version
         ("3.2.0", None, "org.apache.spark:spark-avro_2.12:3.2.0"),
-        ("3.5.7", None, "org.apache.spark:spark-avro_2.12:3.5.7"),
+        ("3.5.8", None, "org.apache.spark:spark-avro_2.12:3.5.8"),
         # Override Scala version
         ("3.2.0", "2.12", "org.apache.spark:spark-avro_2.12:3.2.0"),
         ("3.2.0", "2.12", "org.apache.spark:spark-avro_2.12:3.2.0"),
-        ("3.5.7", "2.12", "org.apache.spark:spark-avro_2.12:3.5.7"),
-        ("3.5.7", "2.13", "org.apache.spark:spark-avro_2.13:3.5.7"),
+        ("3.5.8", "2.12", "org.apache.spark:spark-avro_2.12:3.5.8"),
+        ("3.5.8", "2.13", "org.apache.spark:spark-avro_2.13:3.5.8"),
         # Scala version contain three digits when only two needed
-        ("3.5.7", "2.12.1", "org.apache.spark:spark-avro_2.12:3.5.7"),
+        ("3.5.8", "2.12.1", "org.apache.spark:spark-avro_2.12:3.5.8"),
     ],
 )
 def test_avro_get_packages(spark_version, scala_version, package):

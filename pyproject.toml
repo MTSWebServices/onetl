@@ -1,5 +1,5 @@
 [build-system]
-requires = [ "setuptools>=61.2", "setuptools-git-versioning>=2.0,<3"]
+requires = [ "setuptools>=61.2", "setuptools-git-versioning>=3.0,<4"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools-git-versioning]
@@ -156,7 +156,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-3.5" = [
-    "pyspark==3.5.7",
+    "pyspark==3.5.8",
     "numpy>=1.16",
     "pandas>=1.0",
     "pyarrow>=4.0",
@@ -223,6 +223,9 @@ conflicts = [
     ],
     [
         { group = "docs" },
+        { group = "test-pydantic-2" },
+    ],
+    [
         { group = "test-pydantic-1" },
         { group = "test-pydantic-2" },
     ]

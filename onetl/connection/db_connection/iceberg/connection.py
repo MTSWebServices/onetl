@@ -177,7 +177,7 @@ class Iceberg(DBConnection):
             from onetl.connection import Iceberg, SparkHDFS
             from pyspark.sql import SparkSession
 
-            maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.7")
+            maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
             spark = (
                 SparkSession.builder.appName("spark-app-name")
                 .config("spark.jars.packages", ",".join(maven_packages))
@@ -291,7 +291,7 @@ class Iceberg(DBConnection):
             from onetl.connection import Iceberg
 
             # Note: Iceberg 1.10.0 requires Java 11+
-            Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.7")
+            Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
         """
 
         version = Version(package_version).min_digits(3)

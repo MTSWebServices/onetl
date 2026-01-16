@@ -5,7 +5,6 @@ include .env.local
 SPARK_EXTERNAL_IP=$$(docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
 VERSION = develop
 SPARK_VERSION ?= 3.5
-PYDANTIC_VERSION ?= 2
 VIRTUAL_ENV ?= .venv
 PYTHON = ${VIRTUAL_ENV}/bin/python
 PIP = ${VIRTUAL_ENV}/bin/pip
@@ -52,7 +51,6 @@ venv-install: ##@Env Install requirements to venv
 		--group test-mysql \
 		--group test-oracle \
 		--group test-postgres \
-		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 		$(UV_ARGS)
 
@@ -63,7 +61,6 @@ test-spark: ##@Run tests with Spark
 	uv run \
 		$(UV_ARGS) \
 		--group test \
-		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 			${PYTEST} \
 			$(PYTEST_ARGS)
@@ -73,7 +70,6 @@ test-no-spark: ##@Run tests without Spark installed
 	uv run \
 		$(UV_ARGS) \
 		--group test \
-		--group test-pydantic-${PYDANTIC_VERSION} \
 			${PYTEST} \
 				$(PYTEST_ARGS)
 
@@ -82,7 +78,6 @@ test-core: ##@Run core tests
 	uv run \
 		$(UV_ARGS) \
 		--group test \
-		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 		--with-editable tests/libs/dummy \
 		--with-editable tests/libs/failing \
@@ -95,7 +90,6 @@ test-doctest: ##@Run documentation tests
 	uv run \
 		$(UV_ARGS) \
 		--group test \
-		--group test-pydantic-${PYDANTIC_VERSION} \
 		--group test-spark-${SPARK_VERSION} \
 			${PYTEST} \
 				--doctest-modules onetl/_util onetl/hooks onetl/file/filter onetl/file/limit onetl/hwm/store/hwm_class_registry.py \

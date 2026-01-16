@@ -205,7 +205,7 @@ or install PySpark explicitly:
 
 .. code:: bash
 
-    pip install onetl pyspark==3.5.7  # install a specific PySpark version
+    pip install onetl pyspark==3.5.8  # install a specific PySpark version
 
 or inject PySpark to ``sys.path`` in some other way BEFORE creating a class instance.
 **Otherwise connection object cannot be created.**
@@ -546,7 +546,7 @@ Read files directly from S3 path, convert them to dataframe, transform it and th
     setup_logging()
 
     # Initialize new SparkSession with Hadoop AWS libraries and Postgres driver loaded
-    maven_packages = SparkS3.get_packages(spark_version="3.5.7") + Postgres.get_packages()
+    maven_packages = SparkS3.get_packages(spark_version="3.5.8") + Postgres.get_packages()
     exclude_packages = SparkS3.get_exclude_packages()
     spark = (
         SparkSession.builder.appName("spark_app_onetl_demo")
