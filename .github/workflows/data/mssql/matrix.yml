@@ -18,11 +18,20 @@
   mssql-version: 2025-latest
   spark-version: "4.0"
   pydantic-version: 2
-  python-version: '3.13'
-  # https://stackoverflow.com/a/79017758/23601543
+  python-version: '3.14'
+  # https://issues.apache.org/jira/browse/SPARK-54276
+  java-version: 22
+  os: ubuntu-latest
+
+4_1_x: &4_1_x
+  mssql-version: 2025-latest
+  spark-version: "4.1"
+  pydantic-version: 2
+  python-version: '3.14'
+  # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest
 
 matrix:
   small: [*3_5_x]
-  full: [*3_2_x, *3_5_x, *4_0_x]
+  full: [*3_2_x, *3_5_x, *4_0_x, *4_1_x]

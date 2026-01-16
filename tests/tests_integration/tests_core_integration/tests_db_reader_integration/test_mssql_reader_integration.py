@@ -346,10 +346,13 @@ def test_mssql_reader_snapshot_with_partitioning_mode_mod_unsupported_column_typ
         },
     )
 
-    with pytest.raises(
-        Exception,
-        match=r"are incompatible in the modulo operator|Conversion failed .* to data type int",
-    ):
+    msg = (
+        r"are incompatible in the modulo operator|"
+        r"Conversion failed .* to data type int|"
+        r"The conversion of the varchar value .* overflowed an int column"
+    )
+
+    with pytest.raises(Exception, match=msg):
         table_df = reader.run()
         table_df.count()
 

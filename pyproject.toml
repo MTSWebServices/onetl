@@ -30,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Java Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -171,6 +172,14 @@ test-samba = ["pysmb"]
     "sqlalchemy",
     "setuptools",
 ]
+"test-spark-4.1" = [
+    "pyspark==4.1.1",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=11.0",
+    "sqlalchemy",
+    "setuptools",
+]
 test = [
     "coverage",
     "omegaconf",
@@ -220,6 +229,7 @@ conflicts = [
         { group = "test-spark-3.4" },
         { group = "test-spark-3.5" },
         { group = "test-spark-4.0" },
+        { group = "test-spark-4.1" },
     ],
     [
         { group = "docs" },
@@ -234,6 +244,7 @@ conflicts = [
 [tool.uv.dependency-groups]
 "test-spark-3.5" = {requires-python = ">=3.8"}
 "test-spark-4.0" = {requires-python = ">=3.9"}
+"test-spark-4.1" = {requires-python = ">=3.10"}
 dev = {requires-python = ">=3.12"}
 docs = {requires-python = ">=3.12"}
 
@@ -301,44 +312,6 @@ show_error_codes = true
 
 [tool.codespell]
 ignore-words-list = ["INOUT", "inout", "thirdparty"]
-
-[pytest.ini_options]
-testpaths = ["tests"]
-norecursedirs = [".git", "docker", "onetl"]
-cache_dir = ".pytest_cache"
-addopts = '--ignore-glob="tests/libs/**" --ignore-glob="tests/fixtures/**" --ignore-glob="tests/util/**" --ignore-glob="tests/resources/**"'
-log_cli_level = "INFO"
-markers = [
-    "connection: Tests which calls connection constructor or imports optional requirements",
-    "db_connection: Tests which requires PySpark to be installed",
-    "file_df_connection: Tests which requires PySpark to be installed",
-    "file_connection: Tests which imports optional requirements",
-    "clickhouse: Clickhouse tests",
-    "ftp: FTP tests",
-    "ftps: FTPS tests",
-    "greenplum: Greenplum tests",
-    "hdfs: HDFS tests",
-    "hive: Hive tests",
-    "kafka: Kafka tests",
-    "local_fs: LocalFS tests",
-    "mongodb: MongoDB tests",
-    "mssql: MSSQL tests",
-    "mysql: MySQL tests",
-    "oracle: Oracle tests",
-    "postgres: Postgres tests",
-    "s3: S3 tests",
-    "sftp: SFTP tests",
-    "samba: Samba tests",
-    "webdav: WebDAV tests",
-    "csv: CSV tests",
-    "json: JSON tests",
-    "orc: ORC tests",
-    "parquet: Parquet tests",
-    "xml: XML tests",
-    "avro: Avro tests",
-    "excel: Excel tests",
-    "iceberg: Iceberg tests",
-]
 
 [tool.coverage.run]
 source_pkgs = ["onetl"]

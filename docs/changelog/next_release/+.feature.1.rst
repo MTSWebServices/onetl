@@ -1,0 +1,2 @@
+Test Spark 4.1.x compatibility.
+For now, Iceberg & Excel packages have no versions support for that, but other packages already supporting Spark 4.0.x can be used freely.
