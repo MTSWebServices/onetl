@@ -54,7 +54,7 @@ repos:
         priority: 0
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
+    rev: v1.5.6
     hooks:
       - id: forbid-tabs
         priority: 0
@@ -106,13 +106,13 @@ repos:
         priority: 8
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.24
+    rev: 0.9.26
     hooks:
       - id: uv-lock
         priority: 8
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.11
+    rev: v0.14.13
     hooks:
       - id: ruff-format
         priority: 8
