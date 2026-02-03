@@ -93,10 +93,10 @@ def fix_pandas_df(
         column_name = column.lower()
 
         if "datetime" in column_name:
-            if df.dtypes[column] == "object":
+            if df.dtypes[column] in ("object", "str"):
                 df[column] = parse_datetime(df[column])
         elif "date" in column_name:
-            if df.dtypes[column] == "object":
+            if df.dtypes[column] in ("object", "str"):
                 df[column] = parse_date(df[column]).dt.date
             else:
                 df[column] = df[column].dt.date
