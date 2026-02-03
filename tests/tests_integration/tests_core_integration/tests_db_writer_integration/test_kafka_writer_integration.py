@@ -172,7 +172,7 @@ def test_kafka_writer_key_column(spark, kafka_processing, kafka_spark_df):
     assert len(pd_df) == df.count()
     processing.assert_equal_df(
         df,
-        other_frame=pd_df.drop(columns=["partition", "headers", "topic"], axis=1),
+        other_frame=pd_df.drop(columns=["partition", "headers", "topic"]),
     )
 
 
@@ -248,7 +248,7 @@ def test_kafka_writer_headers(spark, kafka_processing, kafka_spark_df):
 
     processing.assert_equal_df(
         df,
-        other_frame=pd_df.drop(columns=["key", "partition", "topic"], axis=1),
+        other_frame=pd_df.drop(columns=["key", "partition", "topic"]),
     )
 
 
@@ -296,7 +296,7 @@ def test_kafka_writer_mode(spark, kafka_processing, kafka_spark_df):
 
     # Check that second dataframe record is appended to first dataframe in same topic
     processing.assert_equal_df(
-        pd_df.drop(columns=["headers"], axis=1),
+        pd_df.drop(columns=["headers"]),
         other_frame=read_df.union(read_df),
     )
 

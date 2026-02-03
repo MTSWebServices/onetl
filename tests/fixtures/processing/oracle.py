@@ -170,6 +170,6 @@ class OracleProcessing(BaseProcessing):
                 # I'm not sure why, but something does not support reading milliseconds from Oracle.
                 # It's probably Oracle JDBC Dialect, but I'm not sure.
                 # Just cut them off.
-                df[column] = df[column].dt.floor("S")
+                df[column] = df[column].dt.floor("s")
 
         return df
