@@ -49,8 +49,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          activate-environment: "true"
-          enable-cache: "false"
+          activate-environment: 'true'
+          enable-cache: 'false'
 
       # no uv cache here because fresh install takes about 1 second
 

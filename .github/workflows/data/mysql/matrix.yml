@@ -2,34 +2,34 @@
   # Tags 5.7.6-5.6.12 cannot be downloaded since Docker v26:
   # "Docker Image Format v1 and Docker Image manifest version 2, schema 1 support is disabled by default"
   mysql-version: 5.7.13
-  spark-version: "3.2"
+  spark-version: '3.2'
   pydantic-version: 1
-  python-version: "3.7"
+  python-version: '3.7'
   java-version: 8
   os: ubuntu-22.04
 
 3_5_x: &3_5_x
   mysql-version: 9.5.0
-  spark-version: "3.5"
+  spark-version: '3.5'
   pydantic-version: 2
-  python-version: "3.13"
+  python-version: '3.13'
   java-version: 20
   os: ubuntu-latest
 
 4_0_x: &4_0_x
   mysql-version: 9.5.0
-  spark-version: "4.0"
+  spark-version: '4.0'
   pydantic-version: 2
-  python-version: "3.14"
+  python-version: '3.14'
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest
 
 4_1_x: &4_1_x
   mysql-version: 9.5.0
-  spark-version: "4.1"
+  spark-version: '4.1'
   pydantic-version: 2
-  python-version: "3.14"
+  python-version: '3.14'
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest

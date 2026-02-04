@@ -1,12 +1,12 @@
 min: &min
   pydantic-version: 1
-  python-version: "3.7"
+  python-version: '3.7'
   os: ubuntu-22.04
 
 max: &max
   pydantic-version: 2
   # pydantic v1 fails with `TypeError: cannot pickle 'cell' object` on FTPS, but not on FTP`
-  python-version: "3.13"
+  python-version: '3.13'
   os: ubuntu-latest
 
 matrix:

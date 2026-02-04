@@ -64,8 +64,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          activate-environment: "true"
-          enable-cache: "false"
+          activate-environment: 'true'
+          enable-cache: 'false'
 
       # astral-sh/setup-uv cannot restore multiple keys
       - name: Cache uv

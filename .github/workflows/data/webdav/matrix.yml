@@ -2,13 +2,13 @@ min: &min
   # chonjay21/webdav image has only latest tag
   webdav-version: latest
   pydantic-version: 1
-  python-version: "3.7"
+  python-version: '3.7'
   os: ubuntu-22.04
 
 max: &max
   webdav-version: latest
   pydantic-version: 2
-  python-version: "3.14"
+  python-version: '3.14'
   os: ubuntu-latest
 
 matrix:

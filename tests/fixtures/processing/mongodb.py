@@ -138,7 +138,7 @@ class MongoDBProcessing(BaseProcessing):
         return datetime.now()
 
     def create_pandas_df(self, min_id: int = 1, max_id: int | None = None) -> pandas.DataFrame:
-        max_id = max_id if max_id else self._df_max_length
+        max_id = max_id or self._df_max_length
         time_multiplier = 100000
 
         values = defaultdict(list)

@@ -2,34 +2,34 @@
   # prior image versions doesn't support directory markers (empty objects with path ending with /)
   minio-version: 2021.12.9
   # Minimal Spark version with Hadoop 3.x support
-  spark-version: "3.2"
+  spark-version: '3.2'
   pydantic-version: 1
-  python-version: "3.7"
+  python-version: '3.7'
   java-version: 8
   os: ubuntu-22.04
 
 3_5_x: &3_5_x
   minio-version: 2025.7.23
-  spark-version: "3.5"
+  spark-version: '3.5'
   pydantic-version: 2
-  python-version: "3.13"
+  python-version: '3.13'
   java-version: 20
   os: ubuntu-latest
 
 4_0_x: &4_0_x
   minio-version: 2025.7.23
-  spark-version: "4.0"
+  spark-version: '4.0'
   pydantic-version: 2
-  python-version: "3.14"
+  python-version: '3.14'
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest
 
 4_1_x: &4_1_x
   minio-version: 2025.7.23
-  spark-version: "4.1"
+  spark-version: '4.1'
   pydantic-version: 2
-  python-version: "3.14"
+  python-version: '3.14'
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest

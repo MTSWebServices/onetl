@@ -384,7 +384,7 @@ class S3(FileConnection):
 
     def _extract_stat_from_entry(self, top: RemotePath, entry: Object) -> RemotePathStat:
         return RemotePathStat(
-            st_size=entry.size if entry.size else 0,
+            st_size=entry.size or 0,
             st_mtime=entry.last_modified.timestamp() if entry.last_modified else None,
             st_uid=entry.owner_name or entry.owner_id,
         )
