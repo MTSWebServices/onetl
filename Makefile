@@ -2,7 +2,7 @@
 
 include .env.local
 
-SPARK_EXTERNAL_IP=$$(docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
+export SPARK_EXTERNAL_IP := $(shell docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
 VERSION = develop
 SPARK_VERSION ?= 3.5
 VIRTUAL_ENV ?= .venv
