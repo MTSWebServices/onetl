@@ -6,6 +6,8 @@ import warnings
 from enum import Enum
 from typing import Optional
 
+from onetl.impl.generic_options import GenericOptions
+
 try:
     from pydantic.v1 import Field, root_validator
 except (ImportError, AttributeError):
@@ -72,7 +74,7 @@ class GreenplumTableExistBehavior(str, Enum):
         return None
 
 
-class GreenplumReadOptions(JDBCMixinOptions):
+class GreenplumReadOptions(GenericOptions):
     """VMware's Greenplum Spark connector reading options.
 
     .. warning::
@@ -105,6 +107,7 @@ class GreenplumReadOptions(JDBCMixinOptions):
     class Config:
         known_options = READ_OPTIONS | READ_WRITE_OPTIONS
         prohibited_options = JDBCMixinOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | WRITE_OPTIONS
+        extra = "allow"
 
     partition_column: Optional[str] = Field(alias="partitionColumn")
     """Column used to parallelize reading from a table.
@@ -207,7 +210,7 @@ class GreenplumReadOptions(JDBCMixinOptions):
     """
 
 
-class GreenplumWriteOptions(JDBCMixinOptions):
+class GreenplumWriteOptions(GenericOptions):
     """VMware's Greenplum Spark connector writing options.
 
     .. warning::
@@ -241,6 +244,7 @@ class GreenplumWriteOptions(JDBCMixinOptions):
     class Config:
         known_options = WRITE_OPTIONS | READ_WRITE_OPTIONS
         prohibited_options = JDBCMixinOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | READ_OPTIONS
+        extra = "allow"
 
     if_exists: GreenplumTableExistBehavior = Field(  # type: ignore[literal-required]
         default=GreenplumTableExistBehavior.APPEND,
