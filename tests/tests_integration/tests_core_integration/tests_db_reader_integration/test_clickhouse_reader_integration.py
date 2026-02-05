@@ -7,6 +7,7 @@ try:
 except ImportError:
     pytest.skip("Missing pandas", allow_module_level=True)
 
+from onetl._util.version import Version
 from onetl.connection import Clickhouse
 from onetl.db import DBReader
 from tests.util.rand import rand_str
@@ -461,7 +462,6 @@ def test_clickhouse_reader_snapshot_with_columns(spark, processing, load_table_d
     assert count_df.collect()[0][0] == table_df.count()
 
 
-@pytest.mark.xfail(reason="Clickhouse <24 deduplicated column names, but 24+ does not")
 def test_clickhouse_reader_snapshot_with_columns_duplicated(spark, processing, prepare_schema_table):
     clickhouse = Clickhouse(
         host=processing.host,
@@ -487,9 +487,16 @@ def test_clickhouse_reader_snapshot_with_columns_duplicated(spark, processing, p
         ],
     )
 
-    with pytest.raises(Exception, match="The column `id_int` already exists"):
+    df = clickhouse.fetch("SELECT version()")
+    version = df.collect()[0][0]
+    if not Version(version).major >= 24:
+        # Clickhouse <24 deduplicated column names
         df2 = reader2.run()
         assert df1.columns == df2.columns
+
+    else:
+        with pytest.raises(Exception, match="The column `id_int` already exists"):
+            reader2.run()
 
 
 def test_clickhouse_reader_snapshot_with_columns_mixed_naming(spark, processing, get_schema_table):

@@ -2,6 +2,8 @@ import logging
 
 import pytest
 
+from onetl._util.version import Version
+
 try:
     import pandas
 except ImportError:
@@ -288,7 +290,6 @@ def test_clickhouse_connection_execute_dml(request, spark, processing, load_tabl
     assert not clickhouse.fetch(f"SELECT * FROM {temp_table}{suffix}").count()
 
 
-@pytest.mark.xfail(reason="CREATE FUNCTION is not supported in Clickhouse < 21.20")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_clickhouse_connection_execute_function(
     request,
@@ -296,7 +297,6 @@ def test_clickhouse_connection_execute_function(
     processing,
     load_table_data,
     suffix,
-    caplog,
 ):
     clickhouse = Clickhouse(
         host=processing.host,
@@ -306,6 +306,11 @@ def test_clickhouse_connection_execute_function(
         database=processing.database,
         spark=spark,
     )
+
+    df = clickhouse.fetch("SELECT version()")
+    version = df.collect()[0][0]
+    if not Version(version) < Version("21.20"):
+        pytest.skip("CREATE FUNCTION is not supported in Clickhouse < 21.20")
 
     table = load_table_data.full_name
     func = f"{load_table_data.table}_func"

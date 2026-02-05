@@ -277,7 +277,6 @@ def test_greenplum_connection_dml(request, spark, processing, load_table_data, s
     assert not greenplum.fetch(f"SELECT * FROM {temp_table}{suffix}").count()
 
 
-@pytest.mark.xfail(reason="Greenplum prior to 7.x does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_greenplum_connection_execute_procedure(
     request,
@@ -295,6 +294,10 @@ def test_greenplum_connection_execute_procedure(
         spark=spark,
         extra=processing.extra,
     )
+    df = greenplum.fetch("SHOW gp_server_version")
+    version = df.collect()[0][0]
+    if not version.startswith("7"):
+        pytest.skip("Greenplum prior to 7.x does not support procedures")
 
     table = load_table_data.full_name
     proc = f"{load_table_data.table}_proc"
@@ -387,7 +390,6 @@ def test_greenplum_connection_execute_procedure(
         )
 
 
-@pytest.mark.xfail(reason="Greenplum prior to 7.x does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_greenplum_connection_execute_procedure_arguments(
     request,
@@ -405,6 +407,10 @@ def test_greenplum_connection_execute_procedure_arguments(
         spark=spark,
         extra=processing.extra,
     )
+    df = greenplum.fetch("SHOW gp_server_version")
+    version = df.collect()[0][0]
+    if not version.startswith("7"):
+        pytest.skip("Greenplum prior to 7.x does not support procedures")
 
     table = load_table_data.full_name
     proc = f"{load_table_data.table}_proc"
@@ -439,7 +445,6 @@ def test_greenplum_connection_execute_procedure_arguments(
         greenplum.execute(f"CALL {proc}(10, 1){suffix}")
 
 
-@pytest.mark.xfail(reason="Greenplum prior to 7.x does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_greenplum_connection_execute_procedure_inout(
     request,
@@ -457,6 +462,10 @@ def test_greenplum_connection_execute_procedure_inout(
         spark=spark,
         extra=processing.extra,
     )
+    df = greenplum.fetch("SHOW gp_server_version")
+    version = df.collect()[0][0]
+    if not version.startswith("7"):
+        pytest.skip("Greenplum prior to 7.x does not support procedures")
 
     table = load_table_data.full_name
     proc = f"{load_table_data.table}_proc_inout"
@@ -496,7 +505,6 @@ def test_greenplum_connection_execute_procedure_inout(
         greenplum.execute(f"CALL {proc}(10, ?){suffix}")
 
 
-@pytest.mark.xfail(reason="Greenplum prior to 7.x does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_greenplum_connection_execute_procedure_ddl(
     request,
@@ -514,6 +522,10 @@ def test_greenplum_connection_execute_procedure_ddl(
         spark=spark,
         extra=processing.extra,
     )
+    df = greenplum.fetch("SHOW gp_server_version")
+    version = df.collect()[0][0]
+    if not version.startswith("7"):
+        pytest.skip("Greenplum prior to 7.x does not support procedures")
 
     table = get_schema_table.full_name
     proc = f"{table}_ddl"
@@ -537,7 +549,6 @@ def test_greenplum_connection_execute_procedure_ddl(
     assert not greenplum.execute(f"DROP TABLE {table}")
 
 
-@pytest.mark.xfail(reason="Greenplum prior to 7.x does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_greenplum_connection_execute_procedure_dml(
     request,
@@ -555,6 +566,10 @@ def test_greenplum_connection_execute_procedure_dml(
         spark=spark,
         extra=processing.extra,
     )
+    df = greenplum.fetch("SHOW gp_server_version")
+    version = df.collect()[0][0]
+    if not version.startswith("7"):
+        pytest.skip("Greenplum prior to 7.x does not support procedures")
 
     table = get_schema_table.full_name
     proc = f"{table}_dml"
