@@ -570,7 +570,6 @@ def test_postgres_connection_execute_procedure_ddl(
     assert not postgres.execute(f"DROP TABLE {table}")
 
 
-@pytest.mark.xfail(reason="Postgres prior to v11 does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_postgres_connection_execute_procedure_dml(
     request,
@@ -587,6 +586,10 @@ def test_postgres_connection_execute_procedure_dml(
         database=processing.database,
         spark=spark,
     )
+    df = postgres.fetch("SHOW server_version")
+    version = df.collect()[0][0]
+    if not Version(version).major < 11:
+        pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = get_schema_table.full_name
     proc = f"{table}_dml"
