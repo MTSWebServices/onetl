@@ -309,7 +309,7 @@ def test_clickhouse_connection_execute_function(
 
     df = clickhouse.fetch("SELECT version()")
     version = df.collect()[0][0]
-    if not Version(version) < Version("21.20"):
+    if Version(version) < Version("21.20"):
         pytest.skip("CREATE FUNCTION is not supported in Clickhouse < 21.20")
 
     table = load_table_data.full_name

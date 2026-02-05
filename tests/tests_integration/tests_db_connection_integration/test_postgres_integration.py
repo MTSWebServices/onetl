@@ -320,7 +320,7 @@ def test_postgres_connection_execute_procedure(
 
     df = postgres.fetch("SHOW server_version")
     version = df.collect()[0][0]
-    if not Version(version).major < 11:
+    if Version(version).major < 11:
         pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = load_table_data.full_name
@@ -432,7 +432,7 @@ def test_postgres_connection_execute_procedure_arguments(
     )
     df = postgres.fetch("SHOW server_version")
     version = df.collect()[0][0]
-    if not Version(version).major < 11:
+    if Version(version).major < 11:
         pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = load_table_data.full_name
@@ -486,7 +486,7 @@ def test_postgres_connection_execute_procedure_inout(
     )
     df = postgres.fetch("SHOW server_version")
     version = df.collect()[0][0]
-    if not Version(version).major < 11:
+    if Version(version).major < 11:
         pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = load_table_data.full_name
@@ -545,7 +545,7 @@ def test_postgres_connection_execute_procedure_ddl(
     )
     df = postgres.fetch("SHOW server_version")
     version = df.collect()[0][0]
-    if not Version(version).major < 11:
+    if Version(version).major < 11:
         pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = get_schema_table.full_name
@@ -588,7 +588,7 @@ def test_postgres_connection_execute_procedure_dml(
     )
     df = postgres.fetch("SHOW server_version")
     version = df.collect()[0][0]
-    if not Version(version).major < 11:
+    if Version(version).major < 11:
         pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = get_schema_table.full_name

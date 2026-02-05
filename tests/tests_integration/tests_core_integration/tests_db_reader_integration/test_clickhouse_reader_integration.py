@@ -489,7 +489,7 @@ def test_clickhouse_reader_snapshot_with_columns_duplicated(spark, processing, p
 
     df = clickhouse.fetch("SELECT version()")
     version = df.collect()[0][0]
-    if not Version(version).major >= 24:
+    if Version(version).major < 24:
         # Clickhouse <24 deduplicated column names
         df2 = reader2.run()
         assert df1.columns == df2.columns
