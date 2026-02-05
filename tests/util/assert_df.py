@@ -23,6 +23,7 @@ def assert_equal_df(
     **kwargs,
 ) -> None:
     """Checks that right_df equal to left_df"""
+    __tracebackhide__ = True
 
     # Oracle returns column names in UPPERCASE, convert them back to lowercase
     # Nota: this is only for dataframe comparison purpose
@@ -54,6 +55,7 @@ def assert_subset_df(
     columns: list[str] | None = None,
 ) -> None:
     """Checks that left_df is subset of right_df"""
+    __tracebackhide__ = True
 
     small_pdf = lowercase_columns(to_pandas(small_df))
     large_pdf = lowercase_columns(to_pandas(large_df))

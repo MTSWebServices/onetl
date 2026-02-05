@@ -172,6 +172,7 @@ class BaseProcessing(ABC):
         **kwargs,
     ) -> None:
         """Checks that df and other_frame are equal"""
+        __tracebackhide__ = True
 
         if other_frame is None:
             if schema is None or table is None:
@@ -192,6 +193,7 @@ class BaseProcessing(ABC):
         columns: list[str] | None = None,
     ) -> None:
         """Checks that other_frame contains df"""
+        __tracebackhide__ = True
 
         if other_frame is None:
             if schema is None or table is None:
