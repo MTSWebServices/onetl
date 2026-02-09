@@ -130,7 +130,7 @@ class JDBCMixin:
         warnings.warn(
             "Connections are now closed immediately. Method is no-op since 0.13.0",
             UserWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
         return self
 

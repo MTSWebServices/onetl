@@ -274,6 +274,6 @@ class MongoDBWriteOptions(GenericOptions):
                 "Option `MongoDB.WriteOptions(mode=...)` is deprecated since v0.9.0 and will be removed in v1.0.0. "
                 "Use `MongoDB.WriteOptions(if_exists=...)` instead",
                 category=UserWarning,
-                stacklevel=3,
+                stacklevel=5,
             )
         return values
