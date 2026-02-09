@@ -183,7 +183,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
             options=raw_options,
         )
 
-        new_columns = columns or ["*"]
+        new_columns = columns.copy() if columns else ["*"]
         alias: str | None = None
 
         if read_options.partition_column:
