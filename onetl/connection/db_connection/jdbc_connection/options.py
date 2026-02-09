@@ -235,15 +235,15 @@ class JDBCReadOptions(JDBCFetchOptions):
                 SELECT ... FROM table
                 WHERE (partition_column >= lowerBound
                         OR partition_column IS NULL)
-                AND partition_column < (lower_bound + stride)
+                AND partition_column < (lowerBound + stride)
 
             Executor 2:
 
             .. code:: sql
 
                 SELECT ... FROM table
-                WHERE partition_column >= (lower_bound + stride)
-                AND partition_column < (lower_bound + 2 * stride)
+                WHERE partition_column >= (lowerBound + stride)
+                AND partition_column < (lowerBound + 2 * stride)
 
             ...
 
@@ -252,14 +252,12 @@ class JDBCReadOptions(JDBCFetchOptions):
             .. code:: sql
 
                 SELECT ... FROM table
-                WHERE partition_column >= (lower_bound + (N-1) * stride)
-                AND partition_column <= upper_bound
+                WHERE partition_column >= (lowerBound + (N-1) * stride)
+                AND partition_column <= upperBound
 
-            Where ``stride=(upper_bound - lower_bound) / num_partitions``.
+            Where ``stride=(upperBound - lowerBound) / numPartitions``.
 
-        .. note::
-
-            Can be used only with columns of integer, date or timestamp types.
+        Column type **must be** integer, date or timestamp.
 
         .. note::
 
