@@ -249,6 +249,9 @@ conflicts = [
 dev = {requires-python = ">=3.12"}
 docs = {requires-python = ">=3.12"}
 
+[tool.uv.extra-build-dependencies]
+cx-oracle = ["pkg_resources"]
+
 [tool.ruff]
 target-version = "py37"
 line-length = 120
