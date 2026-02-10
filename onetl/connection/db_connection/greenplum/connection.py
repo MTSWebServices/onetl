@@ -11,14 +11,12 @@ from urllib.parse import quote, urlencode, urlparse, urlunparse
 
 from etl_entities.instance import Host
 
-from onetl._util.classproperty import classproperty
-from onetl.connection.db_connection.jdbc_connection.options import JDBCReadOptions
-
 try:
     from pydantic.v1 import SecretStr, validator
 except (ImportError, AttributeError):
     from pydantic import SecretStr, validator  # type: ignore[no-redef, assignment]
 
+from onetl._util.classproperty import classproperty
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
 from onetl._util.spark import (
@@ -37,7 +35,6 @@ from onetl.connection.db_connection.greenplum.options import (
     GreenplumExecuteOptions,
     GreenplumFetchOptions,
     GreenplumReadOptions,
-    GreenplumSQLOptions,
     GreenplumTableExistBehavior,
     GreenplumWriteOptions,
 )
@@ -172,7 +169,6 @@ class Greenplum(JDBCMixin, DBConnection):
 
     ReadOptions = GreenplumReadOptions
     WriteOptions = GreenplumWriteOptions
-    SQLOptions = GreenplumSQLOptions
     FetchOptions = GreenplumFetchOptions
     ExecuteOptions = GreenplumExecuteOptions
     JDBCOptions = JDBCMixinOptions
@@ -383,7 +379,7 @@ class Greenplum(JDBCMixin, DBConnection):
         self,
         source: str,
         columns: list[str] | None = None,
-        options: JDBCReadOptions | None = None,
+        options: GreenplumReadOptions | None = None,
     ) -> StructType:
         log.info("|%s| Detected dialect: '%s'", self.__class__.__name__, self._get_spark_dialect_class_name())
         log.info("|%s| Fetching schema of table %r ...", self.__class__.__name__, source)
@@ -406,7 +402,7 @@ class Greenplum(JDBCMixin, DBConnection):
         window: Window,
         hint: Any | None = None,
         where: Any | None = None,
-        options: JDBCReadOptions | None = None,
+        options: GreenplumReadOptions | None = None,
     ) -> tuple[Any, Any]:
         log.info("|%s| Getting min and max values for %r ...", self.__class__.__name__, window.expression)
         jdbc_options = self.ReadOptions.parse(options).copy(update={"fetchsize": 1})

@@ -14,7 +14,6 @@ except (ImportError, AttributeError):
     from pydantic import Field, root_validator  # type: ignore[no-redef, assignment]
 
 from onetl._util.alias import avoid_alias
-from onetl.connection.db_connection.jdbc_connection import JDBCSQLOptions
 from onetl.connection.db_connection.jdbc_mixin import (
     JDBCExecuteOptions,
     JDBCFetchOptions,
@@ -330,10 +329,6 @@ class GreenplumWriteOptions(GenericOptions):
                 stacklevel=5,
             )
         return values
-
-
-class GreenplumSQLOptions(JDBCSQLOptions):
-    __doc__ = JDBCSQLOptions.__doc__.replace("SomeDB", "Greenplum")  # type: ignore[assignment, union-attr]
 
 
 class GreenplumFetchOptions(JDBCFetchOptions):

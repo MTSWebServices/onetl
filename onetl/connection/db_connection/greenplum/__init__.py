@@ -6,7 +6,6 @@ from onetl.connection.db_connection.greenplum.options import (
     GreenplumExecuteOptions,
     GreenplumFetchOptions,
     GreenplumReadOptions,
-    GreenplumSQLOptions,
     GreenplumTableExistBehavior,
     GreenplumWriteOptions,
 )
@@ -17,7 +16,6 @@ __all__ = [
     "GreenplumExecuteOptions",
     "GreenplumFetchOptions",
     "GreenplumReadOptions",
-    "GreenplumSQLOptions",
     "GreenplumTableExistBehavior",
     "GreenplumWriteOptions",
 ]

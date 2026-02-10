@@ -631,10 +631,10 @@ class JDBCSQLOptions(GenericOptions):
     """Number of jobs created by Spark to read the table content in parallel."""
 
     lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
-    """Defines the starting boundary for partitioning the query's data. Mandatory if :obj:`~partition_column` is set"""
+    """Defines the lower boundary for partitioning the query's data. Mandatory if :obj:`~partition_column` is set"""
 
     upper_bound: Optional[int] = Field(default=None, alias="upperBound")
-    """Sets the ending boundary for data partitioning. Mandatory if :obj:`~partition_column` is set"""
+    """Sets the lower boundary for data partitioning. Mandatory if :obj:`~partition_column` is set"""
 
     session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
