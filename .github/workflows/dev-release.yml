@@ -14,7 +14,7 @@ jobs:
   wait-code-analysis:
     name: Release package
     runs-on: ubuntu-latest
-    if: github.repository == 'MobileTeleSystems/onetl'  # prevent running on forks
+    if: github.repository == 'MTSWebServices/onetl'  # prevent running on forks
 
     environment:
       name: test-pypi
@@ -36,7 +36,7 @@ jobs:
 
       - name: Fix logo in Readme
         run: |
-          sed -i "s#image:: docs/#image:: https://raw.githubusercontent.com/MobileTeleSystems/onetl/$GITHUB_SHA/docs/#g" README.rst
+          sed -i "s#image:: docs/#image:: https://raw.githubusercontent.com/MTSWebServices/onetl/$GITHUB_SHA/docs/#g" README.rst
 
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
         id: python

@@ -8,13 +8,13 @@ onETL
 
 .. |Repo Status| image:: https://www.repostatus.org/badges/latest/active.svg
     :alt: Repo status - Active
-    :target: https://github.com/MobileTeleSystems/onetl
+    :target: https://github.com/MTSWebServices/onetl
 .. |PyPI Latest Release| image:: https://img.shields.io/pypi/v/onetl
     :alt: PyPI - Latest Release
     :target: https://pypi.org/project/onetl/
 .. |PyPI License| image:: https://img.shields.io/pypi/l/onetl.svg
     :alt: PyPI - License
-    :target: https://github.com/MobileTeleSystems/onetl/blob/develop/LICENSE.txt
+    :target: https://github.com/MTSWebServices/onetl/blob/develop/LICENSE.txt
 .. |PyPI Python Version| image:: https://img.shields.io/pypi/pyversions/onetl.svg
     :alt: PyPI - Python Version
     :target: https://pypi.org/project/onetl/
@@ -24,21 +24,21 @@ onETL
 .. |Documentation| image:: https://readthedocs.org/projects/onetl/badge/?version=stable
     :alt: Documentation - ReadTheDocs
     :target: https://onetl.readthedocs.io/
-.. |CI Status| image:: https://github.com/MobileTeleSystems/onetl/workflows/Tests/badge.svg
+.. |CI Status| image:: https://github.com/MTSWebServices/onetl/workflows/Tests/badge.svg
     :alt: Github Actions - latest CI build status
-    :target: https://github.com/MobileTeleSystems/onetl/actions
+    :target: https://github.com/MTSWebServices/onetl/actions
 .. |Test Coverage| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/
     MTSOnGithub/03e73a82ecc4709934540ce8201cc3b4/raw/onetl_badge.json
-    :target: https://github.com/MobileTeleSystems/onetl/actions
-.. |pre-commit.ci Status| image:: https://results.pre-commit.ci/badge/github/MobileTeleSystems/onetl/develop.svg
+    :target: https://github.com/MTSWebServices/onetl/actions
+.. |pre-commit.ci Status| image:: https://results.pre-commit.ci/badge/github/MTSWebServices/onetl/develop.svg
     :alt: pre-commit.ci - status
-    :target: https://results.pre-commit.ci/latest/github/MobileTeleSystems/onetl/develop
+    :target: https://results.pre-commit.ci/latest/github/MTSWebServices/onetl/develop
 
 |Logo|
 
 .. |Logo| image:: docs/_static/logo_wide.svg
     :alt: onETL logo
-    :target: https://github.com/MobileTeleSystems/onetl
+    :target: https://github.com/MTSWebServices/onetl
 
 What is onETL?
 --------------

@@ -14,7 +14,7 @@ In case of error please follow instructions below:
     * `Spark <https://spark.apache.org/docs/latest/>`_ documentation.
     * Documentation of database or filesystem you are connecting to.
     * Documentation of underlying connector.
-* Search for known `issues <https://github.com/MobileTeleSystems/onetl/issues>`_, or create a new one.
+* Search for known `issues <https://github.com/MTSWebServices/onetl/issues>`_, or create a new one.
 * Always use the most resent versions of onETL, PySpark and connector packages, :ref:`compatible with your environment <install-spark>`.
 
 .. toctree::

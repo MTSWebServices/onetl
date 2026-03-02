@@ -20,7 +20,7 @@ Breaking Changes
 Features
 --------
 
-- Add support for ``FileModifiedTimeHWM`` HWM class (see `etl-entities 2.5.0 <https://github.com/MobileTeleSystems/etl-entities/releases/tag/2.5.0>`_):
+- Add support for ``FileModifiedTimeHWM`` HWM class (see `etl-entities 2.5.0 <https://github.com/MTSWebServices/etl-entities/releases/tag/2.5.0>`_):
 
   .. code:: python
 
@@ -218,7 +218,7 @@ Bug Fixes
 Dependencies
 ------------
 
-- Minimal ``etl-entities`` version is now `2.5.0 <https://github.com/MobileTeleSystems/etl-entities/releases/tag/2.5.0>`_. (:github:pull:`331`)
+- Minimal ``etl-entities`` version is now `2.5.0 <https://github.com/MTSWebServices/etl-entities/releases/tag/2.5.0>`_. (:github:pull:`331`)
 - Update DB connectors/drivers to latest versions: (:github:pull:`345`)
     * Clickhouse ``0.6.5`` → ``0.7.2``
     * MongoDB ``10.4.0`` → ``10.4.1``

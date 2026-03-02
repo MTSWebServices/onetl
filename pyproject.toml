@@ -70,11 +70,11 @@ exclude = ["docs", "tests"]
 "*" = ["py.typed", "VERSION"]
 
 [project.urls]  # Optional
-"Homepage" = "https://github.com/MobileTeleSystems/onetl"
+"Homepage" = "https://github.com/MTSWebServices/onetl"
 "Documentation" = "https://onetl.readthedocs.io/"
-"Source" = "https://github.com/MobileTeleSystems/onetl"
-"CI/CD" = "https://github.com/MobileTeleSystems/onetl/actions"
-"Tracker" = "https://github.com/MobileTeleSystems/onetl/issues"
+"Source" = "https://github.com/MTSWebServices/onetl"
+"CI/CD" = "https://github.com/MTSWebServices/onetl/actions"
+"Tracker" = "https://github.com/MTSWebServices/onetl/issues"
 
 [project.entry-points."tricoder_package_spy.register"]
 onetl = "onetl"

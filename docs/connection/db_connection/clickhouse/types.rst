@@ -9,7 +9,7 @@ Clickhouse <-> Spark type mapping
 
 .. note::
 
-    It is recommended to use `spark-dialect-extension <https://github.com/MobileTeleSystems/spark-dialect-extension>`_ package,
+    It is recommended to use `spark-dialect-extension <https://github.com/MTSWebServices/spark-dialect-extension>`_ package,
     which implements writing Arrays from Spark to Clickhouse, fixes dropping fractions of seconds in ``TimestampType``,
     and fixes other type conversion issues.
 

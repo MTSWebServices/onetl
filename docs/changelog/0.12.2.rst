@@ -15,7 +15,7 @@ Bug Fixes
 Dependencies
 ------------
 
-- Allow using `etl-entities==2.4.0 <https://github.com/MobileTeleSystems/etl-entities/releases/tag/2.4.0>`_.
+- Allow using `etl-entities==2.4.0 <https://github.com/MTSWebServices/etl-entities/releases/tag/2.4.0>`_.
 
 Doc only Changes
 ----------------
