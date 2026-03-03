@@ -143,7 +143,7 @@ class S3(FileConnection):
             warnings.warn(
                 f"It is highly recommended to specify {cls.__name__}(region=...) to avoid potential access errors",
                 category=UserWarning,
-                stacklevel=3,
+                stacklevel=5,
             )
         return value
 

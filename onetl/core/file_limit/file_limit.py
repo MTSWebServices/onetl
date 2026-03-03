@@ -88,6 +88,6 @@ class FileLimit(BaseFileLimit, FrozenModel):
         warnings.warn(
             textwrap.dedent(message).strip(),
             category=UserWarning,
-            stacklevel=3,
+            stacklevel=5,
         )
         return value

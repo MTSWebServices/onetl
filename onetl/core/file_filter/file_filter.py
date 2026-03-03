@@ -183,7 +183,7 @@ class FileFilter(BaseFileFilter, FrozenModel):
         warnings.warn(
             textwrap.dedent(message).strip(),
             category=UserWarning,
-            stacklevel=3,  # 1 is current method, 2 is BaseModel internals, 3 is user code
+            stacklevel=5,
         )
         return value
 
