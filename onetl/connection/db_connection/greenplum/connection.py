@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from urllib.parse import quote, urlencode, urlparse, urlunparse
 
 from etl_entities.instance import Host
+from typing_extensions import deprecated
 
 try:
     from pydantic.v1 import SecretStr, validator
@@ -76,6 +77,7 @@ class GreenplumExtra(GenericOptions):
 
 
 @support_hooks
+@deprecated("Deprecated in 0.15.1 and will be removed in 1.0.0", category=None)
 class Greenplum(JDBCMixin, DBConnection):
     """Greenplum connection. |support_hooks|
 
@@ -87,6 +89,9 @@ class Greenplum(JDBCMixin, DBConnection):
         Before using this connector please take into account :ref:`greenplum-prerequisites`
 
     .. versionadded:: 0.5.0
+
+    .. deprecated:: 0.15.1
+        Pivotal connector cannot be downloaded anymore
 
     Parameters
     ----------
