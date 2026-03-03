@@ -102,7 +102,7 @@ jobs:
           dest: ./logs
 
       - name: Upload MSSQL logs
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: container-logs-mssql-${{ inputs.mssql-version }}-spark${{ inputs.spark-version }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Upload coverage results
         if: success() || failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-mssql-${{ inputs.mssql-version }}-spark${{ inputs.spark-version }}
           path: reports/*
