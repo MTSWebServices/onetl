@@ -1,4 +1,4 @@
-# Стратегия Snapshot { #snapshot-strategy-0 }
+# Snapshot Strategy { #snapshot-strategy-0 }
 
 <!--
     ```{eval-rst}
