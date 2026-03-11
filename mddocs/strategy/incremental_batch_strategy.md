@@ -1,6 +1,6 @@
 # Стратегия Incremental Batch { #incremental-batch-strategy-0 }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.strategy.incremental_strategy
     ```
