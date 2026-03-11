@@ -1,6 +1,6 @@
 # Стратегия Snapshot { #snapshot-strategy-0 }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.strategy.snapshot_strategy
     ```

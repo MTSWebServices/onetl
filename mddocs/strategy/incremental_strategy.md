@@ -1,6 +1,6 @@
 # Стратегия Incremental { #incremental-strategy-0 }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.strategy.incremental_strategy
     ```
