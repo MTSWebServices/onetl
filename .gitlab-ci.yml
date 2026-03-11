@@ -8,9 +8,10 @@ sbom-creation:
   stage: sbom
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
-      when: manual
+      when: always
     - if: $CI_COMMIT_REF_NAME =~ $CI_DEFAULT_BRANCH
       when: always
+    - when: never
   image:
     name: ${DEFAULT_IMAGE}:develop
     entrypoint: ['']
@@ -36,6 +37,10 @@ security-scan:
       yaml_variables: true
   variables:
     APPSECHUB_PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+    APPSECHUB_SCA_SBOM_GENERATOR: custom
+    APPSECHUB_SBOM_PATH: sbom.cyclonedx.json
+    APPSECHUB_SBOM_MASK: "*bom*.json"
+    CUSTOM_SBOM_GENERATOR_JOB_NAME: sbom-creation
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: always
