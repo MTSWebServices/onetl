@@ -1,18 +1,41 @@
 stages:
+  - sbom
   - security-scan
 
 ## -------------- Security Pipeline ---------------- ##
 
-security-scan:
+sbom-creation:
+  stage: sbom
   rules:
-    - if: $CI_COMMIT_REF_NAME =~ /(develop)/
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ $CI_DEFAULT_BRANCH
       when: always
+  image:
+    name: ${DEFAULT_IMAGE}:develop
+    entrypoint: ['']
+  script:
+    - uv pip install cyclonedx-bom
+    - uv export --all-extras --no-dev --no-group test --no-group docs --link-mode=copy --format requirements.txt | cyclonedx-py requirements - > sbom.cyclonedx.json
+  artifacts:
+    paths:
+      - sbom.cyclonedx.json
+    expire_in: 1 days
+
+security-scan:
   stage: security-scan
+  needs:
+    - sbom-creation
   trigger:
     include:
-      - project: devsecops3000Pro/public/pipelines/security-pipeline
+      - project: $SECURITY_PIPELINE_PROJECT
         file: security_pipeline.yaml
-        ref: master
+        ref: $SECURITY_PIPELINE_REF
     forward:
       pipeline_variables: true
       yaml_variables: true
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: always
