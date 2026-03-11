@@ -1,4 +1,4 @@
-# Стратегия Incremental Batch { #incremental-batch-strategy-0 }
+# Incremental Batch Strategy { #incremental-batch-strategy-0 }
 
 <!--
     ```{eval-rst}

@@ -1,8 +1,8 @@
-# Стратегии чтения { #strategy }
+# Read Strategies { #strategy }
 
-onETL предоставляет несколько встроенных стратегий для чтения данных:
+onETL have several builtin strategies for reading data:
 
-1. [Snapshot][snapshot-strategy-0]
-2. [Incremental][incremental-strategy-0]
-3. [Snapshot Batch][snapshot-batch-strategy-0]
-4. [Incremental Batch][incremental-batch-strategy-0]
+1. [Snapshot Strategy][snapshot-strategy-0]
+2. [Incremental Strategy][incremental-strategy-0]
+3. [Snapshot Batch Strategy][snapshot-batch-strategy-0]
+4. [Incremental Batch Strategy][incremental-batch-strategy-0]
