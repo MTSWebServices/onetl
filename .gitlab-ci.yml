@@ -39,7 +39,7 @@ security-scan:
     APPSECHUB_PARENT_PIPELINE_ID: $CI_PIPELINE_ID
     APPSECHUB_SCA_SBOM_GENERATOR: custom
     APPSECHUB_SBOM_PATH: sbom.cyclonedx.json
-    APPSECHUB_SBOM_MASK: "*bom*.json"
+    APPSECHUB_SBOM_MASK: '*bom*.json'
     CUSTOM_SBOM_GENERATOR_JOB_NAME: sbom-creation
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
