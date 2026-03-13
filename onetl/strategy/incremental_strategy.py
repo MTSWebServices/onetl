@@ -188,7 +188,7 @@ class IncrementalStrategy(HWMStrategy):
 
         .. warning::
 
-            FileDownload updates HWM in HWM Store at the end of ``.run()`` call,
+            FileDownloader updates HWM in HWM Store at the end of ``.run()`` call,
             **NOT** while exiting strategy context. This is because:
 
             * FileDownloader does not raise exceptions if some file cannot be downloaded.
@@ -434,7 +434,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
            WHERE id > 1000 AND id <= 1100; -- previous HWM value is 1000, step is 100
 
         2: WHERE id > 1100 AND id <= 1200; -- + step
-        3: WHERE id > 1200 AND id <= 1200; -- + step
+        3: WHERE id > 1200 AND id <= 1300; -- + step
         N: WHERE id > 1300 AND id <= 1400; -- until stop
 
     This allows to use less CPU and RAM than reading all the data in the one batch,

@@ -564,7 +564,7 @@ class DBReader(FrozenModel):
 
         .. warning::
 
-            If :etl-entities:`hwm <hwm/index.html>` is used,
+            If :etl-entities:`hwm <index.html>` is used,
             then method should be called inside :ref:`strategy` context.
             And vise-versa, if HWM is not used, this method should not be called within strategy.
 
