@@ -96,20 +96,20 @@ repos:
         priority: 8
 
   - repo: https://github.com/lovesegfault/beautysh
-    rev: v6.4.2
+    rev: v6.4.3
     hooks:
       - id: beautysh
         additional_dependencies: [setuptools]
         priority: 8
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.10.9
+    rev: 0.10.10
     hooks:
       - id: uv-lock
         priority: 8
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.5
+    rev: v0.15.6
     hooks:
       - id: ruff-format
         priority: 8
