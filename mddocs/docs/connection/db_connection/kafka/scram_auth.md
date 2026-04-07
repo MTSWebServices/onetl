@@ -19,6 +19,3 @@
         inherited_members: true
         heading_level: 3
         show_root_heading: true
-        extensions:
-            - griffe_sphinx
-            - griffe_pydantic: {schema: false}

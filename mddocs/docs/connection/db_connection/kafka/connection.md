@@ -12,7 +12,3 @@
 -->
 
 ::: onetl.connection.db_connection.kafka.connection.Kafka
-    options:
-        extensions:
-            - griffe_sphinx
-            - griffe_pydantic: {schema: false}

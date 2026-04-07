@@ -13,7 +13,3 @@
  -->
 
 ::: onetl.connection.db_connection.kafka.kafka_auth.KafkaAuth
-    options:
-        extensions:
-            - griffe_sphinx
-            - griffe_pydantic: {schema: false}

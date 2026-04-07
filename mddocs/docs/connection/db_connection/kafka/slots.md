@@ -13,7 +13,3 @@
  -->
 
 ::: onetl.connection.db_connection.kafka.slots.KafkaSlots
-    options:
-        extensions:
-            - griffe_sphinx
-            - griffe_pydantic: {schema: false}
