@@ -5,13 +5,9 @@
         inherited_members: true
         heading_level: 3
         show_root_heading: true
-        extensions:
-            - griffe_sphinx
-            - griffe_pydantic: {schema: false}
-
 
 ## Authentication { #DBR-onetl-connection-db-connection-iceberg-catalog-rest-authentication }
 
-<!-- ::: {.toctree maxdepth="1"}
-auth_basic auth_bearer auth_oauth2_client_credentials
-::: -->
+- [Basic Authentication][DBR-onetl-connection-db-connection-iceberg-auth-basic-basic-authentication]
+- [Bearer Token Authentication][DBR-onetl-connection-db-connection-iceberg-auth-bearer-bearer-token-authentication]
+- [OAuth2 Client Credentials Flow][DBR-onetl-connection-db-connection-iceberg-auth-oauth2-client-credentials-oauth2-client-credentials-flow]
