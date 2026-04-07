@@ -16,5 +16,6 @@
 ::: onetl.file.file_uploader.options.FileUploaderOptions
     options:
         members:
-            - source_dir
-            - target_dir
+            - if_exists
+            - delete_local
+            - workers
