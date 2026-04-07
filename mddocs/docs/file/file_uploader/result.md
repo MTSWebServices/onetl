@@ -35,5 +35,3 @@
             - raise_if_contains_zero_size
             - details
             - summary
-            - dict
-            - json
