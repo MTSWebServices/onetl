@@ -1,0 +1,18 @@
+# Postgres connection { #DBR-onetl-connection-db-connection-postgres-connection-0 }
+
+<!-- 
+```{eval-rst}
+.. currentmodule:: onetl.connection.db_connection.postgres.connection
+```
+
+```{eval-rst}
+.. autoclass:: Postgres
+    :members: get_packages, check
+```
+ -->
+
+::: onetl.connection.db_connection.postgres.connection.Postgres
+    options:
+        members:
+            - get_packages
+            - check
