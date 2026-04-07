@@ -44,18 +44,6 @@ extra:                                              # Language Selection
   test_cov_badge: '[![Test coverage - percent](https://codecov.io/gh/MTSWebServices/onetl/branch/develop/graph/badge.svg?token=RIO8URKNZJ)](https://codecov.io/gh/MTSWebServices/onetl)'
   etl_entities_link: '[`etl-entities`](https://github.com/MTSWebServices/etl-entities)'
 
-  alternate:
-
-      # Switch to English
-    - name: English
-      link: /en/
-      lang: en
-
-    # Switch to Russian
-    - name: Русский
-      link: /ru/
-      lang: ru
-
 plugins:
   - autorefs
   - literate-nav:

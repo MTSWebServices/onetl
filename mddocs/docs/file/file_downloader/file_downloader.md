@@ -23,6 +23,6 @@
 ::: onetl.file.file_downloader.file_downloader.FileDownloader
     options:
         members:
-            __init__
+            - __init__
             - run
             - view_files
