@@ -17,7 +17,7 @@
 docs/include_0.md
 ----8<----
 
- <!-- (documentation)= -->
+ 
 
 ## Documentation { #DBR-onetl-quickstart-documentation }
 
@@ -25,11 +25,11 @@ See at [ReadTheDocs](https://onetl.readthedocs.io/en/latest/)
 
 ## How to install { #DBR-onetl-quickstart-how-to-install }
 
-<!-- (install)= -->
+
 
 ### Minimal installation { #DBR-onetl-quickstart-minimal-installation }
 
-<!-- (minimal-install)= -->
+
 
 Base `onetl` package contains:
 
@@ -54,13 +54,13 @@ pip install onetl
 
 ### With DB and FileDF connections { #DBR-onetl-quickstart-with-db-and-filedf-connections }
 
-<!-- (spark-install)= -->
+
 
 All DB connection classes (`Clickhouse`, `Greenplum`, `Hive` and others)
 and all FileDF connection classes (`SparkHDFS`, `SparkLocalFS`, `SparkS3`)
 require Spark to be installed.
 
-<!-- (java-install)= -->
+
 
 Firstly, you should install JDK. The exact installation instruction depends on your OS, here are some examples:
 
@@ -70,7 +70,7 @@ dnf install java-11-openjdk-devel  # CentOS 8 | Spark 3
 apt-get install openjdk-11-jdk  # Debian-based | Spark 3
 ```
 
-<!-- (spark-compatibility-matrix)= -->
+
 
 #### Compatibility matrix { #DBR-onetl-quickstart-compatibility-matrix }
 
@@ -83,7 +83,7 @@ apt-get install openjdk-11-jdk  # Debian-based | Spark 3
 | [3.4.x](https://spark.apache.org/docs/3.4.4/#downloading) | 3.7 - 3.12 | 8u362 - 20 | 2.12  |
 | [3.5.x](https://spark.apache.org/docs/3.5.5/#downloading) | 3.8 - 3.13 | 8u371 - 20 | 2.12  |
 
-<!-- (pyspark-install)= -->
+
 
 Then you should install PySpark via passing `spark` to `extras`:
 
@@ -102,7 +102,7 @@ or inject PySpark to `sys.path` in some other way BEFORE creating a class instan
 
 ### With File connections { #DBR-onetl-quickstart-with-file-connections }
 
-<!-- (files-install)= -->
+
 
 All File (but not *FileDF*) connection classes (`FTP`, `SFTP`, `HDFS` and so on) requires specific Python clients to be installed.
 
@@ -123,7 +123,7 @@ pip install onetl[files]
 
 ### With Kerberos support { #DBR-onetl-quickstart-with-kerberos-support }
 
-<!-- (kerberos-install)= -->
+
 
 Most of Hadoop instances set up with Kerberos support,
 so some connections require additional setup to work properly.
@@ -156,7 +156,7 @@ pip install onetl[kerberos]
 
 ### Full bundle { #DBR-onetl-quickstart-full-bundle }
 
-<!-- (full-bundle-1)= -->
+
 
 To install all connectors and dependencies, you can pass `all` into `extras`:
 
@@ -171,7 +171,7 @@ pip install onetl[spark,files,kerberos]
 
     This method consumes a lot of disk space, and requires for Java & Kerberos libraries to be installed into your OS.
 
-<!-- (quick-start)= -->
+
 
 ## Quick start { #DBR-onetl-quickstart-quick-start }
 
