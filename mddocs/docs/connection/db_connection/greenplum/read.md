@@ -352,18 +352,6 @@ You should use [UNLOGGED](https://docs.vmware.com/en/VMware-Greenplum/7/greenplu
 
 ## Options { #DBR-onetl-connection-db-connection-greenplum-read-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.greenplum.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: GreenplumReadOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.greenplum.options.GreenplumReadOptions
     options:

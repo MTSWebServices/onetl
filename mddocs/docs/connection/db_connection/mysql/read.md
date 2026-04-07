@@ -77,17 +77,6 @@ Especially if there are indexes for columns used in `where` clause.
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-read-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mysql.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MySQLReadOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-    ```
- -->
 
 ::: onetl.connection.db_connection.mysql.options.MySQLReadOptions
     options:

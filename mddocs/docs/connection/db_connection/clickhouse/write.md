@@ -42,19 +42,6 @@ writer.run(df)
 
 Method above accepts [Clickhouse.WriteOptions][onetl.connection.db_connection.clickhouse.options.ClickhouseWriteOptions]
 
-<!--
-```{eval-rst}
-.. currentmodule:: onetl.connection.db_connection.clickhouse.options
-```
-
-```{eval-rst}
-.. autopydantic_model:: ClickhouseWriteOptions
-    :inherited-members: GenericOptions
-    :member-order: bysource
-    :model-show-field-summary: false
-    :field-show-constraints: false
-```
--->
 
 ::: onetl.connection.db_connection.clickhouse.options.ClickhouseWriteOptions
     options:

@@ -166,18 +166,6 @@ then `sort_columns` should start with `repartition_columns` or be equal to it.
 
 ## Options { #DBR-onetl-connection-db-connection-hive-write-options }
 
-<!--
-```{eval-rst}
-.. currentmodule:: onetl.connection.db_connection.hive.options
-```
-
-```{eval-rst}
-.. autopydantic_model:: HiveWriteOptions
-    :member-order: bysource
-    :model-show-field-summary: false
-    :field-show-constraints: false
-```
--->
 
 ::: onetl.connection.db_connection.hive.options.HiveWriteOptions
     options:

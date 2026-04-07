@@ -37,19 +37,6 @@ For writing data to MSSQL, use [DBWriter][DBR-onetl-db-writer].
 
 Method above accepts [MSSQL.WriteOptions][onetl.connection.db_connection.mssql.options.MSSQLWriteOptions]
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mssql.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MSSQLWriteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.mssql.options.MSSQLWriteOptions
     options:

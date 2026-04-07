@@ -128,27 +128,6 @@ The only port used while interacting with Greenplum in this case is `5432` (Gree
 
 ## Options { #DBR-onetl-connection-db-connection-greenplum-execute-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.greenplum.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: GreenplumFetchOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: GreenplumExecuteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.greenplum.options.GreenplumFetchOptions
     options:

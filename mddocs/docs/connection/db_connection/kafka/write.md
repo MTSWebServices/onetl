@@ -62,18 +62,6 @@ writer.run(write_df)
 
 ## Options { #DBR-onetl-connection-db-connection-kafka-write-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.kafka.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: KafkaWriteOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.kafka.options.KafkaWriteOptions
     options:

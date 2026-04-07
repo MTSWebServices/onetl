@@ -88,24 +88,6 @@ This method supports **any** query syntax supported by Postgres, like:
 
 ## Options { #DBR-onetl-connection-db-connection-postgres-execute-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.postgres.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: PostgresFetchOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: PostgresExecuteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-    ```
- -->
 
 ::: onetl.connection.db_connection.postgres.options.PostgresFetchOptions
     options:

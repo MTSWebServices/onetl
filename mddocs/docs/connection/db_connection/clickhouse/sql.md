@@ -61,19 +61,6 @@ Especially if there are indexes or partitions for columns used in `where` clause
 
 ## Options { #DBR-onetl-connection-db-connection-clickhouse-sql-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.clickhouse.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: ClickhouseSQLOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.clickhouse.options.ClickhouseSQLOptions
     options:

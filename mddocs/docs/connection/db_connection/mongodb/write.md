@@ -31,20 +31,6 @@ For writing data to MongoDB, use [DBWriter][DBR-onetl-db-writer].
 
 Method above accepts [MongoDB.WriteOptions][onetl.connection.db_connection.mongodb.options.MongoDBWriteOptions]
 
-<!--
-
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mongodb.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MongoDBWriteOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
-
- -->
 
 ::: onetl.connection.db_connection.mongodb.options.MongoDBWriteOptions
     options:

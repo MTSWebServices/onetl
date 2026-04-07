@@ -42,15 +42,6 @@ This method supports **any** query syntax supported by Hive, like:
 
 ### Details { #DBR-onetl-connection-db-connection-hive-execute-details }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.hive.connection
-    ```
-
-    ```{eval-rst}
-    .. automethod:: Hive.execute
-    ```
- -->
 
 ::: onetl.connection.db_connection.hive.connection.Hive.execute
     options:

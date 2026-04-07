@@ -136,18 +136,6 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
 
 ## Options { #DBR-onetl-connection-db-connection-greenplum-write-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.greenplum.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: GreenplumWriteOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.greenplum.options.GreenplumWriteOptions
     options:

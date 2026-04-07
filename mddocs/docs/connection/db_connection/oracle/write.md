@@ -35,19 +35,6 @@ For writing data to Oracle, use [DBWriter][DBR-onetl-db-writer].
 
 Method above accepts [OracleWriteOptions][onetl.connection.db_connection.oracle.options.OracleWriteOptions]
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.oracle.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: OracleWriteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.oracle.options.OracleWriteOptions
     options:

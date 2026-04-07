@@ -9,7 +9,7 @@
 {{ docs_status_badge }}
 {{ ci_status_badge  }}
 {{ precommit_badge  }}
-<!-- {-{ test_cov_badge }-} -->
+{{ test_cov_badge }}
 
 {{ onetl_logo_wide }}
 

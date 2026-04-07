@@ -1,24 +1,10 @@
 # Spark { #DBR-onetl-install-spark }
 
-<!--
-```{eval-rst}
-.. include:: ../../README.rst
-    :start-after: .. _spark-install:
-    :end-before: .. _java-install:
-```
- -->
 
 All DB connection classes (`Clickhouse`, `Greenplum`, `Hive` and others) and all FileDF connection classes (`SparkHDFS`, `SparkLocalFS`, `SparkS3`) require Spark to be installed.
 
 ## Installing Java { #DBR-onetl-install-spark-installing-java }
 
-<!--
-```{eval-rst}
-.. include:: ../../README.rst
-    :start-after: .. _java-install:
-    :end-before: .. _pyspark-install:
-```
- -->
 
 Firstly, you should install JDK. The exact installation instruction depends on your OS, here are some examples:
 
@@ -41,13 +27,6 @@ apt-get install openjdk-11-jdk  # Debian-based + Spark 3
 
 ## Installing PySpark { #DBR-onetl-install-spark-installing-pyspark }
 
-<!--
-```{eval-rst}
-.. include:: ../../README.rst
-    :start-after: .. _pyspark-install:
-    :end-before: With File connections
-```
- -->
 
 Then you should install PySpark via passing `spark` to `extras`:
 

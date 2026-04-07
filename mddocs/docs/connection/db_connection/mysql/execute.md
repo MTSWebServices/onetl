@@ -90,24 +90,6 @@ This method supports **any** query syntax supported by MySQL, like:
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-execute-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mysql.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MySQLFetchOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MySQLExecuteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-    ```
- -->
 
 ::: onetl.connection.db_connection.mysql.options.MySQLFetchOptions
     options:

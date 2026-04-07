@@ -77,17 +77,6 @@ Especially if there are indexes or partitions for columns used in `where` clause
 
 ## Options { #DBR-onetl-connection-db-connection-oracle-read-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.oracle.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: OracleReadOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-    ```
- -->
 
 ::: onetl.connection.db_connection.oracle.options.OracleReadOptions
     options:

@@ -65,15 +65,6 @@ Supported operators are: `=`, `>`, `<` and `BETWEEN`, and only against some **st
 
 ## Details { #DBR-onetl-connection-db-connection-hive-sql-details }
 
-<!--
-```{eval-rst}
-.. currentmodule:: onetl.connection.db_connection.hive.connection
-```
-
-```{eval-rst}
-.. automethod:: Hive.sql
-```
- -->
 
 ::: onetl.connection.db_connection.hive.connection.Hive.sql
     options:

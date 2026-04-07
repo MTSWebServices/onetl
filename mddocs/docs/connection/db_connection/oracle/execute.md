@@ -91,24 +91,6 @@ This method supports **any** query syntax supported by Oracle, like:
 
 ## Options { #DBR-onetl-connection-db-connection-oracle-execute-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.oracle.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: OracleFetchOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: OracleExecuteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-    ```
- -->
 
 ::: onetl.connection.db_connection.oracle.options.OracleFetchOptions
     options:

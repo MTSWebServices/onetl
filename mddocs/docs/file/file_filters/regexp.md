@@ -1,16 +1,5 @@
 # Regexp { #DBR-onetl-file-filters-regexp }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.file.filter.regexp
-    ```
-
-    ```{eval-rst}
-    .. autoclass:: Regexp
-        :members: match
-    ```
--->
-
 
 ::: onetl.file.filter.regexp.Regexp
     options:

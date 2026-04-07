@@ -124,18 +124,6 @@ Especially if there are indexes for columns used in `where` clause.
 
 ## Read options { #DBR-onetl-connection-db-connection-mongodb-read-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mongodb.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MongoDBReadOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.mongodb.options.MongoDBReadOptions
     options:

@@ -97,28 +97,6 @@ So it should **NOT** be used to read large amounts of data. Use [DBReader][DBR-o
 
 ## Options { #DBR-onetl-connection-db-connection-clickhouse-execute-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.clickhouse.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: ClickhouseFetchOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: ClickhouseExecuteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.clickhouse.options.ClickhouseFetchOptions
     options:

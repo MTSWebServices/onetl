@@ -89,27 +89,6 @@ This method supports **any** query syntax supported by MSSQL, like:
 
 ## Options { #DBR-onetl-connection-db-connection-mssql-execute-options }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mssql.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MSSQLFetchOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MSSQLExecuteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.mssql.options.MSSQLFetchOptions
     options:

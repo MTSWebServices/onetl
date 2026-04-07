@@ -39,19 +39,6 @@ For writing data to MySQL, use [DBWriter][DBR-onetl-db-writer].
 
 Method above accepts [MySQL.WriteOptions][onetl.connection.db_connection.mysql.options.MySQLWriteOptions]
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mysql.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MySQLWriteOptions
-        :inherited-members: GenericOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.mysql.options.MySQLWriteOptions
     options:

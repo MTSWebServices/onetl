@@ -16,26 +16,6 @@ Especially if there are indexes for columns used in `pipeline` value.
 
 ## References { #DBR-onetl-connection-db-connection-mongodb-pipeline-references }
 
-<!--
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mongodb.connection
-    ```
-
-    ```{eval-rst}
-    .. automethod:: MongoDB.pipeline
-    ```
-
-    ```{eval-rst}
-    .. currentmodule:: onetl.connection.db_connection.mongodb.options
-    ```
-
-    ```{eval-rst}
-    .. autopydantic_model:: MongoDBPipelineOptions
-        :member-order: bysource
-        :model-show-field-summary: false
-        :field-show-constraints: false
-    ```
- -->
 
 ::: onetl.connection.db_connection.mongodb.connection.MongoDB.pipeline
     options:
