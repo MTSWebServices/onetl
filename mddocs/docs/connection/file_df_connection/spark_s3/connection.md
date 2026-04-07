@@ -1,6 +1,6 @@
 # Spark S3 Connection { #DBR-onetl-connection-file-df-connection-spark-s3-connection }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.file_df_connection.spark_s3.connection
 ```

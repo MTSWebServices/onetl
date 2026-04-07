@@ -1,6 +1,6 @@
 # FileDF Writer { #DBR-onetl-file-df-writer-filedf-writer-0 }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.file_df_writer.file_df_writer
     ```

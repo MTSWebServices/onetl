@@ -1,6 +1,6 @@
 # Kafka ScramAuth { #DBR-onetl-connection-db-connection-kafka-scram-auth-kafka-scramauth }
 
-<!-- 
+<!--
 
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.kafka.kafka_scram_auth

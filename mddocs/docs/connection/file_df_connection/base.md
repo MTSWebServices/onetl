@@ -1,6 +1,6 @@
 # Base interface { #DBR-onetl-connection-file-df-connection-base-interface }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.base.base_file_df_connection
 ```

@@ -1,6 +1,6 @@
 # ORC { #DBR-onetl-file-df-file-formats-orc }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.format.orc
     ```

@@ -1,6 +1,6 @@
 # YAML HWM Store { #DBR-onetl-hwm-store-yaml-hwm-store }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.hwm.store.yaml_hwm_store
 ```

@@ -1,6 +1,6 @@
 # `@slot` decorator { #DBR-onetl-hooks-slot-decorator }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.hooks.slot
 ```

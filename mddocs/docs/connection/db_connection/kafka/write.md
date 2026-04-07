@@ -62,7 +62,7 @@ writer.run(write_df)
 
 ## Options { #DBR-onetl-connection-db-connection-kafka-write-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.kafka.options
     ```

@@ -88,7 +88,7 @@ This method supports **any** query syntax supported by Postgres, like:
 
 ## Options { #DBR-onetl-connection-db-connection-postgres-execute-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.postgres.options
     ```

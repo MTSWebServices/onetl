@@ -1,6 +1,6 @@
 # Hive Connection { #DBR-onetl-connection-db-connection-hive-connection-0 }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.hive.connection
 ```

@@ -42,7 +42,7 @@ writer.run(df)
 
 Method above accepts [Clickhouse.WriteOptions][onetl.connection.db_connection.clickhouse.options.ClickhouseWriteOptions]
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.clickhouse.options
 ```
@@ -53,7 +53,7 @@ Method above accepts [Clickhouse.WriteOptions][onetl.connection.db_connection.cl
     :member-order: bysource
     :model-show-field-summary: false
     :field-show-constraints: false
-``` 
+```
 -->
 
 ::: onetl.connection.db_connection.clickhouse.options.ClickhouseWriteOptions

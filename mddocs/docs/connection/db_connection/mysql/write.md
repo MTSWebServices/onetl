@@ -32,14 +32,14 @@ For writing data to MySQL, use [DBWriter][DBR-onetl-db-writer].
             ),
         )
 
-        writer.run(df)   
+        writer.run(df)
     ```
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-write-options }
 
 Method above accepts [MySQL.WriteOptions][onetl.connection.db_connection.mysql.options.MySQLWriteOptions]
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mysql.options
     ```

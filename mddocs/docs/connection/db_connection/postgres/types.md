@@ -148,7 +148,7 @@ Here you can find source code with type conversions:
 
     Note that types in Postgres and Spark have different value ranges:
 
-    
+
     | Postgres type | Min value                       | Max value                        | Spark type          | Min value                      | Max value                      |
     |---------------|---------------------------------|----------------------------------|---------------------|--------------------------------|--------------------------------|
     | `date`      | `-4713-01-01`                 | `5874897-01-01`                | `DateType()`      | `0001-01-01`                 | `9999-12-31`                 |

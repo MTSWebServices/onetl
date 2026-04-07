@@ -90,7 +90,7 @@ This method supports **any** query syntax supported by MySQL, like:
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-execute-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mysql.options
     ```

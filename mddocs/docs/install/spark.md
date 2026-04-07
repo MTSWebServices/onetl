@@ -1,6 +1,6 @@
 # Spark { #DBR-onetl-install-spark }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. include:: ../../README.rst
     :start-after: .. _spark-install:
@@ -12,7 +12,7 @@ All DB connection classes (`Clickhouse`, `Greenplum`, `Hive` and others) and all
 
 ## Installing Java { #DBR-onetl-install-spark-installing-java }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. include:: ../../README.rst
     :start-after: .. _java-install:
@@ -41,7 +41,7 @@ apt-get install openjdk-11-jdk  # Debian-based + Spark 3
 
 ## Installing PySpark { #DBR-onetl-install-spark-installing-pyspark }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. include:: ../../README.rst
     :start-after: .. _pyspark-install:

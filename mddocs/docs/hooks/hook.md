@@ -1,6 +1,6 @@
 # `@hook` decorator { #DBR-onetl-hooks-hook-decorator }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.hooks.hook
 ```
@@ -30,7 +30,7 @@
 .. autoclass:: Hook
     :members: enable, disable, skip
     :member-order: bysource
-``` 
+```
 -->
 
 ::: onetl.hooks.hook.hook

@@ -44,8 +44,8 @@ This method supports **any** query syntax supported by Greenplum, like:
         options=Greenplum.FetchOptions(queryTimeout=10),
     )
     greenplum.close()
-    value = df.collect()[0][0]  # get value from first row and first column 
-        
+    value = df.collect()[0][0]  # get value from first row and first column
+
     ```
 
 ### Use `Greenplum.execute` { #DBR-onetl-connection-db-connection-greenplum-execute-use-greenplum-execute }
@@ -87,7 +87,7 @@ This method supports **any** query syntax supported by Greenplum, like:
         DISTRIBUTED BY id
         """,
         options=Greenplum.ExecuteOptions(queryTimeout=10),
-    ) 
+    )
     ```
 
 ## Interaction schema { #DBR-onetl-connection-db-connection-greenplum-execute-interaction-schema }
@@ -156,7 +156,7 @@ The only port used while interacting with Greenplum in this case is `5432` (Gree
 
 ## Options { #DBR-onetl-connection-db-connection-greenplum-execute-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.greenplum.options
     ```

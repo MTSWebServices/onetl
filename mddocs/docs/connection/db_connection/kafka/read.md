@@ -122,7 +122,7 @@ deserialized_df = read_df.select(
 
 ## Options { #DBR-onetl-connection-db-connection-kafka-read-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.kafka.options
     ```

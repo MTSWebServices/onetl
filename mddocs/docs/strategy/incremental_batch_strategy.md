@@ -1,6 +1,6 @@
 # Incremental Batch Strategy { #DBR-onetl-strategy-incremental-batch-strategy }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.strategy.incremental_strategy
     ```

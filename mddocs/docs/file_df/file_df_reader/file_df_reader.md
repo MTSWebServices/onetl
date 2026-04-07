@@ -1,6 +1,6 @@
 # FileDF Reader { #DBR-onetl-file-df-reader-filedf-reader-0 }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.file_df_reader.file_df_reader
     ```
@@ -9,7 +9,7 @@
     .. autoclass:: FileDFReader
         :members: run
         :member-order: bysource
-    ``` 
+    ```
 -->
 
 ::: onetl.file.file_df_reader.file_df_reader.FileDFReader

@@ -1,6 +1,6 @@
 # Hooks global state { #DBR-onetl-hooks-global-state }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.hooks.hooks_state
 ```

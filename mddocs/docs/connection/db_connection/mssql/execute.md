@@ -89,7 +89,7 @@ This method supports **any** query syntax supported by MSSQL, like:
 
 ## Options { #DBR-onetl-connection-db-connection-mssql-execute-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mssql.options
     ```

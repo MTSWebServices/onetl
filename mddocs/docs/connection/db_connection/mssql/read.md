@@ -36,8 +36,8 @@ Snapshot strategy:
             where="key = 'something'",
             options=MSSQL.ReadOptions(partitionColumn="id", numPartitions=10),
         )
-        df = reader.run() 
-          
+        df = reader.run()
+
           .
     ```
 
@@ -77,7 +77,7 @@ Especially if there are indexes or partitions for columns used in `where` clause
 
 ## Options { #DBR-onetl-connection-db-connection-mssql-read-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mssql.options
     ```

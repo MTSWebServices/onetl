@@ -24,14 +24,14 @@ For writing data to MongoDB, use [DBWriter][DBR-onetl-db-writer].
             ),
         )
 
-        writer.run(df)  
+        writer.run(df)
     ```
 
 ## Write options { #DBR-onetl-connection-db-connection-mongodb-write-options }
 
 Method above accepts [MongoDB.WriteOptions][onetl.connection.db_connection.mongodb.options.MongoDBWriteOptions]
 
-<!-- 
+<!--
 
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mongodb.options

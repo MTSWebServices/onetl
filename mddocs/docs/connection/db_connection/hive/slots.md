@@ -1,6 +1,6 @@
 # Hive Slots { #DBR-onetl-connection-db-connection-hive-slots }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.hive.slots
 ```

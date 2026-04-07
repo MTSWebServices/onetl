@@ -1,6 +1,6 @@
 # Excel { #DBR-onetl-file-df-file-formats-excel }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.format.excel
     ```

@@ -35,7 +35,7 @@ For writing data to Oracle, use [DBWriter][DBR-onetl-db-writer].
 
 Method above accepts [OracleWriteOptions][onetl.connection.db_connection.oracle.options.OracleWriteOptions]
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.oracle.options
     ```

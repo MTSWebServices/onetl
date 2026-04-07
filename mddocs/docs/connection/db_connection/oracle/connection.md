@@ -1,6 +1,6 @@
 # Oracle connection { #DBR-onetl-connection-db-connection-oracle-connection-0 }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.oracle.connection
 ```

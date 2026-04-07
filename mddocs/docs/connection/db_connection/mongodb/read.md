@@ -124,7 +124,7 @@ Especially if there are indexes for columns used in `where` clause.
 
 ## Read options { #DBR-onetl-connection-db-connection-mongodb-read-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mongodb.options
     ```

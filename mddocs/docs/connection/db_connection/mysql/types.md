@@ -84,7 +84,7 @@ Always prefer creating tables with specific types **BEFORE WRITING DATA**:
         target="myschema.target_tbl",
         options=MySQL.WriteOptions(if_exists="append"),
     )
-    writer.run(df)  
+    writer.run(df)
     ```
 
 ### References { #DBR-onetl-connection-db-connection-mysql-types-references }
@@ -131,7 +131,7 @@ See [official documentation](https://dev.mysql.com/doc/refman/en/data-types.html
 
     Note that types in MySQL and Spark have different value ranges:
 
-    
+
     | MySQL type    | Min value                      | Max value                      | Spark type          | Min value                      | Max value                      |
     |---------------|--------------------------------|--------------------------------|---------------------|--------------------------------|--------------------------------|
     | `year`<br/>`date`      | `1901`<br/>`1000-01-01`                       | `2155`<br/>`9999-12-31`                       | `DateType()`      | `0001-01-01`                 | `9999-12-31`                 |
@@ -208,7 +208,7 @@ It is also possible to use [JSON_OBJECT](https://dev.mysql.com/doc/refman/en/jso
             # explicit cast
             df.unsupported_column_str.cast("integer").alias("parsed_integer"),
             JSON().parse_column("json_column", json_scheme).alias("struct_column"),
-        )  
+        )
     ```
 
 ### `DBWriter` { #DBR-onetl-connection-db-connection-mysql-types-dbwriter }
@@ -235,7 +235,7 @@ To write JSON data to a `json` or `text` column in a MySQL table, use the [JSON.
             JSON().serialize_column(df.array_column).alias("array_column_json"),
         )
 
-        writer.run(df)  
+        writer.run(df)
     ```
 
 Then you can parse this column on MySQL side - for example, by creating a view:

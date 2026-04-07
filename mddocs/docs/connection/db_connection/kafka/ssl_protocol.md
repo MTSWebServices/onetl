@@ -1,6 +1,6 @@
 # Kafka SSLProtocol { #DBR-onetl-connection-db-connection-kafka-ssl-protocol-kafka-sslprotocol }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.kafka.kafka_ssl_protocol
 ```

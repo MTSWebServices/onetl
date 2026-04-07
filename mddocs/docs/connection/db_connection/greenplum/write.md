@@ -34,7 +34,7 @@ For writing data to Greenplum, use [DBWriter][DBR-onetl-db-writer] with [Greenpl
             ),
         )
 
-        writer.run(df) 
+        writer.run(df)
     ```
 
 ## Interaction schema { #DBR-onetl-connection-db-connection-greenplum-write-interaction-schema }
@@ -157,13 +157,13 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
         activate D
 
         note right of A : This is done in parallel,<br/>executors are independent<br/>|<br/>|<br/>|<br/>V
-        
+
         B ->> E: CREATE WRITABLE EXTERNAL TABLE spark_executor1 (id bigint, col1 int, col2 text, ...)<br/>USING address=executor1_host:executor1_port<br/>INSERT INTO EXTERNAL TABLE spark_executor1 FROM gp_table WHERE gp_segment_id = 1
         activate E
-        note right of E : Each white vertical line here is a opened connection to master.<br/>Usually, **N+1** connections are created from Spark to Greenplum master   
+        note right of E : Each white vertical line here is a opened connection to master.<br/>Usually, **N+1** connections are created from Spark to Greenplum master
         E -->> F: SELECT DATA FROM gp_table_data_on_segment1 TO spark_executor1
         activate F
-        
+
         note right of F : No direct requests between Greenplum segments & Spark.<br/>Data transfer is always initiated by Greenplum segments.
 
         C ->> E: CREATE WRITABLE EXTERNAL TABLE spark_executor2 (id bigint, col1 int, col2 text, ...)<br/>USING address=executor2_host:executor2_port<br/>INSERT INTO EXTERNAL TABLE spark_executor2 FROM gp_table WHERE gp_segment_id = 2
@@ -176,7 +176,7 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
         E -->> H: SELECT DATA FROM gp_table_data_on_segmentN TO spark_executorN
         activate H
 
-            
+
         F -xB: INITIALIZE CONNECTION TO Spark executor1<br/>PUSH DATA TO Spark executor1
         deactivate F
         note left of B : Circle is an open GPFDIST port,<br/>listened by executor
@@ -202,7 +202,7 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
         D -->> A: DONE
         deactivate D
 
-        
+
         A -->> E: CLOSE CONNECTION
         deactivate E
         deactivate A
@@ -210,7 +210,7 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
 
 ## Options { #DBR-onetl-connection-db-connection-greenplum-write-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.greenplum.options
     ```

@@ -8,7 +8,7 @@
         DBReader.run
         DBReader.has_data
         DBReader.raise_if_no_data
-    ``` 
+    ```
 -->
 
 ::: onetl.db.db_reader.db_reader.DBReader

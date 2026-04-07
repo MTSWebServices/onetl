@@ -37,7 +37,7 @@ For writing data to Postgres, use [DBWriter][DBR-onetl-db-writer].
 
 Method above accepts [Postgres.WriteOptions][onetl.connection.db_connection.postgres.options.PostgresWriteOptions]
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.postgres.options
     ```

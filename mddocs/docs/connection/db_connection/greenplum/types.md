@@ -65,7 +65,7 @@ So instead of relying on Spark to create tables:
             # partitionBy is not supported
         ),
     )
-    writer.run(df) 
+    writer.run(df)
     ```
 
 Always prefer creating table with desired DDL **BEFORE WRITING DATA**:
@@ -134,7 +134,7 @@ See:
 
     Note that types in Greenplum and Spark have different value ranges:
 
-    
+
     | Greenplum type | Min value                       | Max value                        | Spark type          | Min value                      | Max value                      |
     |----------------|---------------------------------|----------------------------------|---------------------|--------------------------------|--------------------------------|
     | `date`       | `-4713-01-01`                 | `5874897-01-01`                | `DateType()`      | `0001-01-01`                 | `9999-12-31`                 |
@@ -210,7 +210,7 @@ Direct casting of Greenplum types is not supported by DBReader due to the connec
             connection=greenplum,
             # will fail
             columns=["CAST(unsupported_column AS text)"],
-        ) 
+        )
     ```
 
 But there is a workaround - create a view with casting unsupported column to text (or any other supported type).
@@ -287,7 +287,7 @@ To write data to a `text` or `json` column in a Greenplum table, use [JSON.seria
             connection=greenplum,
             target="schema.target_table",
         )
-        writer.run(write_df) 
+        writer.run(write_df)
     ```
 
 Then you can parse this column on Greenplum side:

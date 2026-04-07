@@ -38,7 +38,7 @@ but does not support custom queries, like `JOIN`.
         options=Clickhouse.ReadOptions(partitionColumn="id", numPartitions=10),
     )
     df = reader.run()
-    
+
     ```
 
 ### Incremental strategy { #DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy }
@@ -77,7 +77,7 @@ Especially if there are indexes or partitions for columns used in `where` clause
 
 ## Options { #DBR-onetl-connection-db-connection-clickhouse-read-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.clickhouse.options
     ```

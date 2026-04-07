@@ -1,6 +1,6 @@
 # JSONLine { #DBR-onetl-file-df-file-formats-jsonline }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.format.jsonline
     ```

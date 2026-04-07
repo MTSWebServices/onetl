@@ -36,7 +36,7 @@ Snapshot strategy:
             columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
             where="key = 'something'",
         )
-        df = reader.run() 
+        df = reader.run()
     ```
 
 Incremental strategy:

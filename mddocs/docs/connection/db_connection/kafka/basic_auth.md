@@ -1,6 +1,6 @@
 # Kafka BasicAuth { #DBR-onetl-connection-db-connection-kafka-basic-auth-kafka-basicauth }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.kafka.kafka_basic_auth
 ```

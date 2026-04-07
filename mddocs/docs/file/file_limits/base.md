@@ -1,6 +1,6 @@
 # Base interface { #DBR-onetl-file-limits-base-interface }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.base.base_file_limit
     ```
@@ -17,7 +17,7 @@
     ```{eval-rst}
     .. autoclass:: BaseFileLimit
         :members: reset, stops_at, is_reached
-    ``` 
+    ```
 -->
 
 ::: onetl.base.base_file_limit.BaseFileLimit

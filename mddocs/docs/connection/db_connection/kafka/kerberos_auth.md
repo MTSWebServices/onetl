@@ -1,6 +1,6 @@
 # Kafka KerberosAuth { #DBR-onetl-connection-db-connection-kafka-kerberos-auth-kafka-kerberosauth }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.kafka.kafka_kerberos_auth
 ```

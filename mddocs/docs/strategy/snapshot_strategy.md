@@ -1,6 +1,6 @@
 # Snapshot Strategy { #DBR-onetl-strategy-snapshot-strategy }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.strategy.snapshot_strategy
     ```

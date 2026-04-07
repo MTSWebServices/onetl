@@ -16,7 +16,7 @@ Especially if there are indexes for columns used in `pipeline` value.
 
 ## References { #DBR-onetl-connection-db-connection-mongodb-pipeline-references }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mongodb.connection
     ```

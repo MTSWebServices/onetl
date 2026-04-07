@@ -97,7 +97,7 @@ So it should **NOT** be used to read large amounts of data. Use [DBReader][DBR-o
 
 ## Options { #DBR-onetl-connection-db-connection-clickhouse-execute-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.clickhouse.options
     ```

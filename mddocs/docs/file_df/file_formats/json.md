@@ -1,6 +1,6 @@
 # JSON { #DBR-onetl-file-df-file-formats-json }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.format.json
     ```

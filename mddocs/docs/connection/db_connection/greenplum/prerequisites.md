@@ -125,7 +125,7 @@ Number of connections can be limited by 2 ways:
             extra={
                 "pool.maxSize": 10,
             },
-        ) 
+        )
     ```
 
 See [connection pooling](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/using_the_connector.html#jdbcconnpool)
@@ -282,7 +282,7 @@ There are 3 ways to fix that:
             extra={
                 "server.nic": "eth0",
             },
-        ) 
+        )
         ```
 
   You can get list of network interfaces using this command.

@@ -1,6 +1,6 @@
 # Kafka Slots { #DBR-onetl-connection-db-connection-kafka-slots }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.kafka.slots
 ```

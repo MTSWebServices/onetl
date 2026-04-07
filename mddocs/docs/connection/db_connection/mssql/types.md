@@ -136,7 +136,7 @@ See [official documentation](https://learn.microsoft.com/en-us/sql/t-sql/data-ty
 
     Note that types in MSSQL and Spark have different value ranges:
 
-    
+
     | MySQL type        | Min value                      | Max value                      | Spark type          | Min value                      | Max value                      |
     |-------------------|--------------------------------|--------------------------------|---------------------|--------------------------------|--------------------------------|
     | `smalldatetime`<br/>`datetime`<br/>`datetime2`<br/>`time` | `1900-01-01 00:00:00`<br/>`1753-01-01 00:00:00.000`<br/>`0001-01-01 00:00:00.000000`<br/>`00:00:00.0000000`        | `2079-06-06 23:59:00`<br/>`9999-12-31 23:59:59.997`<br/>`9999-12-31 23:59:59.999999`<br/>`23:59:59.9999999`        | `TimestampType()`   | `0001-01-01 00:00:00.000000`   | `9999-12-31 23:59:59.999999`   |

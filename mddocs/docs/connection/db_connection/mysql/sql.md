@@ -61,7 +61,7 @@ Especially if there are indexes or partitions for columns used in `where` clause
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-sql-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mysql.options
     ```

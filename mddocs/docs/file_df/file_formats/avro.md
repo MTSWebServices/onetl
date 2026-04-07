@@ -1,6 +1,6 @@
 # Avro { #DBR-onetl-file-df-file-formats-avro }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.format.avro
     ```

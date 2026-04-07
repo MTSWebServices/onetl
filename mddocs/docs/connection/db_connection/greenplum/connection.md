@@ -1,6 +1,6 @@
 # Greenplum connection { #DBR-onetl-connection-db-connection-greenplum-connection-0 }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.greenplum.connection
 ```

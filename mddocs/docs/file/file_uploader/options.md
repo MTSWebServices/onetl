@@ -1,6 +1,6 @@
 # File Uploader Options { #DBR-onetl-file-uploader-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.file_uploader.options
     ```
@@ -10,7 +10,7 @@
         :member-order: bysource
         :model-show-field-summary: false
         :field-show-constraints: false
-    ``` 
+    ```
 -->
 
 ::: onetl.file.file_uploader.options.FileUploaderOptions

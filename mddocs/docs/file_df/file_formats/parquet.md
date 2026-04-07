@@ -1,6 +1,6 @@
 # Parquet { #DBR-onetl-file-df-file-formats-parquet }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.file.format.parquet
     ```
@@ -9,7 +9,7 @@
     .. autoclass:: Parquet
         :members: __init__, mergeSchema,compression
         :member-order: bysource
-    ``` 
+    ```
 -->
 
 ::: onetl.file.format.parquet.Parquet

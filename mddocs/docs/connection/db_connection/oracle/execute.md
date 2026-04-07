@@ -91,7 +91,7 @@ This method supports **any** query syntax supported by Oracle, like:
 
 ## Options { #DBR-onetl-connection-db-connection-oracle-execute-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.oracle.options
     ```

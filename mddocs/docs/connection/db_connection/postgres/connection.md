@@ -1,6 +1,6 @@
 # Postgres connection { #DBR-onetl-connection-db-connection-postgres-connection-0 }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.postgres.connection
 ```

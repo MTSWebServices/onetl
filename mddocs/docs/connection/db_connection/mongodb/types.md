@@ -101,7 +101,7 @@ See [official documentation](https://www.mongodb.com/docs/manual/reference/bson-
 
     Note that types in MongoDB and Spark have different value ranges:
 
-    
+
     | MongoDB type  | Min value                      | Max value                      | Spark type          | Min value                      | Max value                      |
     |---------------|--------------------------------|--------------------------------|---------------------|--------------------------------|--------------------------------|
     | `Date`<br/>`Timestamp`      | -290 million years<br/>`1970-01-01 00:00:00`             | 290 million years<br/>`2106-02-07 09:28:16`              | `TimestampType()` | `0001-01-01 00:00:00.000000` | `9999-12-31 23:59:59.999999` |

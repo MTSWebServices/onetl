@@ -37,7 +37,7 @@ Snapshot strategy:
             hint="SKIP_SCAN(schema.table key_index)",
             options=MySQL.ReadOptions(partitionColumn="id", numPartitions=10),
         )
-        df = reader.run()   
+        df = reader.run()
     ```
 
 Incremental strategy:
@@ -60,7 +60,7 @@ Incremental strategy:
         )
 
         with IncrementalStrategy():
-            df = reader.run()  
+            df = reader.run()
     ```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-mysql-read-recommendations }
@@ -77,7 +77,7 @@ Especially if there are indexes for columns used in `where` clause.
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-read-options }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.connection.db_connection.mysql.options
     ```

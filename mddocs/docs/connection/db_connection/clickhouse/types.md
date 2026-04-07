@@ -171,16 +171,16 @@ Notes:
 
     Note that types in Clickhouse and Spark have different value ranges:
 
-    | Clickhouse type        | Min value                         | Max value                         | Spark type          | Min value                      | Max value                      | 
-    |------------------------|-----------------------------------|-----------------------------------|---------------------|--------------------------------|--------------------------------| 
-    | `Date`                 | `1970-01-01`                      | `2149-06-06`                      | <br/><br/>`DateType()` {: rowspan=3}        | <br/><br/>`0001-01-01 00:00:00.000000` {: rowspan=3}   | <br/><br/>`9999-12-31 23:59:59.999999` {:  rowspan=3} |   
-    | `DateTime64(P=0..8)`   | `1900-01-01 00:00:00.00000000`    | `2299-12-31 23:59:59.99999999`  | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} | 
-    | `DateTime64(P=9)`      | `1900-01-01 00:00:00.000000000`   | `2262-04-11 23:47:16.999999999` | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} | 
-        
+    | Clickhouse type        | Min value                         | Max value                         | Spark type          | Min value                      | Max value                      |
+    |------------------------|-----------------------------------|-----------------------------------|---------------------|--------------------------------|--------------------------------|
+    | `Date`                 | `1970-01-01`                      | `2149-06-06`                      | <br/><br/>`DateType()` {: rowspan=3}        | <br/><br/>`0001-01-01 00:00:00.000000` {: rowspan=3}   | <br/><br/>`9999-12-31 23:59:59.999999` {:  rowspan=3} |
+    | `DateTime64(P=0..8)`   | `1900-01-01 00:00:00.00000000`    | `2299-12-31 23:59:59.99999999`  | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} |
+    | `DateTime64(P=9)`      | `1900-01-01 00:00:00.000000000`   | `2262-04-11 23:47:16.999999999` | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} | &#8288 {: style="padding:0"} |
+
     So not all of values in Spark DataFrame can be written to Clickhouse.
-        
+
     References:
-         
+
     * [Clickhouse Date documentation](https://clickhouse.com/docs/en/sql-reference/data-types/date)
     * [Clickhouse Datetime32 documentation](https://clickhouse.com/docs/en/sql-reference/data-types/datetime)
     * [Clickhouse Datetime64 documentation](https://clickhouse.com/docs/en/sql-reference/data-types/datetime64)

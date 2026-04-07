@@ -1,6 +1,6 @@
 # Base interface { #DBR-onetl-file-df-file-formats-base-interface }
 
-<!-- 
+<!--
     ```{eval-rst}
     .. currentmodule:: onetl.base.base_file_format
     ```

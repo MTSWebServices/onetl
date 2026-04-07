@@ -32,7 +32,7 @@ Only queries with the following syntax are supported:
             WHERE
                 key = 'something'
             """
-        )   
+        )
     ```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-hive-sql-recommendations }
@@ -65,7 +65,7 @@ Supported operators are: `=`, `>`, `<` and `BETWEEN`, and only against some **st
 
 ## Details { #DBR-onetl-connection-db-connection-hive-sql-details }
 
-<!-- 
+<!--
 ```{eval-rst}
 .. currentmodule:: onetl.connection.db_connection.hive.connection
 ```
