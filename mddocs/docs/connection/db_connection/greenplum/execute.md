@@ -99,59 +99,31 @@ The only port used while interacting with Greenplum in this case is `5432` (Gree
 
 ??? note "Spark <-> Greenplum interaction during Greenplum.execute()/Greenplum.fetch()"
 
-    ```plantuml
-        @startuml
-        title Greenplum master <-> Spark driver
-                box Spark
-                participant "Spark driver"
-                end box
-
-                box "Greenplum"
-                participant "Greenplum master"
-                end box
-
-                == Greenplum.check() ==
-
-                activate "Spark driver"
-                "Spark driver" -> "Greenplum master" ++ : CONNECT
-
-                == Greenplum.execute(statement) ==
-                "Spark driver" --> "Greenplum master" : EXECUTE statement
-                "Greenplum master" -> "Spark driver" : RETURN result
-
-                == Greenplum.close() ==
-                "Spark driver" --> "Greenplum master" : CLOSE CONNECTION
-
-                deactivate "Greenplum master"
-                deactivate "Spark driver"
-        @enduml
-    ```
-
     ```mermaid
-        ---
-        title: Greenplum master <—> Spark driver
-        ---
+    ---
+    title: Greenplum master <—> Spark driver
+    ---
 
-        sequenceDiagram
-            box Spark
-            participant A as Spark driver
-            end
-            box Greenplum
-            participant B as Greenplum master
-            end
+    sequenceDiagram
+        box Spark
+        participant A as Spark driver
+        end
+        box Greenplum
+        participant B as Greenplum master
+        end
 
-            Note over A,B: == Greenplum.check() ==
+        Note over A,B: == Greenplum.check() ==
 
-            A->>B: CONNECT
+        A->>B: CONNECT
 
-            Note over A,B: == Greenplum.execute(statement) ==
+        Note over A,B: == Greenplum.execute(statement) ==
 
-            A-->>B: EXECUTE statement
-            B-->> A: RETURN result
+        A-->>B: EXECUTE statement
+        B-->> A: RETURN result
 
-            Note over A,B: == Greenplum.close() ==
+        Note over A,B: == Greenplum.close() ==
 
-            A ->> B: CLOSE CONNECTION
+        A ->> B: CLOSE CONNECTION
     ```
 
 ## Options { #DBR-onetl-connection-db-connection-greenplum-execute-options }
