@@ -15,4 +15,5 @@
 ::: onetl.file.file_df_writer.file_df_writer.FileDFWriter
     options:
         members:
+            - __init__
             - run
