@@ -21,30 +21,30 @@ Only queries with the following syntax are supported:
 
 ## Examples { #DBR-onetl-connection-db-connection-clickhouse-sql-examples }
 
-    ```python
-    from onetl.connection import Clickhouse
+```python
+from onetl.connection import Clickhouse
 
-    clickhouse = Clickhouse(...)
-    df = clickhouse.sql(
-        """
-        SELECT
-            id,
-            key,
-            CAST(value AS String) value,
-            updated_at
-        FROM
-            some.mytable
-        WHERE
-            key = 'something'
-        """,
-        options=Clickhouse.SQLOptions(
-            partitionColumn="id",
-            numPartitions=10,
-            lowerBound=0,
-            upperBound=1000,
-        ),
-    )
-    ```
+clickhouse = Clickhouse(...)
+df = clickhouse.sql(
+    """
+    SELECT
+        id,
+        key,
+        CAST(value AS String) value,
+        updated_at
+    FROM
+        some.mytable
+    WHERE
+        key = 'something'
+    """,
+    options=Clickhouse.SQLOptions(
+        partitionColumn="id",
+        numPartitions=10,
+        lowerBound=0,
+        upperBound=1000,
+    ),
+)
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-clickhouse-sql-recommendations }
 

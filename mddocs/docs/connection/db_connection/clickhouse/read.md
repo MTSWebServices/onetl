@@ -24,44 +24,44 @@ but does not support custom queries, like `JOIN`.
 
 ### Snapshot strategy { #DBR-onetl-connection-db-connection-clickhouse-read-snapshot-strategy }
 
-    ```python
-    from onetl.connection import Clickhouse
-    from onetl.db import DBReader
+```python
+from onetl.connection import Clickhouse
+from onetl.db import DBReader
 
-    clickhouse = Clickhouse(...)
+clickhouse = Clickhouse(...)
 
-    reader = DBReader(
-        connection=clickhouse,
-        source="schema.table",
-        columns=["id", "key", "CAST(value AS String) value", "updated_dt"],
-        where="key = 'something'",
-        options=Clickhouse.ReadOptions(partitionColumn="id", numPartitions=10),
-    )
-    df = reader.run()
+reader = DBReader(
+    connection=clickhouse,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS String) value", "updated_dt"],
+    where="key = 'something'",
+    options=Clickhouse.ReadOptions(partitionColumn="id", numPartitions=10),
+)
+df = reader.run()
 
-    ```
+```
 
 ### Incremental strategy { #DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy }
 
-    ```python
-    from onetl.connection import Clickhouse
-    from onetl.db import DBReader
-    from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import Clickhouse
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-    clickhouse = Clickhouse(...)
+clickhouse = Clickhouse(...)
 
-    reader = DBReader(
-        connection=clickhouse,
-        source="schema.table",
-        columns=["id", "key", "CAST(value AS String) value", "updated_dt"],
-        where="key = 'something'",
-        hwm=DBReader.AutoDetectHWM(name="clickhouse_hwm", expression="updated_dt"),
-        options=Clickhouse.ReadOptions(partitionColumn="id", numPartitions=10),
-    )
+reader = DBReader(
+    connection=clickhouse,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS String) value", "updated_dt"],
+    where="key = 'something'",
+    hwm=DBReader.AutoDetectHWM(name="clickhouse_hwm", expression="updated_dt"),
+    options=Clickhouse.ReadOptions(partitionColumn="id", numPartitions=10),
+)
 
-    with IncrementalStrategy():
-        df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-clickhouse-read-recommendations }
 

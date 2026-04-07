@@ -24,41 +24,41 @@ but does not support custom queries, like `JOIN`.
 
 Snapshot strategy:
 
-    ```python
-        from onetl.connection import Hive
-        from onetl.db import DBReader
+```python
+from onetl.connection import Hive
+from onetl.db import DBReader
 
-        hive = Hive(...)
+hive = Hive(...)
 
-        reader = DBReader(
-            connection=hive,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-        )
-        df = reader.run()
-    ```
+reader = DBReader(
+    connection=hive,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+)
+df = reader.run()
+```
 
 Incremental strategy:
 
-    ```python
-        from onetl.connection import Hive
-        from onetl.db import DBReader
-        from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import Hive
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-        hive = Hive(...)
+hive = Hive(...)
 
-        reader = DBReader(
-            connection=hive,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            hwm=DBReader.AutoDetectHWM(name="hive_hwm", expression="updated_dt"),
-        )
+reader = DBReader(
+    connection=hive,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    hwm=DBReader.AutoDetectHWM(name="hive_hwm", expression="updated_dt"),
+)
 
-        with IncrementalStrategy():
-            df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-hive-read-recommendations }
 

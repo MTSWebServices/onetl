@@ -23,43 +23,43 @@
 
 Snapshot strategy:
 
-    ```python
-        from onetl.connection import Postgres
-        from onetl.db import DBReader
+```python
+from onetl.connection import Postgres
+from onetl.db import DBReader
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        reader = DBReader(
-            connection=postgres,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            options=Postgres.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
-        df = reader.run()
-    ```
+reader = DBReader(
+    connection=postgres,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    options=Postgres.ReadOptions(partitionColumn="id", numPartitions=10),
+)
+df = reader.run()
+```
 
 Incremental strategy:
 
-    ```python
-        from onetl.connection import Postgres
-        from onetl.db import DBReader
-        from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import Postgres
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        reader = DBReader(
-            connection=postgres,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            hwm=DBReader.AutoDetectHWM(name="postgres_hwm", expression="updated_dt"),
-            options=Postgres.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
+reader = DBReader(
+    connection=postgres,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    hwm=DBReader.AutoDetectHWM(name="postgres_hwm", expression="updated_dt"),
+    options=Postgres.ReadOptions(partitionColumn="id", numPartitions=10),
+)
 
-        with IncrementalStrategy():
-            df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-postgres-read-recommendations }
 

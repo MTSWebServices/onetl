@@ -16,22 +16,22 @@ For writing data to MSSQL, use [DBWriter][DBR-onetl-db-writer].
 
 ## Examples { #DBR-onetl-connection-db-connection-mssql-write-examples }
 
-    ```python
-        from onetl.connection import MSSQL
-        from onetl.db import DBWriter
+```python
+from onetl.connection import MSSQL
+from onetl.db import DBWriter
 
-        mssql = MSSQL(...)
+mssql = MSSQL(...)
 
-        df = ...  # data is here
+df = ...  # data is here
 
-        writer = DBWriter(
-            connection=mssql,
-            target="schema.table",
-            options=MSSQL.WriteOptions(if_exists="append"),
-        )
+writer = DBWriter(
+    connection=mssql,
+    target="schema.table",
+    options=MSSQL.WriteOptions(if_exists="append"),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```
 
 ## Options { #DBR-onetl-connection-db-connection-mssql-write-options }
 

@@ -217,42 +217,42 @@ For example, you can use `CAST(column AS text)` to convert data to string repres
 
 It is also possible to use [to_json](https://www.postgresql.org/docs/current/functions-json.html) Postgres function to convert column of any type to string representation, and then parse this column on Spark side you can use the [JSON.parse_column][onetl.file.format.json.JSON.parse_column] method:
 
-    ```python
-        from pyspark.sql.types import IntegerType
+```python
+from pyspark.sql.types import IntegerType
 
-        from onetl.connection import Postgres
-        from onetl.db import DBReader
-        from onetl.file.format import JSON
+from onetl.connection import Postgres
+from onetl.db import DBReader
+from onetl.file.format import JSON
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        DBReader(
-            connection=postgres,
-            columns=[
-                "id",
-                "supported_column",
-                "CAST(unsupported_column AS text) unsupported_column_str",
-                # or
-                "to_json(unsupported_column) array_column_json",
-            ],
-        )
-        df = reader.run()
+DBReader(
+    connection=postgres,
+    columns=[
+        "id",
+        "supported_column",
+        "CAST(unsupported_column AS text) unsupported_column_str",
+        # or
+        "to_json(unsupported_column) array_column_json",
+    ],
+)
+df = reader.run()
 
-        json_schema = StructType(
-            [
-                StructField("id", IntegerType(), nullable=True),
-                StructField("name", StringType(), nullable=True),
-                ...,
-            ]
-        )
-        df = df.select(
-            df.id,
-            df.supported_column,
-            # explicit cast
-            df.unsupported_column_str.cast("integer").alias("parsed_integer"),
-            JSON().parse_column("array_column_json", json_schema).alias("json_string"),
-        )
-    ```
+json_schema = StructType(
+    [
+        StructField("id", IntegerType(), nullable=True),
+        StructField("name", StringType(), nullable=True),
+        ...,
+    ]
+)
+df = df.select(
+    df.id,
+    df.supported_column,
+    # explicit cast
+    df.unsupported_column_str.cast("integer").alias("parsed_integer"),
+    JSON().parse_column("array_column_json", json_schema).alias("json_string"),
+)
+```
 
 ### `DBWriter` { #DBR-onetl-connection-db-connection-postgres-types-dbwriter }
 
@@ -262,48 +262,48 @@ It is always possible to convert data on the Spark side to a string, and then wr
 
 You can use the [JSON.serialize_column][onetl.file.format.json.JSON.serialize_column] method for data serialization:
 
-    ```python
-        from onetl.file.format import JSON
-        from pyspark.sql.functions import col
+```python
+from onetl.file.format import JSON
+from pyspark.sql.functions import col
 
-        from onetl.connection import Postgres
-        from onetl.db import DBWriter
+from onetl.connection import Postgres
+from onetl.db import DBWriter
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        postgres.execute(
-            """
-            CREATE TABLE schema.target_table (
-                id int,
-                supported_column timestamp,
-                array_column_json jsonb -- any column type, actually
-            )
-            """,
-        )
+postgres.execute(
+    """
+    CREATE TABLE schema.target_table (
+        id int,
+        supported_column timestamp,
+        array_column_json jsonb -- any column type, actually
+    )
+    """,
+)
 
-        write_df = df.select(
-            df.id,
-            df.supported_column,
-            JSON().serialize_column(df.unsupported_column).alias("array_column_json"),
-        )
+write_df = df.select(
+    df.id,
+    df.supported_column,
+    JSON().serialize_column(df.unsupported_column).alias("array_column_json"),
+)
 
-        writer = DBWriter(
-            connection=postgres,
-            target="schema.target_table",
-        )
-        writer.run(write_df)
-    ```
+writer = DBWriter(
+    connection=postgres,
+    target="schema.target_table",
+)
+writer.run(write_df)
+```
 
 Then you can parse this column on the Postgres side (for example, by creating a view):
 
-    ```sql
-        SELECT
-            id,
-            supported_column,
-            array_column_json->'0' AS array_item_0
-        FROM
-            schema.target_table
-    ```
+```sql
+SELECT
+    id,
+    supported_column,
+    array_column_json->'0' AS array_item_0
+FROM
+    schema.target_table
+```
 
 To avoid casting the value on every table read you can use [GENERATED ALWAYS STORED](https://www.postgresql.org/docs/current/ddl-generated-columns.html) column, but this requires 2x space (for original and parsed value).
 
@@ -313,43 +313,43 @@ Postgres connector also supports conversion text value directly to target column
 
 For example, you can write data like `[123, 345)` to `int8range` type because Postgres allows cast `'[123, 345)'::int8range'`:
 
-    ```python
-        from pyspark.sql.ftypes import StringType
-        from pyspark.sql.functions import udf
+```python
+from pyspark.sql.ftypes import StringType
+from pyspark.sql.functions import udf
 
-        from onetl.connection import Postgres
-        from onetl.db import DBReader
+from onetl.connection import Postgres
+from onetl.db import DBReader
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        postgres.execute(
-            """
-            CREATE TABLE schema.target_table (
-                id int,
-                range_column int8range -- any column type, actually
-            )
-            """,
-        )
-
-
-        @udf(returnType=StringType())
-        def array_to_range(value: tuple):
-            """This UDF allows to convert tuple[start, end] to Postgres' range format"""
-            start, end = value
-            return f"[{start},{end})"
+postgres.execute(
+    """
+    CREATE TABLE schema.target_table (
+        id int,
+        range_column int8range -- any column type, actually
+    )
+    """,
+)
 
 
-        write_df = df.select(
-            df.id,
-            array_to_range(df.range_column).alias("range_column"),
-        )
+@udf(returnType=StringType())
+def array_to_range(value: tuple):
+    """This UDF allows to convert tuple[start, end] to Postgres' range format"""
+    start, end = value
+    return f"[{start},{end})"
 
-        writer = DBWriter(
-            connection=postgres,
-            target="schema.target_table",
-        )
-        writer.run(write_df)
-    ```
+
+write_df = df.select(
+    df.id,
+    array_to_range(df.range_column).alias("range_column"),
+)
+
+writer = DBWriter(
+    connection=postgres,
+    target="schema.target_table",
+)
+writer.run(write_df)
+```
 
 This can be tricky to implement and may lead to longer write process.
 But this does not require extra space on Postgres side, and allows to avoid explicit value cast on every table read.

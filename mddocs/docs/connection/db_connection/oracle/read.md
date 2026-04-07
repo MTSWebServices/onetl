@@ -23,45 +23,45 @@
 
 Snapshot strategy:
 
-    ```python
-        from onetl.connection import Oracle
-        from onetl.db import DBReader
+```python
+from onetl.connection import Oracle
+from onetl.db import DBReader
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        reader = DBReader(
-            connection=oracle,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS VARCHAR2(4000)) value", "updated_dt"],
-            where="key = 'something'",
-            hint="INDEX(schema.table key_index)",
-            options=Oracle.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
-        df = reader.run()
-    ```
+reader = DBReader(
+    connection=oracle,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS VARCHAR2(4000)) value", "updated_dt"],
+    where="key = 'something'",
+    hint="INDEX(schema.table key_index)",
+    options=Oracle.ReadOptions(partitionColumn="id", numPartitions=10),
+)
+df = reader.run()
+```
 
 Incremental strategy:
 
-    ```python
-        from onetl.connection import Oracle
-        from onetl.db import DBReader
-        from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import Oracle
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        reader = DBReader(
-            connection=oracle,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS VARCHAR2(4000)) value", "updated_dt"],
-            where="key = 'something'",
-            hint="INDEX(schema.table key_index)",
-            hwm=DBReader.AutoDetectHWM(name="oracle_hwm", expression="updated_dt"),
-            options=Oracle.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
+reader = DBReader(
+    connection=oracle,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS VARCHAR2(4000)) value", "updated_dt"],
+    where="key = 'something'",
+    hint="INDEX(schema.table key_index)",
+    hwm=DBReader.AutoDetectHWM(name="oracle_hwm", expression="updated_dt"),
+    options=Oracle.ReadOptions(partitionColumn="id", numPartitions=10),
+)
 
-        with IncrementalStrategy():
-            df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-oracle-read-recommendations }
 

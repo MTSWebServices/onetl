@@ -34,18 +34,18 @@ This method supports **any** query syntax supported by MySQL, like:
 
 #### Examples in `MySQL.fetch` { #DBR-onetl-connection-db-connection-mysql-execute-examples-in-mysql-fetch }
 
-    ```python
-        from onetl.connection import MySQL
+```python
+from onetl.connection import MySQL
 
-        mysql = MySQL(...)
+mysql = MySQL(...)
 
-        df = mysql.fetch(
-            "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
-            options=MySQL.FetchOptions(queryTimeout=10),
-        )
-        mysql.close()
-        value = df.collect()[0][0]  # get value from first row and first column
-    ```
+df = mysql.fetch(
+    "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
+    options=MySQL.FetchOptions(queryTimeout=10),
+)
+mysql.close()
+value = df.collect()[0][0]  # get value from first row and first column
+```
 
 ### Use `MySQL.execute` { #DBR-onetl-connection-db-connection-mysql-execute-use-mysql-execute }
 
@@ -69,24 +69,24 @@ This method supports **any** query syntax supported by MySQL, like:
 
 #### Examples for `MySQL.execute` { #DBR-onetl-connection-db-connection-mysql-execute-examples-for-mysql-execute }
 
-    ```python
-        from onetl.connection import MySQL
+```python
+from onetl.connection import MySQL
 
-        mysql = MySQL(...)
+mysql = MySQL(...)
 
-        mysql.execute("DROP TABLE schema.table")
-        mysql.execute(
-            """
-            CREATE TABLE schema.table (
-                id bigint,
-                key text,
-                value float
-            )
-            ENGINE = InnoDB
-            """,
-            options=MySQL.ExecuteOptions(queryTimeout=10),
-        )
-    ```
+mysql.execute("DROP TABLE schema.table")
+mysql.execute(
+    """
+    CREATE TABLE schema.table (
+        id bigint,
+        key text,
+        value float
+    )
+    ENGINE = InnoDB
+    """,
+    options=MySQL.ExecuteOptions(queryTimeout=10),
+)
+```
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-execute-options }
 

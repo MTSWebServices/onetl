@@ -8,24 +8,24 @@ For writing data to MongoDB, use [DBWriter][DBR-onetl-db-writer].
 
 ## Examples { #DBR-onetl-connection-db-connection-mongodb-write-examples }
 
-    ```python
-        from onetl.connection import MongoDB
-        from onetl.db import DBWriter
+```python
+from onetl.connection import MongoDB
+from onetl.db import DBWriter
 
-        mongodb = MongoDB(...)
+mongodb = MongoDB(...)
 
-        df = ...  # data is here
+df = ...  # data is here
 
-        writer = DBWriter(
-            connection=mongodb,
-            target="schema.table",
-            options=MongoDB.WriteOptions(
-                if_exists="append",
-            ),
-        )
+writer = DBWriter(
+    connection=mongodb,
+    target="schema.table",
+    options=MongoDB.WriteOptions(
+        if_exists="append",
+    ),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```
 
 ## Write options { #DBR-onetl-connection-db-connection-mongodb-write-options }
 

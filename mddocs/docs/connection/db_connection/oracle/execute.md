@@ -35,18 +35,18 @@ This method supports **any** query syntax supported by Oracle, like:
 
 #### Examples for `Oracle.fetch` { #DBR-onetl-connection-db-connection-oracle-execute-examples-for-oracle-fetch }
 
-    ```python
-        from onetl.connection import Oracle
+```python
+from onetl.connection import Oracle
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        df = oracle.fetch(
-            "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
-            options=Oracle.FetchOptions(queryTimeout=10),
-        )
-        oracle.close()
-        value = df.collect()[0][0]  # get value from first row and first column
-    ```
+df = oracle.fetch(
+    "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
+    options=Oracle.FetchOptions(queryTimeout=10),
+)
+oracle.close()
+value = df.collect()[0][0]  # get value from first row and first column
+```
 
 ### Use `Oracle.execute` { #DBR-onetl-connection-db-connection-oracle-execute-use-oracle-execute }
 
@@ -71,23 +71,23 @@ This method supports **any** query syntax supported by Oracle, like:
 
 #### Examples for `Oracle.execute` { #DBR-onetl-connection-db-connection-oracle-execute-examples-for-oracle-execute }
 
-    ```python
-        from onetl.connection import Oracle
+```python
+from onetl.connection import Oracle
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        oracle.execute("DROP TABLE schema.table")
-        oracle.execute(
-            """
-            CREATE TABLE schema.table (
-                id bigint GENERATED ALWAYS AS IDENTITY,
-                key VARCHAR2(4000),
-                value NUMBER
-            )
-            """,
-            options=Oracle.ExecuteOptions(queryTimeout=10),
-        )
-    ```
+oracle.execute("DROP TABLE schema.table")
+oracle.execute(
+    """
+    CREATE TABLE schema.table (
+        id bigint GENERATED ALWAYS AS IDENTITY,
+        key VARCHAR2(4000),
+        value NUMBER
+    )
+    """,
+    options=Oracle.ExecuteOptions(queryTimeout=10),
+)
+```
 
 ## Options { #DBR-onetl-connection-db-connection-oracle-execute-options }
 

@@ -184,77 +184,77 @@ It is possible to explicitly cast column type using `DBReader(columns=...)` synt
 
 For example, you can use `CAST(column AS text)` to convert data to string representation on MSSQL side, and so it will be read as Spark's `StringType()`:
 
-    ```python
-        from onetl.connection import MSSQL
-        from onetl.db import DBReader
+```python
+from onetl.connection import MSSQL
+from onetl.db import DBReader
 
-        mssql = MSSQL(...)
+mssql = MSSQL(...)
 
-        DBReader(
-            connection=mssql,
-            columns=[
-                "id",
-                "supported_column",
-                "CAST(unsupported_column AS text) unsupported_column_str",
-            ],
-        )
-        df = reader.run()
+DBReader(
+    connection=mssql,
+    columns=[
+        "id",
+        "supported_column",
+        "CAST(unsupported_column AS text) unsupported_column_str",
+    ],
+)
+df = reader.run()
 
-        # cast column content to proper Spark type
-        df = df.select(
-            df.id,
-            df.supported_column,
-            # explicit cast
-            df.unsupported_column_str.cast("integer").alias("parsed_integer"),
-        )
-    ```
+# cast column content to proper Spark type
+df = df.select(
+    df.id,
+    df.supported_column,
+    # explicit cast
+    df.unsupported_column_str.cast("integer").alias("parsed_integer"),
+)
+```
 
 ### `DBWriter` { #DBR-onetl-connection-db-connection-mssql-types-dbwriter }
 
 Convert dataframe column to JSON using [to_json](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.to_json.html), and write it as `text` column in MSSQL:
 
-    ```python
-        mssql.execute(
-            """
-            CREATE TABLE schema.target_tbl (
-                id bigint,
-                struct_column_json text -- any string type, actually
-            )
-            """,
-        )
+```python
+mssql.execute(
+    """
+    CREATE TABLE schema.target_tbl (
+        id bigint,
+        struct_column_json text -- any string type, actually
+    )
+    """,
+)
 
-        from pyspark.sql.functions import to_json
+from pyspark.sql.functions import to_json
 
-        df = df.select(
-            df.id,
-            to_json(df.struct_column).alias("struct_column_json"),
-        )
+df = df.select(
+    df.id,
+    to_json(df.struct_column).alias("struct_column_json"),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```
 
 Then you can parse this column on MSSQL side - for example, by creating a view:
 
-    ```sql
-        SELECT
-            id,
-            JSON_VALUE(struct_column_json, "$.nested.field") AS nested_field
-        FROM target_tbl
-    ```
+```sql
+SELECT
+    id,
+    JSON_VALUE(struct_column_json, "$.nested.field") AS nested_field
+FROM target_tbl
+```
 
 Or by using [computed column](https://learn.microsoft.com/en-us/sql/relational-databases/tables/specify-computed-columns-in-a-table):
 
-    ```sql
-        CREATE TABLE schema.target_table (
-            id bigint,
-            supported_column datetime2(6),
-            struct_column_json text, -- any string type, actually
-            -- computed column
-            nested_field AS (JSON_VALUE(struct_column_json, "$.nested.field"))
-            -- or persisted column
-            -- nested_field AS (JSON_VALUE(struct_column_json, "$.nested.field")) PERSISTED
-        )
-    ```
+```sql
+CREATE TABLE schema.target_table (
+    id bigint,
+    supported_column datetime2(6),
+    struct_column_json text, -- any string type, actually
+    -- computed column
+    nested_field AS (JSON_VALUE(struct_column_json, "$.nested.field"))
+    -- or persisted column
+    -- nested_field AS (JSON_VALUE(struct_column_json, "$.nested.field")) PERSISTED
+)
+```
 
 By default, column value is calculated on every table read.
 Column marked as `PERSISTED` is calculated during insert, but this require additional space.

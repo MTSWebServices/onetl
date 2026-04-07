@@ -20,30 +20,30 @@ Only queries with the following syntax are supported:
 
 ## Examples { #DBR-onetl-connection-db-connection-postgres-sql-examples }
 
-    ```python
-        from onetl.connection import Postgres
+```python
+from onetl.connection import Postgres
 
-        postgres = Postgres(...)
-        df = postgres.sql(
-            """
-            SELECT
-                id,
-                key,
-                CAST(value AS text) value,
-                updated_at
-            FROM
-                some.mytable
-            WHERE
-                key = 'something'
-            """,
-            options=Postgres.SQLOptions(
-                partitionColumn="id",
-                numPartitions=10,
-                lowerBound=0,
-                upperBound=1000,
-            ),
-        )
-    ```
+postgres = Postgres(...)
+df = postgres.sql(
+    """
+    SELECT
+        id,
+        key,
+        CAST(value AS text) value,
+        updated_at
+    FROM
+        some.mytable
+    WHERE
+        key = 'something'
+    """,
+    options=Postgres.SQLOptions(
+        partitionColumn="id",
+        numPartitions=10,
+        lowerBound=0,
+        upperBound=1000,
+    ),
+)
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-postgres-sql-recommendations }
 

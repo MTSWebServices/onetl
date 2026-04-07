@@ -21,30 +21,30 @@ Only queries with the following syntax are supported:
 
 ## Examples { #DBR-onetl-connection-db-connection-oracle-sql-examples }
 
-    ```python
-        from onetl.connection import Oracle
+```python
+from onetl.connection import Oracle
 
-        oracle = Oracle(...)
-        df = oracle.sql(
-            """
-            SELECT
-                id,
-                key,
-                CAST(value AS VARCHAR2(4000)) value,
-                updated_at
-            FROM
-                some.mytable
-            WHERE
-                key = 'something'
-            """,
-            options=Oracle.SQLOptions(
-                partitionColumn="id",
-                numPartitions=10,
-                lowerBound=0,
-                upperBound=1000,
-            ),
-        )
-    ```
+oracle = Oracle(...)
+df = oracle.sql(
+    """
+    SELECT
+        id,
+        key,
+        CAST(value AS VARCHAR2(4000)) value,
+        updated_at
+    FROM
+        some.mytable
+    WHERE
+        key = 'something'
+    """,
+    options=Oracle.SQLOptions(
+        partitionColumn="id",
+        numPartitions=10,
+        lowerBound=0,
+        upperBound=1000,
+    ),
+)
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-oracle-sql-recommendations }
 

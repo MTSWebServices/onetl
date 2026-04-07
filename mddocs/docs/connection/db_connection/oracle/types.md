@@ -176,36 +176,36 @@ For example, you can use `CAST(column AS CLOB)` to convert data to string repres
 
 It is also possible to use [JSON_ARRAY](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/JSON_ARRAY.html) or [JSON_OBJECT](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/JSON_OBJECT.html) Oracle functions to convert column of any type to string representation. Then this JSON string can then be effectively parsed using the [JSON.parse_column][onetl.file.format.json.JSON.parse_column] method.
 
-    ```python
-        from onetl.file.format import JSON
-        from pyspark.sql.types import IntegerType, StructType, StructField
+```python
+from onetl.file.format import JSON
+from pyspark.sql.types import IntegerType, StructType, StructField
 
-        from onetl.connection import Oracle
-        from onetl.db import DBReader
+from onetl.connection import Oracle
+from onetl.db import DBReader
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        DBReader(
-            connection=oracle,
-            columns=[
-                "id",
-                "supported_column",
-                "CAST(unsupported_column AS VARCHAR2(4000)) unsupported_column_str",
-                # or
-                "JSON_ARRAY(array_column) array_column_json",
-            ],
-        )
-        df = reader.run()
+DBReader(
+    connection=oracle,
+    columns=[
+        "id",
+        "supported_column",
+        "CAST(unsupported_column AS VARCHAR2(4000)) unsupported_column_str",
+        # or
+        "JSON_ARRAY(array_column) array_column_json",
+    ],
+)
+df = reader.run()
 
-        json_scheme = StructType([StructField("key", IntegerType())])
+json_scheme = StructType([StructField("key", IntegerType())])
 
-        df = df.select(
-            df.id,
-            df.supported_column,
-            df.unsupported_column_str.cast("integer").alias("parsed_integer"),
-            JSON().parse_column("array_column_json", json_scheme).alias("array_column"),
-        )
-    ```
+df = df.select(
+    df.id,
+    df.supported_column,
+    df.unsupported_column_str.cast("integer").alias("parsed_integer"),
+    JSON().parse_column("array_column_json", json_scheme).alias("array_column"),
+)
+```
 
 ### `DBWriter` { #DBR-onetl-connection-db-connection-oracle-types-dbwriter }
 
@@ -213,56 +213,56 @@ It is always possible to convert data on Spark side to string, and then write it
 
 To serialize and write JSON data to a `text` or `json` column in an Oracle table use the [JSON.serialize_column][onetl.file.format.json.JSON.serialize_column] method.
 
-    ```python
-        from onetl.connection import Oracle
-        from onetl.db import DBWriter
-        from onetl.file.format import JSON
+```python
+from onetl.connection import Oracle
+from onetl.db import DBWriter
+from onetl.file.format import JSON
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        oracle.execute(
-            """
-            CREATE TABLE schema.target_table (
-                id INTEGER,
-                supported_column TIMESTAMP,
-                array_column_json VARCHAR2(4000) -- any string type, actually
-            )
-            """,
-        )
+oracle.execute(
+    """
+    CREATE TABLE schema.target_table (
+        id INTEGER,
+        supported_column TIMESTAMP,
+        array_column_json VARCHAR2(4000) -- any string type, actually
+    )
+    """,
+)
 
-        write_df = df.select(
-            df.id,
-            df.supported_column,
-            JSON().serialize_column(df.unsupported_column).alias("array_column_json"),
-        )
+write_df = df.select(
+    df.id,
+    df.supported_column,
+    JSON().serialize_column(df.unsupported_column).alias("array_column_json"),
+)
 
-        writer = DBWriter(
-            connection=oracle,
-            target="schema.target_table",
-        )
-        writer.run(write_df)
-    ```
+writer = DBWriter(
+    connection=oracle,
+    target="schema.target_table",
+)
+writer.run(write_df)
+```
 
 Then you can parse this column on Oracle side - for example, by creating a view:
 
-    ```sql
-        SELECT
-            id,
-            supported_column,
-            JSON_VALUE(array_column_json, '$[0]' RETURNING NUMBER) AS array_item_0
-        FROM
-            schema.target_table
-    ```
+```sql
+SELECT
+    id,
+    supported_column,
+    JSON_VALUE(array_column_json, '$[0]' RETURNING NUMBER) AS array_item_0
+FROM
+    schema.target_table
+```
 
 Or by using [VIRTUAL column](https://oracle-base.com/articles/11g/virtual-columns-11gr1):
 
-    ```sql
-        CREATE TABLE schema.target_table (
-            id INTEGER,
-            supported_column TIMESTAMP,
-            array_column_json VARCHAR2(4000), -- any string type, actually
-            array_item_0 GENERATED ALWAYS AS (JSON_VALUE(array_column_json, '$[0]' RETURNING NUMBER)) VIRTUAL
-        )
-    ```
+```sql
+CREATE TABLE schema.target_table (
+    id INTEGER,
+    supported_column TIMESTAMP,
+    array_column_json VARCHAR2(4000), -- any string type, actually
+    array_item_0 GENERATED ALWAYS AS (JSON_VALUE(array_column_json, '$[0]' RETURNING NUMBER)) VIRTUAL
+)
+```
 
 But data will be parsed on each table read in any case, as Oracle does no support `GENERATED ALWAYS AS (...) STORED` columns.

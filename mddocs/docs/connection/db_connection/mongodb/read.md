@@ -24,95 +24,95 @@
 
 Snapshot strategy:
 
-    ```python
-    from onetl.connection import MongoDB
-    from onetl.db import DBReader
+```python
+from onetl.connection import MongoDB
+from onetl.db import DBReader
 
-    from pyspark.sql.types import (
-        StructType,
-        StructField,
-        IntegerType,
-        StringType,
-        TimestampType,
-    )
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    IntegerType,
+    StringType,
+    TimestampType,
+)
 
-    mongodb = MongoDB(...)
+mongodb = MongoDB(...)
 
-    # mandatory
-    df_schema = StructType(
-        [
-            StructField("_id", StringType()),
-            StructField("some", StringType()),
-            StructField(
-                "field",
-                StructType(
-                    [
-                        StructField("nested", IntegerType()),
-                    ],
-                ),
+# mandatory
+df_schema = StructType(
+    [
+        StructField("_id", StringType()),
+        StructField("some", StringType()),
+        StructField(
+            "field",
+            StructType(
+                [
+                    StructField("nested", IntegerType()),
+                ],
             ),
-            StructField("updated_dt", TimestampType()),
-        ]
-    )
+        ),
+        StructField("updated_dt", TimestampType()),
+    ]
+)
 
-    reader = DBReader(
-        connection=mongodb,
-        source="some_collection",
-        df_schema=df_schema,
-        where={"field": {"$eq": 123}},
-        hint={"field": 1},
-        options=MongoDBReadOptions(batchSize=10000),
-    )
-    df = reader.run()
-    ```
+reader = DBReader(
+    connection=mongodb,
+    source="some_collection",
+    df_schema=df_schema,
+    where={"field": {"$eq": 123}},
+    hint={"field": 1},
+    options=MongoDBReadOptions(batchSize=10000),
+)
+df = reader.run()
+```
 
 Incremental strategy:
 
-    ```python
-    from onetl.connection import MongoDB
-    from onetl.db import DBReader
-    from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import MongoDB
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-    from pyspark.sql.types import (
-        StructType,
-        StructField,
-        IntegerType,
-        StringType,
-        TimestampType,
-    )
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    IntegerType,
+    StringType,
+    TimestampType,
+)
 
-    mongodb = MongoDB(...)
+mongodb = MongoDB(...)
 
-    # mandatory
-    df_schema = StructType(
-        [
-            StructField("_id", StringType()),
-            StructField("some", StringType()),
-            StructField(
-                "field",
-                StructType(
-                    [
-                        StructField("nested", IntegerType()),
-                    ],
-                ),
+# mandatory
+df_schema = StructType(
+    [
+        StructField("_id", StringType()),
+        StructField("some", StringType()),
+        StructField(
+            "field",
+            StructType(
+                [
+                    StructField("nested", IntegerType()),
+                ],
             ),
-            StructField("updated_dt", TimestampType()),
-        ]
-    )
+        ),
+        StructField("updated_dt", TimestampType()),
+    ]
+)
 
-    reader = DBReader(
-        connection=mongodb,
-        source="some_collection",
-        df_schema=df_schema,
-        where={"field": {"$eq": 123}},
-        hint={"field": 1},
-        hwm=DBReader.AutoDetectHWM(name="mongodb_hwm", expression="updated_dt"),
-        options=MongoDBReadOptions(batchSize=10000),
-    )
+reader = DBReader(
+    connection=mongodb,
+    source="some_collection",
+    df_schema=df_schema,
+    where={"field": {"$eq": 123}},
+    hint={"field": 1},
+    hwm=DBReader.AutoDetectHWM(name="mongodb_hwm", expression="updated_dt"),
+    options=MongoDBReadOptions(batchSize=10000),
+)
 
-    with IncrementalStrategy():
-        df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-mongodb-read-recommendations }
 

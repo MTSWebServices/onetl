@@ -16,22 +16,22 @@ For writing data to Postgres, use [DBWriter][DBR-onetl-db-writer].
 
 ## Examples { #DBR-onetl-connection-db-connection-postgres-write-examples }
 
-    ```python
-        from onetl.connection import Postgres
-        from onetl.db import DBWriter
+```python
+from onetl.connection import Postgres
+from onetl.db import DBWriter
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        df = ...  # data is here
+df = ...  # data is here
 
-        writer = DBWriter(
-            connection=postgres,
-            target="schema.table",
-            options=Postgres.WriteOptions(if_exists="append"),
-        )
+writer = DBWriter(
+    connection=postgres,
+    target="schema.table",
+    options=Postgres.WriteOptions(if_exists="append"),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```
 
 ## Options { #DBR-onetl-connection-db-connection-postgres-write-options }
 

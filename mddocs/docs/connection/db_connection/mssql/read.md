@@ -23,45 +23,43 @@
 
 Snapshot strategy:
 
-    ```python
-        from onetl.connection import MSSQL
-        from onetl.db import DBReader
+```python
+from onetl.connection import MSSQL
+from onetl.db import DBReader
 
-        mssql = MSSQL(...)
+mssql = MSSQL(...)
 
-        reader = DBReader(
-            connection=mssql,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            options=MSSQL.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
-        df = reader.run()
-
-          .
-    ```
+reader = DBReader(
+    connection=mssql,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    options=MSSQL.ReadOptions(partitionColumn="id", numPartitions=10),
+)
+df = reader.run()
+```
 
 Incremental strategy:
 
-    ```python
-        from onetl.connection import MSSQL
-        from onetl.db import DBReader
-        from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import MSSQL
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-        mssql = MSSQL(...)
+mssql = MSSQL(...)
 
-        reader = DBReader(
-            connection=mssql,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            hwm=DBReader.AutoDetectHWM(name="mssql_hwm", expression="updated_dt"),
-            options=MSSQL.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
+reader = DBReader(
+    connection=mssql,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    hwm=DBReader.AutoDetectHWM(name="mssql_hwm", expression="updated_dt"),
+    options=MSSQL.ReadOptions(partitionColumn="id", numPartitions=10),
+)
 
-        with IncrementalStrategy():
-            df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-mssql-read-recommendations }
 

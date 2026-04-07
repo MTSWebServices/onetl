@@ -15,54 +15,54 @@ MongoDB is, by design, \_\_schemaless\_\_. So there are 2 ways how this can be h
 ??? note "See example"
 
     ```python
-        from onetl.connection import MongoDB
-        from onetl.db import DBReader
+    from onetl.connection import MongoDB
+    from onetl.db import DBReader
 
-        from pyspark.sql.types import (
-            StructType,
-            StructField,
-            IntegerType,
-            StringType,
-            TimestampType,
-        )
+    from pyspark.sql.types import (
+        StructType,
+        StructField,
+        IntegerType,
+        StringType,
+        TimestampType,
+    )
 
-        mongodb = MongoDB(...)
+    mongodb = MongoDB(...)
 
-        df_schema = StructType(
-            [
-                StructField("_id", StringType()),
-                StructField("some", StringType()),
-                StructField(
-                    "field",
-                    StructType(
-                        [
-                            StructField("nested", IntegerType()),
-                        ]
-                    ),
+    df_schema = StructType(
+        [
+            StructField("_id", StringType()),
+            StructField("some", StringType()),
+            StructField(
+                "field",
+                StructType(
+                    [
+                        StructField("nested", IntegerType()),
+                    ]
                 ),
-            ]
-        )
+            ),
+        ]
+    )
 
-        reader = DBReader(
-            connection=mongodb,
-            source="some_collection",
-            df_schema=df_schema,
-        )
-        df = reader.run()
+    reader = DBReader(
+        connection=mongodb,
+        source="some_collection",
+        df_schema=df_schema,
+    )
+    df = reader.run()
 
-        # or
+    # or
 
-        df = mongodb.pipeline(
-            collection="some_collection",
-            df_schema=df_schema,
-        )
+    df = mongodb.pipeline(
+        collection="some_collection",
+        df_schema=df_schema,
+    )
     ```
 
 - Rely on MongoDB connector schema infer:
 
-        ```python
-            df = mongodb.pipeline(collection="some_collection")
-        ```
+    ```python
+    df = mongodb.pipeline(collection="some_collection")
+    ```
 
   In this case MongoDB connector read a sample of collection documents, and build DataFrame schema based on document fields and values.
 

@@ -32,18 +32,18 @@ This method supports **any** query syntax supported by Postgres, like:
 
 #### Examples for `Postgres.fetch` { #DBR-onetl-connection-db-connection-postgres-execute-examples-for-postgres-fetch }
 
-    ```python
-        from onetl.connection import Postgres
+```python
+from onetl.connection import Postgres
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        df = postgres.fetch(
-            "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
-            options=Postgres.FetchOptions(queryTimeout=10),
-        )
-        postgres.close()
-        value = df.collect()[0][0]  # get value from first row and first column
-    ```
+df = postgres.fetch(
+    "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
+    options=Postgres.FetchOptions(queryTimeout=10),
+)
+postgres.close()
+value = df.collect()[0][0]  # get value from first row and first column
+```
 
 ### Use `Postgres.execute` { #DBR-onetl-connection-db-connection-postgres-execute-use-postgres-execute }
 
@@ -68,23 +68,23 @@ This method supports **any** query syntax supported by Postgres, like:
 
 #### Examples for `Postgres.execute` { #DBR-onetl-connection-db-connection-postgres-execute-examples-for-postgres-execute }
 
-    ```python
-        from onetl.connection import Postgres
+```python
+from onetl.connection import Postgres
 
-        postgres = Postgres(...)
+postgres = Postgres(...)
 
-        postgres.execute("DROP TABLE schema.table")
-        postgres.execute(
-            """
-            CREATE TABLE schema.table (
-                id bigint GENERATED ALWAYS AS IDENTITY,
-                key text,
-                value real
-            )
-            """,
-            options=Postgres.ExecuteOptions(queryTimeout=10),
-        )
-    ```
+postgres.execute("DROP TABLE schema.table")
+postgres.execute(
+    """
+    CREATE TABLE schema.table (
+        id bigint GENERATED ALWAYS AS IDENTITY,
+        key text,
+        value real
+    )
+    """,
+    options=Postgres.ExecuteOptions(queryTimeout=10),
+)
+```
 
 ## Options { #DBR-onetl-connection-db-connection-postgres-execute-options }
 

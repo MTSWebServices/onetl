@@ -15,27 +15,27 @@ For writing data to Greenplum, use [DBWriter][DBR-onetl-db-writer] with [Greenpl
 
 ## Examples { #DBR-onetl-connection-db-connection-greenplum-write-examples }
 
-    ```python
-        from onetl.connection import Greenplum
-        from onetl.db import DBWriter
+```python
+from onetl.connection import Greenplum
+from onetl.db import DBWriter
 
-        greenplum = Greenplum(...)
+greenplum = Greenplum(...)
 
-        df = ...  # data is here
+df = ...  # data is here
 
-        writer = DBWriter(
-            connection=greenplum,
-            target="schema.table",
-            options=Greenplum.WriteOptions(
-                if_exists="append",
-                # by default distribution is random
-                distributedBy="id",
-                # partitionBy is not supported
-            ),
-        )
+writer = DBWriter(
+    connection=greenplum,
+    target="schema.table",
+    options=Greenplum.WriteOptions(
+        if_exists="append",
+        # by default distribution is random
+        distributedBy="id",
+        # partitionBy is not supported
+    ),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```
 
 ## Interaction schema { #DBR-onetl-connection-db-connection-greenplum-write-interaction-schema }
 

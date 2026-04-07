@@ -69,25 +69,25 @@ This method supports **any** query syntax supported by Clickhouse, like:
 
 #### Examples for `Clickhouse.execute` { #DBR-onetl-connection-db-connection-clickhouse-execute-examples-for-clickhouse-execute }
 
-    ```python
-    from onetl.connection import Clickhouse
+```python
+from onetl.connection import Clickhouse
 
-    clickhouse = Clickhouse(...)
+clickhouse = Clickhouse(...)
 
-    clickhouse.execute("DROP TABLE schema.table")
-    clickhouse.execute(
-        """
-        CREATE TABLE schema.table (
-            id UInt8,
-            key String,
-            value Float32
-        )
-        ENGINE = MergeTree()
-        ORDER BY id
-        """,
-        options=Clickhouse.ExecuteOptions(queryTimeout=10),
+clickhouse.execute("DROP TABLE schema.table")
+clickhouse.execute(
+    """
+    CREATE TABLE schema.table (
+        id UInt8,
+        key String,
+        value Float32
     )
-    ```
+    ENGINE = MergeTree()
+    ORDER BY id
+    """,
+    options=Clickhouse.ExecuteOptions(queryTimeout=10),
+)
+```
 
 ## Notes { #DBR-onetl-connection-db-connection-clickhouse-execute-notes }
 

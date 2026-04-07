@@ -21,30 +21,30 @@ Only queries with the following syntax are supported:
 
 ## Examples { #DBR-onetl-connection-db-connection-mysql-sql-examples }
 
-    ```python
-        from onetl.connection import MySQL
+```python
+from onetl.connection import MySQL
 
-        mysql = MySQL(...)
-        df = mysql.sql(
-            """
-            SELECT
-                id,
-                key,
-                CAST(value AS text) value,
-                updated_at
-            FROM
-                some.mytable
-            WHERE
-                key = 'something'
-            """,
-            options=MySQL.SQLOptions(
-                partitionColumn="id",
-                numPartitions=10,
-                lowerBound=0,
-                upperBound=1000,
-            ),
-        )
-    ```
+mysql = MySQL(...)
+df = mysql.sql(
+    """
+    SELECT
+        id,
+        key,
+        CAST(value AS text) value,
+        updated_at
+    FROM
+        some.mytable
+    WHERE
+        key = 'something'
+    """,
+    options=MySQL.SQLOptions(
+        partitionColumn="id",
+        numPartitions=10,
+        lowerBound=0,
+        upperBound=1000,
+    ),
+)
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-mysql-sql-recommendations }
 

@@ -34,19 +34,19 @@ This method supports **any** query syntax supported by Greenplum, like:
 
 #### Examples for `Greenplum.fetch` { #DBR-onetl-connection-db-connection-greenplum-execute-examples-for-greenplum-fetch }
 
-    ```python
-    from onetl.connection import Greenplum
+```python
+from onetl.connection import Greenplum
 
-    greenplum = Greenplum(...)
+greenplum = Greenplum(...)
 
-    df = greenplum.fetch(
-        "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
-        options=Greenplum.FetchOptions(queryTimeout=10),
-    )
-    greenplum.close()
-    value = df.collect()[0][0]  # get value from first row and first column
+df = greenplum.fetch(
+    "SELECT value FROM some.reference_table WHERE key = 'some_constant'",
+    options=Greenplum.FetchOptions(queryTimeout=10),
+)
+greenplum.close()
+value = df.collect()[0][0]  # get value from first row and first column
 
-    ```
+```
 
 ### Use `Greenplum.execute` { #DBR-onetl-connection-db-connection-greenplum-execute-use-greenplum-execute }
 
@@ -71,24 +71,24 @@ This method supports **any** query syntax supported by Greenplum, like:
 
 #### Examples for `Greenplum.execute` { #DBR-onetl-connection-db-connection-greenplum-execute-examples-for-greenplum-execute }
 
-    ```python
-    from onetl.connection import Greenplum
+```python
+from onetl.connection import Greenplum
 
-    greenplum = Greenplum(...)
+greenplum = Greenplum(...)
 
-    greenplum.execute("DROP TABLE schema.table")
-    greenplum.execute(
-        """
-        CREATE TABLE schema.table (
-            id int,
-            key text,
-            value real
-        )
-        DISTRIBUTED BY id
-        """,
-        options=Greenplum.ExecuteOptions(queryTimeout=10),
+greenplum.execute("DROP TABLE schema.table")
+greenplum.execute(
+    """
+    CREATE TABLE schema.table (
+        id int,
+        key text,
+        value real
     )
-    ```
+    DISTRIBUTED BY id
+    """,
+    options=Greenplum.ExecuteOptions(queryTimeout=10),
+)
+```
 
 ## Interaction schema { #DBR-onetl-connection-db-connection-greenplum-execute-interaction-schema }
 

@@ -14,22 +14,22 @@ For writing data to Oracle, use [DBWriter][DBR-onetl-db-writer].
 
 ## Examples { #DBR-onetl-connection-db-connection-oracle-write-examples }
 
-    ```python
-        from onetl.connection import Oracle
-        from onetl.db import DBWriter
+```python
+from onetl.connection import Oracle
+from onetl.db import DBWriter
 
-        oracle = Oracle(...)
+oracle = Oracle(...)
 
-        df = ...  # data is here
+df = ...  # data is here
 
-        writer = DBWriter(
-            connection=oracle,
-            target="schema.table",
-            options=Oracle.WriteOptions(if_exists="append"),
-        )
+writer = DBWriter(
+    connection=oracle,
+    target="schema.table",
+    options=Oracle.WriteOptions(if_exists="append"),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```
 
 ## Options { #DBR-onetl-connection-db-connection-oracle-write-options }
 

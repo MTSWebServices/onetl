@@ -21,24 +21,24 @@ This method supports **any** query syntax supported by Hive, like:
 
 ## Examples { #DBR-onetl-connection-db-connection-hive-execute-examples }
 
-    ```python
-        from onetl.connection import Hive
+```python
+from onetl.connection import Hive
 
-        hive = Hive(...)
+hive = Hive(...)
 
-        hive.execute("DROP TABLE schema.table")
-        hive.execute(
-            """
-            CREATE TABLE schema.table (
-                id NUMBER,
-                key VARCHAR,
-                value DOUBLE
-            )
-            PARTITION BY (business_date DATE)
-            STORED AS orc
-            """
-        )
-    ```
+hive.execute("DROP TABLE schema.table")
+hive.execute(
+    """
+    CREATE TABLE schema.table (
+        id NUMBER,
+        key VARCHAR,
+        value DOUBLE
+    )
+    PARTITION BY (business_date DATE)
+    STORED AS orc
+    """
+)
+```
 
 ### Details { #DBR-onetl-connection-db-connection-hive-execute-details }
 

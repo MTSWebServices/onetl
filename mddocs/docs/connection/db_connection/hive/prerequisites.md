@@ -31,16 +31,16 @@ See [installation instruction][DBR-onetl-install-spark] for more details.
 
 Create `$SPARK_CONF_DIR/hive-site.xml` with Hive Metastore URL:
 
-    ```xml
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-            <property>
-                <name>hive.metastore.uris</name>
-                <value>thrift://metastore.host.name:9083</value>
-            </property>
-        </configuration>
-    ```
+```xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://metastore.host.name:9083</value>
+    </property>
+</configuration>
+```
 
 Create `$SPARK_CONF_DIR/core-site.xml` with warehouse location ,e.g. HDFS IPC port of Hadoop namenode, or S3 bucket address & credentials:
 

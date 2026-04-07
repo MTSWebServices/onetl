@@ -35,29 +35,29 @@ Data can be read from Greenplum to Spark using [DBReader][DBR-onetl-db-reader]. 
     This is OK:
 
     ```python
-        DBReader(
-            columns=[
-                "some_column",
-                # this cast is executed on Spark side
-                "CAST(another_column AS STRING)",
-            ],
-            # this predicate is parsed by Spark, and can be pushed down to Greenplum
-            where="some_column LIKE 'val1%'",
-        )
+    DBReader(
+        columns=[
+            "some_column",
+            # this cast is executed on Spark side
+            "CAST(another_column AS STRING)",
+        ],
+        # this predicate is parsed by Spark, and can be pushed down to Greenplum
+        where="some_column LIKE 'val1%'",
+    )
     ```
 
     This is will fail:
 
     ```python
-        DBReader(
-            columns=[
-                "some_column",
-                # Spark does not have `text` type
-                "CAST(another_column AS text)",
-            ],
-            # Spark does not support ~ syntax for regexp matching
-            where="some_column ~ 'val1.*'",
-        )
+    DBReader(
+        columns=[
+            "some_column",
+            # Spark does not have `text` type
+            "CAST(another_column AS text)",
+        ],
+        # Spark does not support ~ syntax for regexp matching
+        where="some_column ~ 'val1.*'",
+    )
     ```
 
 ## Examples { #DBR-onetl-connection-db-connection-greenplum-read-examples }
@@ -210,28 +210,28 @@ If view is used, it is recommended to include `gp_segment_id` column to this vie
 ??? note "Reading from view with gp_segment_id column"
 
     ```python
-        from onetl.connection import Greenplum
-        from onetl.db import DBReader
+    from onetl.connection import Greenplum
+    from onetl.db import DBReader
 
-        greenplum = Greenplum(...)
+    greenplum = Greenplum(...)
 
-        greenplum.execute(
-            """
-            CREATE VIEW schema.view_with_gp_segment_id AS
-            SELECT
-                id,
-                some_column,
-                another_column,
-                gp_segment_id  -- IMPORTANT
-            FROM schema.some_table
-            """,
-        )
+    greenplum.execute(
+        """
+        CREATE VIEW schema.view_with_gp_segment_id AS
+        SELECT
+            id,
+            some_column,
+            another_column,
+            gp_segment_id  -- IMPORTANT
+        FROM schema.some_table
+        """,
+    )
 
-        reader = DBReader(
-            connection=greenplum,
-            source="schema.view_with_gp_segment_id",
-        )
-        df = reader.run()
+    reader = DBReader(
+        connection=greenplum,
+        source="schema.view_with_gp_segment_id",
+    )
+    df = reader.run()
     ```
 
 #### Using custom `partition_column` { #DBR-onetl-connection-db-connection-greenplum-read-using-custom-partition-column }
@@ -244,33 +244,33 @@ In this case, custom column can be used instead:
 ??? note "Reading from view with custom partition_column"
 
     ```python
-        from onetl.connection import Greenplum
-        from onetl.db import DBReader
+    from onetl.connection import Greenplum
+    from onetl.db import DBReader
 
-        greenplum = Greenplum(...)
+    greenplum = Greenplum(...)
 
-        greenplum.execute(
-            """
-            CREATE VIEW schema.view_with_partition_column AS
-            SELECT
-                id,
-                some_column,
-                part_column  -- correlated to greenplum segment ID
-            FROM schema.some_table
-            """,
-        )
+    greenplum.execute(
+        """
+        CREATE VIEW schema.view_with_partition_column AS
+        SELECT
+            id,
+            some_column,
+            part_column  -- correlated to greenplum segment ID
+        FROM schema.some_table
+        """,
+    )
 
-        reader = DBReader(
-            connection=greenplum,
-            source="schema.view_with_partition_column",
-            options=Greenplum.ReadOptions(
-                # parallelize data using specified column
-                partitionColumn="part_column",
-                # create 10 Spark tasks, each will read only part of table data
-                partitions=10,
-            ),
-        )
-        df = reader.run()
+    reader = DBReader(
+        connection=greenplum,
+        source="schema.view_with_partition_column",
+        options=Greenplum.ReadOptions(
+            # parallelize data using specified column
+            partitionColumn="part_column",
+            # create 10 Spark tasks, each will read only part of table data
+            partitions=10,
+        ),
+    )
+    df = reader.run()
     ```
 
 #### Reading `DISTRIBUTED REPLICATED` tables { #DBR-onetl-connection-db-connection-greenplum-read-reading-distributed-replicated-tables }
@@ -290,42 +290,42 @@ Instead is recommended to run `JOIN` query on Greenplum side, save the result to
 ??? note "Reading from view using intermediate table"
 
     ```python
-        from onetl.connection import Greenplum
-        from onetl.db import DBReader
+    from onetl.connection import Greenplum
+    from onetl.db import DBReader
 
-        greenplum = Greenplum(...)
+    greenplum = Greenplum(...)
 
-        greenplum.execute(
-            """
-            CREATE UNLOGGED TABLE schema.intermediate_table AS
-            SELECT
-                id,
-                tbl1.col1,
-                tbl1.data,
-                tbl2.another_data
-            FROM
-                schema.table1 as tbl1
-            JOIN
-                schema.table2 as tbl2
-            ON
-                tbl1.col1 = tbl2.col2
-            WHERE ...
-            """,
-        )
+    greenplum.execute(
+        """
+        CREATE UNLOGGED TABLE schema.intermediate_table AS
+        SELECT
+            id,
+            tbl1.col1,
+            tbl1.data,
+            tbl2.another_data
+        FROM
+            schema.table1 as tbl1
+        JOIN
+            schema.table2 as tbl2
+        ON
+            tbl1.col1 = tbl2.col2
+        WHERE ...
+        """,
+    )
 
-        reader = DBReader(
-            connection=greenplum,
-            source="schema.intermediate_table",
-        )
-        df = reader.run()
+    reader = DBReader(
+        connection=greenplum,
+        source="schema.intermediate_table",
+    )
+    df = reader.run()
 
-        # write dataframe somethere
+    # write dataframe somethere
 
-        greenplum.execute(
-            """
-            DROP TABLE schema.intermediate_table
-            """,
-        )
+    greenplum.execute(
+        """
+        DROP TABLE schema.intermediate_table
+        """,
+    )
     ```
 
 !!! warning
@@ -333,10 +333,10 @@ Instead is recommended to run `JOIN` query on Greenplum side, save the result to
     **NEVER** do that:
 
     ```python
-        df1 = DBReader(connection=greenplum, target="public.table1", ...).run()
-        df2 = DBReader(connection=greenplum, target="public.table2", ...).run()
+    df1 = DBReader(connection=greenplum, target="public.table1", ...).run()
+    df2 = DBReader(connection=greenplum, target="public.table2", ...).run()
 
-        joined_df = df1.join(df2, on="col")
+    joined_df = df1.join(df2, on="col")
     ```
 
     This will lead to sending all the data from both `table1` and `table2` to Spark executor memory, and then `JOIN`

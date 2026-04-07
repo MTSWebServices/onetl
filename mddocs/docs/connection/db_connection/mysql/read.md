@@ -23,45 +23,45 @@
 
 Snapshot strategy:
 
-    ```python
-        from onetl.connection import MySQL
-        from onetl.db import DBReader
+```python
+from onetl.connection import MySQL
+from onetl.db import DBReader
 
-        mysql = MySQL(...)
+mysql = MySQL(...)
 
-        reader = DBReader(
-            connection=mysql,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            hint="SKIP_SCAN(schema.table key_index)",
-            options=MySQL.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
-        df = reader.run()
-    ```
+reader = DBReader(
+    connection=mysql,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    hint="SKIP_SCAN(schema.table key_index)",
+    options=MySQL.ReadOptions(partitionColumn="id", numPartitions=10),
+)
+df = reader.run()
+```
 
 Incremental strategy:
 
-    ```python
-        from onetl.connection import MySQL
-        from onetl.db import DBReader
-        from onetl.strategy import IncrementalStrategy
+```python
+from onetl.connection import MySQL
+from onetl.db import DBReader
+from onetl.strategy import IncrementalStrategy
 
-        mysql = MySQL(...)
+mysql = MySQL(...)
 
-        reader = DBReader(
-            connection=mysql,
-            source="schema.table",
-            columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
-            where="key = 'something'",
-            hint="SKIP_SCAN(schema.table key_index)",
-            hwm=DBReader.AutoDetectHWM(name="mysql_hwm", expression="updated_dt"),
-            options=MySQL.ReadOptions(partitionColumn="id", numPartitions=10),
-        )
+reader = DBReader(
+    connection=mysql,
+    source="schema.table",
+    columns=["id", "key", "CAST(value AS text) value", "updated_dt"],
+    where="key = 'something'",
+    hint="SKIP_SCAN(schema.table key_index)",
+    hwm=DBReader.AutoDetectHWM(name="mysql_hwm", expression="updated_dt"),
+    options=MySQL.ReadOptions(partitionColumn="id", numPartitions=10),
+)
 
-        with IncrementalStrategy():
-            df = reader.run()
-    ```
+with IncrementalStrategy():
+    df = reader.run()
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-mysql-read-recommendations }
 

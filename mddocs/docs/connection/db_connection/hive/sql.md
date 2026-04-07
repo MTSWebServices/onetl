@@ -16,24 +16,24 @@ Only queries with the following syntax are supported:
 
 ## Examples { #DBR-onetl-connection-db-connection-hive-sql-examples }
 
-    ```python
-        from onetl.connection import Hive
+```python
+from onetl.connection import Hive
 
-        hive = Hive(...)
-        df = hive.sql(
-            """
-            SELECT
-                id,
-                key,
-                CAST(value AS text) value,
-                updated_at
-            FROM
-                some.mytable
-            WHERE
-                key = 'something'
-            """
-        )
-    ```
+hive = Hive(...)
+df = hive.sql(
+    """
+    SELECT
+        id,
+        key,
+        CAST(value AS text) value,
+        updated_at
+    FROM
+        some.mytable
+    WHERE
+        key = 'something'
+    """
+)
+```
 
 ## Recommendations { #DBR-onetl-connection-db-connection-hive-sql-recommendations }
 
