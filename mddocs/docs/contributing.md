@@ -5,25 +5,30 @@ reports, improving documentation, submitting feature requests, reviewing
 new submissions, or contributing code that can be incorporated into the
 project.
 
-## Limitations { #DBR-onetl-contributing-limitations }
+## Review process { #DBR-onetl-contributing-review-process }
 
-We should keep close to these items during development:
+For any **significant** changes please create a new GitHub issue and
+enhancements that you wish to make. Describe the feature you would like
+to see, why you need it, and how it will work. Discuss your ideas
+transparently and get community feedback before proceeding.
 
-* Some companies still use old Spark versions, like 3.2.0. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
-* Different users uses onETL in different ways - some uses only DB connectors, some only files. Connector-specific dependencies should be optional.
-* Instead of creating classes with a lot of different options, prefer splitting them into smaller classes, e.g. options class, context manager, etc, and using composition.
+Small changes can directly be crafted and submitted to the GitHub
+Repository as a Pull Request. This requires creating a **repo fork** using
+[instruction](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+
+## Important notes { #DBR-onetl-contributing-limitations }
+
+Please take into account that:
+
+-   Some companies still use old Spark versions, like 3.2.0. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
+-   Different users uses onETL in different ways - some uses only DB connectors, some only files. Connector-specific dependencies should be optional.
+-   Instead of creating classes with a lot of different options, prefer splitting them into smaller classes, e.g. options class, context manager, etc, and using composition.
 
 ## Initial setup for local development { #DBR-onetl-contributing-initial-setup-for-local-development }
 
 ### Install Git { #DBR-onetl-contributing-install-git }
 
 Please follow [instruction](https://docs.github.com/en/get-started/quickstart/set-up-git).
-
-### Create a fork { #DBR-onetl-contributing-create-a-fork }
-
-If you are not a member of a development team building onETL, you should create a fork before making any changes.
-
-Please follow [instruction](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
 ### Clone the repo { #DBR-onetl-contributing-clone-the-repo }
 
@@ -35,15 +40,13 @@ git clone git@github.com:myuser/onetl.git -b develop
 cd onetl
 ```
 
-### Setup environment { #DBR-onetl-contributing-setup-environment }
+### Enable pre-commit hooks { #DBR-onetl-contributing-enable-pre-commit-hooks }
 
 Create virtualenv and install dependencies:
 
 ```bash
 make venv-install
 ```
-
-### Enable pre-commit hooks { #DBR-onetl-contributing-enable-pre-commit-hooks }
 
 Install pre-commit hooks:
 
@@ -60,6 +63,18 @@ prek run
 ## How to { #DBR-onetl-contributing-how-to }
 
 ### Run tests locally { #DBR-onetl-contributing-run-tests-locally }
+
+!!! note
+
+    You can skip this if only documentation is changed.
+
+#### Setup environment { #DBR-onetl-contributing-setup-environment }
+
+Create virtualenv and install dependencies:
+
+```bash
+make venv-install
+```
 
 #### Using docker-compose { #DBR-onetl-contributing-using-docker-compose }
 
@@ -179,6 +194,16 @@ docker-compose --profile all down -v
 
 ### Build documentation { #DBR-onetl-contributing-build-documentation }
 
+!!! note
+
+    You can skip this if only source code behavior remains the same.
+
+Create virtualenv and install dependencies:
+
+```bash
+make venv-install
+```
+
 Build documentation using Sphinx:
 
 ```bash
@@ -187,20 +212,6 @@ make html
 ```
 
 Then open in browser `docs/_build/index.html`.
-
-## Review process { #DBR-onetl-contributing-review-process }
-
-Please create a new GitHub issue for any significant changes and
-enhancements that you wish to make. Provide the feature you would like
-to see, why you need it, and how it will work. Discuss your ideas
-transparently and get community feedback before proceeding.
-
-Significant Changes that you wish to contribute to the project should be
-discussed first in a GitHub issue that clearly outlines the changes and
-benefits of the feature.
-
-Small Changes can directly be crafted and submitted to the GitHub
-Repository as a Pull Request.
 
 ### Create pull request { #DBR-onetl-contributing-create-pull-request }
 
@@ -229,7 +240,7 @@ enough but feel free to add as many details as you feel necessary
 for the users to understand what it means.
 
 **Use the past tense** for the text in your fragment because,
-combined with others, it will be a part of the “news digest”
+combined with others, it will be a part of the "news digest"
 telling the readers **what changed** in a specific version of
 the library *since the previous version*.
 
@@ -289,53 +300,57 @@ Just add `ci:skip-changelog` label to pull request.
 
 #### Release Process { #DBR-onetl-contributing-release-process }
 
+!!! note
+
+    This is for repo maintainers only
+
 Before making a release from the `develop` branch, follow these steps:
 
-1. Checkout to `develop` branch and update it to the actual state
+0. Checkout to `develop` branch and update it to the actual state
 
 ```bash
 git checkout develop
 git pull -p
 ```
 
-2. Backup `NEXT_RELEASE.rst`
+1. Backup `NEXT_RELEASE.rst`
 
 ```bash
 cp "docs/changelog/NEXT_RELEASE.rst" "docs/changelog/temp_NEXT_RELEASE.rst"
 ```
 
-3. Build the Release notes with Towncrier
+2. Build the Release notes with Towncrier
 
 ```bash
 VERSION=$(cat onetl/VERSION)
 towncrier build "--version=${VERSION}" --yes
 ```
 
-4. Change file with changelog to release version number
+3. Change file with changelog to release version number
 
 ```bash
 mv docs/changelog/NEXT_RELEASE.rst "docs/changelog/${VERSION}.rst"
 ```
 
-5. Remove content above the version number heading in the `${VERSION}.rst` file
+4. Remove content above the version number heading in the `${VERSION}.rst` file
 
 ```bash
 awk '!/^.*towncrier release notes start/' "docs/changelog/${VERSION}.rst" > temp && mv temp "docs/changelog/${VERSION}.rst"
 ```
 
-6. Update Changelog Index
+5. Update Changelog Index
 
 ```bash
 awk -v version=${VERSION} '/DRAFT/{print;print "    " version;next}1' docs/changelog/index.rst > temp && mv temp docs/changelog/index.rst
 ```
 
-7. Restore `NEXT_RELEASE.rst` file from backup
+6. Restore `NEXT_RELEASE.rst` file from backup
 
 ```bash
 mv "docs/changelog/temp_NEXT_RELEASE.rst" "docs/changelog/NEXT_RELEASE.rst"
 ```
 
-8. Commit and push changes to `develop` branch
+7. Commit and push changes to `develop` branch
 
 ```bash
 git add .
@@ -343,7 +358,7 @@ git commit -m "Prepare for release ${VERSION}"
 git push
 ```
 
-9. Merge `develop` branch to `master`, **WITHOUT** squashing
+8. Merge `develop` branch to `master`, **WITHOUT** squashing
 
 ```bash
 git checkout master
@@ -352,14 +367,14 @@ git merge develop
 git push
 ```
 
-10. Add git tag to the latest commit in `master` branch
+9. Add git tag to the latest commit in `master` branch
 
 ```bash
 git tag "$VERSION"
 git push origin "$VERSION"
 ```
 
-11. Update version in `develop` branch **after release**:
+10. Update version in `develop` branch **after release**:
 
 ```bash
 git checkout develop
