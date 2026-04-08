@@ -17,7 +17,7 @@ BEFORE creating the connector instance.
 
 See [installation instruction][DBR-onetl-install-spark] for more details.
 
-## Download VMware package { #DBR-onetl-connection-db-connection-greenplum-prerequisites-downloading-vmware-package }
+## Download VMware package { #DBR-onetl-connection-db-connection-greenplum-prerequisites-download-vmware-package }
 
 To use Greenplum connector you should download connector `.jar` file from
 [VMware website](https://network.tanzu.vmware.com/products/vmware-greenplum#/releases/1413479/file_groups/16966)
@@ -74,9 +74,9 @@ More details can be found in official documentation:
 - [format of server.port value](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html#server.port)
 - [port troubleshooting](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/troubleshooting.html#port-errors)
 
-### spark.master=local { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-local }
+### spark.master=local { #DBR-onetl-connection-db-connection-greenplum-prerequisites-spark-masterlocal }
 
-#### Set `gpfdist` server host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-local-set-gpfdist-server-host }
+#### Set `gpfdist` server host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-gpfdist-server-host-0 }
 
 By default, Greenplum connector tries to resolve current host IP, and then pass it to Greenplum segment.
 On some hosts it works as-is, without any additional configuration. In others it's not.
@@ -141,7 +141,7 @@ There are 2 ways to fix that:
   This requires root privileges on host, not everyone can do this.
   Also this doesn't work with dynamic IP addresses.
 
-#### Set `gpfdist` server port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-local-set-gpfdist-server-port }
+#### Set `gpfdist` server port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-gpfdist-server-port-0 }
 
 By default, Spark executors can start `gpfdist` server on *any* random port number.
 You can limit port range using `extra` option:
@@ -157,9 +157,9 @@ greenplum = Greenplum(
 
 Number of ports in this range should be at least `number of parallel running Spark sessions on host` * `number of executors per session`.
 
-### spark.master=yarn { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-yarn }
+### spark.master=yarn { #DBR-onetl-connection-db-connection-greenplum-prerequisites-spark-masteryarn }
 
-#### Set `gpfdist` server host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-yarn-set-gpfdist-server-host }
+#### Set `gpfdist` server host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-gpfdist-server-host-1 }
 
 By default, Greenplum connector tries to resolve current host IP, and then pass it to Greenplum segment.
 Usually there are no issues with that, connector just works as-is, without any adjustments.
@@ -225,7 +225,7 @@ instead of external IP of Hadoop data/compute node. There are 3 ways to fix it:
   This requires root privileges on host, not everyone can do this.
   Also this doesn't work with dynamic IP addresses.
 
-#### Set `gpfdist` server port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-yarn-set-gpfdist-server-port }
+#### Set `gpfdist` server port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-gpfdist-server-port-1 }
 
 By default, Spark executors can start `gpfdist` server on *any* random port number.
 You can limit port range using `extra` option:
@@ -241,7 +241,7 @@ greenplum = Greenplum(
 
 Number of ports in this range should be at least `number of parallel running Spark sessions per node` * `number of executors per session` / `number of Hadoop nodes`.
 
-### spark.master=k8s { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-k8s }
+### spark.master=k8s { #DBR-onetl-connection-db-connection-greenplum-prerequisites-spark-masterk8s }
 
 Before starting Spark session, you should to create a Kubernetes [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) object:
 

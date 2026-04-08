@@ -74,27 +74,27 @@ apt-get install openjdk-11-jdk  # Debian-based | Spark 3
 
 #### Compatibility matrix { #DBR-onetl-quickstart-compatibility-matrix }
 
-| Spark                                                     | Python     | Java       | Scala |
-| --------------------------------------------------------- | ---------- | ---------- | ----- |
-| [2.3.x](https://spark.apache.org/docs/2.3.1/#downloading) | 3.7 only   | 8 only     | 2.11  |
-| [2.4.x](https://spark.apache.org/docs/2.4.8/#downloading) | 3.7 only   | 8 only     | 2.11  |
-| [3.2.x](https://spark.apache.org/docs/3.2.4/#downloading) | 3.7 - 3.10 | 8u201 - 11 | 2.12  |
-| [3.3.x](https://spark.apache.org/docs/3.3.4/#downloading) | 3.7 - 3.12 | 8u201 - 17 | 2.12  |
-| [3.4.x](https://spark.apache.org/docs/3.4.4/#downloading) | 3.7 - 3.12 | 8u362 - 20 | 2.12  |
-| [3.5.x](https://spark.apache.org/docs/3.5.5/#downloading) | 3.8 - 3.13 | 8u371 - 20 | 2.12  |
+| Spark                                                     | Python      | Java       | Scala |
+| --------------------------------------------------------- | ----------- | ---------- | ----- |
+| [3.2.x](https://spark.apache.org/docs/3.2.4/#downloading) | 3.7  - 3.10 | 8u201 - 11 | 2.12  |
+| [3.3.x](https://spark.apache.org/docs/3.3.4/#downloading) | 3.7  - 3.12 | 8u201 - 17 | 2.12  |
+| [3.4.x](https://spark.apache.org/docs/3.4.4/#downloading) | 3.7  - 3.12 | 8u362 - 20 | 2.12  |
+| [3.5.x](https://spark.apache.org/docs/3.5.5/#downloading) | 3.8  - 3.13 | 8u371 - 20 | 2.12  |
+| [4.0.x](https://spark.apache.org/docs/4.0.1/#downloading) | 3.9  - 3.14 |   17 - 22  | 2.13  |
+| [4.1.x](https://spark.apache.org/docs/4.1.1/#downloading) | 3.10 - 3.14 |   17 - 22  | 2.13  |
 
 
 
 Then you should install PySpark via passing `spark` to `extras`:
 
 ```bash
-pip install onetl[spark]  # install latest PySpark
+pip install "onetl[spark]"  # install latest PySpark
 ```
 
 or install PySpark explicitly:
 
 ```bash
-pip install onetl pyspark==3.5.5  # install a specific PySpark version
+pip install onetl pyspark==3.5.8  # install a specific PySpark version
 ```
 
 or inject PySpark to `sys.path` in some other way BEFORE creating a class instance.
@@ -109,14 +109,14 @@ All File (but not *FileDF*) connection classes (`FTP`, `SFTP`, `HDFS` and so on)
 Each client can be installed explicitly by passing connector name (in lowercase) to `extras`:
 
 ```bash
-pip install onetl[ftp]  # specific connector
-pip install onetl[ftp,ftps,sftp,hdfs,s3,webdav,samba]  # multiple connectors
+pip install "onetl[ftp]"  # specific connector
+pip install "onetl[ftp,ftps,sftp,hdfs,s3,webdav,samba]"  # multiple connectors
 ```
 
 To install all file connectors at once you can pass `files` to `extras`:
 
 ```bash
-pip install onetl[files]
+pip install "onetl[files]"
 ```
 
 **Otherwise class import will fail.**
@@ -151,7 +151,7 @@ dnf install krb5-devel krb5-libs krb5-workstation gcc  # CentOS, OracleLinux
 Also you should pass `kerberos` to `extras` to install required Python packages:
 
 ```bash
-pip install onetl[kerberos]
+pip install "onetl[kerberos]"
 ```
 
 ### Full bundle { #DBR-onetl-quickstart-full-bundle }
@@ -161,10 +161,10 @@ pip install onetl[kerberos]
 To install all connectors and dependencies, you can pass `all` into `extras`:
 
 ```bash
-pip install onetl[all]
+pip install "onetl[all]"
 
 # this is just the same as
-pip install onetl[spark,files,kerberos]
+pip install "onetl[spark,files,kerberos]"
 ```
 
 !!! warning
@@ -181,7 +181,7 @@ Read data from MSSQL, transform & write to Hive.
 
 ```bash
 # install onETL and PySpark
-pip install onetl[spark]
+pip install "onetl[spark]"
 ```
 
 ```python
@@ -282,7 +282,7 @@ Download files from SFTP & upload them to HDFS.
 
 ```bash
 # install onETL with SFTP and HDFS clients, and Kerberos support
-pip install onetl[hdfs,sftp,kerberos]
+pip install "onetl[hdfs,sftp,kerberos]"
 ```
 
 ```python
@@ -402,7 +402,7 @@ Read files directly from S3 path, convert them to dataframe, transform it and th
 
 ```bash
 # install onETL and PySpark
-pip install onetl[spark]
+pip install "onetl[spark]"
 ```
 
 ```python

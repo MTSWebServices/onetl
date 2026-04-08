@@ -26,5 +26,5 @@ dnf install krb5-devel krb5-libs krb5-workstation gcc  # CentOS, OracleLinux
 Also you should pass `kerberos` to `extras` to install required Python packages:
 
 ```bash
-pip install onetl[kerberos]
+pip install "onetl[kerberos]"
 ```

@@ -3,10 +3,10 @@
 To install all connectors and dependencies, you can pass `all` into `extras`:
 
 ```bash
-pip install onetl[all]
+pip install "onetl[all]"
 
 # this is just the same as
-pip install onetl[spark,files,kerberos]
+pip install "onetl[spark,files,kerberos]"
 ```
 
 !!! warning

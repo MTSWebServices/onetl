@@ -50,7 +50,7 @@ This could be done using following methods:
 
 Or any other method provided by Spark or third-larty libraries which can parse `BinaryType()` column into useful data.
 
-## GroupIds and offsets
+## GroupIds and offsets { #DBR-onetl-connection-db-connection-kafka-read-groupids-and-offsets }
 
 Regular Kafka consumers use `subscrube(topic)` method to notify Kafka that some new data from Kafka should be send to consumer if available. Offsets read by group are committed to Kafka, to guarantee at-least-once even if consumer failed somethere.
 

@@ -9,7 +9,7 @@ project.
 
 We should keep close to these items during development:
 
-* Some companies still use old Spark versions, like 2.3.1. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
+* Some companies still use old Spark versions, like 3.2.0. So it is required to keep compatibility if possible, e.g. adding branches for different Spark versions.
 * Different users uses onETL in different ways - some uses only DB connectors, some only files. Connector-specific dependencies should be optional.
 * Instead of creating classes with a lot of different options, prefer splitting them into smaller classes, e.g. options class, context manager, etc, and using composition.
 
@@ -27,7 +27,7 @@ Please follow [instruction](https://docs.github.com/en/get-started/quickstart/fo
 
 ### Clone the repo { #DBR-onetl-contributing-clone-the-repo }
 
-Open terminal and run these commands:
+Open terminal and run these commands to clone a **forked** repo:
 
 ```bash
 git clone git@github.com:myuser/onetl.git -b develop
@@ -40,33 +40,7 @@ cd onetl
 Create virtualenv and install dependencies:
 
 ```bash
-python -m venv venv
-source venv/bin/activate
-pip install -U wheel
-pip install -U pip setuptools
-pip install -U \
-    -r requirements/core.txt \
-    -r requirements/ftp.txt \
-    -r requirements/hdfs.txt \
-    -r requirements/kerberos.txt \
-    -r requirements/s3.txt \
-    -r requirements/sftp.txt \
-    -r requirements/webdav.txt \
-    -r requirements/dev.txt \
-    -r requirements/docs.txt \
-    -r requirements/tests/base.txt \
-    -r requirements/tests/clickhouse.txt \
-    -r requirements/tests/kafka.txt \
-    -r requirements/tests/mongodb.txt \
-    -r requirements/tests/mssql.txt \
-    -r requirements/tests/mysql.txt \
-    -r requirements/tests/postgres.txt \
-    -r requirements/tests/oracle.txt \
-    -r requirements/tests/pydantic-2.txt \
-    -r requirements/tests/spark-3.5.5.txt
-
-# TODO: remove after https://github.com/zqmillet/sphinx-plantuml/pull/4
-pip install sphinx-plantuml --no-deps
+make venv-install
 ```
 
 ### Enable pre-commit hooks { #DBR-onetl-contributing-enable-pre-commit-hooks }
@@ -74,13 +48,13 @@ pip install sphinx-plantuml --no-deps
 Install pre-commit hooks:
 
 ```bash
-pre-commit install --install-hooks
+prek install --install-hooks
 ```
 
 Test pre-commit hooks run:
 
 ```bash
-pre-commit run
+prek run
 ```
 
 ## How to { #DBR-onetl-contributing-how-to }
@@ -110,13 +84,13 @@ docker-compose --profile mongodb up -d
 Run tests:
 
 ```bash
-docker-compose run --rm onetl ./run_tests.sh
+docker-compose run --rm onetl pytest
 ```
 
 You can pass additional arguments, they will be passed to pytest:
 
 ```bash
-docker-compose run --rm onetl ./run_tests.sh -m mongodb -lsx -vvvv --log-cli-level=INFO
+docker-compose run --rm onetl pytest -m mongodb -lsx -vvvv --log-cli-level=INFO
 ```
 
 You can run interactive bash session and use it:
@@ -124,7 +98,7 @@ You can run interactive bash session and use it:
 ```bash
 docker-compose run --rm onetl bash
 
-./run_tests.sh -m mongodb -lsx -vvvv --log-cli-level=INFO
+pytest -m mongodb -lsx -vvvv --log-cli-level=INFO
 ```
 
 See logs of test container:
@@ -178,22 +152,23 @@ You can run limited set of dependencies:
 docker-compose --profile mongodb up -d
 ```
 
-Load environment variables with connection properties:
+Run core tests:
 
 ```bash
-source .env.local
+make test-core
 ```
 
-Run tests:
+Run specific connection tests:
 
 ```bash
-./run_tests.sh
+make test-spark PYTEST_ARGS="-m mongodb"
+make test-no-spark PYTEST_ARGS="-m ftp"
 ```
 
 You can pass additional arguments, they will be passed to pytest:
 
 ```bash
-./run_tests.sh -m mongodb -lsx -vvvv --log-cli-level=INFO
+make test-spark PYTEST_ARGS="-m mongodb -lsx -vvvv --log-cli-level=INFO"
 ```
 
 Stop all containers and remove created volumes:

@@ -1,8 +1,8 @@
-## What is onETL? { #DBR-onetl-snippet-0-what-is-onetl }
+## What is onETL? { #DBR-onetl-include-0-what-is-onetl }
 
 Python ETL/ELT library powered by [Apache Spark](https://spark.apache.org/) & other open-source tools.
 
-## Goals { #DBR-onetl-snippet-0-goals }
+## Goals { #DBR-onetl-include-0-goals }
 
 - Provide unified classes to extract data from (**E**) & load data to (**L**) various stores.
 - Provides [Spark DataFrame API](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.html) for performing transformations (**T**) in terms of *ETL*.
@@ -10,21 +10,21 @@ Python ETL/ELT library powered by [Apache Spark](https://spark.apache.org/) & ot
 - Support different [read strategies][DBR-onetl-strategy-read-strategies] for incremental and batch data fetching.
 - Provide [hooks][DBR-onetl-hooks] & [plugins][DBR-onetl-plugins] mechanism for altering behavior of internal classes.
 
-## Non-goals { #DBR-onetl-snippet-0-non-goals }
+## Non-goals { #DBR-onetl-include-0-non-goals }
 
 - onETL is not a Spark replacement. It just provides additional functionality that Spark does not have, and improves UX for end users.
 - onETL is not a framework, as it does not have requirements to project structure, naming, the way of running ETL/ELT processes, configuration, etc. All of that should be implemented in some other tool.
 - onETL is deliberately developed without any integration with scheduling software like Apache Airflow. All integrations should be implemented as separated tools.
 - Only batch operations, no streaming. For streaming prefer [Apache Flink](https://flink.apache.org/).
 
-## Requirements { #DBR-onetl-snippet-0-requirements }
+## Requirements { #DBR-onetl-include-0-requirements }
 
 - **Python** 3.7 - 3.13
 - PySpark 2.3.x - 3.5.x (depends on used connector)
 - Java 8+ (required by Spark, see below)
 - Kerberos libs & GCC (required by `Hive`, `HDFS` and `SparkHDFS` connectors)
 
-## Supported storages { #DBR-onetl-snippet-0-supported-storages }
+## Supported storages { #DBR-onetl-include-0-supported-storages }
 
 | Type               | Storage      | Powered by                                                                                                              |
 |--------------------|--------------|-------------------------------------------------------------------------------------------------------------------------|

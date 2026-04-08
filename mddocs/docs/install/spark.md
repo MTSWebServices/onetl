@@ -23,7 +23,9 @@ apt-get install openjdk-11-jdk  # Debian-based + Spark 3
 | [3.2.x](https://spark.apache.org/docs/3.2.4/#downloading) | 3.7 - 3.10 | 8u201 - 11 |    2.12 |
 | [3.3.x](https://spark.apache.org/docs/3.3.4/#downloading) | 3.7 - 3.12 | 8u201 - 17 |    2.12 |
 | [3.4.x](https://spark.apache.org/docs/3.4.4/#downloading) | 3.7 - 3.12 | 8u362 - 20 |    2.12 |
-| [3.5.x](https://spark.apache.org/docs/3.5.5/#downloading) | 3.8 - 3.13 | 8u371 - 20 |    2.12 |
+| [3.5.x](https://spark.apache.org/docs/3.5.1/#downloading) | 3.8 - 3.13 | 8u371 - 20 |    2.12 |
+| [4.0.x](https://spark.apache.org/docs/4.0.1/#downloading) | 3.9 - 3.14 | 17 - 22    |    2.13 |
+| [4.1.x](https://spark.apache.org/docs/4.1.1/#downloading) | 3.10 - 3.14 | 17 - 22   |    2.13 |
 
 ## Installing PySpark { #DBR-onetl-install-spark-installing-pyspark }
 
@@ -31,13 +33,13 @@ apt-get install openjdk-11-jdk  # Debian-based + Spark 3
 Then you should install PySpark via passing `spark` to `extras`:
 
 ```bash
-pip install onetl[spark]  # install latest PySpark
+pip install "onetl[spark]"  # install latest PySpark
 ```
 
 or install PySpark explicitly:
 
 ```bash
-pip install onetl pyspark==3.5.5  # install a specific PySpark version
+pip install onetl pyspark==3.5.8  # install a specific PySpark version
 ```
 
 or inject PySpark to `sys.path` in some other way BEFORE creating a class instance.
