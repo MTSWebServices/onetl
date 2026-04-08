@@ -16,7 +16,6 @@ Use this method to perform some `SELECT` query which returns **small number or r
 
 Method accepts [MSSQL.FetchOptions][onetl.connection.db_connection.mssql.options.MSSQLFetchOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 !!! warning
 
@@ -52,7 +51,6 @@ Use this method to execute DDL and DML operations. Each method call runs operati
 
 Method accepts [MSSQL.ExecuteOptions][onetl.connection.db_connection.mssql.options.MSSQLExecuteOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 #### Syntax support in `MSSQL.execute` { #DBR-onetl-connection-db-connection-mssql-execute-syntax-support-in-mssql-execute }
 

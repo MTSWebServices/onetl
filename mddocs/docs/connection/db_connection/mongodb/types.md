@@ -2,7 +2,7 @@
 
 !!! note
 
-    The results below are valid for Spark 3.5.5, and may differ on other Spark versions.
+    The results below are valid for Spark 3.5.8, and may differ on other Spark versions.
 
 ## Type detection & casting { #DBR-onetl-connection-db-connection-mongodb-types-type-detection-casting }
 
@@ -72,8 +72,8 @@ It is highly recommended to pass `df_schema` explicitly, to avoid type conversio
 
 Here you can find source code with type conversions:
 
-- [MongoDB -> Spark](https://github.com/mongodb/mongo-spark/blob/r10.4.1/src/main/java/com/mongodb/spark/sql/connector/schema/InferSchema.java#L214-L260)
-- [Spark -> MongoDB](https://github.com/mongodb/mongo-spark/blob/r10.4.1/src/main/java/com/mongodb/spark/sql/connector/schema/RowToBsonDocumentConverter.java#L157-L260)
+- [MongoDB -> Spark](https://github.com/mongodb/mongo-spark/blob/r10.5.0/src/main/java/com/mongodb/spark/sql/connector/schema/InferSchema.java#L214-L260)
+- [Spark -> MongoDB](https://github.com/mongodb/mongo-spark/blob/r10.5.0/src/main/java/com/mongodb/spark/sql/connector/schema/RowToBsonDocumentConverter.java#L157-L260)
 
 ## Supported types { #DBR-onetl-connection-db-connection-mongodb-types-supported-types }
 

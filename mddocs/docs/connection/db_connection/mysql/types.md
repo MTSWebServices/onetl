@@ -2,7 +2,7 @@
 
 !!! note
 
-    The results below are valid for Spark 3.5.5, and may differ on other Spark versions.
+    The results below are valid for Spark 3.5.8, and may differ on other Spark versions.
 
 ## Type detection & casting { #DBR-onetl-connection-db-connection-mysql-types-type-detection-casting }
 
@@ -92,8 +92,8 @@ Always prefer creating tables with specific types **BEFORE WRITING DATA**:
 Here you can find source code with type conversions:
 
 - [MySQL -> JDBC](https://github.com/mysql/mysql-connector-j/blob/8.0.33/src/main/core-api/java/com/mysql/cj/MysqlType.java#L44-L623)
-- [JDBC -> Spark](https://github.com/apache/spark/blob/v3.5.5/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MySQLDialect.scala#L104-L132)
-- [Spark -> JDBC](https://github.com/apache/spark/blob/v3.5.5/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MySQLDialect.scala#L204-L211)
+- [JDBC -> Spark](https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MySQLDialect.scala#L104-L132)
+- [Spark -> JDBC](https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MySQLDialect.scala#L204-L211)
 - [JDBC -> MySQL](https://github.com/mysql/mysql-connector-j/blob/8.0.33/src/main/core-api/java/com/mysql/cj/MysqlType.java#L625-L867)
 
 ## Supported types { #DBR-onetl-connection-db-connection-mysql-types-supported-types }

@@ -17,7 +17,6 @@ Greenplum config, or reading data from some reference table. Method returns Spar
 
 Method accepts [Greenplum.FetchOptions][onetl.connection.db_connection.greenplum.options.GreenplumFetchOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 !!! warning
 
@@ -54,7 +53,6 @@ Use this method to execute DDL and DML operations. Each method call runs operati
 
 Method accepts [Greenplum.ExecuteOptions][onetl.connection.db_connection.greenplum.options.GreenplumExecuteOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 #### Syntax support in `Greenplum.execute` { #DBR-onetl-connection-db-connection-greenplum-execute-syntax-support-in-greenplum-execute }
 

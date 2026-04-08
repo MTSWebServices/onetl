@@ -39,7 +39,7 @@ classDiagram
     JDBCConnection <|-- MySQL
     JDBCConnection <|-- Postgres
     JDBCConnection <|-- Oracle
-    JDBCConnection <|-- Teradata
+
     BaseConnection <|-- FileConnection
     FileConnection <|-- FTP
     FileConnection <|-- FTPS

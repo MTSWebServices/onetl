@@ -2,7 +2,7 @@
 
 !!! note
 
-    The results below are valid for Spark 3.5.5, and may differ on other Spark versions.
+    The results below are valid for Spark 3.5.8, and may differ on other Spark versions.
 
 ## Type detection & casting { #DBR-onetl-connection-db-connection-mssql-types-type-detection-casting }
 
@@ -94,8 +94,8 @@ Always prefer creating tables with specific types **BEFORE WRITING DATA**:
 Here you can find source code with type conversions:
 
 - [MSSQL -> JDBC](https://github.com/microsoft/mssql-jdbc/blob/v12.2.0/src/main/java/com/microsoft/sqlserver/jdbc/SQLServerResultSetMetaData.java#L117-L170)
-- [JDBC -> Spark](https://github.com/apache/spark/blob/v3.5.5/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MsSqlServerDialect.scala#L135-L152)
-- [Spark -> JDBC](https://github.com/apache/spark/blob/v3.5.5/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MsSqlServerDialect.scala#L154-L163)
+- [JDBC -> Spark](https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MsSqlServerDialect.scala#L135-L152)
+- [Spark -> JDBC](https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/jdbc/MsSqlServerDialect.scala#L154-L163)
 - [JDBC -> MSSQL](https://github.com/microsoft/mssql-jdbc/blob/v12.2.0/src/main/java/com/microsoft/sqlserver/jdbc/DataTypes.java#L625-L676)
 
 ## Supported types { #DBR-onetl-connection-db-connection-mssql-types-supported-types }

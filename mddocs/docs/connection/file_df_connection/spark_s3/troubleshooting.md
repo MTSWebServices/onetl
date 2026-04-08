@@ -234,7 +234,7 @@ spark_s3 = SparkS3(
 
 But is is **NOT** recommended.
 
-#### Accessing S3 without domain-style access style support { #DBR-onetl-connection-file-df-connection-spark-s3-troubleshooting-accessing-s3-without-domain-style-access-style-support }
+#### Accessing S3 without path-style access style support { #DBR-onetl-connection-file-df-connection-spark-s3-troubleshooting-accessing-s3-without-path-style-access-style-support }
 
 ```text
 Caused by: java.net.UnknownHostException: my-bucket.s3provider.com
@@ -247,9 +247,7 @@ spark_s3 = SparkS3(
     host="s3provider.com",
     bucket="my-bucket",
     ...,
-    extra={
-        "path.style.access": True,
-    },
+    path_style_access=True,
 )
 ```
 

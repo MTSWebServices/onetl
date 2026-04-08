@@ -2,7 +2,7 @@
 
 ## Version Compatibility { #DBR-onetl-connection-file-df-connection-spark-s3-prerequisites-version-compatibility }
 
-- Spark versions: 3.2.x - 3.5.x (only with Hadoop 3.x libraries)
+- Spark versions: 3.2.x - 3.5.x
 - Java versions: 8 - 20
 
 ## Installing PySpark { #DBR-onetl-connection-file-df-connection-spark-s3-prerequisites-installing-pyspark }
@@ -21,7 +21,7 @@ AWS and some other S3 cloud providers allows bucket access using domain style on
 Other implementations, like Minio, by default allows path style access only, e.g. `https://s3provider.com/mybucket`
 (see [MINIO_DOMAIN](https://min.io/docs/minio/linux/reference/minio-server/minio-server.html#envvar.MINIO_DOMAIN)).
 
-You should set `path.style.access` to `True` or `False`, to choose the preferred style.
+You should set `path_style_access` to `True` or `False`, to choose the preferred style.
 
 ### Authentication { #DBR-onetl-connection-file-df-connection-spark-s3-prerequisites-authentication }
 

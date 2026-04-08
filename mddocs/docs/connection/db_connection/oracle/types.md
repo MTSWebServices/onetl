@@ -2,7 +2,7 @@
 
 !!! note
 
-    The results below are valid for Spark 3.5.5, and may differ on other Spark versions.
+    The results below are valid for Spark 3.5.8, and may differ on other Spark versions.
 
 ## Type detection & casting { #DBR-onetl-connection-db-connection-oracle-types-type-detection-casting }
 
@@ -92,8 +92,8 @@ See [List of Oracle types](https://docs.oracle.com/en/database/oracle/oracle-dat
 
 Here you can find source code with type conversions:
 
-- [JDBC -> Spark](https://github.com/apache/spark/blob/v3.5.5/sql/core/src/main/scala/org/apache/spark/sql/jdbc/OracleDialect.scala#L83-L109)
-- [Spark -> JDBC](https://github.com/apache/spark/blob/v3.5.5/sql/core/src/main/scala/org/apache/spark/sql/jdbc/OracleDialect.scala#L111-L123)
+- [JDBC -> Spark](https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/jdbc/OracleDialect.scala#L83-L109)
+- [Spark -> JDBC](https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/jdbc/OracleDialect.scala#L111-L123)
 
 ### Numeric types { #DBR-onetl-connection-db-connection-oracle-types-numeric-types }
 

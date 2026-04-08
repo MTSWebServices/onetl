@@ -17,7 +17,6 @@ Clickhouse config, or reading data from some reference table. Method returns Spa
 
 Method accepts [Clickhouse.FetchOptions][onetl.connection.db_connection.clickhouse.options.ClickhouseFetchOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 !!! warning
 
@@ -54,7 +53,6 @@ Use this method to execute DDL and DML operations. Each method call runs operati
 
 Method accepts [Clickhouse.ExecuteOptions][onetl.connection.db_connection.clickhouse.options.ClickhouseExecuteOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 #### Syntax support in `Clickhouse.execute` { #DBR-onetl-connection-db-connection-clickhouse-execute-syntax-support-in-clickhouse-execute }
 

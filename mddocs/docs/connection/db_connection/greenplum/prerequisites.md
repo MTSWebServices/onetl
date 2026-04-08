@@ -5,7 +5,7 @@
 - Greenplum server versions:
   - Officially declared: 5.x, 6.x, and 7.x (which requires `Greenplum.get_packages(package_version="2.3.0")` or higher)
   - Actually tested: 6.23, 7.0
-- Spark versions: 2.3.x - 3.2.x (Spark 3.3+ is not supported yet)
+- Spark versions: 3.2.x (Spark 3.3+ is not supported yet)
 - Java versions: 8 - 11
 
 See [official documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.2/greenplum-connector-spark/release_notes.html).
@@ -17,7 +17,7 @@ BEFORE creating the connector instance.
 
 See [installation instruction][DBR-onetl-install-spark] for more details.
 
-## Downloading VMware package { #DBR-onetl-connection-db-connection-greenplum-prerequisites-downloading-vmware-package }
+## Download VMware package { #DBR-onetl-connection-db-connection-greenplum-prerequisites-downloading-vmware-package }
 
 To use Greenplum connector you should download connector `.jar` file from
 [VMware website](https://network.tanzu.vmware.com/products/vmware-greenplum#/releases/1413479/file_groups/16966)
@@ -40,146 +40,33 @@ There are several ways to do that. See [install Java packages][DBR-onetl-install
     If you're uploading package to private package repo, use `groupId=io.pivotal` and `artifactoryId=greenplum-spark_2.12`
     (`2.12` is Scala version) to give uploaded package a proper name.
 
-## Connecting to Greenplum { #DBR-onetl-connection-db-connection-greenplum-prerequisites-connecting-to-greenplum }
+## Interaction Spark ↔ Greenplum { #DBR-onetl-connection-db-connection-greenplum-prerequisites-interaction-spark-greenplum }
 
-### Interaction schema { #DBR-onetl-connection-db-connection-greenplum-prerequisites-interaction-schema }
+This connector is **very** different from regular Postgres connector.
 
-Spark executors open ports to listen incoming requests.
-Greenplum segments are initiating connections to Spark executors using [EXTERNAL TABLE](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/ref_guide-sql_commands-CREATE_EXTERNAL_TABLE.html)
-functionality, and send/read data using [gpfdist protocol](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-external-g-using-the-greenplum-parallel-file-server--gpfdist-.html#about-gpfdist-setup-and-performance-1).
+Postgres connector connects directly to Postgres host via JDBC driver:
 
-Data is **not** send through Greenplum master.
-Greenplum master only receives commands to start reading/writing process, and manages all the metadata (external table location, schema and so on).
+- Spark driver → Postgres host (get query column names and types, create target table)
+- Spark executors → Postgres host (send/fetch actual data)
+
+Data should **NEVER** be send via Greenplum master (coordinator) using regular Postgres connector, as it's very easy to overload coordinator
+by sending hundreds and thousands of gigabytes of data.
+
+Instead, Greenplum connector uses [gpfdist protocol](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-external-g-using-the-greenplum-parallel-file-server--gpfdist-.html#about-gpfdist-setup-and-performance-1) with a bit complicated schema:
+
+- Spark driver → Greenplum master (get query column names and types, create target table)
+- Spark executors → Greenplum master (create [EXTERNAL TABLEs](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/ref_guide-sql_commands-CREATE_EXTERNAL_TABLE.html))
+- Greenplum segments → Spark executors (send/fetch actual data via `EXTERNAL TABLE`)
 
 More details can be found in [official documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/overview.html).
 
-### Set number of connections { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-number-of-connections }
+## Configuring the connector { #DBR-onetl-connection-db-connection-greenplum-prerequisites-configuring-the-connector }
 
-!!! warning
+Each Spark executor starts a `gpfdist` server, and each Greeplum **segment** connect to this server.
+Greenplum segment should know server's IP address/hostname and a port number.
 
-    This is very important!!!
-
-    If you don't limit number of connections, you can exceed the [max_connections](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-client_auth.html#limiting-concurrent-connections#limiting-concurrent-connections-2)
-    limit set on the Greenplum side. It's usually not so high, e.g. 500-1000 connections max,
-    depending on your Greenplum instance settings and using connection balancers like `pgbouncer`.
-
-    Consuming all available connections means **nobody** (even admin users) can connect to Greenplum.
-
-Each job on the Spark executor makes its own connection to Greenplum master node,
-so you need to limit number of connections to avoid opening too many of them.
-
-- Reading about `5-10Gb` of data requires about `3-5` parallel connections.
-- Reading about `20-30Gb` of data requires about `5-10` parallel connections.
-- Reading about `50Gb` of data requires ~ `10-20` parallel connections.
-- Reading about `100+Gb` of data requires `20-30` parallel connections.
-- Opening more than `30-50` connections is not recommended.
-
-Number of connections can be limited by 2 ways:
-
-- By limiting number of Spark executors and number of cores per-executor. Max number of parallel jobs is `executors * cores`.
-
-=== "Spark with master=local"
-
-    ```python
-    spark = (
-        SparkSession.builder
-        # Spark will run with 5 threads in local mode, allowing up to 5 parallel tasks
-        .config("spark.master", "local[5]")
-        .config("spark.executor.cores", 1)
-    ).getOrCreate()
-    ```
-
-=== "Spark with master=yarn or master=k8s, dynamic allocation"
-
-    ```python
-    spark = (
-        SparkSession.builder
-        .config("spark.master", "yarn")
-        # Spark will start MAX 10 executors with 1 core each (dynamically), so max number of parallel jobs is 10
-        .config("spark.dynamicAllocation.maxExecutors", 10)
-        .config("spark.executor.cores", 1)
-    ).getOrCreate()
-    ```
-
-=== "Spark with master=yarn or master=k8s, static allocation"
-
-    ```python
-    spark = (
-        SparkSession.builder
-        .config("spark.master", "yarn")
-        # Spark will start EXACTLY 10 executors with 1 core each, so max number of parallel jobs is 10
-        .config("spark.executor.instances", 10)
-        .config("spark.executor.cores", 1)
-    ).getOrCreate()
-    ```
-
-- By limiting connection pool size user by Spark (**only** for Spark with `master=local`):
-
-```python
-spark = SparkSession.builder.config("spark.master", "local[*]").getOrCreate()
-
-# No matter how many executors are started and how many cores they have,
-# number of connections cannot exceed pool size:
-Greenplum(
-    ...,
-    extra={
-        "pool.maxSize": 10,
-    },
-)
-```
-
-See [connection pooling](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/using_the_connector.html#jdbcconnpool)
-documentation.
-
-- By setting [num_partitions][onetl.connection.db_connection.greenplum.options.GreenplumReadOptions.num_partitions]
-  and [partition_column][onetl.connection.db_connection.greenplum.options.GreenplumReadOptions.partition_column] (not recommended).
-
-### Allowing connection to Greenplum master { #DBR-onetl-connection-db-connection-greenplum-prerequisites-allowing-connection-to-greenplum-master }
-
-Ask your Greenplum cluster administrator to allow your user to connect to Greenplum master node,
-e.g. by updating `pg_hba.conf` file.
-
-More details can be found in [official documentation](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-client_auth.html#limiting-concurrent-connections#allowing-connections-to-greenplum-database-0).
-
-### Set connection port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-connection-port }
-
-#### Connection port for Spark with `master=k8s` { #DBR-onetl-connection-db-connection-greenplum-prerequisites-connection-port-for-spark-with-masterk8s }
-
-Please follow [the official documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/configure.html#k8scfg)
-
-#### Connection port for Spark with `master=yarn` or `master=local` { #DBR-onetl-connection-db-connection-greenplum-prerequisites-connection-port-for-spark-with-masteryarn-or-masterlocal }
-
-To read data from Greenplum using Spark, following ports should be opened in firewall between Spark and Greenplum:
-
-- Spark driver and all Spark executors -> port `5432` on Greenplum master node.
-
-    This port number should be set while connecting to Greenplum:
-
-    ```python
-    greenplum = Greenplum(host="master.host", port=5432, ...)
-    ```
-
-- Greenplum segments -> some port range (e.g. `41000-42000`) **listened by Spark executors**.
-
-    This range should be set in `extra` option:
-
-    ```python
-    greenplum = Greenplum(
-        ...,
-        extra={
-            "server.port": "41000-42000",
-        },
-    )
-    ```
-
-  Number of ports in this range is `number of parallel running Spark sessions` * `number of parallel connections per session`.
-
-  Number of connections per session (see below) is usually less than `30` (see above).
-
-  Number of session depends on your environment:
-
-    - For `master=local` only few ones-tens sessions can be started on the same host, depends on available RAM and CPU.
-    - For `master=yarn` hundreds or thousands of sessions can be started simultaneously, but they are executing on different cluster nodes, so one port can be opened on different nodes at the same time.
+This target IP and port range should be added to firewall `ALLOW` rule on Spark host/cluster with sourceIP = Greenplum network.
+Otherwise connection cannot be established.
 
 More details can be found in official documentation:
 
@@ -187,18 +74,15 @@ More details can be found in official documentation:
 - [format of server.port value](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html#server.port)
 - [port troubleshooting](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/troubleshooting.html#port-errors)
 
-### Set connection host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-connection-host }
+### spark.master=local { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-local }
 
-#### Connection host for Spark with `master=k8s` { #DBR-onetl-connection-db-connection-greenplum-prerequisites-connection-host-for-spark-with-masterk8s }
+#### Set `gpfdist` server host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-local-set-gpfdist-server-host }
 
-Please follow [the official documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/configure.html#k8scfg)
+By default, Greenplum connector tries to resolve current host IP, and then pass it to Greenplum segment.
+On some hosts it works as-is, without any additional configuration. In others it's not.
 
-#### Connection host for Spark with `master=local` { #DBR-onetl-connection-db-connection-greenplum-prerequisites-connection-host-for-spark-with-masterlocal }
-
-By default, Greenplum connector tries to resolve IP of current host, and then pass it as `gpfdist` URL to Greenplum segment.
-This may fail in some cases.
-
-For example, IP can be resolved using `/etc/hosts` content like this:
+The most common error is that Greenplum segment receives `127.0.0.1` IP address (loopback interface).
+This is usually caused by `/etc/hosts` content like this:
 
 ```text
 127.0.0.1 localhost real-host-name
@@ -223,19 +107,22 @@ error code = 111 (Connection refused);  (seg3 slice1 12.34.56.78:10003 pid=12345
 
 There are 2 ways to fix that:
 
-- Explicitly pass your host IP address to connector, like this
+- Explicitly pass your host IP address to connector, like this:
 
     ```python
     import os
 
-    # pass here real host IP (accessible from GP segments)
-    os.environ["HOST_IP"] = "192.168.1.1"
+    # host IP, accessible from GP segments
+    os.environ["SPARK_LOCAL_IP"] = "192.168.1.1"
+
+    # !!!SET IP BEFORE CREATING SPARK SESSION!!!
+    spark = ...
 
     greenplum = Greenplum(
         ...,
         extra={
             # connector will read IP from this environment variable
-            "server.hostEnv": "env.HOST_IP",
+            "server.hostEnv": "env.SPARK_LOCAL_IP",
         },
         spark=spark,
     )
@@ -248,18 +135,39 @@ There are 2 ways to fix that:
     ```text
     127.0.0.1 localhost
     # this IP should be accessible from GP segments
-    192.168.1.1 driver-host-name
+    192.168.1.1 real-host-name
     ```
 
-  So Greenplum connector will properly resolve host IP.
+  This requires root privileges on host, not everyone can do this.
+  Also this doesn't work with dynamic IP addresses.
 
-#### Connection host for Spark with `master=yarn` { #DBR-onetl-connection-db-connection-greenplum-prerequisites-connection-host-for-spark-with-masteryarn }
+#### Set `gpfdist` server port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-local-set-gpfdist-server-port }
 
-The same issue with resolving IP address can occur on Hadoop cluster node, but it's tricky to fix, because each node has a different IP.
+By default, Spark executors can start `gpfdist` server on *any* random port number.
+You can limit port range using `extra` option:
 
-There are 3 ways to fix that:
+```python
+greenplum = Greenplum(
+    ...,
+    extra={
+        "server.port": "41000-42000",  # !!! JUST AN EXAMPLE !!!
+    },
+)
+```
 
-- Pass node hostname to `gpfdist` URL. So IP will be resolved on segment side:
+Number of ports in this range should be at least `number of parallel running Spark sessions on host` * `number of executors per session`.
+
+### spark.master=yarn { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-yarn }
+
+#### Set `gpfdist` server host { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-yarn-set-gpfdist-server-host }
+
+By default, Greenplum connector tries to resolve current host IP, and then pass it to Greenplum segment.
+Usually there are no issues with that, connector just works as-is, without any adjustments.
+
+The most common error is that Greenplum segment receives `127.0.0.1` IP address (loopback interface)
+instead of external IP of Hadoop data/compute node. There are 3 ways to fix it:
+
+- Pass node hostname instead of IP address to Greenplum segment:
 
     ```python
     greenplum = Greenplum(
@@ -270,11 +178,11 @@ There are 3 ways to fix that:
     )
     ```
 
-  But this may fail if Hadoop cluster node hostname cannot be resolved from Greenplum segment side.
+  This may require configuring DNS on each Greenplum segment to properly resolve Hadoop node hostname → some IP.
 
   More details can be found in [official documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html#server.usehostname).
 
-- Set specific network interface to get IP address from:
+- Set network interface name to get IP address from:
 
     ```python
     greenplum = Greenplum(
@@ -301,24 +209,177 @@ There are 3 ways to fix that:
         valid_lft 83457sec preferred_lft 83457sec
     ```
 
-  Note that in this case **each** Hadoop cluster node node should have network interface with name `eth0`.
+  Note that in this case **each** Hadoop cluster node node should have network interface with name `eth0`,
+  which may not be the case.
 
   More details can be found in [official documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html#server.nic).
 
-- Update `/etc/hosts` on each Hadoop cluster node to include real node IP:
+- Update `/etc/hosts` on each Hadoop cluster node to include its IP address:
 
     ```text
     127.0.0.1 localhost
     # this IP should be accessible from GP segments
-    192.168.1.1 cluster-node-name
+    192.168.1.1 real-host-name
     ```
 
-  So Greenplum connector will properly resolve node IP.
+  This requires root privileges on host, not everyone can do this.
+  Also this doesn't work with dynamic IP addresses.
 
-### Set required grants { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-required-grants }
+#### Set `gpfdist` server port { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-yarn-set-gpfdist-server-port }
 
-Ask your Greenplum cluster administrator to set following grants for a user,
-used for creating a connection:
+By default, Spark executors can start `gpfdist` server on *any* random port number.
+You can limit port range using `extra` option:
+
+```python
+greenplum = Greenplum(
+    ...,
+    extra={
+        "server.port": "41000-42000",  # !!! JUST AN EXAMPLE !!!
+    },
+)
+```
+
+Number of ports in this range should be at least `number of parallel running Spark sessions per node` * `number of executors per session` / `number of Hadoop nodes`.
+
+### spark.master=k8s { #DBR-onetl-connection-db-connection-greenplum-prerequisites-sparkmaster-k8s }
+
+Before starting Spark session, you should to create a Kubernetes [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) object:
+
+```yaml title="ingress.yaml"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: gpfdist-ingress
+    namespace: mynamespace
+    annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+spec:
+    rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+                name: gpfdist-default
+                port:
+                number: 50000
+
+## RETURNED FROM K8S API RESPONSE ##
+# status:
+#     loadBalancer:
+#         ingress:
+#             - ip: 11.22.33.44
+```
+
+Then add special Spark listener to Spark session config, and specify ingress' load balancer IP or domain name with a port number:
+
+```python
+spark = (
+    SparkSession.builder.config("spark.master", "k8s://...")
+    .config("spark.extraListeners", "org.greenplum.GpfdistIngressListener")
+    .config("spark.kubernetes.namespace", "mynamespace")
+    .config("spark.greenplum.k8s.ingress.name", "gpfdist-ingress")  # ingress name
+    .config("spark.greenplum.gpfdist.host", "11.22.33.44")  # ingress IP/domain name
+    .config("spark.greenplum.gpfdist.listen-port", "50000")  # ingress port
+    .config(
+        "spark.greenplum.gpfdist.is-ssl", "false"
+    )  # true for ingress with TLS enabled
+).getOrCreate()
+```
+
+Set fixed port for `gpfdist` server to listen on:
+
+```python
+greenplum = Greenplum(
+    ...,
+    extra={
+        "server.port": "50000",  # should match ingress port
+    },
+)
+```
+
+## Set number of connections { #DBR-onetl-connection-db-connection-greenplum-prerequisites-set-number-of-connections }
+
+!!! warning
+
+    This is very important!!!
+
+    If you don't limit number of connections, you can exceed the [max_connections](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-client_auth.html#limiting-concurrent-connections#limiting-concurrent-connections-2)
+    limit set on the Greenplum side. It's usually not so high, e.g. 500-1000 connections max,
+    depending on your Greenplum instance settings and using connection balancers like `pgbouncer`.
+
+    Consuming all available connections means **nobody** (even admin users) can connect to Greenplum!
+
+Each task running on the Spark executor makes its own connection to Greenplum master node.
+To avoid opening too many connections to Greenplum master (coordinator), you should limit number of tasks.
+
+- Reading about `5-10Gb` of data requires about `3-5` parallel connections.
+- Reading about `20-30Gb` of data requires about `5-10` parallel connections.
+- Reading about `50Gb` of data requires ~ `10-20` parallel connections.
+- Reading about `100+Gb` of data requires `20-30` parallel connections.
+- Opening more than `30-50` connections is not recommended.
+
+Max number of parallel tasks is `N executors * N cores-per-executor`, so this can be adjusted using Spark session configuration:
+
+=== "Spark with master=local"
+
+    ```python
+    spark = (
+        SparkSession.builder
+        # Spark will run with 5 threads in local mode, allowing up to 5 parallel tasks
+        .config("spark.master", "local[5]")
+    ).getOrCreate()
+
+    # Set connection pool size AT LEAST to number of executors + 1 for driver
+    Greenplum(
+        ...,
+        extra={
+            "pool.maxSize": 6,  # 5 executors + 1 driver
+        },
+    )
+    ```
+
+=== "Spark with master=yarn or master=k8s, dynamic allocation"
+
+    ```python
+    spark = (
+        SparkSession.builder
+        .config("spark.master", "yarn")
+        # Spark will start MAX 10 executors with 1 core each (dynamically), so max number of parallel jobs is 10
+        .config("spark.dynamicAllocation.maxExecutors", 10)
+        .config("spark.executor.cores", 1)
+    ).getOrCreate()
+    ```
+
+=== "Spark with master=yarn or master=k8s, static allocation"
+
+    ```python
+    spark = (
+        SparkSession.builder
+        .config("spark.master", "yarn")
+        # Spark will start EXACTLY 10 executors with 1 core each, so max number of parallel jobs is 10
+        .config("spark.executor.instances", 10)
+        .config("spark.executor.cores", 1)
+    ).getOrCreate()
+    ```
+
+See [connection pooling](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/using_the_connector.html#jdbcconnpool)
+documentation.
+
+## Greenplum side adjustments { #DBR-onetl-connection-db-connection-greenplum-prerequisites-greenplum-side-adjustments }
+
+### Allow connecting to Greenplum master { #DBR-onetl-connection-db-connection-greenplum-prerequisites-allow-connecting-to-greenplum-master }
+
+Ask your Greenplum cluster administrator to allow your user to connect to Greenplum master (coordinator),
+e.g. by updating `pg_hba.conf` file.
+
+More details can be found in [official documentation](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-client_auth.html#limiting-concurrent-connections#allowing-connections-to-greenplum-database-0).
+
+### Provide required grants { #DBR-onetl-connection-db-connection-greenplum-prerequisites-provide-required-grants }
+
+Ask your Greenplum cluster administrator to set following grants for a user:
 
 === "Read + Write"
 

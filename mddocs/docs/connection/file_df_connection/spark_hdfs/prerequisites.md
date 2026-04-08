@@ -2,8 +2,8 @@
 
 ## Version Compatibility { #DBR-onetl-connection-file-df-connection-spark-hdfs-prerequisites-version-compatibility }
 
-- Hadoop versions: 2.x, 3.x (only with Hadoop 3.x libraries)
-- Spark versions: 2.3.x - 3.5.x
+- Hadoop versions: 2.x, 3.x
+- Spark versions: 3.2.x - 3.5.x
 - Java versions: 8 - 20
 
 ## Installing PySpark { #DBR-onetl-connection-file-df-connection-spark-hdfs-prerequisites-installing-pyspark }

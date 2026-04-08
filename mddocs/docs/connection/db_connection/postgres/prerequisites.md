@@ -3,10 +3,10 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-postgres-prerequisites-version-compatibility }
 
 - PostgreSQL server versions:
-  - Officially declared: 8.2 - 17
-  - Actually tested: 9.4.26, 17.3
-- Spark versions: 2.3.x - 3.5.x
-- Java versions: 8 - 20
+  - Officially declared: 8.4 - 18
+  - Actually tested: 9.4.26, 18.1
+- Spark versions: 3.2.x - 4.1.x
+- Java versions: 8 - 22
 
 See [official documentation](https://jdbc.postgresql.org/).
 

@@ -16,7 +16,6 @@ Use this method to perform some `SELECT` query which returns **small number or r
 
 Method accepts [MySQL.FetchOptions][onetl.connection.db_connection.mysql.options.MySQLFetchOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 !!! warning
 
@@ -53,7 +52,6 @@ Use this method to execute DDL and DML operations. Each method call runs operati
 
 Method accepts [MySQL.ExecuteOptions][onetl.connection.db_connection.mysql.options.MySQLExecuteOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 #### Syntax support in `MySQL.execute` { #DBR-onetl-connection-db-connection-mysql-execute-syntax-support-in-mysql-execute }
 

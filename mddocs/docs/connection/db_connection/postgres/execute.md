@@ -16,7 +16,6 @@ Use this method to execute some `SELECT` query which returns **small number or r
 
 Method accepts [Postgres.FetchOptions][onetl.connection.db_connection.postgres.options.PostgresFetchOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 !!! warning
 
@@ -51,7 +50,6 @@ Use this method to execute DDL and DML operations. Each method call runs operati
 
 Method accepts [Postgres.ExecuteOptions][onetl.connection.db_connection.postgres.options.PostgresExecuteOptions].
 
-Connection opened using this method should be then closed with `connection.close()` or `with connection:`.
 
 #### Syntax support in `Postgres.execute` { #DBR-onetl-connection-db-connection-postgres-execute-syntax-support-in-postgres-execute }
 
