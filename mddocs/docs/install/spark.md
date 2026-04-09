@@ -16,16 +16,14 @@ apt-get install openjdk-11-jdk  # Debian-based + Spark 3
 
 ### Compatibility matrix { #DBR-onetl-install-spark-compatibility-matrix }
 
-| Spark                                                     | Python     | Java       |   Scala |
-|-----------------------------------------------------------|------------|------------|---------|
-| [2.3.x](https://spark.apache.org/docs/2.3.1/#downloading) | 3.7 only   | 8 only     |    2.11 |
-| [2.4.x](https://spark.apache.org/docs/2.4.8/#downloading) | 3.7 only   | 8 only     |    2.11 |
-| [3.2.x](https://spark.apache.org/docs/3.2.4/#downloading) | 3.7 - 3.10 | 8u201 - 11 |    2.12 |
-| [3.3.x](https://spark.apache.org/docs/3.3.4/#downloading) | 3.7 - 3.12 | 8u201 - 17 |    2.12 |
-| [3.4.x](https://spark.apache.org/docs/3.4.4/#downloading) | 3.7 - 3.12 | 8u362 - 20 |    2.12 |
-| [3.5.x](https://spark.apache.org/docs/3.5.1/#downloading) | 3.8 - 3.13 | 8u371 - 20 |    2.12 |
-| [4.0.x](https://spark.apache.org/docs/4.0.1/#downloading) | 3.9 - 3.14 | 17 - 22    |    2.13 |
-| [4.1.x](https://spark.apache.org/docs/4.1.1/#downloading) | 3.10 - 3.14 | 17 - 22   |    2.13 |
+| Spark                                                     | Python      | Java       |   Scala |
+|-----------------------------------------------------------|-------------|------------|---------|
+| [3.2.x](https://spark.apache.org/docs/3.2.4/#downloading) | 3.7  - 3.10 | 8u201 - 11 |    2.12 |
+| [3.3.x](https://spark.apache.org/docs/3.3.4/#downloading) | 3.7  - 3.12 | 8u201 - 17 |    2.12 |
+| [3.4.x](https://spark.apache.org/docs/3.4.4/#downloading) | 3.7  - 3.12 | 8u362 - 20 |    2.12 |
+| [3.5.x](https://spark.apache.org/docs/3.5.1/#downloading) | 3.8  - 3.13 | 8u371 - 20 |    2.12 |
+| [4.0.x](https://spark.apache.org/docs/4.0.1/#downloading) | 3.9  - 3.14 |   17 - 22  |    2.13 |
+| [4.1.x](https://spark.apache.org/docs/4.1.1/#downloading) | 3.10 - 3.14 |   17 - 22  |    2.13 |
 
 ## Installing PySpark { #DBR-onetl-install-spark-installing-pyspark }
 
