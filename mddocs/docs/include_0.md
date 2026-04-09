@@ -19,8 +19,8 @@ Python ETL/ELT library powered by [Apache Spark](https://spark.apache.org/) & ot
 
 ## Requirements { #DBR-onetl-include-0-requirements }
 
-- **Python** 3.7 - 3.13
-- PySpark 2.3.x - 3.5.x (depends on used connector)
+- **Python** 3.7 - 3.14
+- PySpark 3.2.x - 4.1.x (depends on used connector)
 - Java 8+ (required by Spark, see below)
 - Kerberos libs & GCC (required by `Hive`, `HDFS` and `SparkHDFS` connectors)
 

@@ -83,23 +83,18 @@ def maven_packages(request):  # noqa: C901, PLR0912
         )
 
     if "avro" in markers:
-        # There is no Avro package for Spark 2.3
         packages.extend(Avro.get_packages(spark_version=str(pyspark_version)))
 
     if "kafka" in markers:
-        # Kafka connector for Spark 2.3 is too old and not supported
         packages.extend(Kafka.get_packages(spark_version=str(pyspark_version)))
 
     if "s3" in markers:
-        # There is no SparkS3 connector for Spark less than 3
         packages.extend(SparkS3.get_packages(spark_version=str(pyspark_version)))
 
     if "xml" in markers:
-        # There is no XML files support for Spark less than 3
         packages.extend(XML.get_packages(spark_version=str(pyspark_version)))
 
     if "mongodb" in markers:
-        # There is no MongoDB connector for Spark less than 3.2
         packages.extend(MongoDB.get_packages(spark_version=str(pyspark_version)))
 
     if "excel" in markers:

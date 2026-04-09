@@ -101,9 +101,7 @@ class SparkHDFS(SparkFileDFConnection):
                 from onetl.connection import SparkHDFS
                 from pyspark.sql import SparkSession
 
-                # Create Spark session.
-                # Use names "spark.yarn.access.hadoopFileSystems", "spark.yarn.principal"
-                # and "spark.yarn.keytab" for Spark 2
+                # Create Spark session
 
                 spark = (
                     SparkSession.builder.appName("spark-app-name")

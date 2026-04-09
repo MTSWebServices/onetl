@@ -170,9 +170,9 @@ Firstly, you should install JDK. The exact installation instruction depends on y
 
 .. code:: bash
 
-    yum install java-1.8.0-openjdk-devel  # CentOS 7 + Spark 2
-    dnf install java-11-openjdk-devel  # CentOS 8 + Spark 3
-    apt-get install openjdk-11-jdk  # Debian-based + Spark 3
+    yum install java-1.8.0-openjdk-devel  # CentOS 7
+    dnf install java-11-openjdk-devel  # CentOS 8
+    apt-get install openjdk-11-jdk  # Debian-based
 
 .. _spark-compatibility-matrix:
 
