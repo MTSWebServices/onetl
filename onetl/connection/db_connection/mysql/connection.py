@@ -65,10 +65,8 @@ class MySQL(JDBCConnection):
     password : str
         Password for database connection
 
-    database : str
-        Database in RDBMS, NOT schema.
-
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+    database : str, optional
+        Database (==schema) in MySQL
 
     spark : :obj:`pyspark.sql.SparkSession`
         Spark session.

@@ -63,9 +63,7 @@ class Clickhouse(JDBCConnection):
         Password for database connection
 
     database : str, optional
-        Database in RDBMS, NOT schema.
-
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+        Database (==schema) in Clickhouse.
 
     spark : :obj:`pyspark.sql.SparkSession`
         Spark session.

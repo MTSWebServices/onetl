@@ -3,11 +3,22 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from typing import TYPE_CHECKING, cast
 
 from onetl.connection.db_connection.jdbc_connection import JDBCDialect
 
+if TYPE_CHECKING:
+    from onetl.connection.db_connection.mysql.connection import MySQL
+
 
 class MySQLDialect(JDBCDialect):
+    def validate_name(self, value: str) -> str:
+        connection = cast("MySQL", self.connection)
+        if connection.database:
+            return value
+
+        return super().validate_name(value)
+
     def get_partition_column_hash(self, partition_column: str, num_partitions: int) -> str:
         # MD5 is the fastest hash function https://stackoverflow.com/a/3118889/23601543
         # But it returns 32 char string (128 bit), which we need to convert to integer

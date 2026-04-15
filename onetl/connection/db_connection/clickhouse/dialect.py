@@ -3,12 +3,22 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 from onetl.connection.db_connection.jdbc_connection import JDBCDialect
 
+if TYPE_CHECKING:
+    from onetl.connection.db_connection.clickhouse.connection import Clickhouse
+
 
 class ClickhouseDialect(JDBCDialect):
+    def validate_name(self, value: str) -> str:
+        connection = cast("Clickhouse", self.connection)
+        if connection.database:
+            return value
+
+        return super().validate_name(value)
+
     def get_partition_column_hash(self, partition_column: str, num_partitions: int) -> str:
         # SipHash is 3 times faster thah MD5
         # https://clickhouse.com/docs/en/sql-reference/functions/hash-functions#siphash64
