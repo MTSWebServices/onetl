@@ -1,32 +1,31 @@
 stages:
-  - sbom
-  - security-scan
+  - security
 
 ## -------------- Security Pipeline ---------------- ##
 
 sbom-creation:
-  stage: sbom
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: always
-    - if: $CI_COMMIT_REF_NAME =~ $CI_DEFAULT_BRANCH
-      when: always
-    - when: never
+  stage: security
   image:
-    name: ${DEFAULT_IMAGE}:develop
+    name: ${UV_IMAGE}
     entrypoint: ['']
   script:
-    - uv pip install cyclonedx-bom
-    - uv export --all-extras --no-dev --no-group test --no-group docs --link-mode=copy --format requirements.txt | cyclonedx-py requirements - > sbom.cyclonedx.json
+    - uv export --all-extras --no-dev --no-group test --no-group docs --link-mode=copy --format cyclonedx1.5 > sbom.cyclonedx.json
   artifacts:
     paths:
       - sbom.cyclonedx.json
     expire_in: 1 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: on_success
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: on_success
+    - when: never
 
 security-scan:
-  stage: security-scan
+  stage: security
   needs:
-    - sbom-creation
+    - job: sbom-creation
+      artifacts: true
   trigger:
     include:
       - project: $SECURITY_PIPELINE_PROJECT
@@ -42,8 +41,8 @@ security-scan:
     APPSECHUB_SBOM_MASK: '*bom*.json'
     CUSTOM_SBOM_GENERATOR_JOB_NAME: sbom-creation
   rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-      when: always
     - if: $CI_PIPELINE_SOURCE == "web"
-      when: always
+      when: on_success
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: on_success
     - when: never
