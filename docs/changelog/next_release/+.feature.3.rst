@@ -1,1 +1,0 @@
-Allow ``Kafka.SSLProtocol`` to be used in both TLS and mTLS modes (without and with keystore, respectively).

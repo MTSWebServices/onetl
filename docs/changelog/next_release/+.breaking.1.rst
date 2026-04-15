@@ -1,1 +1,0 @@
-Mark Greenplum connector as deprecated and pending for removal in v1.0.0.
