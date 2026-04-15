@@ -39,7 +39,7 @@ def test_postgres_reader_snapshot(spark, processing, load_table_data):
 
 
 @pytest.mark.parametrize(
-    "mode, column",
+    ("mode", "column"),
     [
         ("range", "id_int"),
         ("hash", "text_string"),

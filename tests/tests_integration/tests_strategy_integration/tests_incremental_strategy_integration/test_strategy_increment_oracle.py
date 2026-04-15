@@ -16,7 +16,7 @@ pytestmark = [pytest.mark.oracle, pytest.mark.flaky]
 # Do not fail in such the case
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_type, hwm_column",
+    ("hwm_type", "hwm_column"),
     [
         (ColumnIntHWM, "HWM_INT"),
         # there is no Date type in Oracle
@@ -25,7 +25,7 @@ pytestmark = [pytest.mark.oracle, pytest.mark.flaky]
     ],
 )
 @pytest.mark.parametrize(
-    "span_gap, span_length",
+    ("span_gap", "span_length"),
     [
         (10, 100),
         (10, 50),
@@ -226,7 +226,7 @@ def test_oracle_strategy_incremental_nothing_to_read(spark, processing, prepare_
 
 # Fail if HWM is Numeric, or Decimal with fractional part, or string
 @pytest.mark.parametrize(
-    "hwm_column, exception_type, error_message",
+    ("hwm_column", "exception_type", "error_message"),
     [
         ("FLOAT_VALUE", ValueError, "Expression 'FLOAT_VALUE' returned values"),
         ("TEXT_STRING", RuntimeError, "Cannot detect HWM type for"),
@@ -320,7 +320,7 @@ def test_oracle_strategy_incremental_explicit_hwm_type(
 
 
 @pytest.mark.parametrize(
-    "hwm_source, hwm_expr, hwm_type, func",
+    ("hwm_source", "hwm_expr", "hwm_type", "func"),
     [
         (
             "hwm_int",

@@ -9,6 +9,9 @@ Do not test all possible options and combinations, we are not testing Spark here
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
+from onetl._util.spark import get_spark_version
+from onetl._util.version import Version
+from onetl.connection import SparkS3
 from onetl.file import FileDFReader, FileDFWriter
 from onetl.file.format import CSV
 
@@ -113,11 +116,18 @@ def test_file_df_writer_run_if_exists_skip_entire_directory(
 
 
 def test_file_df_writer_run_if_exists_replace_overlapping_partitions_target_not_partitioned_df_is(
+    spark,
     file_df_connection_with_path_and_files,
     file_df_dataframe,
     file_df_schema_str_value_last,
 ):
     file_df_connection, target_path, _ = file_df_connection_with_path_and_files
+
+    if isinstance(file_df_connection, SparkS3) and get_spark_version(spark) >= Version("4.1.0"):
+        # java.io.IOException: PathOutputCommitter does not support dynamicPartitionOverwrite:
+        #   MagicCommitter{AbstractS3ACommitter{name=magic, ...}}
+        pytest.skip("Spark 4.1 does not support replace_overlapping_partitions")
+
     df = file_df_dataframe
     df1 = df.filter(df.id <= 5)
 
@@ -146,10 +156,17 @@ def test_file_df_writer_run_if_exists_replace_overlapping_partitions_target_not_
 
 
 def test_file_df_writer_run_if_exists_replace_overlapping_partitions_target_partitioned_df_is_not(
+    spark,
     file_df_connection_with_path_and_files,
     file_df_dataframe,
 ):
     file_df_connection, target_path, _ = file_df_connection_with_path_and_files
+
+    if isinstance(file_df_connection, SparkS3) and get_spark_version(spark) >= Version("4.1.0"):
+        # java.io.IOException: PathOutputCommitter does not support dynamicPartitionOverwrite:
+        #   MagicCommitter{AbstractS3ACommitter{name=magic, ...}}
+        pytest.skip("Spark 4.1 does not support replace_overlapping_partitions")
+
     df = file_df_dataframe
     df1 = df.filter(df.id <= 5)
 
@@ -178,10 +195,17 @@ def test_file_df_writer_run_if_exists_replace_overlapping_partitions_target_part
 
 
 def test_file_df_writer_run_if_exists_replace_overlapping_partitions_to_different_partitioning_schema(
+    spark,
     file_df_connection_with_path,
     file_df_dataframe,
 ):
     file_df_connection, target_path = file_df_connection_with_path
+
+    if isinstance(file_df_connection, SparkS3) and get_spark_version(spark) >= Version("4.1.0"):
+        # java.io.IOException: PathOutputCommitter does not support dynamicPartitionOverwrite:
+        #   MagicCommitter{AbstractS3ACommitter{name=magic, ...}}
+        pytest.skip("Spark 4.1 does not support replace_overlapping_partitions")
+
     df = file_df_dataframe
     df1 = df.filter(df.id <= 5)
 
@@ -217,11 +241,18 @@ def test_file_df_writer_run_if_exists_replace_overlapping_partitions_to_differen
 
 
 def test_file_df_writer_run_if_exists_replace_overlapping_partitions_to_overlapping_partitions(
+    spark,
     file_df_connection_with_path,
     file_df_dataframe,
     file_df_schema_str_value_last,
 ):
     file_df_connection, target_path = file_df_connection_with_path
+
+    if isinstance(file_df_connection, SparkS3) and get_spark_version(spark) >= Version("4.1.0"):
+        # java.io.IOException: PathOutputCommitter does not support dynamicPartitionOverwrite:
+        #   MagicCommitter{AbstractS3ACommitter{name=magic, ...}}
+        pytest.skip("Spark 4.1 does not support replace_overlapping_partitions")
+
     df = file_df_dataframe
 
     # df1 contains all rows with str_value == "val1" and one row with str_value == "val2"
@@ -257,7 +288,7 @@ def test_file_df_writer_run_if_exists_replace_overlapping_partitions_to_overlapp
 
 
 @pytest.mark.parametrize(
-    "original_options, new_options, real_df_schema",
+    ("original_options", "new_options", "real_df_schema"),
     [
         pytest.param(
             {},
@@ -512,5 +543,7 @@ def test_file_df_writer_with_streaming_df(
 
     streaming_df = spark.readStream.format("rate").load()
     assert streaming_df.isStreaming
-    with pytest.raises(ValueError, match="DataFrame is streaming. FileDFWriter supports only batch DataFrames."):
+
+    msg = r"DataFrame is streaming\. FileDFWriter supports only batch DataFrames\."
+    with pytest.raises(ValueError, match=msg):
         writer.run(streaming_df)

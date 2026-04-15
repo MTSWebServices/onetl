@@ -1,12 +1,355 @@
-[tool.isort]
-profile = "black"
-multi_line_output = 3
+[build-system]
+requires = [ "setuptools>=61.2", "setuptools-git-versioning>=3.0,<4"]
+build-backend = "setuptools.build_meta"
 
-[tool.black]
+[tool.setuptools-git-versioning]
+enabled = true
+version_file = "onetl/VERSION"
+count_commits_from_version_file = true
+dev_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}"
+dirty_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}+git.{sha}.dirty"
+
+[project]
+name = "onetl"
+description = "One ETL tool to rule them all"
+license = {text = "Apache-2.0"}
+authors = [{name= "MWS Data Bridge", email = "onetools@mts.ru"}]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 1",
+    "Framework :: Pydantic :: 2",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Java Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Distributed Computing",
+    "Typing :: Typed",
+]
+keywords = ["Spark", "ETL", "JDBC", "HWM"]
+requires-python = ">=3.7"
+dependencies = [
+    "etl-entities>=2.5,<2.7",
+    "evacuator>=1.0,<1.1",
+    "frozendict",
+    "humanize",
+    # 3.5.0 fails with "entry_points() got an unexpected keyword argument 'group'"
+    "importlib_metadata>=3.6.0",
+    "ordered-set",
+    "platformdirs",
+    # https://github.com/pydantic/pydantic/issues/4092
+    # https://github.com/pydantic/pydantic/issues/4498
+    "pydantic>=1.9.2,!=1.10.2,<3",
+    "pyyaml",
+    # https://github.com/python/typing_extensions/pull/188
+    "typing_extensions>=4.5.0,!=4.6.1; python_version == '3.7'",
+    "typing_extensions>=4.5.0; python_version > '3.7'",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[tool.setuptools.packages.find]
+include = ["onetl*"]
+exclude = ["docs", "tests"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed", "VERSION"]
+
+[project.urls]  # Optional
+"Homepage" = "https://github.com/MTSWebServices/onetl"
+"Documentation" = "https://onetl.readthedocs.io/"
+"Source" = "https://github.com/MTSWebServices/onetl"
+"CI/CD" = "https://github.com/MTSWebServices/onetl/actions"
+"Tracker" = "https://github.com/MTSWebServices/onetl/issues"
+
+[project.entry-points."tricoder_package_spy.register"]
+onetl = "onetl"
+
+
+[project.optional-dependencies]
+# pyspark package is heavy, make it optional dependency
+spark = ["pyspark"]
+
+# same as hdfs[kerberos], but without including hdfs itself
+kerberos = ["requests-kerberos>=0.7.0"]
+
+# https://todo.sr.ht/~sschwarzer/ftputil/150
+ftp = ["ftputil>=5.0.4"]
+ftps = ["ftputil>=5.0.4"]
+hdfs = ["hdfs>2"]
+# https://github.com/minio/minio-py/pull/1530
+s3 = ["minio<8"]
+samba = ["pysmb"]
+sftp = ["paramiko"]
+webdav = ["webdavclient3"]
+
+# all file dependencies from above
+files = [
+    "ftputil>=5.0.4",
+    "hdfs>2",
+    "minio<8",
+    "pysmb",
+    "paramiko",
+    "webdavclient3",
+]
+
+# spark + kerberos + files
+all = [
+    "pyspark",
+    "ftputil>=5.0.4",
+    "hdfs>2",
+    "minio<8",
+    "pysmb",
+    "paramiko",
+    "webdavclient3",
+    "requests-kerberos>=0.7.0",
+]
+
+
+[dependency-groups]
+test-clickhouse = ["clickhouse-driver"]
+test-greenplum = ["psycopg2-binary"]
+test-kafka = ["confluent-kafka"]
+test-mongodb = ["pymongo"]
+test-mssql = ["pymssql"]
+test-mysql = ["pymysql[rsa]"]
+test-oracle = ["cx_Oracle"]
+test-postgres = ["psycopg2-binary"]
+test-pydantic-1 = ["pydantic<2"]
+test-pydantic-2 = ["pydantic>=2,<3"]
+test-samba = ["pysmb"]
+"test-spark-3.2" = [
+    "pyspark==3.2.4",
+    "numpy>=1.16,<1.24",
+    "pandas>=1.0,<2",
+    "pyarrow>=1.0",
+    "sqlalchemy<2.0",
+    "setuptools",
+]
+"test-spark-3.3" = [
+    "pyspark==3.3.4",
+    "numpy>=1.16,<1.24",
+    "pandas>=1.0,<2",
+    "pyarrow>=1.0",
+    "sqlalchemy<2.0",
+    "setuptools",
+]
+"test-spark-3.4" = [
+    "pyspark==3.4.4",
+    "numpy>=1.16",
+    "pandas>=1.0",
+    "pyarrow>=1.0",
+    "sqlalchemy",
+    "setuptools",
+]
+"test-spark-3.5" = [
+    "pyspark==3.5.8",
+    "numpy>=1.16",
+    "pandas>=1.0",
+    "pyarrow>=4.0",
+    "sqlalchemy",
+    "setuptools",
+]
+"test-spark-4.0" = [
+    "pyspark==4.0.1",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=11.0",
+    "sqlalchemy",
+    "setuptools",
+]
+"test-spark-4.1" = [
+    "pyspark==4.1.1",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=11.0",
+    "sqlalchemy",
+    "setuptools",
+]
+test = [
+    "coverage",
+    "omegaconf",
+    "pytest<8",
+    "pytest-lazy-fixture",
+    "pytest-mock",
+    "pytest-rerunfailures",
+    "pytest-xdist[psutil]",
+    "requests",
+    "responses",
+    "filelock",
+]
+dev = [
+    "ruff~=0.15.4",
+    "mypy~=1.19.0",
+    "prek~=0.3.1",
+    "types-Deprecated~=1.3.1",
+    "types-PyYAML~=6.0.12",
+]
+docs = [
+    # TODO: remove version limit after upgrading all Pydantic models to v2
+    "autodoc-pydantic~=1.9.1",
+    "furo~=2025.12.19",
+    "numpydoc~=1.10.0",
+    "pygments-csv-lexer~=0.1.3",
+    # TODO: remove version limit after upgrading autodoc-pydantic to v2
+    "sphinx~=7.4.7",
+    "sphinx-copybutton~=0.5.2",
+    "sphinx-design~=0.6.1",
+    "sphinx-favicon~=1.0.1",
+    # https://github.com/mgeier/sphinx-last-updated-by-git/pull/77
+    "sphinx-last-updated-by-git~=0.3.8",
+    # TODO: uncomment after https://github.com/zqmillet/sphinx-plantuml/pull/4
+    # sphinx-plantuml~=1.0.0",
+    "sphinx-tabs~=3.4.5",
+    "sphinx-toolbox~=4.1.0",
+    "sphinx_substitution_extensions~=2025.2.19",
+    "sphinxcontrib-towncrier~=0.5.0a0",
+    "towncrier~=25.8.0",
+]
+
+[tool.uv]
+default-groups = []
+conflicts = [
+    [
+        { group = "test-spark-3.2" },
+        { group = "test-spark-3.3" },
+        { group = "test-spark-3.4" },
+        { group = "test-spark-3.5" },
+        { group = "test-spark-4.0" },
+        { group = "test-spark-4.1" },
+    ],
+    [
+        { group = "docs" },
+        { group = "test-pydantic-2" },
+    ],
+    [
+        { group = "test-pydantic-1" },
+        { group = "test-pydantic-2" },
+    ]
+]
+
+[tool.uv.dependency-groups]
+"test-spark-3.5" = {requires-python = ">=3.8"}
+"test-spark-4.0" = {requires-python = ">=3.9"}
+"test-spark-4.1" = {requires-python = ">=3.10"}
+dev = {requires-python = ">=3.12"}
+docs = {requires-python = ">=3.12"}
+
+[tool.uv.extra-build-dependencies]
+# fails on missing pkg_resources
+cx-oracle = ["setuptools<82"]
+
+[tool.ruff]
+target-version = "py37"
 line-length = 120
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
-include = '\.pyi?$'
-exclude = '''(\.eggs|\.git|\.mypy_cache|\.tox|\.venv|_build|buck-out|build|dist)'''
+extend-exclude = ["docs/", "Makefile"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A002",
+    "ANN",
+    "ARG",
+    "COM812",
+    "D",
+    "FIX002",
+    "N805",
+    "N815",
+    "PLC0415",
+    "PYI051",
+    "TC001",
+    "TC002",
+    "TC003",
+    "TD",
+    "UP006",
+    "UP007",
+    "UP045",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"onetl/connection/file_connection/*" = ["ERA001"]
+
+"tests/*" = [
+    "S",
+    "A",
+    "PLC0415",
+    "TC",
+    "ICN001",
+    "PT",
+    "PLR2004",
+    "PLR0913",
+    "SLF001",
+    "FBT",
+    "SIM117",
+    "SIM108",
+    "PLR0915",
+    "DTZ",
+    "B017",
+    "PERF401",
+    "BLE001",
+    "PERF203",
+    "FURB171",
+]
+"tests/tests_unit/test_hooks/*" = ["C901"]
+"tests/libs/*" = ["INP001"]
+
+[tool.mypy]
+python_version = "3.7"
+plugins = ["pydantic.mypy"]
+exclude = "^(?=.*file).*"
+strict_optional = true
+ignore_missing_imports = true
+follow_imports = "silent"
+show_error_codes = true
+
+[tool.codespell]
+ignore-words-list = ["INOUT", "inout", "thirdparty"]
+
+[tool.coverage.run]
+source_pkgs = ["onetl"]
+branch = true
+parallel = true
+relative_files = true
+omit = [
+  "tests/*",
+]
+data_file = "reports/.coverage"
+
+[tool.coverage.report]
+precision = 2
+exclude_also = [
+  "def __repr__",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "class .*\bProtocol:",
+  "@(abc\\.)?abstractmethod",
+  "\\.\\.\\.",
+  "def downgrade\\(\\)",
+]
+partial_also = [
+  "if .*TYPE_CHECKING:",
+  "if .*isEnabledFor.*:",
+  "if .*debug.*:",
+  "if .*sys.version_info.*:",
+  "if pyspark_version",
+  "if spark_version",
+  "if __name__ == .__main__.:",
+  "except .*ImportError",
+]
 
 [tool.towncrier]
 name = "onETL"

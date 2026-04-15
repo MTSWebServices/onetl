@@ -21,7 +21,7 @@ pytestmark = pytest.mark.postgres
 
 
 @pytest.mark.parametrize(
-    "hwm_column, new_type",
+    ("hwm_column", "new_type"),
     [
         ("hwm_int", "date"),
         ("hwm_date", "integer"),
@@ -60,9 +60,8 @@ def test_postgres_strategy_incremental_different_hwm_type_in_store(
     processing.drop_table(schema=load_table_data.schema, table=load_table_data.table)
     processing.create_table(schema=load_table_data.schema, table=load_table_data.table, fields=new_fields)
 
-    with pytest.raises(TypeError, match="Cannot cast HWM of type .* as .*"):
-        with IncrementalStrategy():
-            reader.run()
+    with pytest.raises(TypeError, match=r"Cannot cast HWM of type .* as .*"), IncrementalStrategy():
+        reader.run()
 
 
 def test_postgres_strategy_incremental_different_hwm_source_in_store(
@@ -92,9 +91,8 @@ def test_postgres_strategy_incremental_different_hwm_source_in_store(
         source=load_table_data.full_name,
         hwm=old_hwm,
     )
-    with pytest.raises(ValueError, match="Detected HWM with different `entity` attribute"):
-        with IncrementalStrategy():
-            reader.run()
+    with pytest.raises(ValueError, match="Detected HWM with different `entity` attribute"), IncrementalStrategy():
+        reader.run()
 
 
 @pytest.mark.parametrize("attribute", ["expression", "description"])
@@ -170,13 +168,13 @@ def test_postgres_strategy_incremental_hwm_set_twice(spark, processing, load_tab
 
         with pytest.raises(
             ValueError,
-            match="Detected wrong IncrementalStrategy usage.",
+            match="Detected wrong IncrementalStrategy usage",
         ):
             reader2.run()
 
         with pytest.raises(
             ValueError,
-            match="Detected wrong IncrementalStrategy usage.",
+            match="Detected wrong IncrementalStrategy usage",
         ):
             reader3.run()
 
@@ -244,7 +242,7 @@ def test_postgres_strategy_incremental_where(spark, processing, prepare_schema_t
 
 
 @pytest.mark.parametrize(
-    "span_gap, span_length, hwm_column, offset",
+    ("span_gap", "span_length", "hwm_column", "offset"),
     [
         (10, 50, "hwm_int", 50 + 10 + 50 + 1),  # offset >  span_length + gap
         (50, 10, "hwm_int", 10 + 50 + 10 + 1),  # offset <  span_length + gap
@@ -368,10 +366,10 @@ def test_postgres_strategy_incremental_handle_exception(spark, processing, prepa
     )
 
     # process is failed
-    with suppress(ValueError):
-        with IncrementalStrategy():
-            reader.run()
-            raise ValueError("some error")
+    with suppress(ValueError), IncrementalStrategy():
+        reader.run()
+        msg = "some error"
+        raise ValueError(msg)
 
     # and then process is retried
     with IncrementalStrategy():

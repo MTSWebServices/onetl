@@ -173,19 +173,19 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
         return path
 
     @slot
-    def get_hwm(self, name: str) -> HWM | None:  # type: ignore
+    def get_hwm(self, name: str) -> HWM | None:
         data = self._load(name)
 
         if not data:
             return None
 
         latest = sorted(data, key=operator.itemgetter("modified_time"))[-1]
-        return HWMTypeRegistry.parse(latest)  # type: ignore
+        return HWMTypeRegistry.parse(latest)
 
     @slot
-    def set_hwm(self, hwm: HWM) -> LocalPath:  # type: ignore
+    def set_hwm(self, hwm: HWM) -> LocalPath:
         data = self._load(hwm.name)
-        self._dump(hwm.name, [hwm.serialize()] + data)
+        self._dump(hwm.name, [*hwm.serialize(), *data])
         return self.get_file_path(hwm.name)
 
     @classmethod

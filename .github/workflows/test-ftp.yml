@@ -31,8 +31,7 @@ jobs:
       - name: Start FTP
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile ftp pull
-          docker compose --profile ftp up -d --wait --wait-timeout 200
+          docker compose --profile ftp up -d --pull always
         env:
           FTP_IMAGE: chonjay21/ftps:${{ inputs.ftp-version }}
 
@@ -41,28 +40,27 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache pip
-        uses: actions/cache@v4
-        if: inputs.with-cache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-ftp-${{ hashFiles('requirements/core.txt', 'requirements/ftp.txt', 'requirements/tests/base.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-ftp-${{ hashFiles('requirements/core.txt', 'requirements/ftp.txt', 'requirements/tests/base.txt') }}
-            ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-ftp-
+          activate-environment: 'true'
+          enable-cache: 'false'
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
+      # no uv cache here because fresh install takes about 1 second
 
-      - name: Install dependencies
+      - name: Wait for FTP to be ready
         run: |
-          pip install -I -r requirements/core.txt -r requirements/ftp.txt -r requirements/tests/base.txt -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          docker compose --profile ftp up -d --wait --wait-timeout 200
+        env:
+          FTP_IMAGE: chonjay21/ftps:${{ inputs.ftp-version }}
 
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -m ftp
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/ftp-${RANDOM}.xml"
+          make test-no-spark UV_ARGS="--extra ftp" PYTEST_ARGS="-m ftp"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
 
       - name: Dump FTP logs on failure
         if: failure()
@@ -72,10 +70,10 @@ jobs:
           dest: ./logs
 
       - name: Upload FTP logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: container-logs-ftp-${{ inputs.ftp-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-ftp-${{ inputs.ftp-version }}-python-${{ inputs.python-version }}
           path: logs/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true
@@ -86,7 +84,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
         with:
-          name: coverage-ftp-${{ inputs.ftp-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-ftp-${{ inputs.ftp-version }}-python-${{ inputs.python-version }}
           path: reports/*
+          # https://github.com/actions/upload-artifact/issues/602
+          include-hidden-files: true

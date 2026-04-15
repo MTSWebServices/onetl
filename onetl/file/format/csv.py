@@ -475,7 +475,8 @@ class CSV(ReadWriteFileFormat):
     def parse_column(self, column: str | Column, schema: StructType) -> Column:
         """
         Parses a CSV string column to a structured Spark SQL column using Spark's
-        `from_csv <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.from_csv.html>`_ function, based on the provided schema.
+        `from_csv <https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.from_csv.html>`_ function,
+        based on the provided schema.
 
         .. note::
 
@@ -489,11 +490,13 @@ class CSV(ReadWriteFileFormat):
             The name of the column or the column object containing CSV strings/bytes to parse.
 
         schema : StructType
-            The schema to apply when parsing the CSV data. This defines the structure of the output DataFrame column.
+            The schema to apply when parsing the CSV data.
+            This defines the structure of the output DataFrame column.
 
         Returns
         -------
-        Column with deserialized data, with the same structure as the provided schema. Column name is the same as input column.
+        Column with deserialized data, with the same structure as the provided schema.
+        Column name is the same as input column.
 
         Examples
         --------
@@ -532,18 +535,17 @@ class CSV(ReadWriteFileFormat):
         |-- value: struct (nullable = true)
         |    |-- name: string (nullable = true)
         |    |-- age: integer (nullable = true)
-        """
+        """  # noqa: E501
 
-        from pyspark.sql import Column, SparkSession  # noqa: WPS442
+        from pyspark.sql import Column, SparkSession
 
-        spark = SparkSession._instantiatedSession  # noqa: WPS437
-        self.check_if_supported(spark)
+        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.functions import col, from_csv
 
         if isinstance(column, Column):
-            column_name = column._jc.toString()  # noqa: WPS437
+            column_name = column._jc.toString()  # noqa: SLF001
         else:
             column_name, column = column, col(column).cast("string")
 
@@ -603,18 +605,17 @@ class CSV(ReadWriteFileFormat):
         root
         |-- id: integer (nullable = true)
         |-- value: string (nullable = true)
-        """
+        """  # noqa: E501
 
-        from pyspark.sql import Column, SparkSession  # noqa: WPS442
+        from pyspark.sql import Column, SparkSession
 
-        spark = SparkSession._instantiatedSession  # noqa: WPS437
-        self.check_if_supported(spark)
+        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.functions import col, to_csv
 
         if isinstance(column, Column):
-            column_name = column._jc.toString()  # noqa: WPS437
+            column_name = column._jc.toString()  # noqa: SLF001
         else:
             column_name, column = column, col(column)
 
@@ -626,7 +627,8 @@ class CSV(ReadWriteFileFormat):
         unsupported_options = current_options.keys() & PARSE_COLUMN_UNSUPPORTED_OPTIONS
         if unsupported_options:
             warnings.warn(
-                f"Options `{sorted(unsupported_options)}` are set but not supported in `CSV.parse_column` or `CSV.serialize_column`.",
+                f"Options `{sorted(unsupported_options)}` are set but not supported "
+                "in `CSV.parse_column` or `CSV.serialize_column`.",
                 UserWarning,
                 stacklevel=2,
             )

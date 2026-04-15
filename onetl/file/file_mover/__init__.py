@@ -3,3 +3,9 @@
 from onetl.file.file_mover.file_mover import FileMover
 from onetl.file.file_mover.options import FileMoverOptions
 from onetl.file.file_mover.result import MoveResult
+
+__all__ = [
+    "FileMover",
+    "FileMoverOptions",
+    "MoveResult",
+]

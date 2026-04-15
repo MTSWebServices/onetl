@@ -2,10 +2,12 @@ import logging
 
 import pytest
 
+from onetl._util.version import Version
+
 try:
     import pandas
 except ImportError:
-    pytest.skip("Missing pandas", allow_module_level=True)
+    pytest.skip("Missing pandas or pyspark", allow_module_level=True)
 
 from onetl import __version__ as onetl_version
 from onetl.connection import Clickhouse
@@ -116,10 +118,11 @@ def test_clickhouse_connection_fetch(spark, processing, load_table_data, suffix,
     )
 
     schema = load_table_data.schema
-    table = load_table_data.full_name
+    table = load_table_data.table
+    full_table = load_table_data.full_name
 
     with caplog.at_level(logging.INFO):
-        df = clickhouse.fetch(f"SELECT * FROM {table}{suffix}")
+        df = clickhouse.fetch(f"SELECT * FROM {full_table}{suffix}")
         assert "Detected dialect: 'org.apache.spark.sql.jdbc.NoopDialect'" in caplog.text
 
     table_df = processing.get_expected_dataframe(
@@ -131,11 +134,11 @@ def test_clickhouse_connection_fetch(spark, processing, load_table_data, suffix,
     clickhouse.close()
 
     # dataframe content is expected
-    df = clickhouse.fetch(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
+    df = clickhouse.fetch(f"SELECT * FROM {full_table} WHERE id_int < 50{suffix}")
     filtered_df = table_df[table_df.id_int < 50]
     processing.assert_equal_df(df=df, other_frame=filtered_df, order_by="id_int")
 
-    df = clickhouse.fetch(f"SHOW TABLES IN {schema}{suffix}")
+    df = clickhouse.fetch(f"SHOW TABLES FROM {schema} ILIKE '{table}'{suffix}")
     result_df = pandas.DataFrame([[load_table_data.table]], columns=["name"])
     processing.assert_equal_df(df=df, other_frame=result_df)
 
@@ -154,7 +157,7 @@ def test_clickhouse_connection_fetch(spark, processing, load_table_data, suffix,
 
     # fetch is always read-only
     with pytest.raises(Exception):
-        clickhouse.fetch(f"DROP TABLE {table}{suffix}")
+        clickhouse.fetch(f"DROP TABLE {full_table}{suffix}")
 
 
 @pytest.mark.parametrize("suffix", ["", ";"])
@@ -287,7 +290,6 @@ def test_clickhouse_connection_execute_dml(request, spark, processing, load_tabl
     assert not clickhouse.fetch(f"SELECT * FROM {temp_table}{suffix}").count()
 
 
-@pytest.mark.xfail(reason="CREATE FUNCTION is not supported in Clickhouse < 21.20")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_clickhouse_connection_execute_function(
     request,
@@ -295,7 +297,6 @@ def test_clickhouse_connection_execute_function(
     processing,
     load_table_data,
     suffix,
-    caplog,
 ):
     clickhouse = Clickhouse(
         host=processing.host,
@@ -305,6 +306,11 @@ def test_clickhouse_connection_execute_function(
         database=processing.database,
         spark=spark,
     )
+
+    df = clickhouse.fetch("SELECT version()")
+    version = df.collect()[0][0]
+    if Version(version) < Version("21.20"):
+        pytest.skip("CREATE FUNCTION is not supported in Clickhouse < 21.20")
 
     table = load_table_data.full_name
     func = f"{load_table_data.table}_func"

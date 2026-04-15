@@ -38,13 +38,12 @@ def test_postgres_strategy_snapshot_hwm_column_present(spark, processing, prepar
     )
 
     error_message = "DBReader(hwm=...) cannot be used with SnapshotStrategy"
-    with SnapshotStrategy():
-        with pytest.raises(RuntimeError, match=re.escape(error_message)):
-            reader.run()
+    with SnapshotStrategy(), pytest.raises(RuntimeError, match=re.escape(error_message)):
+        reader.run()
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step",
+    ("hwm_column", "step"),
     [
         ("hwm_int", "abc"),
         ("hwm_int", timedelta(hours=10)),
@@ -78,14 +77,13 @@ def test_postgres_strategy_snapshot_batch_wrong_step_type(
         hwm=DBReader.AutoDetectHWM(name=secrets.token_hex(5), expression=hwm_column),
     )
 
-    with pytest.raises((TypeError, ValueError)):
-        with SnapshotBatchStrategy(step=step) as part:
-            for _ in part:
-                reader.run()
+    with pytest.raises((TypeError, ValueError)), SnapshotBatchStrategy(step=step) as part:
+        for _ in part:
+            reader.run()
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step",
+    ("hwm_column", "step"),
     [
         ("hwm_int", -10),
         ("hwm_date", timedelta(days=-10)),
@@ -116,15 +114,14 @@ def test_postgres_strategy_snapshot_batch_step_negative(
     )
 
     error_msg = "HWM value is not increasing, please check options passed to SnapshotBatchStrategy"
-    with pytest.raises(ValueError, match=error_msg):
-        with SnapshotBatchStrategy(step=step) as batches:
-            for _ in batches:
-                reader.run()
+    with pytest.raises(ValueError, match=error_msg), SnapshotBatchStrategy(step=step) as batches:
+        for _ in batches:
+            reader.run()
 
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_column, step",
+    ("hwm_column", "step"),
     [
         ("hwm_int", 0.5),
         ("hwm_date", timedelta(days=1)),
@@ -154,10 +151,9 @@ def test_postgres_strategy_snapshot_batch_step_too_small(
     )
 
     error_msg = f"step={step!r} parameter of SnapshotBatchStrategy leads to generating too many iterations"
-    with pytest.raises(ValueError, match=re.escape(error_msg)):
-        with SnapshotBatchStrategy(step=step) as batches:
-            for _ in batches:
-                reader.run()
+    with pytest.raises(ValueError, match=re.escape(error_msg)), SnapshotBatchStrategy(step=step) as batches:
+        for _ in batches:
+            reader.run()
 
 
 def test_postgres_strategy_snapshot_batch_outside_loop(
@@ -181,9 +177,8 @@ def test_postgres_strategy_snapshot_batch_outside_loop(
     )
 
     error_message = "Invalid SnapshotBatchStrategy usage!"
-    with pytest.raises(RuntimeError, match=re.escape(error_message)):
-        with SnapshotBatchStrategy(step=1):
-            reader.run()
+    with pytest.raises(RuntimeError, match=re.escape(error_message)), SnapshotBatchStrategy(step=1):
+        reader.run()
 
 
 def test_postgres_strategy_snapshot_batch_hwm_set_twice(spark, processing, load_table_data):
@@ -223,13 +218,13 @@ def test_postgres_strategy_snapshot_batch_hwm_set_twice(spark, processing, load_
 
             with pytest.raises(
                 ValueError,
-                match="Detected wrong SnapshotBatchStrategy usage.",
+                match="Detected wrong SnapshotBatchStrategy usage",
             ):
                 reader2.run()
 
             with pytest.raises(
                 ValueError,
-                match="Detected wrong SnapshotBatchStrategy usage.",
+                match="Detected wrong SnapshotBatchStrategy usage",
             ):
                 reader3.run()
 
@@ -280,7 +275,7 @@ def test_postgres_strategy_snapshot_batch_where(spark, processing, prepare_schem
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_column, step, per_iter",
+    ("hwm_column", "step", "per_iter"),
     [
         (
             "hwm_int",
@@ -296,7 +291,7 @@ def test_postgres_strategy_snapshot_batch_where(spark, processing, prepare_schem
     ],
 )
 @pytest.mark.parametrize(
-    "span_gap, span_length",
+    ("span_gap", "span_length"),
     [
         (50, 60),  # step < gap < span_length
         (50, 40),  # step < gap > span_length
@@ -446,7 +441,7 @@ def test_postgres_strategy_snapshot_batch_ignores_hwm_value(
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step, stop",
+    ("hwm_column", "step", "stop"),
     [
         ("hwm_int", 10, 50),  # step <  stop
         ("hwm_int", 50, 10),  # step >  stop
@@ -555,18 +550,18 @@ def test_postgres_strategy_snapshot_batch_handle_exception(spark, processing, pr
 
     first_df = None
     raise_counter = 0
-    with suppress(ValueError):
-        with SnapshotBatchStrategy(step=step) as batches:
-            for _ in batches:
-                if first_df is None:
-                    first_df = reader.run()
-                else:
-                    first_df = first_df.union(reader.run())
+    with suppress(ValueError), SnapshotBatchStrategy(step=step) as batches:
+        for _ in batches:
+            if first_df is None:
+                first_df = reader.run()
+            else:
+                first_df = first_df.union(reader.run())
 
-                raise_counter += step
-                # raise exception somewhere in the middle of the read process
-                if raise_counter >= span_gap + (span_length // 2):
-                    raise ValueError("some error")
+            raise_counter += step
+            # raise exception somewhere in the middle of the read process
+            if raise_counter >= span_gap + (span_length // 2):
+                msg = "some error"
+                raise ValueError(msg)
 
     # and then process is retried
     total_df = None

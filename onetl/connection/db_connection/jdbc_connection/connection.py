@@ -58,7 +58,7 @@ WRITE_TOP_LEVEL_OPTIONS = frozenset("url")
 
 
 @support_hooks
-class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
+class JDBCConnection(JDBCMixin, DBConnection):
     user: str
     password: SecretStr
 
@@ -90,7 +90,7 @@ class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
     @slot
     def check(self):
         log.info("|%s| Checking connection availability...", self.__class__.__name__)
-        self._log_parameters()  # type: ignore
+        self._log_parameters()
 
         log.debug("|%s| Executing SQL query:", self.__class__.__name__)
         log_lines(log, self._CHECK_QUERY, level=logging.DEBUG)
@@ -102,7 +102,8 @@ class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
@@ -152,14 +153,14 @@ class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
             with override_job_description(self.spark, f"{self}.sql()"):
                 df = self._query_on_executor(query, self.SQLOptions.parse(options))
         except Exception:
-            log.error("|%s| Query failed!", self.__class__.__name__)
+            log.exception("|%s| Query failed!", self.__class__.__name__)
             raise
 
         log.info("|Spark| DataFrame successfully created from SQL statement")
         return df
 
     @slot
-    def read_source_as_df(
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,
@@ -182,7 +183,7 @@ class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
             options=raw_options,
         )
 
-        new_columns = columns or ["*"]
+        new_columns = columns.copy() if columns else ["*"]
         alias: str | None = None
 
         if read_options.partition_column:
@@ -199,7 +200,7 @@ class JDBCConnection(JDBCMixin, DBConnection):  # noqa: WPS338
             else:
                 partition_column = read_options.partition_column
 
-            # hack to avoid column name verification
+            # avoid column name verification
             # in the spark, the expression in the partitioning of the column must
             # have the same name as the field in the table ( 2.4 version )
             # https://github.com/apache/spark/pull/21379

@@ -30,8 +30,9 @@ def upload_files(
                 remote_files.append(remote_filename)
 
     if not remote_files:
+        msg = f"Could not load file examples from {local_path}. Path should exist and should contain samples"
         raise RuntimeError(
-            f"Could not load file examples from {local_path}. Path should exist and should contain samples",
+            msg,
         )
 
     return remote_files

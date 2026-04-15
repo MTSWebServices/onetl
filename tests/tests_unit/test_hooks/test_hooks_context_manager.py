@@ -257,7 +257,8 @@ def test_hooks_execute_context_manager_catch_exception(caplog):
         @slot
         def plus(self, arg: int) -> int:
             log.info("Called original method with %s and %s", self.data, arg)
-            raise TypeError(f"Raised with {self.data} and {arg}")
+            msg = f"Raised with {self.data} and {arg}"
+            raise TypeError(msg)
 
     @Calculator.plus.bind
     @hook
@@ -274,7 +275,8 @@ def test_hooks_execute_context_manager_catch_exception(caplog):
             if exc_type:
                 log.exception("Context caught exception", exc_info=(exc_type, exc_value, traceback))
                 del traceback
-                raise RuntimeError("Replaced") from exc_value
+                msg = "Replaced"
+                raise RuntimeError(msg) from exc_value
 
             log.info("After method call")
 
@@ -439,7 +441,8 @@ def test_hooks_execute_context_manager_init_is_raising_exception(caplog):
     class BeforeCallback:
         def __init__(self, instance: Calculator, arg: int):
             if arg == 3:
-                raise ValueError("Argument value 3 is not allowed")
+                msg = "Argument value 3 is not allowed"
+                raise ValueError(msg)
             self.instance = instance
             self.arg = arg
 
@@ -482,7 +485,8 @@ def test_hooks_execute_context_manager_enter_is_raising_exception(caplog):
 
         def __enter__(self):
             if self.arg == 3:
-                raise ValueError("Argument value 3 is not allowed")
+                msg = "Argument value 3 is not allowed"
+                raise ValueError(msg)
             return self
 
         def __exit__(self, *args):
@@ -529,7 +533,8 @@ def test_hooks_execute_context_manager_exit_is_raising_exception(caplog):
 
         def process_result(self, result: int) -> int:
             if result == 4:
-                raise ValueError("Result value 4 is not allowed")
+                msg = "Result value 4 is not allowed"
+                raise ValueError(msg)
             return result
 
     # exception successfully raised
@@ -570,7 +575,8 @@ def test_hooks_execute_context_manager_process_result_is_raising_exception(caplo
 
         def __exit__(self, *args):
             if self.arg == 3:
-                raise ValueError("Argument value 3 is not allowed")
+                msg = "Argument value 3 is not allowed"
+                raise ValueError(msg)
             return False
 
     # exception successfully raised
@@ -610,13 +616,15 @@ def test_hooks_execute_context_manager_wrong_signature():
         def __exit__(self, *args):
             return False
 
-    local_name = "test_hooks_context_manager.test_hooks_execute_context_manager_wrong_signature"
-    method_name = f"{local_name}.<locals>.Calculator.plus"
-    hook_name = f"{local_name}.<locals>.MissingArg"
+    local_name = (
+        r"tests\.tests_unit\.test_hooks\.test_hooks_context_manager\.test_hooks_execute_context_manager_wrong_signature"
+    )
+    method_name = rf"{local_name}\.<locals>\.Calculator\.plus"
+    hook_name = rf"{local_name}\.<locals>\.MissingArg"
 
     error_msg = textwrap.dedent(
         rf"""
-        Error while passing method arguments to a hook.
+        Error while passing method arguments to a hook\.
 
         Method name: '{method_name}'
         Method source: '{__file__}:\d+'

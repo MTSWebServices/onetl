@@ -31,8 +31,7 @@ jobs:
       - name: Start SFTP
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile sftp pull
-          docker compose --profile sftp up -d --wait --wait-timeout 200
+          docker compose --profile sftp up -d --pull always
         env:
           SFTP_IMAGE: linuxserver/openssh-server:${{ inputs.openssh-version }}
 
@@ -41,28 +40,27 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache pip
-        uses: actions/cache@v4
-        if: inputs.with-cache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-sftp-${{ hashFiles('requirements/core.txt', 'requirements/sftp.txt', 'requirements/tests/base.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-sftp-${{ hashFiles('requirements/core.txt', 'requirements/sftp.txt', 'requirements/tests/base.txt') }}
-            ${{ runner.os }}-python-${{ inputs.python-version }}-pydantic-${{ inputs.pydantic-version }}-tests-sftp-
+          activate-environment: 'true'
+          enable-cache: 'false'
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
+      # no uv cache here because fresh install takes about 1 second
 
-      - name: Install dependencies
+      - name: Wait for SFTP to be ready
         run: |
-          pip install -I -r requirements/core.txt -r requirements/sftp.txt -r requirements/tests/base.txt -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          docker compose --profile sftp up -d --wait --wait-timeout 200
+        env:
+          SFTP_IMAGE: linuxserver/openssh-server:${{ inputs.openssh-version }}
 
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -m sftp
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/sftp-${RANDOM}.xml"
+          make test-no-spark UV_ARGS="--extra sftp" PYTEST_ARGS="-m sftp"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
 
       - name: Dump SFTP logs on failure
         if: failure()
@@ -72,10 +70,10 @@ jobs:
           dest: ./logs
 
       - name: Upload SFTP logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: container-logs-sftp-${{ inputs.openssh-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-sftp-${{ inputs.openssh-version }}-python-${{ inputs.python-version }}
           path: logs/*
 
       - name: Shutdown SFTP
@@ -84,9 +82,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
         with:
-          name: coverage-sftp-${{ inputs.openssh-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-sftp-${{ inputs.openssh-version }}-python-${{ inputs.python-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

@@ -1,45 +1,76 @@
-default_language_version:
-  python: python3.12
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-ast
+        priority: 0
       - id: check-case-conflict
+        priority: 0
       - id: check-docstring-first
+        priority: 0
       - id: check-executables-have-shebangs
+        priority: 0
       - id: check-merge-conflict
+        priority: 0
       - id: check-toml
+        priority: 0
       - id: check-vcs-permalinks
-      - id: check-yaml
-        args: [--unsafe]
-      - id: requirements-txt-fixer
-        files: ^(requirements/.*\.txt)$
-      - id: end-of-file-fixer
-        exclude: ^(.*/VERSION|tests/resources/.*/.*)$
-      - id: fix-byte-order-marker
+        priority: 0
       - id: name-tests-test
         files: ^tests/(tests_integration|tests_unit)/.*\.py$
         args: [--django]
+        priority: 0
+      - id: end-of-file-fixer
+        exclude: ^(.*/VERSION|tests/resources/.*/.*)$
+        priority: 1
+      - id: fix-byte-order-marker
+        priority: 2
       - id: trailing-whitespace
+        priority: 3
+
+  - repo: https://github.com/IamTheFij/docker-pre-commit
+    rev: v3.0.1
+    hooks:
+      - id: docker-compose-check
+        priority: 0
+
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-no-log-warn
+        priority: 0
+      - id: python-no-eval
+        priority: 0
+      - id: rst-backticks
+        priority: 0
+      - id: rst-directive-colons
+        priority: 0
+      - id: rst-inline-touching-normal
+        priority: 0
+      - id: text-unicode-replacement-char
+        priority: 0
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
+    rev: v1.5.6
     hooks:
       - id: forbid-tabs
+        priority: 0
       - id: remove-tabs
         args: [--whitespaces-count, '2']
+        priority: 4
       - id: chmod
         args: ['644']
         exclude_types: [shell]
         exclude: ^(tests/resources/file_df_connection/generate_files\.py)$
+        priority: 5
       - id: chmod
         args: ['755']
         types: [shell]
+        priority: 5
       - id: chmod
         args: ['755']
         files: ^(tests/resources/file_df_connection/generate_files\.py)$
+        priority: 5
       - id: insert-license
         files: .*\.py$
         exclude: ^(setup\.py|conftest\.py|docs/.*\.py|tests/.*\.py)$
@@ -48,118 +79,71 @@ repos:
           - .spdx-license-header.txt
           - --allow-past-years
           - --no-extra-eol
+        priority: 6
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         args: [-w]
+        priority: 7
 
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.15.0
+    rev: v2.16.0
     hooks:
       - id: pretty-format-yaml
-        args: [--autofix, --indent, '2', --preserve-quotes, --offset, '2']
+        args: [--autofix, --indent, '2', --offset, '2']
+        priority: 8
 
   - repo: https://github.com/lovesegfault/beautysh
-    rev: v6.4.2
+    rev: v6.4.3
     hooks:
       - id: beautysh
         additional_dependencies: [setuptools]
+        priority: 8
 
-  - repo: https://github.com/IamTheFij/docker-pre-commit
-    rev: v3.0.1
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.6
     hooks:
-      - id: docker-compose-check
+      - id: uv-lock
+        priority: 8
 
-  - repo: https://github.com/pycqa/isort
-    rev: 7.0.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.10
     hooks:
-      - id: isort
-
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-      - id: python-no-log-warn
-      - id: python-no-eval
-      - id: rst-backticks
-      - id: rst-directive-colons
-      - id: rst-inline-touching-normal
-      - id: text-unicode-replacement-char
-
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
-    hooks:
-      - id: pyupgrade
-        args: [--py37-plus, --keep-runtime-typing]
-
-  - repo: https://github.com/asottile/add-trailing-comma
-    rev: v4.0.0
-    hooks:
-      - id: add-trailing-comma
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.11.0
-    hooks:
-      - id: black
-        language_version: python3
-
-  - repo: https://github.com/asottile/blacken-docs
-    rev: 1.20.0
-    hooks:
-      - id: blacken-docs
-        additional_dependencies:
-          - black==25.1.0
-
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.9.2
-    hooks:
-      - id: bandit
-        args:
-          - --aggregate=file
-          - -iii
-          - -ll
-        require_serial: true
-
-  - repo: meta
-    hooks:
-      - id: check-hooks-apply
-      - id: check-useless-excludes
-
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.3.1
-    hooks:
-      - id: autoflake
-        args:
-          - --in-place
-          - --config=setup.cfg
+      - id: ruff-format
+        priority: 8
+      - id: ruff
+        args: [--fix]
+        priority: 9
 
   - repo: local
     hooks:
-      - id: flake8
-        name: flake8
-        entry: python3 -m flake8
-        language: system
-        types: [python]
-        files: ^(onetl|tests)/.*$
-        pass_filenames: true
       - id: mypy
         name: mypy
-        entry: python3 -m mypy --config-file setup.cfg onetl
+        entry: python3 -m mypy onetl
         language: system
         types: [python]
         pass_filenames: false
+        priority: 10
       - id: towncrier
         name: towncrier
         entry: towncrier build --draft
         language: system
         types: [rst]
         pass_filenames: false
+        priority: 8
+
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+        priority: 0
+      - id: check-useless-excludes
+        priority: 0
 
 ci:
   skip:
-    - flake8 # checked with Github Actions
+    - chmod # failing in pre-commit.ci
+    - docker-compose-check # cannot run on pre-commit.ci
     - mypy # checked with Github Actions
     - towncrier # checked with Github Actions
-    - docker-compose-check # cannot run on pre-commit.ci
-    - chmod # failing in pre-commit.ci

@@ -94,13 +94,14 @@ class IcebergFilesystemWarehouse(IcebergWarehouse, FrozenModel):
     @slot
     def get_config(self) -> dict[str, str]:
         config = {
-            "warehouse": self.connection._convert_to_url(self.path),  # noqa: WPS437
+            "warehouse": self.connection._convert_to_url(self.path),  # noqa: SLF001
             "io-impl": "org.apache.iceberg.hadoop.HadoopFileIO",
         }
         if isinstance(self.connection, SparkS3):
-            prefix = self.connection._get_hadoop_config_prefix()  # noqa: WPS437
+            prefix = self.connection._get_hadoop_config_prefix()  # noqa: SLF001
             hadoop_config = {
-                "hadoop." + k: v for k, v in self.connection._get_expected_hadoop_config(prefix).items()  # noqa: WPS437
+                "hadoop." + k: v
+                for k, v in self.connection._get_expected_hadoop_config(prefix).items()  # noqa: SLF001
             }
             config.update(hadoop_config)
 

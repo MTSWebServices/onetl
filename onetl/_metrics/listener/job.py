@@ -31,15 +31,12 @@ class SparkListenerJob:
 
     @property
     def stages(self) -> list[SparkListenerStage]:
-        result = []
-        for stage_id in sorted(self._stages.keys()):
-            result.append(self._stages[stage_id])
-        return result
+        return [self._stages[stage_id] for stage_id in sorted(self._stages.keys())]
 
     @classmethod
     def create(cls, event):
-        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListenerJobSubmitted.html
-        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListenerJobCompleted.html
+        # https://spark.apache.org/docs/3.5.8/api/java/org/apache/spark/scheduler/SparkListenerJobSubmitted.html
+        # https://spark.apache.org/docs/3.5.8/api/java/org/apache/spark/scheduler/SparkListenerJobCompleted.html
         result = cls(
             id=event.jobId(),
             description=event.properties().get("spark.job.description"),
@@ -50,7 +47,7 @@ class SparkListenerJob:
         stage_ids = scala_seq_to_python_list(event.stageIds())
         stage_infos = scala_seq_to_python_list(event.stageInfos())
         for stage_id, stage_info in zip(stage_ids, stage_infos):
-            result._stages[stage_id] = SparkListenerStage.create(stage_info)  # noqa: WPS437
+            result._stages[stage_id] = SparkListenerStage.create(stage_info)
 
         return result
 

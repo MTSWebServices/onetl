@@ -201,7 +201,8 @@ def test_spark_metrics_recorder_file_df_writer_executor_failed(
 
     @udf(returnType=IntegerType())
     def raise_exception():
-        raise ValueError("Force task failure")
+        msg = "Force task failure"
+        raise ValueError(msg)
 
     local_fs, target_path = local_fs_file_df_connection_with_path
 

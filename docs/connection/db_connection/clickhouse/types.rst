@@ -5,11 +5,11 @@ Clickhouse <-> Spark type mapping
 
 .. note::
 
-    The results below are valid for Spark 3.5.7, and may differ on other Spark versions.
+    The results below are valid for Spark 3.5.8, and may differ on other Spark versions.
 
 .. note::
 
-    It is recommended to use `spark-dialect-extension <https://github.com/MobileTeleSystems/spark-dialect-extension>`_ package,
+    It is recommended to use `spark-dialect-extension <https://github.com/MTSWebServices/spark-dialect-extension>`_ package,
     which implements writing Arrays from Spark to Clickhouse, fixes dropping fractions of seconds in ``TimestampType``,
     and fixes other type conversion issues.
 
@@ -116,8 +116,8 @@ References
 Here you can find source code with type conversions:
 
 * `Clickhouse -> JDBC <https://github.com/ClickHouse/clickhouse-java/blob/0.3.2/clickhouse-jdbc/src/main/java/com/clickhouse/jdbc/JdbcTypeMapping.java#L39-L176>`_
-* `JDBC -> Spark <https://github.com/apache/spark/blob/v3.5.7/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L307>`_
-* `Spark -> JDBC <https://github.com/apache/spark/blob/v3.5.7/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L141-L164>`_
+* `JDBC -> Spark <https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L307>`_
+* `Spark -> JDBC <https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L141-L164>`_
 * `JDBC -> Clickhouse <https://github.com/ClickHouse/clickhouse-java/blob/0.3.2/clickhouse-jdbc/src/main/java/com/clickhouse/jdbc/JdbcTypeMapping.java#L185-L311>`_
 
 Supported types

@@ -6,6 +6,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from logging import getLogger
 from random import randint
+from typing import ClassVar
 
 import clickhouse_driver
 import pandas
@@ -16,7 +17,7 @@ logger = getLogger(__name__)
 
 
 class ClickhouseProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "id_int": "Int32",
         "text_string": "String",
         "hwm_int": "Int32",
@@ -62,13 +63,13 @@ class ClickhouseProcessing(BaseProcessing):
         return int(os.environ["ONETL_CH_PORT_CLIENT"])
 
     def create_pandas_df(self, min_id: int = 1, max_id: int | None = None) -> pandas.DataFrame:
-        max_id = self._df_max_length if not max_id else max_id
+        max_id = max_id or self._df_max_length
         time_multiplier = 100000
 
         values = defaultdict(list)
         for i in range(min_id, max_id + 1):
-            for column_name in self.column_names:
-                column_name = column_name.lower()
+            for raw_column_name in self.column_names:
+                column_name = raw_column_name.lower()
 
                 if "int" in column_name:
                     values[column_name].append(i)
@@ -77,11 +78,11 @@ class ClickhouseProcessing(BaseProcessing):
                 elif "text" in column_name:
                     values[column_name].append(secrets.token_hex(16))
                 elif "datetime" in column_name:
-                    rand_second = randint(0, i * time_multiplier)  # noqa: S311
+                    rand_second = randint(0, i * time_multiplier)
                     # Clickhouse DATETIME format has time range: 00:00:00 through 23:59:59
                     values[column_name].append(datetime.now().replace(microsecond=0) + timedelta(seconds=rand_second))
                 elif "date" in column_name:
-                    rand_second = randint(0, i * time_multiplier)  # noqa: S311
+                    rand_second = randint(0, i * time_multiplier)
                     values[column_name].append(date.today() + timedelta(seconds=rand_second))
 
         return pandas.DataFrame(data=values)
@@ -105,7 +106,7 @@ class ClickhouseProcessing(BaseProcessing):
         schema: str,
     ) -> str:
         str_fields = ", ".join([f"{key} {value}" for key, value in fields.items()])
-        first_field = list(fields.keys())[0]
+        first_field = next(iter(fields.keys()))
 
         return f"""
             CREATE TABLE IF NOT EXISTS {schema}.{table} ({str_fields})

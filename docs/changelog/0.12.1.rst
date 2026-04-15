@@ -20,4 +20,4 @@ Bug Fixes
 Doc only Changes
 ----------------
 
-- Add note about `spark-dialect-extension <https://github.com/MobileTeleSystems/spark-dialect-extension>`_ package to Clickhouse connector documentation. (:github:pull:`310`)
+- Add note about `spark-dialect-extension <https://github.com/MTSWebServices/spark-dialect-extension>`_ package to Clickhouse connector documentation. (:github:pull:`310`)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pandas
 
@@ -16,7 +16,7 @@ DEFAULT_TIMEOUT = 10.0
 
 
 class KafkaProcessing(BaseProcessing):
-    column_names: list[str] = ["id_int", "text_string", "hwm_int", "float_value"]
+    column_names: ClassVar[list[str]] = ["id_int", "text_string", "hwm_int", "float_value"]
 
     def __enter__(self):
         return self
@@ -87,7 +87,8 @@ class KafkaProcessing(BaseProcessing):
         from confluent_kafka import KafkaException
 
         if err is not None:
-            raise KafkaException(f"Message {msg} delivery failed: {err}")
+            msg = f"Message {msg} delivery failed: {err}"
+            raise KafkaException(msg)
 
     def send_message(self, topic, message, timeout: float = DEFAULT_TIMEOUT):
         from confluent_kafka import KafkaException
@@ -96,7 +97,8 @@ class KafkaProcessing(BaseProcessing):
         producer.produce(topic, message, callback=self.delivery_report)
         messages_left = producer.flush(timeout)
         if messages_left:
-            raise KafkaException(f"{messages_left} messages were not delivered")
+            msg = f"{messages_left} messages were not delivered"
+            raise KafkaException(msg)
 
     def get_expected_df(self, topic: str, num_messages: int = 1, timeout: float = DEFAULT_TIMEOUT) -> pandas.DataFrame:
         from confluent_kafka import KafkaException
@@ -110,12 +112,11 @@ class KafkaProcessing(BaseProcessing):
         for msg in messages:
             if msg.error():
                 raise KafkaException(msg.error())
-            else:
-                key = msg.key().decode("utf-8") if msg.key() else None
-                value = msg.value().decode("utf-8") if msg.value() else None
-                partition = msg.partition()
-                headers = msg.headers()
-                result.append((key, value, partition, headers, topic))
+            key = msg.key().decode("utf-8") if msg.key() else None
+            value = msg.value().decode("utf-8") if msg.value() else None
+            partition = msg.partition()
+            headers = msg.headers()
+            result.append((key, value, partition, headers, topic))
 
         consumer.close()
         return pandas.DataFrame(result, columns=["key", "value", "partition", "headers", "topic"])
@@ -135,11 +136,12 @@ class KafkaProcessing(BaseProcessing):
             # change the number of partitions
             fs = admin_client.create_partitions(new_partitions, request_timeout=timeout)
 
-            for topic, f in fs.items():
+            for topic_name, f in fs.items():
                 try:
                     f.result()
                 except Exception as e:
-                    raise Exception(f"Failed to update number of partitions for topic '{topic}': {e}")  # noqa:  WPS454
+                    msg = f"Failed to update number of partitions for topic '{topic_name}': {e}"
+                    raise RuntimeError(msg) from e
 
     def create_topic(self, topic: str, num_partitions: int, timeout: float = DEFAULT_TIMEOUT):
         from confluent_kafka.admin import KafkaException, NewTopic
@@ -148,11 +150,12 @@ class KafkaProcessing(BaseProcessing):
         topic_config = NewTopic(topic, num_partitions=num_partitions, replication_factor=1)
         fs = admin_client.create_topics([topic_config], request_timeout=timeout)
 
-        for topic, f in fs.items():
+        for topic_name, f in fs.items():
             try:
                 f.result()
             except Exception as e:
-                raise KafkaException(f"Error creating topic '{topic}': {e}")
+                msg = f"Error creating topic '{topic_name}': {e}"
+                raise KafkaException(msg) from e
 
     def delete_topic(self, topics: list[str], timeout: float = DEFAULT_TIMEOUT):
         admin = self.get_admin_client()
@@ -177,7 +180,7 @@ class KafkaProcessing(BaseProcessing):
         # Return the number of partitions
         return len(topic_metadata.partitions)
 
-    def get_expected_dataframe(  # noqa: WPS463
+    def get_expected_dataframe(
         self,
         schema: str,
         table: str,
@@ -193,17 +196,13 @@ class KafkaProcessing(BaseProcessing):
         """Deserializes dataframe's "value" column from JSON to struct"""
         from pyspark.sql.functions import col, from_json
 
-        df = df.select(
+        return df.select(
             from_json(col=col("value").cast("string"), schema=df_schema).alias("value"),
         ).select("value.*")
-
-        return df  # noqa:  WPS331
 
     def json_serialize(self, df: SparkDataFrame) -> SparkDataFrame:
         """Serializes dataframe's columns into JSON "value" field"""
         from pyspark.sql.functions import col, struct, to_json
 
-        df = df.select(struct(*df.columns).alias("value"))
-        df = df.select(to_json(col("value")).alias("value"))
-
-        return df  # noqa:  WPS331
+        intermediate_df = df.select(struct(*df.columns).alias("value"))
+        return intermediate_df.select(to_json(col("value")).alias("value"))

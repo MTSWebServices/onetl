@@ -112,7 +112,7 @@ class HWMStrategy(BaseStrategy):
 
                 warnings.warn(message, UserWarning, stacklevel=2)
 
-    def exit_hook(self, failed: bool = False) -> None:
+    def exit_hook(self, *, failed: bool = False) -> None:
         if not failed:
             self.save_hwm()
 
@@ -128,7 +128,7 @@ class HWMStrategy(BaseStrategy):
         log.info("|%s| Saving HWM to %r:", class_name, hwm_store.__class__.__name__)
         log_hwm(log, self.hwm)
 
-        location = hwm_store.set_hwm(self.hwm)  # type: ignore
+        location = hwm_store.set_hwm(self.hwm)
         log.info("|%s| HWM has been saved", class_name)
 
         if location:

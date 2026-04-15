@@ -18,9 +18,10 @@ class MSSQLDialect(JDBCDialect):
         # Return positive value even for negative input
         return f"ABS({partition_column} % {num_partitions})"
 
-    def get_sql_query(
+    def get_sql_query(  # noqa: PLR0913
         self,
         table: str,
+        *,
         columns: list[str] | None = None,
         where: str | list[str] | None = None,
         hint: str | None = None,

@@ -12,7 +12,7 @@ from typing_extensions import Literal
 try:
     from pydantic.v1 import Field, root_validator, validator
 except (ImportError, AttributeError):
-    from pydantic import Field, validator, root_validator  # type: ignore[no-redef, assignment]
+    from pydantic import Field, root_validator, validator  # type: ignore[no-redef, assignment]
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
@@ -84,7 +84,7 @@ class Avro(ReadWriteFileFormat):
             from onetl.file.format import Avro
 
             # Create Spark session with Avro package loaded
-            maven_packages = Avro.get_packages(spark_version="3.5.7")
+            maven_packages = Avro.get_packages(spark_version="3.5.8")
             spark = (
                 SparkSession.builder.appName("spark-app-name")
                 .config("spark.jars.packages", ",".join(maven_packages))
@@ -238,7 +238,8 @@ class Avro(ReadWriteFileFormat):
     Avro schema may contain union types, which are not supported by Spark.
     Different variants of union are split to separated DataFrame columns with respective type.
 
-    If option value is ``True``, DataFrame column names are based on Avro variant names, e.g. ``member_int``, ``member_string``.
+    If option value is ``True``, DataFrame column names are based on Avro variant names,
+    e.g. ``member_int``, ``member_string``.
     If ``False``, DataFrame column names are generated using field position, e.g. ``member0``, ``member1``.
 
     Default is ``False``.
@@ -285,8 +286,8 @@ class Avro(ReadWriteFileFormat):
 
             from onetl.file.format import Avro
 
-            Avro.get_packages(spark_version="3.5.7")
-            Avro.get_packages(spark_version="3.5.7", scala_version="2.12")
+            Avro.get_packages(spark_version="3.5.8")
+            Avro.get_packages(spark_version="3.5.8", scala_version="2.12")
 
         """
 
@@ -352,12 +353,13 @@ class Avro(ReadWriteFileFormat):
 
         Returns
         -------
-        Column with deserialized data. Schema is matching the provided Avro schema. Column name is the same as input column.
+        Column with deserialized data. Schema is matching the provided Avro schema.
+        Column name is the same as input column.
 
         Raises
         ------
         ValueError
-            If the Spark version is less than 3.x or if neither ``avroSchema`` nor ``avroSchemaUrl`` are defined.
+            If neither ``avroSchema`` nor ``avroSchemaUrl`` are defined.
         ImportError
             If ``schema_url`` is used and the ``requests`` library is not installed.
 
@@ -406,24 +408,24 @@ class Avro(ReadWriteFileFormat):
         |-- value: struct (nullable = true)
         |    |-- name: string (nullable = true)
         |    |-- age: integer (nullable = true)
-        """
-        from pyspark.sql import Column, SparkSession  # noqa: WPS442
+        """  # noqa: E501
+        from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col
 
-        spark = SparkSession._instantiatedSession  # noqa: WPS437
-        self.check_if_supported(spark)
+        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
         self._check_unsupported_parse_options()
 
         from pyspark.sql.avro.functions import from_avro
 
         if isinstance(column, Column):
-            column_name = column._jc.toString()  # noqa: WPS437
+            column_name = column._jc.toString()  # noqa: SLF001
         else:
             column_name, column = column, col(column).cast("binary")
 
         schema = self._get_schema_json()
         if not schema:
-            raise ValueError("Avro.parse_column can be used only with defined `avroSchema` or `avroSchemaUrl`")
+            msg = "Avro.parse_column can be used only with defined `avroSchema` or `avroSchemaUrl`"
+            raise ValueError(msg)
 
         return from_avro(column, schema).alias(column_name)
 
@@ -438,7 +440,8 @@ class Avro(ReadWriteFileFormat):
 
         .. warning::
 
-            If ``schema_url`` is provided, ``requests`` library is used to fetch the schema from the URL. It should be installed manually, like this:
+            If ``schema_url`` is provided, ``requests`` library is used to fetch the schema from the URL.
+            It should be installed manually, like this:
 
             .. code:: bash
 
@@ -503,18 +506,17 @@ class Avro(ReadWriteFileFormat):
         root
         |-- key: string (nullable = true)
         |-- value: binary (nullable = true)
-        """
-        from pyspark.sql import Column, SparkSession  # noqa: WPS442
+        """  # noqa: E501
+        from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col
 
-        spark = SparkSession._instantiatedSession  # noqa: WPS437
-        self.check_if_supported(spark)
+        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.avro.functions import to_avro
 
         if isinstance(column, Column):
-            column_name = column._jc.toString()  # noqa:  WPS437
+            column_name = column._jc.toString()  # noqa: SLF001
         else:
             column_name, column = column, col(column)
 
@@ -557,22 +559,24 @@ class Avro(ReadWriteFileFormat):
         schema_dict = values.get("schema_dict")
         schema_url = values.get("schema_url")
         if schema_dict and schema_url:
-            raise ValueError("Parameters `avroSchema` and `avroSchemaUrl` are mutually exclusive.")
+            msg = "Parameters `avroSchema` and `avroSchemaUrl` are mutually exclusive."
+            raise ValueError(msg)
         return values
 
     def _get_schema_json(self) -> str:
         if self.schema_dict:
             return json.dumps(self.schema_dict)
-        elif self.schema_url:
+        if self.schema_url:
             try:
                 import requests
-
+            except ImportError as e:
+                msg = (
+                    "The 'requests' library is required to use 'schema_url' but is not installed. "
+                    "Install it with 'pip install requests' or avoid using 'schema_url'."
+                )
+                raise ImportError(msg) from e
+            else:
                 response = requests.get(self.schema_url)  # noqa: S113
                 return response.text
-            except ImportError as e:
-                raise ImportError(
-                    "The 'requests' library is required to use 'schema_url' but is not installed. "
-                    "Install it with 'pip install requests' or avoid using 'schema_url'.",
-                ) from e
         else:
             return ""

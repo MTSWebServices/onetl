@@ -3,8 +3,23 @@
 from onetl.connection.db_connection.jdbc_connection.connection import JDBCConnection
 from onetl.connection.db_connection.jdbc_connection.dialect import JDBCDialect
 from onetl.connection.db_connection.jdbc_connection.options import (
+    JDBCFetchOptions,
+    JDBCLegacyOptions,
     JDBCPartitioningMode,
     JDBCReadOptions,
+    JDBCSQLOptions,
     JDBCTableExistBehavior,
     JDBCWriteOptions,
 )
+
+__all__ = [
+    "JDBCConnection",
+    "JDBCDialect",
+    "JDBCFetchOptions",
+    "JDBCLegacyOptions",
+    "JDBCPartitioningMode",
+    "JDBCReadOptions",
+    "JDBCSQLOptions",
+    "JDBCTableExistBehavior",
+    "JDBCWriteOptions",
+]

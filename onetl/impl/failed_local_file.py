@@ -19,7 +19,7 @@ class FailedLocalFile(PathContainer[LocalPath]):
 
     def __post_init__(self):
         # frozen=True does not allow to change any field in __post_init__, small hack here
-        object.__setattr__(self, "path", LocalPath(self.path))  # noqa: WPS609
+        object.__setattr__(self, "path", LocalPath(self.path))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({os.fspath(self.path)!r}, {self.exception!r})"

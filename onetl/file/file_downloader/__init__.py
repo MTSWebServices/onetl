@@ -3,3 +3,9 @@
 from onetl.file.file_downloader.file_downloader import FileDownloader
 from onetl.file.file_downloader.options import FileDownloaderOptions
 from onetl.file.file_downloader.result import DownloadResult
+
+__all__ = [
+    "DownloadResult",
+    "FileDownloader",
+    "FileDownloaderOptions",
+]

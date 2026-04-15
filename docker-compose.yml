@@ -7,7 +7,7 @@ services:
       context: .
       target: base
       args:
-        SPARK_VERSION: 3.5.7
+        SPARK_VERSION: 3.5.8
     env_file: .env.docker
     volumes:
       - ./:/app/
@@ -40,7 +40,7 @@ services:
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
     healthcheck:
-      test: ["CMD", "/usr/local/gpdb/bin/pg_isready"]
+      test: [CMD-SHELL, PGPASSWORD=$$POSTGRESQL_PASSWORD /usr/local/gpdb/bin/pg_isready -h localhost -d $$POSTGRESQL_DATABASE -U $$POSTGRESQL_USERNAME]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -63,7 +63,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=$$POSTGRESQL_PASSWORD psql -h localhost -p 6432 -d onetl -U $$POSTGRESQL_USERNAME -tc 'SELECT 1;' | grep -q 1"]
+      test: [CMD-SHELL, PGPASSWORD=$$POSTGRESQL_PASSWORD psql -h localhost -p 6432 -d onetl -U $$POSTGRESQL_USERNAME -tc 'SELECT 1;' | grep -q 1]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -87,7 +87,7 @@ services:
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
     healthcheck:
-      test: ["CMD-SHELL", 'wget --quiet --no-verbose --tries=1 --spider --header "X-ClickHouse-User: $$CLICKHOUSE_USER" --header "X-ClickHouse-Key: $$CLICKHOUSE_PASSWORD" "http://localhost:8123/?query=SELECT%201&database=$$CLICKHOUSE_DB" || exit 1']
+      test: [CMD-SHELL, 'wget --quiet --no-verbose --tries=1 --spider --header "X-ClickHouse-User: $$CLICKHOUSE_USER" --header "X-ClickHouse-Key: $$CLICKHOUSE_PASSWORD" "http://localhost:8123/?query=SELECT%201&database=$$CLICKHOUSE_DB" || exit 1']
       interval: 10s
       timeout: 5s
       retries: 10
@@ -102,9 +102,9 @@ services:
       - onetl
     environment:
       TZ: UTC
-      ALLOW_ANONYMOUS_LOGIN: 'yes'
+      ALLOW_ANONYMOUS_LOGIN: yes
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 2181 || exit"]
+      test: [CMD-SHELL, nc -z localhost 2181 || exit]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -118,8 +118,8 @@ services:
       - 9095:9095
     environment:
       TZ: UTC
-      ALLOW_PLAINTEXT_LISTENER: 'yes'
-      KAFKA_ENABLE_KRAFT: 'no'
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_ENABLE_KRAFT: no
       KAFKA_CLIENT_USERS: onetl
       KAFKA_CLIENT_PASSWORDS: 123UsedForTestOnly@!
       KAFKA_ZOOKEEPER_BOOTSTRAP_SCRAM_USERS: 'true'
@@ -136,7 +136,7 @@ services:
       zookeeper:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list"]
+      test: [CMD-SHELL, kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -155,7 +155,7 @@ services:
     volumes:
       - ./docker/mongodb/:/docker-entrypoint-initdb.d/
     healthcheck:
-      test: ["CMD-SHELL", echo 'db.runCommand("ping").ok' | $(which mongosh || which mongo) "$$MONGO_INITDB_ROOT_DB" --quiet]
+      test: [CMD-SHELL, echo 'db.runCommand("ping").ok' | $(which mongosh || which mongo) "$$MONGO_INITDB_ROOT_DB" --quiet]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -168,20 +168,20 @@ services:
     restart: unless-stopped
     environment:
       TZ: UTC
-      ACCEPT_EULA: 'Y'
+      ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: 123AdminUserForTests@!
     ports:
       - 1433:1433
     volumes:
       - ./docker/mssql/:/usr/config/
-    entrypoint: ["/usr/config/entrypoint.sh"]
+    entrypoint: [/usr/config/entrypoint.sh]
     networks:
       - onetl
     platform: linux/amd64
     healthcheck:
       # Container is healthy only when database is created
       # TODO: replace with SELECT after fixing sqlcmd location: https://github.com/microsoft/mssql-docker/issues/892
-      test: ["CMD-SHELL", "ls -lsah /var/opt/mssql/data/onetl.mdf"]
+      test: [CMD-SHELL, ls -lsah /var/opt/mssql/data/onetl.mdf]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -202,7 +202,7 @@ services:
       - onetl
     platform: linux/amd64
     healthcheck:
-      test: ["CMD-SHELL", "/usr/bin/mysql --user=root --password=\"$$MYSQL_ROOT_PASSWORD\" --execute \"SHOW DATABASES;\""]
+      test: [CMD-SHELL, /usr/bin/mysql --user=root --password="$$MYSQL_ROOT_PASSWORD" --execute "SHOW DATABASES;"]
       interval: 2s
       timeout: 20s
       retries: 10
@@ -221,7 +221,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: [CMD, pg_isready]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -244,7 +244,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=$$POSTGRESQL_PASSWORD psql -h localhost -p 6432 -d onetl -U $$POSTGRESQL_USERNAME -tc 'SELECT 1;' | grep -q 1"]
+      test: [CMD-SHELL, PGPASSWORD=$$POSTGRESQL_PASSWORD psql -h localhost -p 6432 -d onetl -U $$POSTGRESQL_USERNAME -tc 'SELECT 1;' | grep -q 1]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -282,7 +282,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD", "healthcheck.sh"]
+      test: [CMD, healthcheck.sh]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -309,7 +309,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --show-error --fail -u \"$$APP_USER_NAME:$$APP_USER_PASSWD\" ftp://localhost:21"]
+      test: [CMD-SHELL, curl --silent --show-error --fail -u "$$APP_USER_NAME:$$APP_USER_PASSWD" ftp://localhost:21]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -335,7 +335,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --show-error --fail --ftp-ssl -k -u \"$$APP_USER_NAME:$$APP_USER_PASSWD\" ftp://localhost:21"]
+      test: [CMD-SHELL, curl --silent --show-error --fail --ftp-ssl -k -u "$$APP_USER_NAME:$$APP_USER_PASSWD" ftp://localhost:21]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -347,11 +347,11 @@ services:
     environment:
       TZ: UTC
     ports:
-      - "139:139"
-      - "445:445"
+      - 139:139
+      - 445:445
     volumes:
       - ./docker/samba/custom_entrypoint.sh:/custom_entrypoint.sh
-    entrypoint: ["/custom_entrypoint.sh"]
+    entrypoint: [/custom_entrypoint.sh]
     networks:
       - onetl
     # healthcheck is defined in image
@@ -374,7 +374,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --show-error --fail http://localhost:9000/minio/health/live"]
+      test: [CMD-SHELL, curl --silent --show-error --fail http://localhost:9000/minio/health/live]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -435,7 +435,7 @@ services:
     networks:
       - onetl
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --show-error --fail -u \"$$APP_USER_NAME:$$APP_USER_PASSWD\" -k http://localhost:80"]
+      test: [CMD-SHELL, curl --silent --show-error --fail -u "$$APP_USER_NAME:$$APP_USER_PASSWD" -k http://localhost:80]
       interval: 10s
       timeout: 5s
       retries: 10

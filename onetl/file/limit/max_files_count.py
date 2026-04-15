@@ -48,7 +48,7 @@ class MaxFilesCount(BaseFileLimit, FrozenModel):
 
     def __init__(self, limit: int):
         # this is only to allow passing glob as positional argument
-        super().__init__(limit=limit)  # type: ignore
+        super().__init__(limit=limit)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.limit})"
@@ -56,7 +56,8 @@ class MaxFilesCount(BaseFileLimit, FrozenModel):
     @validator("limit")
     def _limit_cannot_be_negative(cls, value):
         if value <= 0:
-            raise ValueError("Limit should be positive number")
+            msg = "Limit should be positive number"
+            raise ValueError(msg)
         return value
 
     def reset(self):

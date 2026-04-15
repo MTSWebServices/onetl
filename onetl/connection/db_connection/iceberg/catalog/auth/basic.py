@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from typing import Dict
+from __future__ import annotations
 
 try:
     from pydantic.v1 import SecretStr
@@ -44,7 +44,7 @@ class IcebergRESTCatalogBasicAuth(IcebergRESTCatalogAuth, FrozenModel):
     user: str
     password: SecretStr
 
-    def get_config(self) -> Dict[str, str]:
+    def get_config(self) -> dict[str, str]:
         return {
             "rest.auth.type": "basic",
             "rest.auth.basic.username": self.user,

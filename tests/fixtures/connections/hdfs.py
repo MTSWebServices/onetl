@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -14,7 +14,11 @@ from tests.util.upload_files import upload_files
     ],
 )
 def hdfs_server():
-    HDFSServer = namedtuple("HDFSServer", ["host", "webhdfs_port", "ipc_port"])
+    class HDFSServer(NamedTuple):
+        host: str
+        webhdfs_port: str
+        ipc_port: str
+
     return HDFSServer(
         host=os.getenv("ONETL_HDFS_HOST"),
         webhdfs_port=os.getenv("ONETL_HDFS_WEBHDFS_PORT"),
@@ -35,19 +39,16 @@ def hdfs_file_connection(hdfs_server):
 
 
 @pytest.fixture()
-def hdfs_file_connection_with_path(request, hdfs_file_connection):
+def hdfs_file_connection_with_path(hdfs_file_connection, worker_id):
     connection = hdfs_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
     connection.create_dir(root)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

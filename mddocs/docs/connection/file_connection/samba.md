@@ -1,0 +1,21 @@
+# Samba connection { #DBR-onetl-connection-file-connection-samba-connection }
+
+
+::: onetl.connection.file_connection.samba.Samba
+    options:
+        members:
+            - __init__
+            - check
+            - path_exists
+            - is_file
+            - is_dir
+            - get_stat
+            - resolve_dir
+            - resolve_file
+            - create_dir
+            - remove_file
+            - remove_dir
+            - rename_file
+            - list_dir
+            - download_file
+            - upload_file

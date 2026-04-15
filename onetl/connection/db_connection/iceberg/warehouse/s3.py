@@ -14,7 +14,7 @@ from onetl.impl.remote_path import RemotePath
 try:
     from pydantic.v1 import Field, SecretStr, validator
 except (ImportError, AttributeError):
-    from pydantic import validator, Field, SecretStr  # type: ignore[no-redef, assignment]
+    from pydantic import Field, SecretStr, validator  # type: ignore[no-redef, assignment]
 
 from onetl._util.spark import stringify
 from onetl.base import PurePathProtocol

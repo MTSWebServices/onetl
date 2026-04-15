@@ -123,7 +123,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
     def __exit__(self, _exc_type, _exc_value, _traceback):
         self.close()
 
-    def __del__(self):  # noqa: WPS603
+    def __del__(self):
         # If current object is collected by GC, close opened connection
         self.close()
 
@@ -141,7 +141,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
             raise
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
@@ -150,7 +151,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
         remote_path = RemotePath(path)
 
         if not self.path_exists(remote_path):
-            raise FileNotFoundError(f"File '{remote_path}' does not exist")
+            msg = f"File '{remote_path}' does not exist"
+            raise FileNotFoundError(msg)
 
         return self._is_file(remote_path)
 
@@ -159,7 +161,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
         remote_path = RemotePath(path)
 
         if not self.path_exists(remote_path):
-            raise DirectoryNotFoundError(f"Directory '{remote_path}' does not exist")
+            msg = f"Directory '{remote_path}' does not exist"
+            raise DirectoryNotFoundError(msg)
 
         return self._is_dir(remote_path)
 
@@ -176,7 +179,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         if not is_dir:
             remote_file = RemoteFile(path=remote_path, stats=stat)
-            raise NotADirectoryError(f"{path_repr(remote_file)} is not a directory")
+            msg = f"{path_repr(remote_file)} is not a directory"
+            raise NotADirectoryError(msg)
 
         return RemoteDirectory(path=remote_path, stats=stat)
 
@@ -188,7 +192,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         if not is_file:
             remote_directory = RemoteDirectory(path=remote_path, stats=stat)
-            raise NotAFileError(f"{path_repr(remote_directory)} is not a file")
+            msg = f"{path_repr(remote_directory)} is not a file"
+            raise NotAFileError(msg)
 
         return RemoteFile(path=remote_path, stats=stat)
 
@@ -215,7 +220,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
     @slot
     def write_text(self, path: os.PathLike | str, content: str, encoding: str = "utf-8", **kwargs) -> RemoteFile:
         if not isinstance(content, str):
-            raise TypeError(f"content must be str, not '{content.__class__.__name__}'")
+            msg = f"content must be str, not '{content.__class__.__name__}'"
+            raise TypeError(msg)
 
         log.debug(
             "|%s| Writing string size %d with encoding %r and options %r to '%s'",
@@ -244,7 +250,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
     @slot
     def write_bytes(self, path: os.PathLike | str, content: bytes, **kwargs) -> RemoteFile:
         if not isinstance(content, bytes):
-            raise TypeError(f"content must be bytes, not '{content.__class__.__name__}'")
+            msg = f"content must be bytes, not '{content.__class__.__name__}'"
+            raise TypeError(msg)
 
         log.debug(
             "|%s| Writing %s with options %e to '%s'",
@@ -274,6 +281,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         self,
         remote_file_path: os.PathLike | str,
         local_file_path: os.PathLike | str,
+        *,
         replace: bool = True,
     ) -> LocalPath:
         log.debug(
@@ -288,10 +296,12 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         if local_file.exists():
             if not local_file.is_file():
-                raise NotAFileError(f"{path_repr(local_file)} is not a file")
+                msg = f"{path_repr(local_file)} is not a file"
+                raise NotAFileError(msg)
 
             if not replace:
-                raise FileExistsError(f"File {path_repr(local_file)} already exists")
+                msg = f"File {path_repr(local_file)} already exists"
+                raise FileExistsError(msg)
 
             log.warning("|Local FS| File %s already exists, overwriting", path_repr(local_file))
             local_file.unlink()
@@ -301,10 +311,11 @@ class FileConnection(BaseFileConnection, FrozenModel):
         self._download_file(remote_file, local_file)
 
         if local_file.stat().st_size != remote_file.stat().st_size:
-            raise FileSizeMismatchError(
+            msg = (
                 f"The size of the downloaded file ({naturalsize(local_file.stat().st_size)}) does not match "
-                f"the size of the file on the source ({naturalsize(remote_file.stat().st_size)})",
+                f"the size of the file on the source ({naturalsize(remote_file.stat().st_size)})"
             )
+            raise FileSizeMismatchError(msg)
 
         log.info("|Local FS| Successfully downloaded file '%s'", local_file)
         return local_file
@@ -341,22 +352,26 @@ class FileConnection(BaseFileConnection, FrozenModel):
         self,
         local_file_path: os.PathLike | str,
         remote_file_path: os.PathLike | str,
+        *,
         replace: bool = False,
     ) -> RemoteFile:
         log.debug("|%s| Uploading local file '%s' to '%s'", self.__class__.__name__, local_file_path, remote_file_path)
 
         local_file = LocalPath(local_file_path)
         if not local_file.exists():
-            raise FileNotFoundError(f"File '{local_file}' does not exist")
+            msg = f"File '{local_file}' does not exist"
+            raise FileNotFoundError(msg)
 
         if not local_file.is_file():
-            raise NotAFileError(f"{path_repr(local_file)} is not a file")
+            msg = f"{path_repr(local_file)} is not a file"
+            raise NotAFileError(msg)
 
         remote_file = RemotePath(remote_file_path)
         if self.path_exists(remote_file):
             file = self.resolve_file(remote_file_path)
             if not replace:
-                raise FileExistsError(f"File {path_repr(file)} already exists")
+                msg = f"File {path_repr(file)} already exists"
+                raise FileExistsError(msg)
 
             log.warning("|%s| File %s already exists, overwriting", self.__class__.__name__, path_repr(file))
             self._remove_file(remote_file)
@@ -367,10 +382,11 @@ class FileConnection(BaseFileConnection, FrozenModel):
         result = self.resolve_file(remote_file)
 
         if result.stat().st_size != local_file.stat().st_size:
-            raise FileSizeMismatchError(
+            msg = (
                 f"The size of the uploaded file ({naturalsize(result.stat().st_size)}) does not match "
-                f"the size of the file on the source ({naturalsize(local_file.stat().st_size)})",
+                f"the size of the file on the source ({naturalsize(local_file.stat().st_size)})"
             )
+            raise FileSizeMismatchError(msg)
 
         log.info("|%s| Successfully uploaded file '%s'", self.__class__.__name__, remote_file)
         return result
@@ -380,6 +396,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         self,
         source_file_path: os.PathLike | str,
         target_file_path: os.PathLike | str,
+        *,
         replace: bool = False,
     ) -> RemoteFile:
         log.debug("|%s| Renaming file '%s' to '%s'", self.__class__.__name__, source_file_path, target_file_path)
@@ -390,7 +407,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
         if self.path_exists(target_file):
             file = self.resolve_file(target_file)
             if not replace:
-                raise FileExistsError(f"File {path_repr(file)} already exists")
+                msg = f"File {path_repr(file)} already exists"
+                raise FileExistsError(msg)
 
             log.warning("|%s| File %s already exists, overwriting", self.__class__.__name__, path_repr(file))
             self._remove_file(target_file)
@@ -438,6 +456,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
     def walk(
         self,
         root: os.PathLike | str,
+        *,
         topdown: bool = True,
         filters: Iterable[BaseFileFilter] | None = None,
         limits: Iterable[BaseFileLimit] | None = None,
@@ -449,7 +468,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         yield from self._walk(root_dir, topdown=topdown, filters=filters, limits=limits)
 
     @slot
-    def remove_dir(self, path: os.PathLike | str, recursive: bool = False) -> bool:
+    def remove_dir(self, path: os.PathLike | str, *, recursive: bool = False) -> bool:
         description = "RECURSIVELY" if recursive else "NON-recursively"
         log.debug("|%s| %s removing directory '%s'", self.__class__.__name__, description, path)
         remote_dir = RemotePath(path)
@@ -466,9 +485,10 @@ class FileConnection(BaseFileConnection, FrozenModel):
         if not recursive:
             # self.list_dir may return large list
             # self._scan_entries return an iterator, which have to be iterated at least once
-            for _entry in self._scan_entries(remote_dir):  # noqa: WPS122, WPS328
+            for _entry in self._scan_entries(remote_dir):
+                msg = "|%s| Cannot delete non-empty directory %s"
                 raise DirectoryNotEmptyError(
-                    "|%s| Cannot delete non-empty directory %s",
+                    msg,
                     self.__class__.__name__,
                     directory_info,
                 )
@@ -482,9 +502,10 @@ class FileConnection(BaseFileConnection, FrozenModel):
         log.info("|%s| Successfully removed directory '%s'", self.__class__.__name__, remote_dir)
         return True
 
-    def _walk(  # noqa: WPS231
+    def _walk(  # noqa: C901
         self,
         root: RemoteDirectory,
+        *,
         topdown: bool,
         filters: Iterable[BaseFileFilter],
         limits: Iterable[BaseFileLimit],

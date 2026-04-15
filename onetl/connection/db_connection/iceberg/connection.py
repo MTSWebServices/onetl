@@ -177,7 +177,7 @@ class Iceberg(DBConnection):
             from onetl.connection import Iceberg, SparkHDFS
             from pyspark.sql import SparkSession
 
-            maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.7")
+            maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
             spark = (
                 SparkSession.builder.appName("spark-app-name")
                 .config("spark.jars.packages", ",".join(maven_packages))
@@ -228,14 +228,14 @@ class Iceberg(DBConnection):
         catalog_name: str,
         catalog: IcebergCatalog,
         warehouse: Optional[IcebergWarehouse] = None,
-        extra: Union[IcebergExtra, Dict[str, Any]] = IcebergExtra(),  # noqa: B008, WPS404
+        extra: Union[IcebergExtra, Dict[str, Any], None] = None,
     ):
         super().__init__(
             spark=spark,
             catalog_name=catalog_name,  # type: ignore[call-arg]
             catalog=catalog,  # type: ignore[call-arg]
             warehouse=warehouse,  # type: ignore[call-arg]
-            extra=extra,  # type: ignore[call-arg]
+            extra=extra or IcebergExtra(),  # type: ignore[call-arg]
         )
         for k, v in self._get_spark_config().items():
             self.spark.conf.set(k, v)
@@ -291,7 +291,7 @@ class Iceberg(DBConnection):
             from onetl.connection import Iceberg
 
             # Note: Iceberg 1.10.0 requires Java 11+
-            Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.7")
+            Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
         """
 
         version = Version(package_version).min_digits(3)
@@ -339,7 +339,8 @@ class Iceberg(DBConnection):
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
@@ -376,7 +377,7 @@ class Iceberg(DBConnection):
                 with override_job_description(self.spark, f"{self}.sql()"):
                     df = self._execute_sql(query)
             except Exception:
-                log.error("|%s| Query failed", self.__class__.__name__)
+                log.exception("|%s| Query failed", self.__class__.__name__)
 
                 metrics = recorder.metrics()
                 if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
@@ -422,7 +423,7 @@ class Iceberg(DBConnection):
                 with override_job_description(self.spark, f"{self}.execute()"):
                     self._execute_sql(statement).collect()
             except Exception:
-                log.error("|%s| Execution failed", self.__class__.__name__)
+                log.exception("|%s| Execution failed", self.__class__.__name__)
                 metrics = recorder.metrics()
                 if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
                     # as SparkListener results are not guaranteed to be received in time,
@@ -457,7 +458,8 @@ class Iceberg(DBConnection):
             return
 
         if write_options.if_exists == IcebergTableExistBehavior.ERROR:
-            raise ValueError("Operation stopped due to Iceberg.WriteOptions(if_exists='error')")
+            msg = "Operation stopped due to Iceberg.WriteOptions(if_exists='error')"
+            raise ValueError(msg)
 
         if write_options.if_exists == IcebergTableExistBehavior.IGNORE:
             log.info(
@@ -469,7 +471,7 @@ class Iceberg(DBConnection):
         self._insert_into(df, target, options)
 
     @slot
-    def read_source_as_df(
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,

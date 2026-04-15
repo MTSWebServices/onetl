@@ -35,7 +35,7 @@ on:
 
 jobs:
   test-greenplum:
-    if: github.repository == 'MobileTeleSystems/onetl'  # prevent running on forks
+    if: github.repository == 'MTSWebServices/onetl'  # prevent running on forks
     name: Run Greenplum tests (server=${{ inputs.greenplum-version }}, spark=${{ inputs.spark-version }}, pydantic=${{ inputs.pydantic-version }}, java=${{ inputs.java-version }}, python=${{ inputs.python-version }}, os=${{ inputs.os }})
     runs-on: ${{ inputs.os }}
 
@@ -46,8 +46,7 @@ jobs:
       - name: Start Grenplum
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile greenplum pull
-          docker compose --profile greenplum up -d --wait --wait-timeout 200
+          docker compose --profile greenplum up -d --pull always
         env:
           GREENPLUM_IMAGE: andruche/greenplum:${{ inputs.greenplum-version }}
 
@@ -62,25 +61,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache Ivy
-        uses: actions/cache@v4
-        if: inputs.with-cache
-        with:
-          path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-greenplum-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-greenplum-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-greenplum-
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        if: inputs.with-cache
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-${{ hashFiles('requirements/core.txt', 'requirements/tests/base.txt', 'requirements/tests/spark-*.txt', 'requirements/tests/pydantic-*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-${{ hashFiles('requirements/core.txt', 'requirements/tests/base.txt', 'requirements/tests/spark-*.txt', 'requirements/tests/pydantic-*.txt') }}
-            ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-
+      # no caching of ~/.ivy2 because Greenplum connector is just a few MB
 
       - name: Set up Postgres client
         if: runner.os == 'Linux'
@@ -88,32 +69,52 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends postgresql-client
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          activate-environment: 'true'
+          enable-cache: 'false'
 
-      - name: Install dependencies
+      # astral-sh/setup-uv cannot restore multiple keys
+      - name: Cache uv
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-
+
+      - name: Wait for Grenplum to be ready
         run: |
-          pip install -I -r requirements/core.txt -r requirements/tests/base.txt -r requirements/tests/postgres.txt -r requirements/tests/spark-${{ inputs.spark-version }}.txt -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          docker compose --profile greenplum up -d --wait --wait-timeout 200
+        env:
+          GREENPLUM_IMAGE: andruche/greenplum:${{ inputs.greenplum-version }}
 
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          export ONETL_GP_PACKAGE_VERSION=${{ inputs.package-version }}
-          ./pytest_runner.sh -m greenplum
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/greenplum-${RANDOM}.xml"
+          make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum"
         env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
+          ONETL_GP_PACKAGE_VERSION: ${{ inputs.package-version }}
           GREENPLUM_PACKAGES_USER: ${{ secrets.GREENPLUM_PACKAGES_USER }}
           GREENPLUM_PACKAGES_PASSWORD: ${{ secrets.GREENPLUM_PACKAGES_PASSWORD }}
 
       - name: Run tests with PGBouncer
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          export ONETL_GP_PACKAGE_VERSION=${{ inputs.package-version }}
-          export ONETL_GP_PORT=6433
-          # Run only some basic tests
-          ./pytest_runner.sh -m greenplum  -k "tests_core_integration or tests_db_connection_integration"
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/greenplum-pgbouncer-${RANDOM}.xml"
+          make test-spark UV_ARGS="--group test-greenplum" PYTEST_ARGS="-m greenplum -k 'tests_core_integration or tests_db_connection_integration'"
         env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
+          ONETL_GP_PACKAGE_VERSION: ${{ inputs.package-version }}
+          ONETL_GP_PORT: 6433
           GREENPLUM_PACKAGES_USER: ${{ secrets.GREENPLUM_PACKAGES_USER }}
           GREENPLUM_PACKAGES_PASSWORD: ${{ secrets.GREENPLUM_PACKAGES_PASSWORD }}
 
@@ -125,10 +126,10 @@ jobs:
           dest: ./logs
 
       - name: Upload Greenplum logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: container-logs-greenplum-${{ inputs.greenplum-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: container-logs-greenplum-${{ inputs.greenplum-version }}-spark${{ inputs.spark-version }}
           path: logs/*
 
       - name: Shutdown Greenplum
@@ -137,9 +138,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
         with:
-          name: coverage-greenplum-${{ inputs.greenplum-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-greenplum-${{ inputs.greenplum-version }}-spark${{ inputs.spark-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

@@ -6,7 +6,7 @@ import csv
 import gzip
 import io
 import json
-import os
+import logging
 import random
 import shutil
 import sys
@@ -15,17 +15,20 @@ from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import gettempdir
-from typing import TYPE_CHECKING, Any, Iterator, TextIO
-from xml.etree import ElementTree  # noqa: S405
+from typing import TYPE_CHECKING, Any, TextIO
+from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from avro.schema import Schema as AvroSchema
     from pandas import DataFrame as PandasDataFrame
     from pyarrow import Schema as ArrowSchema
     from pyarrow import Table as ArrowTable
 
 SEED = 42
+logger = logging.getLogger(__name__)
 
 
 def get_data() -> list[dict]:
@@ -144,7 +147,7 @@ def _to_string(obj):
 
 def _write_csv(data: list[dict], file: TextIO, header: bool = False, **kwargs) -> None:
     columns = list(data[0].keys())
-    writer = csv.DictWriter(file, fieldnames=columns, **kwargs)
+    writer = csv.DictWriter(file, fieldnames=columns, lineterminator="\n", **kwargs)
 
     if header:
         writer.writeheader()
@@ -155,19 +158,19 @@ def _write_csv(data: list[dict], file: TextIO, header: bool = False, **kwargs) -
 
 def save_as_csv_without_header(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    with open(path / "file.csv", "w", newline="") as file:
+    with path.joinpath("file.csv").open("w", newline="") as file:
         _write_csv(data, file)
 
 
 def save_as_csv_with_header(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    with open(path / "file.csv", "w", newline="") as file:
+    with path.joinpath("file.csv").open("w", newline="") as file:
         _write_csv(data, file, header=True)
 
 
 def save_as_csv_with_delimiter(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    with open(path / "file.csv", "w", newline="") as file:
+    with path.joinpath("file.csv").open("w", newline="") as file:
         _write_csv(data, file, delimiter=";")
 
 
@@ -178,9 +181,8 @@ def save_as_csv_gz(data: list[dict], path: Path) -> None:
     # Instead of just writing data to file we write it to a buffer, and then compress with fixed mtime
     buffer = io.StringIO()
     _write_csv(data, buffer)
-    with open(path / "file.csv.gz", "wb") as file:
-        with gzip.GzipFile(fileobj=file, mode="w", mtime=0) as gzfile:
-            gzfile.write(buffer.getvalue().encode("utf-8"))
+    with path.joinpath("file.csv.gz").open("wb") as file, gzip.GzipFile(fileobj=file, mode="w", mtime=0) as gzfile:
+        gzfile.write(buffer.getvalue().encode("utf-8"))
 
 
 def save_as_csv_nested(data: list[dict], path: Path) -> None:
@@ -188,15 +190,15 @@ def save_as_csv_nested(data: list[dict], path: Path) -> None:
     path.joinpath("some/path/more").mkdir(parents=True, exist_ok=True)
     path.joinpath("some/path/more/even_more").mkdir(parents=True, exist_ok=True)
 
-    with open(path / "some/path/for_val1.csv", "w", newline="") as file:
+    with path.joinpath("some/path/for_val1.csv").open("w", newline="") as file:
         data_for_val1 = [row for row in data if row["str_value"] == "val1"]
         _write_csv(data_for_val1, file)
 
-    with open(path / "some/path/more/for_val2.csv", "w", newline="") as file:
+    with path.joinpath("some/path/more/for_val2.csv").open("w", newline="") as file:
         data_for_val2 = [row for row in data if row["str_value"] == "val2"]
         _write_csv(data_for_val2, file)
 
-    with open(path / "some/path/more/even_more/for_val3.csv", "w", newline="") as file:
+    with path.joinpath("some/path/more/even_more/for_val3.csv").open("w", newline="") as file:
         data_for_val3 = [row for row in data if row["str_value"] == "val3"]
         _write_csv(data_for_val3, file)
 
@@ -217,15 +219,15 @@ def save_as_csv_partitioned(data: list[dict], path: Path) -> None:
 
     columns = list(data[0].keys())
     columns.remove("str_value")
-    with open(path / "str_value=val1/file.csv", "w", newline="") as file:
+    with path.joinpath("str_value=val1/file.csv").open("w", newline="") as file:
         data_for_val1 = filter_and_drop(data, "str_value", "val1")
         _write_csv(data_for_val1, file)
 
-    with open(path / "str_value=val2/file.csv", "w", newline="") as file:
+    with path.joinpath("str_value=val2/file.csv").open("w", newline="") as file:
         data_for_val2 = filter_and_drop(data, "str_value", "val2")
         _write_csv(data_for_val2, file)
 
-    with open(path / "str_value=val3/file.csv", "w", newline="") as file:
+    with path.joinpath("str_value=val3/file.csv").open("w", newline="") as file:
         data_for_val3 = filter_and_drop(data, "str_value", "val3")
         _write_csv(data_for_val3, file)
 
@@ -251,9 +253,8 @@ def save_as_json_gz(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
     buffer = io.StringIO()
     json.dump(data, buffer, default=_to_string)
-    with open(path / "file.json.gz", "wb") as file:
-        with gzip.GzipFile(fileobj=file, mode="w", mtime=0) as gzfile:
-            gzfile.write(buffer.getvalue().encode("utf-8"))
+    with path.joinpath("file.json.gz").open("wb") as file, gzip.GzipFile(fileobj=file, mode="w", mtime=0) as gzfile:
+        gzfile.write(buffer.getvalue().encode("utf-8"))
 
 
 def save_as_json(data: list[dict], path: Path) -> None:
@@ -266,10 +267,10 @@ def save_as_json(data: list[dict], path: Path) -> None:
 
 def save_as_jsonline_plain(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    with open(path / "file.jsonl", "w") as file:
+    with path.joinpath("file.jsonl").open("w") as file:
         for row in data:
             row_str = json.dumps(row, default=_to_string)
-            file.write(row_str + os.linesep)
+            file.write(row_str + "\n")
 
 
 def save_as_jsonline_gz(data: list[dict], path: Path) -> None:
@@ -278,11 +279,10 @@ def save_as_jsonline_gz(data: list[dict], path: Path) -> None:
     buffer = io.StringIO()
     for row in data:
         row_str = json.dumps(row, default=_to_string)
-        buffer.write(row_str + os.linesep)
+        buffer.write(row_str + "\n")
 
-    with open(path / "file.jsonl.gz", "wb") as file:
-        with gzip.GzipFile(fileobj=file, mode="w", mtime=0) as gzfile:
-            gzfile.write(buffer.getvalue().encode("utf-8"))
+    with path.joinpath("file.jsonl.gz").open("wb") as file, gzip.GzipFile(fileobj=file, mode="w", mtime=0) as gzfile:
+        gzfile.write(buffer.getvalue().encode("utf-8"))
 
 
 def save_as_jsonline(data: list[dict], path: Path) -> None:
@@ -347,7 +347,7 @@ def save_as_parquet(data: list[dict], path: Path) -> None:
 def temporary_set_seed(seed: int) -> Iterator[int]:
     """Set random.seed to expected value, and return previous value after exit"""
     state = random.getstate()
-    try:  # noqa: WPS501
+    try:
         random.seed(seed)
         yield seed
     finally:
@@ -355,33 +355,35 @@ def temporary_set_seed(seed: int) -> Iterator[int]:
 
 
 def save_as_avro_plain(data: list[dict], path: Path) -> None:
-    from avro.datafile import DataFileDFWriter
+    from avro.datafile import DataFileWriter
     from avro.io import DatumWriter
 
     path.mkdir(parents=True, exist_ok=True)
     schema = get_avro_schema()
-    with open(path / "file.avro", "wb") as file:
-        # DataFileDFWriter.sync_marker is initialized with randbytes
-        # temporary set seed to avoid generating files with different hashes
-        with temporary_set_seed(SEED):
-            with DataFileDFWriter(file, DatumWriter(), schema) as writer:
-                for row in data:
-                    writer.append(row)
+
+    # DataFileDFWriter.sync_marker is initialized with randbytes
+    # temporary set seed to avoid generating files with different hashes
+    with temporary_set_seed(SEED), path.joinpath("file.avro").open("wb") as file, DataFileWriter(
+        file, DatumWriter(), schema
+    ) as writer:
+        for row in data:
+            writer.append(row)
 
 
 def save_as_avro_snappy(data: list[dict], path: Path) -> None:
-    from avro.datafile import DataFileDFWriter
+    from avro.datafile import DataFileWriter
     from avro.io import DatumWriter
 
     path.mkdir(parents=True, exist_ok=True)
     schema = get_avro_schema()
-    with open(path / "file.snappy.avro", "wb") as file:
-        # DataFileDFWriter.sync_marker is initialized with randbytes
-        # temporary set seed to avoid generating files with different hashes
-        with temporary_set_seed(SEED):
-            with DataFileDFWriter(file, DatumWriter(), schema, codec="snappy") as writer:
-                for row in data:
-                    writer.append(row)
+
+    # DataFileDFWriter.sync_marker is initialized with randbytes
+    # temporary set seed to avoid generating files with different hashes
+    with temporary_set_seed(SEED), path.joinpath("file.snappy.avro").open("wb") as file, DataFileWriter(
+        file, DatumWriter(), schema, codec="snappy"
+    ) as writer:
+        for row in data:
+            writer.append(row)
 
 
 def save_as_avro(data: list[dict], path: Path) -> None:
@@ -399,7 +401,7 @@ def save_as_xls_with_options(
     **kwargs,
 ) -> None:
     # required to register xlwt writer which supports generating .xls files
-    import pandas_xlwt
+    import pandas_xlwt  # noqa: F401
 
     path.mkdir(parents=True, exist_ok=True)
     file = path / "file.xls"
@@ -413,15 +415,14 @@ def make_zip_deterministic(path: Path) -> None:
     temp_dir = gettempdir()
     file_copy = Path(shutil.copy(path, temp_dir))
 
-    with ZipFile(file_copy, "r") as original_file:
-        with ZipFile(path, "w") as new_file:
-            for item in original_file.infolist():
-                if item.filename == "docProps/core.xml":
-                    # this file contains modification time, which produces files with different hashes
-                    continue
-                # reset modification time of all files
-                item.date_time = (1980, 1, 1, 0, 0, 0)
-                new_file.writestr(item, original_file.read(item.filename))
+    with ZipFile(file_copy, "r") as original_file, ZipFile(path, "w") as new_file:
+        for item in original_file.infolist():
+            if item.filename == "docProps/core.xml":
+                # this file contains modification time, which produces files with different hashes
+                continue
+            # reset modification time of all files
+            item.date_time = (1980, 1, 1, 0, 0, 0)
+            new_file.writestr(item, original_file.read(item.filename))
 
 
 def save_as_xlsx_with_options(
@@ -475,56 +476,56 @@ def save_as_xls(data: list[dict], path: Path) -> None:
 
 def save_as_xml_plain(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    root = ElementTree.Element("root")
+    root = ET.Element("root")
 
     for record in data:
-        item = ElementTree.SubElement(root, "item")
+        item = ET.SubElement(root, "item")
         for key, value in record.items():
-            child = ElementTree.SubElement(item, key)
+            child = ET.SubElement(item, key)
             if isinstance(value, datetime):
                 child.text = value.isoformat()
             else:
                 child.text = str(value)
 
-    tree = ElementTree.ElementTree(root)
+    tree = ET.ElementTree(root)
     tree.write(path / "file.xml")
 
 
 def save_as_xml_with_attributes(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    root = ElementTree.Element("root")
+    root = ET.Element("root")
 
     for record in data:
         str_attributes = {
             key: value.isoformat() if isinstance(value, datetime) else str(value) for key, value in record.items()
         }
-        item = ElementTree.SubElement(root, "item", attrib=str_attributes)
+        item = ET.SubElement(root, "item", attrib=str_attributes)
         for key, value in record.items():
-            child = ElementTree.SubElement(item, key)
+            child = ET.SubElement(item, key)
             if isinstance(value, datetime):
                 child.text = value.isoformat()
             else:
                 child.text = str(value)
 
-    tree = ElementTree.ElementTree(root)
+    tree = ET.ElementTree(root)
     tree.write(str(path / "file_with_attributes.xml"))
 
 
 def save_as_xml_gz(data: list[dict], path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
-    root = ElementTree.Element("root")
+    root = ET.Element("root")
 
     for record in data:
-        item = ElementTree.SubElement(root, "item")
+        item = ET.SubElement(root, "item")
         for key, value in record.items():
-            child = ElementTree.SubElement(item, key)
+            child = ET.SubElement(item, key)
             if isinstance(value, datetime):
                 child.text = value.isoformat()
             else:
                 child.text = str(value)
 
-    ElementTree.ElementTree(root)
-    xml_string = ElementTree.tostring(root, encoding="utf-8")
+    ET.ElementTree(root)
+    xml_string = ET.tostring(root, encoding="utf-8")
 
     with gzip.open(path / "file.xml.gz", "wb", compresslevel=9) as f:
         f.write(xml_string)
@@ -565,7 +566,8 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv or sys.argv[1:])
 
     if args.format not in format_mapping and args.format != "all":
-        raise ValueError(f"Format {args.format} is not supported")
+        msg = f"Format {args.format} is not supported"
+        raise ValueError(msg)
 
     data = get_data()
     if args.format == "all":

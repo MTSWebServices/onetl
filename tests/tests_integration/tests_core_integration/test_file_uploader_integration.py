@@ -174,7 +174,7 @@ def test_file_uploader_run_missing_file(request, file_connection, file_connectio
     missing_file = PurePosixPath(f"/tmp/test_upload_{secrets.token_hex(5)}")
 
     with caplog.at_level(logging.WARNING):
-        upload_result = uploader.run(test_files + [missing_file])
+        upload_result = uploader.run([*test_files, missing_file])
 
         assert f"Missing file '{missing_file}', skipping" in caplog.text
 

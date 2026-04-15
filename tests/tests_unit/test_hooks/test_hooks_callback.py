@@ -263,13 +263,13 @@ def test_hooks_execute_callback_process_result_last_wins(caplog):
     @Calculator.plus.bind
     @hook
     def modify_callback2(self, arg: int):
-        result = yield  # noqa: F841
+        _result = yield
         yield 123
 
     @Calculator.plus.bind
     @hook
     def modify_callback1(self, arg: int):
-        result = yield  # noqa: F841
+        _result = yield
         yield 234
 
     # the last hook result is used
@@ -289,7 +289,7 @@ def test_hooks_execute_callback_nothing_yielded(caplog):
     @Calculator.plus.bind
     @hook
     def modify_callback(self, arg: int):
-        yield from (i for i in ())  # noqa: WPS335
+        yield from (i for i in ())
 
     # no yield = no override
     assert Calculator(1).plus(2) == 3
@@ -323,7 +323,8 @@ def test_hooks_execute_callback_catch_exception(caplog):
         @slot
         def plus(self, arg: int) -> int:
             log.info("Called original method with %s and %s", self.data, arg)
-            raise TypeError(f"Raised with {self.data} and {arg}")
+            msg = f"Raised with {self.data} and {arg}"
+            raise TypeError(msg)
 
     @Calculator.plus.bind
     @hook
@@ -334,7 +335,8 @@ def test_hooks_execute_callback_catch_exception(caplog):
             log.info("After method call")
         except Exception as e:
             log.exception("Context caught exception")
-            raise RuntimeError("Replaced") from e
+            msg = "Replaced"
+            raise RuntimeError(msg) from e
 
     # exception successfully caught
     with pytest.raises(RuntimeError, match="Replaced"), caplog.at_level(logging.INFO):
@@ -460,7 +462,8 @@ def test_hooks_execute_callback_before_is_raising_exception(caplog):
     @hook
     def before_callback(self, arg: int):
         if arg == 3:
-            raise ValueError("Argument value 3 is not allowed")
+            msg = "Argument value 3 is not allowed"
+            raise ValueError(msg)
 
     # exception successfully raised
     with pytest.raises(ValueError, match="Argument value 3 is not allowed"), caplog.at_level(logging.INFO):
@@ -491,7 +494,8 @@ def test_hooks_execute_callback_after_is_raising_exception(caplog):
     def after_callback(self, arg: int):
         result = yield
         if result == 4:
-            raise ValueError("Result value 4 is not allowed")
+            msg = "Result value 4 is not allowed"
+            raise ValueError(msg)
         yield result
 
     # exception successfully raised
@@ -525,7 +529,8 @@ def test_hooks_execute_callback_process_result_is_raising_exception(caplog):
     def after_callback(self, arg: int):
         yield
         if arg == 3:
-            raise ValueError("Argument value 3 is not allowed")
+            msg = "Argument value 3 is not allowed"
+            raise ValueError(msg)
 
     # exception successfully raised
     with pytest.raises(ValueError, match="Argument value 3 is not allowed"), caplog.at_level(logging.INFO):
@@ -557,12 +562,13 @@ def test_hooks_execute_callback_wrong_signature():
     def missing_arg(self):
         pass
 
-    method_name = "test_hooks_callback.test_hooks_execute_callback_wrong_signature.<locals>.Calculator.plus"
-    hook_name = "test_hooks_callback.test_hooks_execute_callback_wrong_signature.<locals>.missing_arg"
+    local_name = r"tests\.tests_unit\.test_hooks\.test_hooks_callback\.test_hooks_execute_callback_wrong_signature"
+    method_name = rf"{local_name}\.<locals>\.Calculator\.plus"
+    hook_name = rf"{local_name}\.<locals>\.missing_arg"
 
     error_msg = textwrap.dedent(
         rf"""
-        Error while passing method arguments to a hook.
+        Error while passing method arguments to a hook\.
 
         Method name: '{method_name}'
         Method source: '{__file__}:\d+'

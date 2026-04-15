@@ -1,7 +1,5 @@
-FROM python:3.13-slim-bookworm as base
+FROM python:3.13-slim-bookworm AS base
 LABEL maintainer="MWS Data Bridge"
-
-ARG ONETL_USER_HOME=/usr/local/onetl
 
 ENV LANGUAGE=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8 \
@@ -24,8 +22,7 @@ RUN apt-get update && \
         unzip && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir /app/ \
-    && useradd -ms /bin/bash -d ${ONETL_USER_HOME} onetl \
-    && chown -R onetl:onetl ${ONETL_USER_HOME} \
+    && useradd -ms /bin/bash onetl \
     && chown -R onetl:onetl /app/
 
 RUN wget -P /tmp https://download.oracle.com/otn_software/linux/instantclient/2110000/instantclient-basic-linux.x64-21.10.0.0.0dbru.zip && \
@@ -39,36 +36,30 @@ ENV LD_LIBRARY_PATH=${ONETL_ORA_CLIENT_PATH}:${LD_LIBRARY_PATH} \
 
 WORKDIR /app
 USER onetl
-ENV PATH=${ONETL_USER_HOME}/.local/bin:${PATH}
+ENV PATH=/app/.venv/bin:${PATH}
 
-COPY --chown=onetl:onetl ./run_tests.sh ./pytest_runner.sh ./combine_coverage.sh /app/
-RUN chmod +x /app/run_tests.sh /app/pytest_runner.sh /app/combine_coverage.sh
+COPY --chown=onetl:onetl Makefile /app/
 
-ARG SPARK_VERSION=3.5.7
-# Spark is heavy, and version change is quite rare
-COPY --chown=onetl:onetl ./requirements/tests/spark-${SPARK_VERSION}.txt /app/requirements/tests/
-RUN pip install -r /app/requirements/tests/spark-${SPARK_VERSION}.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install uv
 
-COPY --chown=onetl:onetl ./requirements/ /app/requirements/
-RUN pip install \
-    -r /app/requirements/core.txt \
-    -r /app/requirements/ftp.txt \
-    -r /app/requirements/hdfs.txt \
-    -r /app/requirements/s3.txt \
-    -r /app/requirements/sftp.txt \
-    -r /app/requirements/samba.txt \
-    -r /app/requirements/webdav.txt \
-    -r /app/requirements/kerberos.txt \
-    -r /app/requirements/docs.txt \
-    -r /app/requirements/tests/base.txt \
-    -r /app/requirements/tests/clickhouse.txt \
-    -r /app/requirements/tests/mongodb.txt \
-    -r /app/requirements/tests/mssql.txt \
-    -r /app/requirements/tests/mysql.txt \
-    -r /app/requirements/tests/oracle.txt \
-    -r /app/requirements/tests/postgres.txt \
-    -r /app/requirements/tests/kafka.txt \
-    -r /app/requirements/tests/pydantic-${PYDANTIC_VERSION}.txt
+ARG SPARK_VERSION=3.5
+ARG PYDANTIC_VERSION=2
+COPY --chown=onetl:onetl pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+  uv sync \
+    --all-extras \
+    --group dev \
+    --group docs \
+    --group test \
+    --group test-clickhouse \
+    --group test-mongodb \
+    --group test-mssql \
+    --group test-mysql \
+    --group test-oracle \
+    --group test-postgres \
+    --group test-pydantic-${PYDANTIC_VERSION} \
+    --group test-spark-${SPARK_VERSION}
 
 FROM base AS full
 

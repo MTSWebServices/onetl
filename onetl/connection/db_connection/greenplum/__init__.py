@@ -3,7 +3,19 @@
 from onetl.connection.db_connection.greenplum.connection import Greenplum
 from onetl.connection.db_connection.greenplum.dialect import GreenplumDialect
 from onetl.connection.db_connection.greenplum.options import (
+    GreenplumExecuteOptions,
+    GreenplumFetchOptions,
     GreenplumReadOptions,
     GreenplumTableExistBehavior,
     GreenplumWriteOptions,
 )
+
+__all__ = [
+    "Greenplum",
+    "GreenplumDialect",
+    "GreenplumExecuteOptions",
+    "GreenplumFetchOptions",
+    "GreenplumReadOptions",
+    "GreenplumTableExistBehavior",
+    "GreenplumWriteOptions",
+]

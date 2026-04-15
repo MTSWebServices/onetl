@@ -206,7 +206,8 @@ class FileDFReader(FrozenModel):
         entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")
 
         if files is None and not self.source_path:
-            raise ValueError("Neither file list nor `source_path` are passed")
+            msg = "Neither file list nor `source_path` are passed"
+            raise ValueError(msg)
 
         if not self._connection_checked:
             self._log_parameters(files)
@@ -272,7 +273,7 @@ class FileDFReader(FrozenModel):
         return source_path
 
     @validator("format")
-    def _validate_format(cls, format, values):  # noqa: WPS125
+    def _validate_format(cls, format, values):
         connection = values.get("connection")
         if isinstance(connection, BaseFileDFConnection):
             connection.check_if_format_supported(format)
@@ -282,7 +283,7 @@ class FileDFReader(FrozenModel):
     def _validate_options(cls, value):
         return cls.Options.parse(value)
 
-    def _validate_files(  # noqa: WPS231
+    def _validate_files(
         self,
         files: Iterable[os.PathLike | str],
     ) -> OrderedSet[PurePathProtocol]:
@@ -293,9 +294,11 @@ class FileDFReader(FrozenModel):
 
             if not self.source_path:
                 if not file_path.is_absolute():
-                    raise ValueError("Cannot pass relative file path with empty `source_path`")
+                    msg = "Cannot pass relative file path with empty `source_path`"
+                    raise ValueError(msg)
             elif file_path.is_absolute() and self.source_path not in file_path.parents:
-                raise ValueError(f"File path '{file_path}' does not match source_path '{self.source_path}'")
+                msg = f"File path '{file_path}' does not match source_path '{self.source_path}'"
+                raise ValueError(msg)
             elif not file_path.is_absolute():
                 # Make file path absolute
                 file_path = self.source_path / file
@@ -307,7 +310,7 @@ class FileDFReader(FrozenModel):
     @classmethod
     def _forward_refs(cls) -> dict[str, type]:
         try_import_pyspark()
-        from pyspark.sql.types import StructType  # noqa: WPS442
+        from pyspark.sql.types import StructType
 
         # avoid importing pyspark unless user called the constructor,
         # as we allow user to use `Connection.get_packages()` for creating Spark session

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-import ftplib  # noqa: S402  # nosec
+import ftplib  # nosec
 import textwrap
 
 from ftputil import FTPHost
@@ -24,14 +24,14 @@ except (ImportError, NameError) as e:
     ) from e
 
 
-class TLSfix(ftplib.FTP_TLS):  # noqa: N801
+class TLSfix(ftplib.FTP_TLS):
     """
     Fix for python 3.6+
     https://stackoverflow.com/questions/14659154/ftpes-session-reuse-required
     """
 
     def ntransfercmd(self, cmd, rest=None):
-        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)  # noqa: S321  # nosec
+        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)  # noqa: S321
         if self._prot_p:
             conn = self.context.wrap_socket(
                 conn,

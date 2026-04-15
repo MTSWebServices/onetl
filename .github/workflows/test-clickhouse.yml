@@ -40,8 +40,7 @@ jobs:
       - name: Start Clickhouse
         run: |
           docker compose --profile all down -v --remove-orphans
-          docker compose --profile clickhouse pull
-          docker compose --profile clickhouse up -d --wait --wait-timeout 200
+          docker compose --profile clickhouse up -d --pull always
         env:
           CLICKHOUSE_IMAGE: ${{ inputs.clickhouse-image }}:${{ inputs.clickhouse-version }}
 
@@ -56,38 +55,40 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Cache Ivy
-        uses: actions/cache@v4
-        if: inputs.with-cache
+      # no caching of ~/.ivy2 because Clickhouse JDBC driver is just a few MB
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.ivy2
-          key: ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-clickhouse-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-clickhouse-${{ hashFiles('onetl/connection/db_connection/*.py', 'onetl/connection/file_df_connection/*.py') }}
-            ${{ runner.os }}-ivy-${{ inputs.spark-version }}-${{ inputs.pydantic-version }}-tests-clickhouse-
+          activate-environment: 'true'
+          enable-cache: 'false'
 
-      - name: Cache pip
-        uses: actions/cache@v4
-        if: inputs.with-cache
+      # astral-sh/setup-uv cannot restore multiple keys
+      - name: Cache uv
+        uses: actions/cache/restore@v5
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-${{ hashFiles('requirements/core.txt', 'requirements/tests/base.txt', 'requirements/tests/spark-*.txt', 'requirements/tests/pydantic-*.txt') }}
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-${{ hashFiles('requirements/core.txt', 'requirements/tests/base.txt', 'requirements/tests/spark-*.txt', 'requirements/tests/pydantic-*.txt') }}
-            ${{ runner.os }}-python-${{ inputs.python-version }}-spark-${{ inputs.spark-version }}-pydantic-${{ inputs.pydantic-version }}-tests-spark-
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-
+            ${{ runner.os }}-python${{ inputs.python-version }}-
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install dependencies
+      - name: Wait for Clickhouse to be ready
         run: |
-          pip install -I -r requirements/core.txt -r requirements/tests/base.txt -r requirements/tests/clickhouse.txt -r requirements/tests/spark-${{ inputs.spark-version }}.txt -r requirements/tests/pydantic-${{ inputs.pydantic-version }}.txt
+          docker compose --profile clickhouse up -d --wait --wait-timeout 200
+        env:
+          CLICKHOUSE_IMAGE: ${{ inputs.clickhouse-image }}:${{ inputs.clickhouse-version }}
 
       - name: Run tests
         run: |
           mkdir reports/ || echo "Directory exists"
-          source .env.local
-          ./pytest_runner.sh -m clickhouse
+          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/clickhouse-${RANDOM}.xml"
+          make test-spark UV_ARGS="--group test-clickhouse" PYTEST_ARGS="-m clickhouse"
+        env:
+          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
+          SPARK_VERSION: ${{ inputs.spark-version }}
 
       - name: Dump Clickhouse logs on failure
         if: failure()
@@ -97,7 +98,7 @@ jobs:
           dest: ./logs
 
       - name: Upload Clickhouse logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: container-logs-clickhouse-${{ inputs.clickhouse-version }}-spark-${{ inputs.spark-version }}
@@ -109,9 +110,10 @@ jobs:
           docker compose --profile all down -v --remove-orphans
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
         with:
-          name: coverage-clickhouse-${{ inputs.clickhouse-version }}-spark-${{ inputs.spark-version }}-python-${{ inputs.python-version }}-os-${{ inputs.os }}
+          name: coverage-clickhouse-${{ inputs.clickhouse-version }}-spark${{ inputs.spark-version }}-python-${{ inputs.python-version }}
           path: reports/*
           # https://github.com/actions/upload-artifact/issues/602
           include-hidden-files: true

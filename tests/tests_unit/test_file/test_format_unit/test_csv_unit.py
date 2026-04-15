@@ -20,7 +20,7 @@ def test_csv_options_delimiter_alias():
 
 
 @pytest.mark.parametrize(
-    "known_option, value, expected_value",
+    ("known_option", "value", "expected_value"),
     [
         ("delimiter", ";", ";"),
         ("quote", "'", "'"),

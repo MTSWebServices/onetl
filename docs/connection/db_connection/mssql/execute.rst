@@ -22,8 +22,6 @@ MSSQL config, or reading data from some reference table. Method returns Spark Da
 
 Method accepts :obj:`MSSQL.FetchOptions <onetl.connection.db_connection.mssql.options.MSSQLFetchOptions>`.
 
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
-
 .. warning::
 
     Please take into account :ref:`mssql-types`.
@@ -60,8 +58,6 @@ Use ``MSSQL.execute``
 Use this method to execute DDL and DML operations. Each method call runs operation in a separated transaction, and then commits it.
 
 Method accepts :obj:`MSSQL.ExecuteOptions <onetl.connection.db_connection.mssql.options.MSSQLExecuteOptions>`.
-
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
 
 Syntax support
 ^^^^^^^^^^^^^^

@@ -30,6 +30,6 @@ class SparkS3Extra(GenericOptions):
     """
 
     class Config:
-        strip_prefixes = ["spark.hadoop.", "fs.s3a.", re.compile(r"bucket\.[^.]+\.")]
+        strip_prefixes = ("spark.hadoop.", "fs.s3a.", re.compile(r"bucket\.[^.]+\."))
         prohibited_options = PROHIBITED_OPTIONS
         extra = "allow"

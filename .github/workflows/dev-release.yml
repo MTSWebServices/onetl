@@ -14,7 +14,7 @@ jobs:
   wait-code-analysis:
     name: Release package
     runs-on: ubuntu-latest
-    if: github.repository == 'MobileTeleSystems/onetl'  # prevent running on forks
+    if: github.repository == 'MTSWebServices/onetl'  # prevent running on forks
 
     environment:
       name: test-pypi
@@ -30,21 +30,27 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Patch version template
+        # Due to change above, git stage area is dirty, so we need to patch the template
+        run: sed -i 's#dirty_template = ".*"#dirty_template = "{tag}.dev{env:GITHUB_RUN_ID:{ccount}}"#' pyproject.toml
+
+      - name: Fix logo in Readme
+        run: |
+          sed -i "s#image:: docs/#image:: https://raw.githubusercontent.com/MTSWebServices/onetl/$GITHUB_SHA/docs/#g" README.rst
+
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
         id: python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Fix logo in Readme
-        run: |
-          sed -i "s#image:: docs/#image:: https://raw.githubusercontent.com/MobileTeleSystems/onetl/$GITHUB_SHA/docs/#g" README.rst
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: 'false'
 
       - name: Build package
-        run: python setup.py sdist bdist_wheel
+        run: uv build
 
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1

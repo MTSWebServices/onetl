@@ -28,7 +28,10 @@ class Version:
     def __init__(self, version: str):
         self._raw_str = version
         self._raw_parts = re.split("[.-]", version)
-        self._numeric_parts = [int(part) for part in self._raw_parts if part.isdigit()]
+        self._numeric_parts = tuple(int(part) for part in self._raw_parts if part.isdigit())
+
+    def __hash__(self):
+        return hash(self._raw_str)
 
     @property
     def major(self) -> int:
@@ -71,7 +74,7 @@ class Version:
         >>> Version("5.6").patch
         0
         """
-        return self._numeric_parts[2] if len(self._numeric_parts) > 2 else 0
+        return self._numeric_parts[2] if len(self._numeric_parts) > 2 else 0  # noqa: PLR2004
 
     @property
     def raw_parts(self) -> list[str]:
@@ -101,7 +104,7 @@ class Version:
         >>> Version("1.2.3-alpha")[3]
         Traceback (most recent call last):
             ...
-        IndexError: list index out of range
+        IndexError: tuple index out of range
         """
         return self._numeric_parts[item]
 
@@ -197,9 +200,11 @@ class Version:
         ValueError: Version '5.6' does not have enough numeric components for requested format (expected at least 3).
         """
         if len(self._numeric_parts) < num_parts:
-            raise ValueError(
-                f"Version '{self}' does not have enough numeric components for requested format (expected at least {num_parts}).",
+            msg = (
+                f"Version '{self}' does not have enough numeric components "
+                f"for requested format (expected at least {num_parts})."
             )
+            raise ValueError(msg)
         return self
 
     def format(self, format_string: str) -> str:

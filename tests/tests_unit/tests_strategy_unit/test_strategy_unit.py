@@ -32,7 +32,7 @@ def test_strategy_batch_step_is_empty(step, strategy):
 
 @patch.object(Postgres, "check")
 @pytest.mark.parametrize(
-    "strategy, kwargs",
+    ("strategy", "kwargs"),
     [
         (IncrementalStrategy, {}),
         (IncrementalBatchStrategy, {"step": 1}),

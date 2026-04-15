@@ -13,7 +13,7 @@ from onetl.connection.db_connection.dialect_mixins import (
 )
 
 
-class IcebergDialect(  # noqa: WPS215
+class IcebergDialect(
     SupportNameWithSchemaOnly,
     SupportColumns,
     NotSupportDFSchema,

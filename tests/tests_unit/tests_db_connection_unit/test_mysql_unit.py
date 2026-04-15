@@ -19,7 +19,7 @@ def test_mysql_package():
 
 
 @pytest.mark.parametrize(
-    "package_version, expected_packages",
+    ("package_version", "expected_packages"),
     [
         (None, ["com.mysql:mysql-connector-j:9.5.0"]),
         ("9.5.0", ["com.mysql:mysql-connector-j:9.5.0"]),
@@ -41,7 +41,10 @@ def test_mysql_get_packages(package_version, expected_packages):
 def test_mysql_get_packages_invalid_version(package_version):
     with pytest.raises(
         ValueError,
-        match=rf"Version '{package_version}' does not have enough numeric components for requested format \(expected at least 3\).",
+        match=(
+            f"Version '{package_version}' does not have enough numeric components "
+            r"for requested format \(expected at least 3\)."
+        ),
     ):
         MySQL.get_packages(package_version=package_version)
 

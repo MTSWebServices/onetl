@@ -29,8 +29,8 @@ class HiveTableExistBehavior(str, Enum):
     def __str__(self):
         return str(self.value)
 
-    @classmethod  # noqa: WPS120
-    def _missing_(cls, value: object):  # noqa: WPS120
+    @classmethod
+    def _missing_(cls, value: object):
         if str(value) == "overwrite":
             warnings.warn(
                 "Mode `overwrite` is deprecated since v0.4.0 and will be removed in v1.0.0. "
@@ -57,6 +57,7 @@ class HiveTableExistBehavior(str, Enum):
                 stacklevel=4,
             )
             return cls.REPLACE_ENTIRE_TABLE
+        return None
 
 
 class HiveWriteOptions(GenericOptions):
@@ -114,14 +115,17 @@ class HiveWriteOptions(GenericOptions):
                 * Table exists, but not partitioned, :obj:`~partition_by` is set
                     Data is appended to a table. Table is still not partitioned (DDL is unchanged).
 
-                * Table exists and partitioned, but has different partitioning schema than :obj:`~partition_by`
+                * Table exists and partitioned,
+                  but has different partitioning schema than :obj:`~partition_by`
                     Partition is created based on table's ``PARTITIONED BY (...)`` options.
                     Explicit :obj:`~partition_by` value is ignored.
 
-                * Table exists and partitioned according :obj:`~partition_by`, but partition is present only in dataframe
+                * Table exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in dataframe
                     Partition is created.
 
-                * Table exists and partitioned according :obj:`~partition_by`, partition is present in both dataframe and table
+                * Table exists and partitioned according :obj:`~partition_by`,
+                  partition is present in both dataframe and table
                     Data is appended to existing partition.
 
                     .. warning::
@@ -132,7 +136,8 @@ class HiveWriteOptions(GenericOptions):
                         To implement deduplication, write data to staging table first,
                         and then perform some deduplication logic using :obj:`~sql`.
 
-                * Table exists and partitioned according :obj:`~partition_by`, but partition is present only in table, not dataframe
+                * Table exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in table, not dataframe
                     Existing partition is left intact.
 
         * ``replace_overlapping_partitions``
@@ -152,19 +157,24 @@ class HiveWriteOptions(GenericOptions):
                     Table is created using options provided by user (``format``, ``compression``, etc).
 
                 * Table exists, but not partitioned, :obj:`~partition_by` is set
-                    Data is **overwritten in all the table**. Table is still not partitioned (DDL is unchanged).
+                    Data is **overwritten in all the table**.
+                    Table is still not partitioned (DDL is unchanged).
 
-                * Table exists and partitioned, but has different partitioning schema than :obj:`~partition_by`
+                * Table exists and partitioned,
+                  but has different partitioning schema than :obj:`~partition_by`
                     Partition is created based on table's ``PARTITIONED BY (...)`` options.
                     Explicit :obj:`~partition_by` value is ignored.
 
-                * Table exists and partitioned according :obj:`~partition_by`, but partition is present only in dataframe
+                * Table exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in dataframe
                     Partition is created.
 
-                * Table exists and partitioned according :obj:`~partition_by`, partition is present in both dataframe and table
+                * Table exists and partitioned according :obj:`~partition_by`,
+                  partition is present in both dataframe and table
                     Existing partition **replaced** with data from dataframe.
 
-                * Table exists and partitioned according :obj:`~partition_by`, but partition is present only in table, not dataframe
+                * Table exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in table, not dataframe
                     Existing partition is left intact.
 
         * ``replace_entire_table``
@@ -257,10 +267,11 @@ class HiveWriteOptions(GenericOptions):
         Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
     """
 
-    bucket_by: Optional[Tuple[int, Union[List[str], str]]] = Field(default=None, alias="bucketBy")  # noqa: WPS234
+    bucket_by: Optional[Tuple[int, Union[List[str], str]]] = Field(default=None, alias="bucketBy")
     """Number of buckets plus bucketing columns. ``None`` means bucketing is disabled.
 
-    Each bucket is created as a set of files with name containing result of calculation ``hash(columns) mod num_buckets``.
+    Each bucket is created as a set of files with name containing result of
+    calculation ``hash(columns) mod num_buckets``.
 
     This allows to remove shuffle from queries containing ``GROUP BY`` or ``JOIN`` or using ``=`` / ``IN`` predicates
     on specific columns.
@@ -335,7 +346,8 @@ class HiveWriteOptions(GenericOptions):
         options = values.copy()
         bucket_by = options.pop("bucket_by", None)
         if sort_by and not bucket_by:
-            raise ValueError("`sort_by` option can only be used with non-empty `bucket_by`")
+            msg = "`sort_by` option can only be used with non-empty `bucket_by`"
+            raise ValueError(msg)
 
         return sort_by
 
@@ -347,15 +359,15 @@ class HiveWriteOptions(GenericOptions):
                 recommend_mode = "replace_entire_table"
             else:
                 recommend_mode = "replace_overlapping_partitions"
-            raise ValueError(
-                f"`partitionOverwriteMode` option should be replaced with if_exists='{recommend_mode}'",
-            )
+            msg = f"`partitionOverwriteMode` option should be replaced with if_exists='{recommend_mode}'"
+            raise ValueError(msg)
 
         if values.get("insert_into") is not None or values.get("insertInto") is not None:
-            raise ValueError(
+            msg = (
                 "`insertInto` option was removed in onETL 0.4.0, "
-                "now df.write.insertInto or df.write.saveAsTable is selected based on table existence",
+                "now df.write.insertInto or df.write.saveAsTable is selected based on table existence"
             )
+            raise ValueError(msg)
 
         return values
 
@@ -366,7 +378,7 @@ class HiveWriteOptions(GenericOptions):
                 "Option `Hive.WriteOptions(mode=...)` is deprecated since v0.9.0 and will be removed in v1.0.0. "
                 "Use `Hive.WriteOptions(if_exists=...)` instead",
                 category=UserWarning,
-                stacklevel=3,
+                stacklevel=5,
             )
         return values
 

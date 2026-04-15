@@ -13,3 +13,18 @@ updates:
       github-actions:
         patterns:
           - '*'
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - type:dependency
+    versioning-strategy: increase-if-necessary
+    ignore:
+      - dependency-name: autodoc-pydantic
+        update-types: [version-update:semver-major]
+    # https://til.simonwillison.net/github/dependabot-python-setup
+    groups:
+      python-packages:
+        patterns:
+          - '*'

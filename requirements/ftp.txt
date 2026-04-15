@@ -1,2 +1,0 @@
-# https://todo.sr.ht/~sschwarzer/ftputil/150
-ftputil>=5.0.4

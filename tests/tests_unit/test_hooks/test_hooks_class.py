@@ -121,7 +121,8 @@ def test_hooks_class_stop_and_resume():
     @hook(enabled=False)
     def never_called(self, arg: int):
         # stop & resume does not affect hook state, it should be enabled explicitly
-        raise AssertionError("Never called")
+        msg = "Never called"
+        raise AssertionError(msg)
 
     assert Calculator1(1).plus(1) == 234
     assert Calculator1(1).multiply(1) == 345
@@ -186,7 +187,8 @@ def test_hooks_class_skip_context():
     @hook(enabled=False)
     def never_called(self, arg: int):
         # skip does not affect hook state, it should be enabled explicitly
-        raise AssertionError("Never called")
+        msg = "Never called"
+        raise AssertionError(msg)
 
     assert Calculator1(1).plus(1) == 234
     assert Calculator1(1).multiply(1) == 345
@@ -256,7 +258,8 @@ def test_hooks_class_skip_decorator():
     @hook(enabled=False)
     def never_called(self, arg: int):
         # skip does not affect hook state, it should be enabled explicitly
-        raise AssertionError("Never called")
+        msg = "Never called"
+        raise AssertionError(msg)
 
     assert Calculator1(1).plus(1) == 234
     assert Calculator1(1).multiply(1) == 345

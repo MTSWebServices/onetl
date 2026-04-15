@@ -22,8 +22,6 @@ MySQL config, or reading data from some reference table. Method returns Spark Da
 
 Method accepts :obj:`MySQL.FetchOptions <onetl.connection.db_connection.mysql.options.MySQLFetchOptions>`.
 
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
-
 .. warning::
 
     Please take into account :ref:`mysql-types`.
@@ -61,8 +59,6 @@ Use ``MySQL.execute``
 Use this method to execute DDL and DML operations. Each method call runs operation in a separated transaction, and then commits it.
 
 Method accepts :obj:`MySQL.ExecuteOptions <onetl.connection.db_connection.mysql.options.MySQLExecuteOptions>`.
-
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
 
 Syntax support
 ^^^^^^^^^^^^^^

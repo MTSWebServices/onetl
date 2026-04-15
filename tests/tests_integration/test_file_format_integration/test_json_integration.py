@@ -29,7 +29,7 @@ pytestmark = [pytest.mark.local_fs, pytest.mark.file_df_connection, pytest.mark.
 
 
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_compression", {}),
         ("with_compression", {"compression": "gzip"}),
@@ -76,7 +76,7 @@ def test_json_writer_is_not_supported(
 
 
 @pytest.mark.parametrize(
-    "json_row, schema, expected_row",
+    ("json_row", "schema", "expected_row"),
     [
         (
             Row(json_column='{"id": 1, "name": "Alice"}'),
@@ -105,7 +105,7 @@ def test_json_parse_column(spark, json_row, schema, expected_row, column_type):
 
 
 @pytest.mark.parametrize(
-    "row, expected_row",
+    ("row", "expected_row"),
     [
         (
             Row(json_column=Row(id=1, name="Alice")),
@@ -138,8 +138,7 @@ def test_json_serialize_column_unsupported_options_warning(spark):
         lineSep="\r\n",
     )
     msg = (
-        "Options `['encoding', 'lineSep']` are set "
-        "but not supported in `JSON.parse_column` or `JSON.serialize_column`."
+        "Options `['encoding', 'lineSep']` are set but not supported in `JSON.parse_column` or `JSON.serialize_column`."
     )
 
     with pytest.warns(UserWarning) as record:
@@ -161,7 +160,8 @@ def test_json_parse_column_unsupported_options_warning(spark):
         dropFieldIfAllNull=True,
     )
     msg = (
-        "Options `['dropFieldIfAllNull', 'encoding', 'lineSep', 'prefersDecimal', 'primitivesAsString', 'samplingRatio']` "
+        "Options `['dropFieldIfAllNull', 'encoding', 'lineSep', "
+        "'prefersDecimal', 'primitivesAsString', 'samplingRatio']` "
         "are set but not supported in `JSON.parse_column` or `JSON.serialize_column`."
     )
 

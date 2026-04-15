@@ -23,6 +23,7 @@ def assert_equal_df(
     **kwargs,
 ) -> None:
     """Checks that right_df equal to left_df"""
+    __tracebackhide__ = True
 
     # Oracle returns column names in UPPERCASE, convert them back to lowercase
     # Nota: this is only for dataframe comparison purpose
@@ -33,8 +34,8 @@ def assert_equal_df(
         left_df = left_df.sort_values(by=order_by.lower())
         right_df = right_df.sort_values(by=order_by.lower())
 
-        left_df.reset_index(inplace=True, drop=True)
-        right_df.reset_index(inplace=True, drop=True)
+        left_df.reset_index(inplace=True, drop=True)  # noqa: PD002
+        right_df.reset_index(inplace=True, drop=True)  # noqa: PD002
 
     # ignore columns order
     left_df = left_df.sort_index(axis=1)
@@ -54,6 +55,7 @@ def assert_subset_df(
     columns: list[str] | None = None,
 ) -> None:
     """Checks that left_df is subset of right_df"""
+    __tracebackhide__ = True
 
     small_pdf = lowercase_columns(to_pandas(small_df))
     large_pdf = lowercase_columns(to_pandas(large_df))
@@ -65,7 +67,7 @@ def assert_subset_df(
     else:
         columns = [column.lower() for column in columns]
 
-    for column in columns:  # noqa: WPS528
+    for column in columns:
         small_column = small_pdf[column]
         large_column = large_pdf[column]
         different_indices = ~small_column.isin(large_column)

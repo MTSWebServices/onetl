@@ -101,9 +101,7 @@ class SparkHDFS(SparkFileDFConnection):
                 from onetl.connection import SparkHDFS
                 from pyspark.sql import SparkSession
 
-                # Create Spark session.
-                # Use names "spark.yarn.access.hadoopFileSystems", "spark.yarn.principal"
-                # and "spark.yarn.keytab" for Spark 2
+                # Create Spark session
 
                 spark = (
                     SparkSession.builder.appName("spark-app-name")
@@ -150,7 +148,7 @@ class SparkHDFS(SparkFileDFConnection):
 
                 # Create connection
                 hdfs = SparkHDFS(cluster="rnd-dwh", spark=spark).check()
-    """
+    """  # noqa: E501
 
     Slots = SparkHDFSSlots
 
@@ -248,15 +246,16 @@ class SparkHDFS(SparkFileDFConnection):
 
             # injecting current cluster name via hooks mechanism
             hdfs = SparkHDFS.get_current(spark=spark)
-        """
+        """  # noqa: E501
 
         log.info("|%s| Detecting current cluster...", cls.__name__)
         current_cluster = cls.Slots.get_current_cluster()
         if not current_cluster:
-            raise RuntimeError(
+            msg = (
                 f"{cls.__name__}.get_current() can be used only if there are "
-                f"some hooks bound to {cls.__name__}.Slots.get_current_cluster",
+                f"some hooks bound to {cls.__name__}.Slots.get_current_cluster"
             )
+            raise RuntimeError(msg)
 
         log.info("|%s|   Got %r", cls.__name__, current_cluster)
         return cls(cluster=current_cluster, spark=spark)
@@ -271,9 +270,8 @@ class SparkHDFS(SparkFileDFConnection):
         log.debug("|%s| Checking if cluster %r is a known cluster...", cls.__name__, validated_cluster)
         known_clusters = cls.Slots.get_known_clusters()
         if known_clusters and validated_cluster not in known_clusters:
-            raise ValueError(
-                f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}",
-            )
+            msg = f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}"
+            raise ValueError(msg)
 
         return validated_cluster
 
@@ -289,10 +287,11 @@ class SparkHDFS(SparkFileDFConnection):
         log.debug("|%s| Checking if %r is a known namenode of cluster %r ...", cls.__name__, namenode, cluster)
         known_namenodes = cls.Slots.get_cluster_namenodes(cluster)
         if known_namenodes and namenode not in known_namenodes:
-            raise ValueError(
+            msg = (
                 f"Namenode {namenode!r} is not in the known nodes list of cluster {cluster!r}: "
-                f"{sorted(known_namenodes)!r}",
+                f"{sorted(known_namenodes)!r}"
             )
+            raise ValueError(msg)
 
         return namenode
 
@@ -314,7 +313,8 @@ class SparkHDFS(SparkFileDFConnection):
 
         namenodes = self.Slots.get_cluster_namenodes(self.cluster)
         if not namenodes:
-            raise RuntimeError(f"Cannot get list of namenodes for a cluster {self.cluster!r}")
+            msg = f"Cannot get list of namenodes for a cluster {self.cluster!r}"
+            raise RuntimeError(msg)
 
         nodes_len = len(namenodes)
         for i, namenode in enumerate(namenodes, start=1):
@@ -324,7 +324,8 @@ class SparkHDFS(SparkFileDFConnection):
                 return namenode
             log.debug("|%s|     Node %r is not active, skipping", class_name, namenode)
 
-        raise RuntimeError(f"Cannot detect active namenode for cluster {self.cluster!r}")
+        msg = f"Cannot detect active namenode for cluster {self.cluster!r}"
+        raise RuntimeError(msg)
 
     def _get_host(self) -> str:
         if not self.host:
@@ -343,7 +344,8 @@ class SparkHDFS(SparkFileDFConnection):
             log.debug("|%s|   No hooks, skip validation", class_name)
             return self.host
 
-        raise RuntimeError(f"Host {self.host!r} is not an active namenode of cluster {self.cluster!r}")
+        msg = f"Host {self.host!r} is not an active namenode of cluster {self.cluster!r}"
+        raise RuntimeError(msg)
 
     def _get_conn_str(self) -> str:
         # cache active host to reduce number of requests.

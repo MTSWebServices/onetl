@@ -160,7 +160,7 @@ class FileMover(FrozenModel):
     _connection_checked: bool = PrivateAttr(default=False)
 
     @slot
-    def run(self, files: Iterable[str | os.PathLike] | None = None) -> MoveResult:  # noqa: WPS231
+    def run(self, files: Iterable[str | os.PathLike] | None = None) -> MoveResult:
         """
         Method for moving files from source to target directory. |support_hooks|
 
@@ -272,7 +272,8 @@ class FileMover(FrozenModel):
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
 
         if files is None and not self.source_path:
-            raise ValueError("Neither file list nor `source_path` are passed")
+            msg = "Neither file list nor `source_path` are passed"
+            raise ValueError(msg)
 
         if not self._connection_checked:
             self._log_parameters(files)
@@ -345,7 +346,8 @@ class FileMover(FrozenModel):
         """
 
         if not self.source_path:
-            raise ValueError("Cannot call `.view_files()` without `source_path`")
+            msg = "Cannot call `.view_files()` without `source_path`"
+            raise ValueError(msg)
 
         log.debug("|%s| Getting files list from path '%s'", self.connection.__class__.__name__, self.source_path)
 
@@ -360,9 +362,8 @@ class FileMover(FrozenModel):
                     result.append(file)
 
         except Exception as e:
-            raise RuntimeError(
-                f"Couldn't read directory tree from remote dir '{self.source_path}'",
-            ) from e
+            msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
+            raise RuntimeError(msg) from e
 
         return result
 
@@ -384,7 +385,7 @@ class FileMover(FrozenModel):
                 self.__class__.__name__,
             )
 
-    def _validate_files(  # noqa: WPS231
+    def _validate_files(
         self,
         remote_files: Iterable[os.PathLike | str],
     ) -> MOVE_ITEMS_TYPE:
@@ -397,23 +398,24 @@ class FileMover(FrozenModel):
             if not self.source_path:
                 # Move into a flat structure
                 if not remote_file_path.is_absolute():
-                    raise ValueError("Cannot pass relative file path with empty `source_path`")
+                    msg = "Cannot pass relative file path with empty `source_path`"
+                    raise ValueError(msg)
 
                 filename = remote_file_path.name
                 new_file = self.target_path / filename
-            else:
-                # Move according to source folder structure
-                if self.source_path in remote_file_path.parents:
-                    # Make relative local path
-                    new_file = self.target_path / remote_file_path.relative_to(self.source_path)
+            # Move according to source folder structure
+            elif self.source_path in remote_file_path.parents:
+                # Make relative local path
+                new_file = self.target_path / remote_file_path.relative_to(self.source_path)
 
-                elif not remote_file_path.is_absolute():
-                    # Passed path is already relative
-                    new_file = self.target_path / remote_file_path
-                    old_file = self.source_path / remote_file_path
-                else:
-                    # Wrong path (not relative path and source path not in the path to the file)
-                    raise ValueError(f"File path '{old_file}' does not match source_path '{self.source_path}'")
+            elif not remote_file_path.is_absolute():
+                # Passed path is already relative
+                new_file = self.target_path / remote_file_path
+                old_file = self.source_path / remote_file_path
+            else:
+                # Wrong path (not relative path and source path not in the path to the file)
+                msg = f"File path '{old_file}' does not match source_path '{self.source_path}'"
+                raise ValueError(msg)
 
             if not isinstance(old_file, PathProtocol) and self.connection.path_exists(old_file):
                 old_file = self.connection.resolve_file(old_file)
@@ -500,8 +502,7 @@ class FileMover(FrozenModel):
                 futures = [
                     executor.submit(self._move_file, source_file, target_file) for source_file, target_file in to_move
                 ]
-                for future in as_completed(futures):
-                    result.append(future.result())
+                result = [future.result() for future in as_completed(futures)]
         else:
             log.debug("|%s| Using plain old for-loop", self.__class__.__name__)
             for source_file, target_file in to_move:
@@ -514,7 +515,7 @@ class FileMover(FrozenModel):
 
         return result
 
-    def _move_file(  # noqa: WPS231, WPS213
+    def _move_file(
         self,
         source_file: RemotePath,
         target_file: RemotePath,
@@ -531,7 +532,8 @@ class FileMover(FrozenModel):
                 new_file = self.connection.resolve_file(target_file)
 
                 if self.options.if_exists == FileExistBehavior.ERROR:
-                    raise FileExistsError(f"File {path_repr(new_file)} already exists")
+                    msg = f"File {path_repr(new_file)} already exists"
+                    raise FileExistsError(msg)  # noqa: TRY301
 
                 if self.options.if_exists == FileExistBehavior.IGNORE:
                     log.warning(
@@ -544,7 +546,6 @@ class FileMover(FrozenModel):
                 replace = True
 
             new_file = self.connection.rename_file(source_file, target_file, replace=replace)
-            return FileMoveStatus.SUCCESSFUL, new_file
 
         except Exception as e:
             if log.isEnabledFor(logging.DEBUG):
@@ -554,13 +555,16 @@ class FileMover(FrozenModel):
                     exc_info=e,
                 )
             else:
-                log.exception(
+                log.exception(  # noqa: LOG007
                     "|%s| Couldn't move file to target dir: %s",
                     self.__class__.__name__,
-                    e,
+                    e,  # noqa: TRY401
                     exc_info=False,
                 )
             return FileMoveStatus.FAILED, FailedRemoteFile(path=source_file.path, stats=source_file.stats, exception=e)
+
+        else:
+            return FileMoveStatus.SUCCESSFUL, new_file
 
     def _log_result(self, result: MoveResult) -> None:
         log_with_indent(log, "")

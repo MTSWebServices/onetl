@@ -70,7 +70,7 @@ class Excel(ReadWriteFileFormat):
             # Create Spark session with Excel package loaded
             maven_packages = Excel.get_packages(
                 package_version="0.31.2",
-                spark_version="3.5.7",
+                spark_version="3.5.8",
             )
             spark = (
                 SparkSession.builder.appName("spark-app-name")
@@ -262,11 +262,11 @@ class Excel(ReadWriteFileFormat):
 
             Excel.get_packages(
                 package_version="0.31.2",
-                spark_version="3.5.7",
+                spark_version="3.5.8",
             )
             Excel.get_packages(
                 package_version="0.31.2",
-                spark_version="3.5.7",
+                spark_version="3.5.8",
                 scala_version="2.12",
             )
 
@@ -274,7 +274,8 @@ class Excel(ReadWriteFileFormat):
 
         version = Version(package_version)
         if version < Version("0.30"):
-            raise ValueError(f"Package version should be at least 0.30, got {package_version}")
+            msg = f"Package version should be at least 0.30, got {package_version}"
+            raise ValueError(msg)
 
         spark_ver = Version(spark_version).min_digits(3)
         scala_ver = Version(scala_version).min_digits(2) if scala_version else get_default_scala_version(spark_ver)

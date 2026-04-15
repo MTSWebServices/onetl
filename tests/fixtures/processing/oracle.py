@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from logging import getLogger
+from typing import ClassVar
 from urllib.parse import quote
 
 import cx_Oracle
@@ -14,7 +15,7 @@ logger = getLogger(__name__)
 
 
 class OracleProcessing(BaseProcessing):
-    _column_types_and_names_matching = {
+    _column_types_and_names_matching: ClassVar[dict[str, str]] = {
         "id_int": "INTEGER NOT NULL",
         "text_string": "VARCHAR2(50) NOT NULL",
         "hwm_int": "INTEGER",
@@ -169,6 +170,6 @@ class OracleProcessing(BaseProcessing):
                 # I'm not sure why, but something does not support reading milliseconds from Oracle.
                 # It's probably Oracle JDBC Dialect, but I'm not sure.
                 # Just cut them off.
-                df[column] = df[column].dt.floor("S")
+                df[column] = df[column].dt.floor("s")
 
         return df

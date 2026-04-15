@@ -92,8 +92,7 @@ def test_hdfs_connection_with_password():
 def test_hdfs_connection_with_keytab(request, tmp_path_factory):
     from onetl.connection import HDFS
 
-    folder: Path = tmp_path_factory.mktemp("keytab")
-    folder.mkdir(exist_ok=True, parents=True)
+    folder: Path = tmp_path_factory.mktemp("keytabs")
     keytab = folder / "user.keytab"
     keytab.touch()
     conn = HDFS(host="some-host.domain.com", user="some_user", keytab=keytab)
@@ -117,7 +116,7 @@ def test_hdfs_connection_keytab_does_not_exist():
 def test_hdfs_connection_keytab_is_directory(request, tmp_path_factory):
     from onetl.connection import HDFS
 
-    folder: Path = tmp_path_factory.mktemp("keytab")
+    folder: Path = tmp_path_factory.mktemp("keytabs")
     keytab = folder / "user.keytab"
     keytab.mkdir(exist_ok=True, parents=True)
 
@@ -141,7 +140,6 @@ def test_hdfs_connection_with_password_and_keytab(request, tmp_path_factory):
     from onetl.connection import HDFS
 
     folder: Path = tmp_path_factory.mktemp("keytab")
-    folder.mkdir(exist_ok=True, parents=True)
     keytab = folder / "user.keytab"
     keytab.touch()
 
@@ -151,7 +149,7 @@ def test_hdfs_connection_with_password_and_keytab(request, tmp_path_factory):
     request.addfinalizer(finalizer)
 
     with pytest.raises(ValueError, match="Please provide either `keytab` or `password` for kinit, not both"):
-        HDFS(host="hdfs2", webhdfs_port=50070, user="usr", password="pwd", keytab=keytab)  # noqa: F841
+        HDFS(host="hdfs2", webhdfs_port=50070, user="usr", password="pwd", keytab=keytab)
 
 
 def test_hdfs_get_known_clusters_hook(request):
@@ -215,9 +213,8 @@ def test_hdfs_normalize_namenode_host_hook(request):
     @hook
     def normalize_namenode_host(host: str, cluster: str | None) -> str:
         host = host.lower()
-        if cluster == "rnd-dwh":
-            if not host.endswith(".domain.com"):
-                host += ".domain.com"
+        if cluster == "rnd-dwh" and not host.endswith(".domain.com"):
+            host += ".domain.com"
         return host
 
     request.addfinalizer(normalize_namenode_host.disable)

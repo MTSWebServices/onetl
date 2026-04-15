@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -17,7 +17,13 @@ from tests.util.upload_files import upload_files
     ],
 )
 def webdav_server():
-    WebDAVServer = namedtuple("WebDAVServer", ["host", "port", "user", "password", "ssl_verify", "protocol"])
+    class WebDAVServer(NamedTuple):
+        host: str
+        port: str
+        user: str
+        password: str
+        ssl_verify: bool
+        protocol: str
 
     return WebDAVServer(
         host=os.getenv("ONETL_WEBDAV_HOST"),
@@ -44,19 +50,16 @@ def webdav_file_connection(webdav_server):
 
 
 @pytest.fixture()
-def webdav_file_connection_with_path(request, webdav_file_connection):
+def webdav_file_connection_with_path(webdav_file_connection, worker_id):
     connection = webdav_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
     connection.create_dir(root)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

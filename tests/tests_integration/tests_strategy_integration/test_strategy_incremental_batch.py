@@ -44,9 +44,8 @@ def test_postgres_strategy_incremental_batch_outside_loop(
     )
 
     error_msg = "Invalid IncrementalBatchStrategy usage!"
-    with pytest.raises(RuntimeError, match=re.escape(error_msg)):
-        with IncrementalBatchStrategy(step=1):
-            reader.run()
+    with pytest.raises(RuntimeError, match=re.escape(error_msg)), IncrementalBatchStrategy(step=1):
+        reader.run()
 
 
 def test_postgres_strategy_incremental_batch_where(spark, processing, prepare_schema_table):
@@ -157,19 +156,19 @@ def test_postgres_strategy_incremental_batch_hwm_set_twice(
 
             with pytest.raises(
                 ValueError,
-                match="Detected wrong IncrementalBatchStrategy usage.",
+                match="Detected wrong IncrementalBatchStrategy usage",
             ):
                 reader2.run()
 
             with pytest.raises(
                 ValueError,
-                match="Detected wrong IncrementalBatchStrategy usage.",
+                match="Detected wrong IncrementalBatchStrategy usage",
             ):
                 reader3.run()
 
 
 @pytest.mark.parametrize(
-    "hwm_column, new_type, step",
+    ("hwm_column", "new_type", "step"),
     [
         ("hwm_int", "date", 200),
         ("hwm_date", "integer", timedelta(days=20)),
@@ -213,7 +212,7 @@ def test_postgres_strategy_incremental_batch_different_hwm_type_in_store(
     processing.drop_table(schema=load_table_data.schema, table=load_table_data.table)
     processing.create_table(schema=load_table_data.schema, table=load_table_data.table, fields=new_fields)
 
-    with pytest.raises(TypeError, match="Cannot cast HWM of type .* as .*"):
+    with pytest.raises(TypeError, match=r"Cannot cast HWM of type .* as .*"):
         with IncrementalBatchStrategy(step=step) as batches:
             for _ in batches:
                 reader.run()
@@ -293,7 +292,7 @@ def test_postgres_strategy_incremental_batch_different_hwm_optional_attribute_in
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step",
+    ("hwm_column", "step"),
     [
         ("hwm_int", 1.5),
         ("hwm_int", "abc"),
@@ -361,14 +360,13 @@ def test_postgres_strategy_incremental_batch_wrong_step_type(
         values=second_span,
     )
 
-    with pytest.raises((TypeError, ValueError)):
-        with IncrementalBatchStrategy(step=step) as part:
-            for _ in part:
-                reader.run()
+    with pytest.raises((TypeError, ValueError)), IncrementalBatchStrategy(step=step) as part:
+        for _ in part:
+            reader.run()
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step",
+    ("hwm_column", "step"),
     [
         ("hwm_int", -10),
         ("hwm_date", timedelta(days=-10)),
@@ -431,14 +429,13 @@ def test_postgres_strategy_incremental_batch_step_negative(
     )
 
     error_msg = "HWM value is not increasing, please check options passed to IncrementalBatchStrategy"
-    with pytest.raises(ValueError, match=error_msg):
-        with IncrementalBatchStrategy(step=step) as part:
-            for _ in part:
-                reader.run()
+    with pytest.raises(ValueError, match=error_msg), IncrementalBatchStrategy(step=step) as part:
+        for _ in part:
+            reader.run()
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step",
+    ("hwm_column", "step"),
     [
         ("hwm_int", 0.01),
         ("hwm_date", timedelta(days=1)),
@@ -501,15 +498,14 @@ def test_postgres_strategy_incremental_batch_step_too_small(
     )
 
     error_msg = f"step={step!r} parameter of IncrementalBatchStrategy leads to generating too many iterations"
-    with pytest.raises(ValueError, match=re.escape(error_msg)):
-        with IncrementalBatchStrategy(step=step) as batches:
-            for _ in batches:
-                reader.run()
+    with pytest.raises(ValueError, match=re.escape(error_msg)), IncrementalBatchStrategy(step=step) as batches:
+        for _ in batches:
+            reader.run()
 
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_type, hwm_column, step, per_iter",
+    ("hwm_type", "hwm_column", "step", "per_iter"),
     [
         (ColumnIntHWM, "hwm_int", 20, 30),  # step <  per_iter
         (ColumnIntHWM, "hwm_int", 30, 30),  # step == per_iter
@@ -518,7 +514,7 @@ def test_postgres_strategy_incremental_batch_step_too_small(
     ],
 )
 @pytest.mark.parametrize(
-    "span_gap, span_length",
+    ("span_gap", "span_length"),
     [
         (50, 100),  # step < gap < span_length
         (50, 40),  # step < gap > span_length
@@ -653,7 +649,7 @@ def test_postgres_strategy_incremental_batch(
 
 
 @pytest.mark.parametrize(
-    "hwm_column, step, stop",
+    ("hwm_column", "step", "stop"),
     [
         ("hwm_int", 10, 50),  # step <  stop
         ("hwm_int", 50, 10),  # step >  stop
@@ -721,7 +717,7 @@ def test_postgres_strategy_incremental_batch_stop(
 
 
 @pytest.mark.parametrize(
-    "span_gap, span_length, hwm_column, step, offset, full",
+    ("span_gap", "span_length", "hwm_column", "step", "offset", "full"),
     [
         (10, 60, "hwm_int", 100, 40 + 10 + 40 + 1, False),  # step >  offset, step <  span_length + gap
         (10, 60, "hwm_int", 100, 60 + 10 + 60 + 1, True),  # step <  offset, step <  span_length + gap

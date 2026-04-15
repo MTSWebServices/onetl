@@ -591,7 +591,7 @@ def test_file_downloader_run_absolute_path_not_match_source_path(
     file_connection_with_path_and_files,
     tmp_path_factory,
 ):
-    file_connection, remote_path, uploaded_files = file_connection_with_path_and_files
+    file_connection, remote_path, _ = file_connection_with_path_and_files
     local_path = tmp_path_factory.mktemp("local_path")
 
     downloader = FileDownloader(
@@ -824,7 +824,7 @@ def test_file_downloader_run_missing_file(request, file_connection_with_path_and
     missing_file = target_path / "missing"
 
     with caplog.at_level(logging.WARNING):
-        download_result = downloader.run(uploaded_files + [missing_file])
+        download_result = downloader.run([*uploaded_files, missing_file])
 
         assert f"Missing file '{missing_file}', skipping" in caplog.text
 
@@ -1022,9 +1022,8 @@ def test_file_downloader_detect_hwm_type_snapshot_batch_strategy(
     )
 
     error_message = "FileDownloader(hwm=...) cannot be used with SnapshotBatchStrategy"
-    with pytest.raises(ValueError, match=re.escape(error_message)):
-        with SnapshotBatchStrategy(step=100500):
-            downloader.run()
+    with pytest.raises(ValueError, match=re.escape(error_message)), SnapshotBatchStrategy(step=100500):
+        downloader.run()
 
 
 @pytest.mark.parametrize("hwm_type", SUPPORTED_HWM_TYPES)
@@ -1044,11 +1043,10 @@ def test_file_downloader_detect_hwm_type_incremental_batch_strategy(
     )
 
     error_message = "FileDownloader(hwm=...) cannot be used with IncrementalBatchStrategy"
-    with pytest.raises(ValueError, match=re.escape(error_message)):
-        with IncrementalBatchStrategy(
-            step=timedelta(days=5),
-        ):
-            downloader.run()
+    with pytest.raises(ValueError, match=re.escape(error_message)), IncrementalBatchStrategy(
+        step=timedelta(days=5),
+    ):
+        downloader.run()
 
 
 @pytest.mark.parametrize("hwm_type", SUPPORTED_HWM_TYPES)
@@ -1089,9 +1087,8 @@ def test_file_downloader_file_hwm_strategy_with_wrong_parameters(
     )
 
     error_message = "FileDownloader(hwm=...) cannot be used with IncrementalStrategy(offset=1, ...)"
-    with pytest.raises(ValueError, match=re.escape(error_message)):
-        with IncrementalStrategy(offset=1):
-            downloader.run()
+    with pytest.raises(ValueError, match=re.escape(error_message)), IncrementalStrategy(offset=1):
+        downloader.run()
 
     with IncrementalStrategy():
         downloader.run()

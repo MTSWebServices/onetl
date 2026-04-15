@@ -5,6 +5,8 @@ import os
 from onetl.plugins import import_plugins
 from onetl.version import __version__
 
+__all__ = ["__version__"]
+
 
 def plugins_auto_import():
     """

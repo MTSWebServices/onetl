@@ -21,21 +21,22 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-class KafkaDialect(  # noqa: WPS215
+class KafkaDialect(
     NotSupportColumns,
     NotSupportDFSchema,
     NotSupportHint,
     NotSupportWhere,
     DBDialect,
 ):
-    SUPPORTED_HWM_COLUMNS = {"offset"}
+    SUPPORTED_HWM_COLUMNS = frozenset(("offset",))
 
     def validate_name(self, value: str) -> str:
         if "*" in value or "," in value:
-            raise ValueError(
+            msg = (
                 f"source/target={value} is not supported by {self.connection.__class__.__name__}. "
-                f"Provide a singular topic.",
+                f"Provide a singular topic."
             )
+            raise ValueError(msg)
         return value
 
     def validate_hwm(
@@ -46,10 +47,11 @@ class KafkaDialect(  # noqa: WPS215
             return None
 
         if hwm.expression not in self.SUPPORTED_HWM_COLUMNS:
-            raise ValueError(
+            msg = (
                 f"hwm.expression={hwm.expression!r} is not supported by {self.connection.__class__.__name__}. "
-                f"Valid values are: {self.SUPPORTED_HWM_COLUMNS}",
+                f"Valid values are: {self.SUPPORTED_HWM_COLUMNS}"
             )
+            raise ValueError(msg)
         return hwm
 
     def detect_hwm_class(self, field: StructField) -> type[KeyValueIntHWM] | None:

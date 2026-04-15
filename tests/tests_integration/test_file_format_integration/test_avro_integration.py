@@ -40,7 +40,7 @@ def avro_schema():
 
 
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_compression", {}),
         ("with_compression", {"compression": "snappy"}),
@@ -48,7 +48,6 @@ def avro_schema():
     ids=["without_compression", "with_compression"],
 )
 def test_avro_reader(
-    spark,
     local_fs_file_df_connection_with_path_and_files,
     file_df_dataframe,
     avro_schema,
@@ -82,7 +81,6 @@ def test_avro_reader(
     ids=["without_compression", "with_compression"],
 )
 def test_avro_writer(
-    spark,
     local_fs_file_df_connection_with_path,
     file_df_dataframe,
     avro_schema,
@@ -115,7 +113,6 @@ def test_avro_writer(
 
 @pytest.mark.parametrize("column_type", [str, col])
 def test_avro_serialize_and_parse_column(
-    spark,
     file_df_dataframe,
     avro_schema,
     column_type,
@@ -136,7 +133,6 @@ def test_avro_serialize_and_parse_column(
 
 @pytest.mark.parametrize("column_type", [str, col])
 def test_avro_serialize_and_parse_no_schema(
-    spark,
     file_df_dataframe,
     column_type,
 ):
@@ -152,7 +148,7 @@ def test_avro_serialize_and_parse_no_schema(
 
     with pytest.raises(
         ValueError,
-        match="Avro.parse_column can be used only with defined `avroSchema` or `avroSchemaUrl`",
+        match=r"Avro\.parse_column can be used only with defined `avroSchema` or `avroSchemaUrl`",
     ):
         serialized_df.select(avro.parse_column(column_type("combined")))
 
@@ -160,7 +156,6 @@ def test_avro_serialize_and_parse_no_schema(
 @pytest.mark.parametrize("column_type", [str, col])
 @responses.activate
 def test_avro_serialize_and_parse_with_schema_url(
-    spark,
     file_df_dataframe,
     column_type,
     avro_schema,
@@ -183,7 +178,6 @@ def test_avro_serialize_and_parse_with_schema_url(
 
 
 def test_avro_serialize_and_parse_column_unsupported_options_warning(
-    spark,
     file_df_dataframe,
     avro_schema,
 ):

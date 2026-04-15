@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
@@ -38,8 +38,8 @@ class HookPriority(int, Enum):
     "Hooks with this priority will run last."
 
 
-@dataclass  # noqa: WPS338
-class Hook(Generic[T]):  # noqa: WPS338
+@dataclass
+class Hook(Generic[T]):
     """
     Hook representation.
 
@@ -282,14 +282,12 @@ class ContextDecorator:
         Just remember this output and return it in :obj:`~process_result` as is.
         """
 
-        try:
+        with suppress(StopIteration):
             self.first_yield_result = self.gen.send(None)
-        except StopIteration:
-            pass
 
         return self
 
-    def __exit__(self, exc_type, value, traceback):  # noqa: WPS231
+    def __exit__(self, exc_type, value, traceback):
         """
         Copy of :obj:`contextlib._GeneratorContextManager.__exit__`
         """
@@ -299,7 +297,8 @@ class ContextDecorator:
                 next(self.gen)
             except StopIteration:
                 return False
-            raise RuntimeError("generator didn't stop")
+            msg = "generator didn't stop"
+            raise RuntimeError(msg)
 
         if value is None:
             # Need to force instantiation so we can reliably
@@ -323,7 +322,7 @@ class ContextDecorator:
             if exc_type is StopIteration and exc.__cause__ is value:
                 return False
             raise
-        except:  # noqa: E722, B001
+        except:
             # only re-raise if it's *not* the exception that was
             # passed to throw(), because __exit__() must not raise
             # an exception unless __exit__() itself failed.  But throw()
@@ -338,7 +337,8 @@ class ContextDecorator:
             if sys.exc_info()[1] is value:
                 return False
             raise
-        raise RuntimeError("generator didn't stop after throw()")
+        msg = "generator didn't stop after throw()"
+        raise RuntimeError(msg)
 
     def process_result(self, result):
         """
@@ -371,7 +371,7 @@ class ContextDecorator:
         return None
 
 
-def hook(inp: Callable[..., T] | None = None, enabled: bool = True, priority: HookPriority = HookPriority.NORMAL):
+def hook(inp: Callable[..., T] | None = None, *, enabled: bool = True, priority: HookPriority = HookPriority.NORMAL):
     """
     Initialize hook from callable/context manager.
 
@@ -435,9 +435,10 @@ def hook(inp: Callable[..., T] | None = None, enabled: bool = True, priority: Ho
                 ...
     """
 
-    def inner_wrapper(callback: Callable[..., T]):  # noqa: WPS430
+    def inner_wrapper(callback: Callable[..., T]):
         if isinstance(callback, Hook):
-            raise TypeError("@hook decorator can be applied only once")
+            msg = "@hook decorator can be applied only once"
+            raise TypeError(msg)
 
         result = Hook(callback=callback, enabled=enabled, priority=priority)
         return wraps(callback)(result)

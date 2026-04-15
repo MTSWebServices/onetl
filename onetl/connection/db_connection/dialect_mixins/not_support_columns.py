@@ -15,4 +15,5 @@ class NotSupportColumns:
         columns: Any,
     ) -> None:
         if columns is not None:
-            raise ValueError(f"'columns' parameter is not supported by {self.connection.__class__.__name__}")
+            msg = f"'columns' parameter is not supported by {self.connection.__class__.__name__}"
+            raise ValueError(msg)

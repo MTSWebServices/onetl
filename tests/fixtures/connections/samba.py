@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -14,7 +14,13 @@ from tests.util.upload_files import upload_files
     ],
 )
 def samba_server():
-    SambaServer = namedtuple("SambaServer", ["host", "protocol", "port", "share", "user", "password"])
+    class SambaServer(NamedTuple):
+        host: str
+        protocol: str
+        port: str
+        share: str
+        user: str
+        password: str
 
     return SambaServer(
         host=os.getenv("ONETL_SAMBA_HOST"),
@@ -41,18 +47,15 @@ def samba_file_connection(samba_server):
 
 
 @pytest.fixture()
-def samba_file_connection_with_path(request, samba_file_connection):
+def samba_file_connection_with_path(samba_file_connection, worker_id):
     connection = samba_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

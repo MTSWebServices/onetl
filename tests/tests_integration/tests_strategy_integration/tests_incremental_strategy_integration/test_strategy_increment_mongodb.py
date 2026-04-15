@@ -35,14 +35,14 @@ def df_schema():
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize(
-    "hwm_type, hwm_column",
+    ("hwm_type", "hwm_column"),
     [
         (ColumnIntHWM, "hwm_int"),
         (ColumnDateTimeHWM, "hwm_datetime"),
     ],
 )
 @pytest.mark.parametrize(
-    "span_gap, span_length",
+    ("span_gap", "span_length"),
     [
         (10, 100),
         (10, 50),
@@ -241,7 +241,7 @@ def test_mongodb_strategy_incremental_nothing_to_read(
 
 # Fail if HWM is Numeric, or Decimal with fractional part, or string
 @pytest.mark.parametrize(
-    "hwm_column, exception_type, error_message",
+    ("hwm_column", "exception_type", "error_message"),
     [
         ("float_value", ValueError, "Expression 'float_value' returned values"),
         ("text_string", RuntimeError, "Cannot detect HWM type for"),

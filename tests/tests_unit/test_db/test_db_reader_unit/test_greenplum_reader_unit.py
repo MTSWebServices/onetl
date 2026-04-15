@@ -46,7 +46,7 @@ def test_greenplum_reader_snapshot_error_pass_df_schema(spark_mock):
 def test_greenplum_reader_wrong_table_name(spark_mock):
     greenplum = Greenplum(host="some_host", user="user", database="database", password="passwd", spark=spark_mock)
 
-    with pytest.raises(ValueError, match="Name should be passed in `schema.name` format"):
+    with pytest.raises(ValueError, match=r"Name should be passed in `schema\.name` format"):
         DBReader(
             connection=greenplum,
             source="table",  # Required format: source="schema.table"
@@ -82,7 +82,7 @@ def test_greenplum_reader_wrong_where_type(spark_mock):
 
 
 @pytest.mark.parametrize(
-    ["df_partitions", "spark_config"],
+    ("df_partitions", "spark_config"),
     [
         pytest.param(30, {"spark.master": "local[200]"}, id="small_df, local[200]"),
         pytest.param(200, {"spark.master": "local[30]"}, id="large_df, local[30]"),
@@ -184,7 +184,7 @@ def test_greenplum_reader_number_of_connections_less_than_warning_threshold(
 
 
 @pytest.mark.parametrize(
-    ["df_partitions", "spark_config", "parallel_connections"],
+    ("df_partitions", "spark_config", "parallel_connections"),
     [
         pytest.param(31, {"spark.master": "local[200]"}, 31, id="small_df, local[200]"),
         pytest.param(200, {"spark.master": "local[31]"}, 31, id="large_df, local[31]"),
@@ -320,7 +320,7 @@ def test_greenplum_reader_number_of_connections_higher_than_warning_threshold(
 
 
 @pytest.mark.parametrize(
-    ["df_partitions", "spark_config", "parallel_connections"],
+    ("df_partitions", "spark_config", "parallel_connections"),
     [
         pytest.param(100, {"spark.master": "local[200]"}, 100, id="large_df, local[200]"),
         pytest.param(200, {"spark.master": "local[100]"}, 100, id="extra_large_df, local[100]"),

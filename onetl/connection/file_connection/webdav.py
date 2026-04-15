@@ -167,9 +167,10 @@ class WebDAV(FileConnection, RenameDirMixin):
         if self.client.is_dir(os.fspath(path)):
             return RemotePathStat()
 
+        mtime = datetime.datetime.strptime(info["modified"], DATA_MODIFIED_FORMAT)  # noqa: DTZ007
         return RemotePathStat(
             st_size=info["size"],
-            st_mtime=datetime.datetime.strptime(info["modified"], DATA_MODIFIED_FORMAT).timestamp(),
+            st_mtime=mtime.timestamp(),
             st_uid=info["name"],
         )
 
@@ -244,8 +245,9 @@ class WebDAV(FileConnection, RenameDirMixin):
         if entry["isdir"]:
             return RemotePathStat()
 
+        mtime = datetime.datetime.strptime(entry["modified"], DATA_MODIFIED_FORMAT)  # noqa: DTZ007
         return RemotePathStat(
             st_size=entry["size"],
-            st_mtime=datetime.datetime.strptime(entry["modified"], DATA_MODIFIED_FORMAT).timestamp(),
+            st_mtime=mtime.timestamp(),
             st_uid=entry["name"],
         )

@@ -35,9 +35,8 @@ def test_samba_file_connection_check_not_existing_share_failed(samba_server, cap
         password=samba_server.password,
     )
 
-    with caplog.at_level(logging.INFO):
-        with pytest.raises(RuntimeError, match="Connection is unavailable"):
-            samba.check()
+    with caplog.at_level(logging.INFO), pytest.raises(RuntimeError, match="Connection is unavailable"):
+        samba.check()
 
     assert f"Share '{not_existing_share}' not found among existing shares" in caplog.text
 

@@ -31,8 +31,8 @@ from onetl.impl.generic_options import GenericOptions
 
 
 class MySQLExtra(GenericOptions):
-    useUnicode: str = "yes"  # noqa: N815
-    characterEncoding: str = "UTF-8"  # noqa: N815
+    useUnicode: str = "yes"
+    characterEncoding: str = "UTF-8"
 
     class Config:
         extra = "allow"
@@ -65,10 +65,8 @@ class MySQL(JDBCConnection):
     password : str
         Password for database connection
 
-    database : str
-        Database in RDBMS, NOT schema.
-
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+    database : str, optional
+        Database (==schema) in MySQL
 
     spark : :obj:`pyspark.sql.SparkSession`
         Spark session.
@@ -131,7 +129,8 @@ class MySQL(JDBCConnection):
     @classmethod
     def get_packages(cls, package_version: str | None = None) -> list[str]:
         """
-        Get package names to be downloaded by Spark. Allows specifying a custom JDBC driver version for MySQL. |support_hooks|
+        Get package names to be downloaded by Spark.
+        Allows specifying a custom JDBC driver version for MySQL. |support_hooks|
 
         .. versionadded:: 0.9.0
 
@@ -193,8 +192,13 @@ class MySQL(JDBCConnection):
     def __str__(self):
         return f"{self.__class__.__name__}[{self.host}:{self.port}]"
 
-    def _get_jdbc_connection(self, options: JDBCFetchOptions | JDBCExecuteOptions, read_only: bool):
-        connection = super()._get_jdbc_connection(options, read_only)
+    def _get_jdbc_connection(
+        self,
+        options: JDBCFetchOptions | JDBCExecuteOptions,
+        *,
+        read_only: bool,
+    ):
+        connection = super()._get_jdbc_connection(options, read_only=read_only)
 
         # connection.setReadOnly() is no-op in MySQL JDBC driver. Session type can be changed by statement:
         # https://stackoverflow.com/questions/10240890/sql-open-connection-in-read-only-mode#comment123789248_48959180

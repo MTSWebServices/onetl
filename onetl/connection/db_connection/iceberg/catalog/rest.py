@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional
 try:
     from pydantic.v1 import AnyUrl, Field
 except (ImportError, AttributeError):
-    from pydantic import Field, AnyUrl  # type: ignore[no-redef, assignment]
+    from pydantic import AnyUrl, Field  # type: ignore[no-redef, assignment]
 
 from onetl._util.spark import stringify
 from onetl.connection.db_connection.iceberg.catalog import IcebergCatalog

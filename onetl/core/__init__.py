@@ -4,8 +4,8 @@ import textwrap
 import warnings
 from importlib import import_module
 
-from onetl.core.file_filter import *
-from onetl.core.file_limit import *
+from onetl.core.file_filter import FileFilter
+from onetl.core.file_limit import FileLimit
 
 module_for_class = {
     "DBReader": "db",
@@ -18,6 +18,20 @@ module_for_class = {
     "FileResult": "file.file_result",
     "FileSet": "file.file_set",
 }
+
+__all__ = [
+    "DBReader",
+    "DBWriter",
+    "DownloadResult",
+    "FileDownloader",
+    "FileFilter",
+    "FileLimit",
+    "FileResult",
+    "FileSet",
+    "FileUploader",
+    "MoveResult",
+    "UploadResult",
+]
 
 
 def __getattr__(name: str):

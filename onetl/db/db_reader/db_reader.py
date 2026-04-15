@@ -357,7 +357,7 @@ class DBReader(FrozenModel):
         return connection.dialect.validate_df_schema(df_schema)
 
     @root_validator(skip_on_failure=True)
-    def validate_hwm(cls, values: dict) -> dict:  # noqa: WPS231
+    def validate_hwm(cls, values: dict) -> dict:
         connection: BaseDBConnection = values["connection"]
         source: str = values["source"]
         hwm_column: str | tuple[str, str] | None = values.get("hwm_column")
@@ -366,10 +366,11 @@ class DBReader(FrozenModel):
 
         if hwm_column is not None:
             if hwm:
-                raise ValueError("Please pass either DBReader(hwm=...) or DBReader(hwm_column=...), not both")
+                msg = "Please pass either DBReader(hwm=...) or DBReader(hwm_column=...), not both"
+                raise ValueError(msg)
 
             if not hwm_expression and isinstance(hwm_column, tuple):
-                hwm_column, hwm_expression = hwm_column  # noqa: WPS434
+                hwm_column, hwm_expression = hwm_column
 
                 if not hwm_expression:
                     error_message = textwrap.dedent(
@@ -409,7 +410,8 @@ class DBReader(FrozenModel):
             )
 
         if hwm and not hwm.expression:
-            raise ValueError("`hwm.expression` cannot be None")
+            msg = "`hwm.expression` cannot be None"
+            raise ValueError(msg)
 
         if hwm and not hwm.entity:
             hwm = hwm.copy(update={"entity": source})
@@ -443,9 +445,8 @@ class DBReader(FrozenModel):
             return read_options_class.parse(options)
 
         if options:
-            raise ValueError(
-                f"{connection.__class__.__name__} does not implement ReadOptions, but {options!r} is passed",
-            )
+            msg = f"{connection.__class__.__name__} does not implement ReadOptions, but {options!r} is passed"
+            raise ValueError(msg)
 
         return None
 
@@ -459,7 +460,9 @@ class DBReader(FrozenModel):
 
         .. warning::
 
-            If :etl-entities:`hwm <hwm/index.html>` is used, then method should be called inside :ref:`strategy` context. And vise-versa, if HWM is not used, this method should not be called within strategy.
+            If :etl-entities:`hwm <hwm/index.html>` is used,
+            then method should be called inside :ref:`strategy` context.
+            And vise-versa, if HWM is not used, this method should not be called within strategy.
 
         .. versionadded:: 0.10.0
 
@@ -521,7 +524,9 @@ class DBReader(FrozenModel):
 
         .. warning::
 
-            If :etl-entities:`hwm <hwm/index.html>` is used, then method should be called inside :ref:`strategy` context. And vise-versa, if HWM is not used, this method should not be called within strategy.
+            If :etl-entities:`hwm <hwm/index.html>` is used,
+            then method should be called inside :ref:`strategy` context.
+            And vise-versa, if HWM is not used, this method should not be called within strategy.
 
         .. versionadded:: 0.10.0
 
@@ -545,7 +550,8 @@ class DBReader(FrozenModel):
         """
 
         if not self.has_data():
-            raise NoDataError(f"No data in the source: {self.source}")
+            msg = f"No data in the source: {self.source}"
+            raise NoDataError(msg)
 
     @slot
     def run(self) -> DataFrame:
@@ -558,7 +564,9 @@ class DBReader(FrozenModel):
 
         .. warning::
 
-            If :etl-entities:`hwm <hwm/index.html>` is used, then method should be called inside :ref:`strategy` context. And vise-versa, if HWM is not used, this method should not be called within strategy.
+            If :etl-entities:`hwm <index.html>` is used,
+            then method should be called inside :ref:`strategy` context.
+            And vise-versa, if HWM is not used, this method should not be called within strategy.
 
         .. versionadded:: 0.1.0
 
@@ -615,13 +623,17 @@ class DBReader(FrozenModel):
 
         if self.hwm:
             if not isinstance(strategy, HWMStrategy):
-                raise RuntimeError(
-                    f"{class_name}(hwm=...) cannot be used with {strategy_name}. Check documentation DBReader.has_data(): https://onetl.readthedocs.io/en/stable/db/db_reader.html#onetl.db.db_reader.db_reader.DBReader.has_data.",
+                msg = (
+                    f"{class_name}(hwm=...) cannot be used with {strategy_name}. "
+                    "Check documentation DBReader.has_data(): "
+                    "https://onetl.readthedocs.io/en/stable/db/db_reader.html#onetl.db.db_reader.db_reader.DBReader.has_data."
                 )
+                raise RuntimeError(msg)
             self._prepare_hwm(strategy, self.hwm)
 
         elif isinstance(strategy, HWMStrategy):
-            raise RuntimeError(f"{strategy_name} cannot be used without {class_name}(hwm=...)")
+            msg = f"{strategy_name} cannot be used without {class_name}(hwm=...)"
+            raise RuntimeError(msg)
 
     def _prepare_hwm(self, strategy: HWMStrategy, hwm: ColumnHWM):
         if not strategy.hwm:
@@ -696,7 +708,8 @@ class DBReader(FrozenModel):
             schema = {field.name.casefold(): field for field in self.df_schema}
             column = hwm.expression.casefold()
             if column not in schema:
-                raise ValueError(f"HWM column {column!r} not found in dataframe schema")
+                msg = f"HWM column {column!r} not found in dataframe schema"
+                raise ValueError(msg)
 
             result = schema[column]
         elif isinstance(self.connection, ContainsGetDFSchemaMethod):
@@ -707,15 +720,16 @@ class DBReader(FrozenModel):
             )
             result = df_schema[0]
         else:
-            raise ValueError(
+            msg = (
                 "You should specify `df_schema` field to use DBReader with "
-                f"{self.connection.__class__.__name__} connection",
+                f"{self.connection.__class__.__name__} connection"
             )
+            raise ValueError(msg)
 
         log.info("|%s| Got Spark field: %s", self.__class__.__name__, result)
         return result
 
-    def _calculate_window_and_limit(self) -> tuple[Window | None, int | None]:  # noqa: WPS231
+    def _calculate_window_and_limit(self) -> tuple[Window | None, int | None]:
         if not self.hwm:
             # SnapshotStrategy - always select all the data from source
             return None, None
@@ -731,9 +745,8 @@ class DBReader(FrozenModel):
             return window, None
 
         if not isinstance(self.connection, ContainsGetMinMaxValues):
-            raise ValueError(
-                f"{self.connection.__class__.__name__} connection does not support {strategy.__class__.__name__}",
-            )
+            msg = f"{self.connection.__class__.__name__} connection does not support {strategy.__class__.__name__}"
+            raise TypeError(msg)
 
         # strategy does not have start/stop/current value - use min/max values from source to fill them up
         min_value, max_value = self.connection.get_min_max_values(
@@ -784,7 +797,8 @@ class DBReader(FrozenModel):
 
             window = Window(self.hwm.expression, start_from=strategy.current, stop_at=strategy.next)
         else:
-            # for IncrementalStrategy fix only max value to avoid difference between real dataframe content and HWM value
+            # for IncrementalStrategy fix only max value
+            # to avoid difference between real dataframe content and HWM value
             window = Window(
                 self.hwm.expression,
                 start_from=strategy.current,
@@ -807,7 +821,7 @@ class DBReader(FrozenModel):
             log_json(log, self.where, "where")
 
         if self.df_schema:
-            empty_df = self.connection.spark.createDataFrame([], self.df_schema)  # type: ignore
+            empty_df = self.connection.spark.createDataFrame([], self.df_schema)
             log_dataframe_schema(log, empty_df)
 
         if self.hwm:
@@ -825,7 +839,7 @@ class DBReader(FrozenModel):
     @classmethod
     def _forward_refs(cls) -> dict[str, type]:
         try_import_pyspark()
-        from pyspark.sql.types import StructType  # noqa: WPS442
+        from pyspark.sql.types import StructType
 
         # avoid importing pyspark unless user called the constructor,
         # as we allow user to use `Connection.get_packages()` for creating Spark session

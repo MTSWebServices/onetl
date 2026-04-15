@@ -21,7 +21,7 @@ class SparkListenerStageStatus(str, Enum):
 
 @dataclass
 class SparkListenerStage:
-    # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/StageInfo.html
+    # https://spark.apache.org/docs/3.5.8/api/java/org/apache/spark/scheduler/StageInfo.html
     id: int
     status: SparkListenerStageStatus = SparkListenerStageStatus.PENDING
     metrics: SparkListenerTaskMetrics = field(default_factory=SparkListenerTaskMetrics, repr=False, init=False)
@@ -29,21 +29,18 @@ class SparkListenerStage:
 
     @property
     def tasks(self) -> list[SparkListenerTask]:
-        result = []
-        for task_id in sorted(self._tasks.keys()):
-            result.append(self._tasks[task_id])
-        return result
+        return [self._tasks[task_id] for task_id in sorted(self._tasks.keys())]
 
     @classmethod
     def create(cls, stage_info):
         return cls(id=stage_info.stageId())
 
     def on_stage_start(self, event):
-        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListenerStageSubmitted.html
+        # https://spark.apache.org/docs/3.5.8/api/java/org/apache/spark/scheduler/SparkListenerStageSubmitted.html
         self.status = SparkListenerStageStatus.ACTIVE
 
     def on_stage_end(self, event):
-        # https://spark.apache.org/docs/3.5.7/api/java/org/apache/spark/scheduler/SparkListenerStageCompleted.html
+        # https://spark.apache.org/docs/3.5.8/api/java/org/apache/spark/scheduler/SparkListenerStageCompleted.html
         stage_info = event.stageInfo()
         if stage_info.failureReason().isDefined():
             self.status = SparkListenerStageStatus.FAILED

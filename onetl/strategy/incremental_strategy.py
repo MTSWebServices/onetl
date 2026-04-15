@@ -17,7 +17,8 @@ class IncrementalStrategy(HWMStrategy):
     by filtering items not covered by the previous :ref:`HWM` value.
 
     For :ref:`db-reader`:
-        First incremental run is just the same as :obj:`SnapshotStrategy <onetl.strategy.snapshot_strategy.SnapshotStrategy>`:
+        First incremental run is just the same as
+        :obj:`SnapshotStrategy <onetl.strategy.snapshot_strategy.SnapshotStrategy>`:
 
         .. code:: sql
 
@@ -54,8 +55,8 @@ class IncrementalStrategy(HWMStrategy):
 
             .. tab:: FileListHWM
 
-                First incremental run is just the same as :obj:`SnapshotStrategy <onetl.strategy.snapshot_strategy.SnapshotStrategy>` -
-                all files are downloaded:
+                First incremental run is just the same as
+                :obj:`SnapshotStrategy <onetl.strategy.snapshot_strategy.SnapshotStrategy>` - all files are downloaded:
 
                 .. code:: bash
 
@@ -123,8 +124,8 @@ class IncrementalStrategy(HWMStrategy):
 
             .. tab:: FileModifiedTimeHWM
 
-                First incremental run is just the same as :obj:`SnapshotStrategy <onetl.strategy.snapshot_strategy.SnapshotStrategy>` -
-                all files are downloaded:
+                First incremental run is just the same as
+                :obj:`SnapshotStrategy <onetl.strategy.snapshot_strategy.SnapshotStrategy>` - all files are downloaded:
 
                 .. code:: bash
 
@@ -143,7 +144,8 @@ class IncrementalStrategy(HWMStrategy):
                         },
                     )
 
-                Then the maximum modified time of original files is saved as ``FileModifiedTimeHWM`` object into :ref:`HWM Store <hwm>`:
+                Then the maximum modified time of original files is saved as
+                ``FileModifiedTimeHWM`` object into :ref:`HWM Store <hwm>`:
 
                 .. code:: python
 
@@ -153,7 +155,8 @@ class IncrementalStrategy(HWMStrategy):
                         value=datetime.datetime(2025, 1, 1, 11, 22, 33, 456789, tzinfo=timezone.utc),
                     )
 
-                Next incremental run will download only files from the source which were modified or created since previous run:
+                Next incremental run will download only files from the source
+                which were modified or created since previous run:
 
                 .. code:: bash
 
@@ -185,12 +188,15 @@ class IncrementalStrategy(HWMStrategy):
 
         .. warning::
 
-            FileDownload updates HWM in HWM Store at the end of ``.run()`` call,
+            FileDownloader updates HWM in HWM Store at the end of ``.run()`` call,
             **NOT** while exiting strategy context. This is because:
 
             * FileDownloader does not raise exceptions if some file cannot be downloaded.
-            * FileDownloader creates files on local filesystem, and file content may differ for different :obj:`modes <onetl.file.file_downloader.file_downloader.FileDownloader.Options.mode>`.
-            * It can remove files from the source if :obj:`delete_source <onetl.file.file_downloader.file_downloader.FileDownloader.Options.delete_source>` is set to ``True``.
+            * FileDownloader creates files on local filesystem, and file content may differ for different
+              :obj:`modes <onetl.file.file_downloader.file_downloader.FileDownloader.Options.mode>`.
+            * It can remove files from the source
+              if :obj:`delete_source <onetl.file.file_downloader.file_downloader.FileDownloader.Options.delete_source>`
+              is set to ``True``.
 
     .. versionadded:: 0.1.0
 
@@ -428,7 +434,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
            WHERE id > 1000 AND id <= 1100; -- previous HWM value is 1000, step is 100
 
         2: WHERE id > 1100 AND id <= 1200; -- + step
-        3: WHERE id > 1200 AND id <= 1200; -- + step
+        3: WHERE id > 1200 AND id <= 1300; -- + step
         N: WHERE id > 1300 AND id <= 1400; -- until stop
 
     This allows to use less CPU and RAM than reading all the data in the one batch,

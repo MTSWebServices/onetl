@@ -4,6 +4,14 @@ import re
 
 import pytest
 
+try:
+    from pyspark import __version__ as spark_version
+except ImportError:
+    pytest.skip("Missing pyspark", allow_module_level=True)
+
+if spark_version.startswith("4.1"):
+    pytest.skip("Iceberg is not supported in Spark 4.1", allow_module_level=True)
+
 from onetl.connection import Iceberg
 from onetl.db import DBWriter
 
@@ -41,7 +49,7 @@ def test_iceberg_writer_with_custom_location(
     connection = iceberg_connection_rest_catalog_s3_warehouse
     df = processing.create_spark_df(spark)
     table = f"{connection.catalog_name}.{get_schema_table.full_name}"
-    location = "s3a://" + os.path.join(
+    location = "s3a://" + os.path.join(  # noqa: PTH118
         connection.warehouse.bucket,
         connection.warehouse.path.as_posix().lstrip("/"),
         get_schema_table.schema,

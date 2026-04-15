@@ -3,22 +3,23 @@ import shutil
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from onetl._util.version import Version
 
 
 @pytest.fixture(scope="session")
-def warehouse_dir(tmp_path_factory):
+def warehouse_dir(tmp_path_factory, worker_id):
     # https://spark.apache.org/docs/latest/sql-data-sources-hive-tables.html
-    path = tmp_path_factory.mktemp("spark-warehouse")
+    path = tmp_path_factory.mktemp("spark-warehouse") / worker_id
     yield path
     shutil.rmtree(path, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
-def spark_metastore_dir(tmp_path_factory):
+def spark_metastore_dir(tmp_path_factory, worker_id):
     # https://stackoverflow.com/a/44048667
-    path = tmp_path_factory.mktemp("metastore_db")
+    path = tmp_path_factory.mktemp("metastore-db") / worker_id
     yield path
     shutil.rmtree(path, ignore_errors=True)
 
@@ -31,7 +32,7 @@ def ivysettings_path():
 
 
 @pytest.fixture(scope="session")
-def maven_packages(request):
+def maven_packages(request):  # noqa: C901, PLR0912
     import pyspark
 
     from onetl.connection import (
@@ -49,6 +50,7 @@ def maven_packages(request):
     from onetl.file.format import XML, Avro, Excel
 
     pyspark_version = Version(pyspark.__version__)
+    version = (pyspark_version.major, pyspark_version.minor)
 
     # get markers from all downstream tests
     markers = set()
@@ -81,28 +83,23 @@ def maven_packages(request):
         )
 
     if "avro" in markers:
-        # There is no Avro package for Spark 2.3
         packages.extend(Avro.get_packages(spark_version=str(pyspark_version)))
+
     if "kafka" in markers:
-        # Kafka connector for Spark 2.3 is too old and not supported
         packages.extend(Kafka.get_packages(spark_version=str(pyspark_version)))
 
     if "s3" in markers:
-        # There is no SparkS3 connector for Spark less than 3
         packages.extend(SparkS3.get_packages(spark_version=str(pyspark_version)))
 
     if "xml" in markers:
-        # There is no XML files support for Spark less than 3
         packages.extend(XML.get_packages(spark_version=str(pyspark_version)))
 
     if "mongodb" in markers:
-        # There is no MongoDB connector for Spark less than 3.2
         packages.extend(MongoDB.get_packages(spark_version=str(pyspark_version)))
 
     if "excel" in markers:
         # There are package versions only for specific Spark versions,
         # see https://github.com/nightscape/spark-excel/issues/902
-        version = (pyspark_version.major, pyspark_version.minor)
         if version == (3, 2):
             packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="3.2.4"))
         elif version == (3, 3):
@@ -114,8 +111,8 @@ def maven_packages(request):
         elif version == (4, 0):
             packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="4.0.0"))
 
-    if "iceberg" in markers:
-        version = (pyspark_version.major, pyspark_version.minor)
+    # There is no package for Iceberg Runtime for Spark 4.1 for now
+    if "iceberg" in markers and version < (4, 1):
         iceberg_version = "1.4.3" if version == (3, 2) else "1.10.0"
         packages.extend(
             Iceberg.get_packages(
@@ -149,11 +146,19 @@ def excluded_packages():
         pytest.param("real-spark", marks=[pytest.mark.db_connection, pytest.mark.connection]),
     ],
 )
-def spark(warehouse_dir, spark_metastore_dir, ivysettings_path, maven_packages, excluded_packages):
+def spark(
+    warehouse_dir,
+    spark_metastore_dir,
+    ivysettings_path,
+    maven_packages,
+    excluded_packages,
+    worker_id,
+    tmp_path_factory,
+):
     from pyspark.sql import SparkSession
 
-    spark = (
-        SparkSession.builder.config("spark.app.name", "onetl")  # noqa: WPS221
+    spark_builder = (
+        SparkSession.builder.config("spark.app.name", "onetl")
         .config("spark.master", "local[*]")
         .config("spark.jars.packages", ",".join(maven_packages))
         .config("spark.jars.excludes", ",".join(excluded_packages))
@@ -172,8 +177,17 @@ def spark(warehouse_dir, spark_metastore_dir, ivysettings_path, maven_packages, 
         )
         .config("spark.sql.warehouse.dir", warehouse_dir)
         .enableHiveSupport()
-        .getOrCreate()
     )
+
+    if worker_id == "master":
+        spark = spark_builder.getOrCreate()
+    else:
+        # https://pytest-xdist.readthedocs.io/en/stable/how-to.html#making-session-scoped-fixtures-execute-only-once
+        # Parallel start of Spark sessions can fail to write same files into ~/.ivy2 cache
+        # So we starting sessions one by one
+        root_tmp_dir = tmp_path_factory.getbasetemp().parent
+        with FileLock(root_tmp_dir / "spark_session.lock"):
+            spark = spark_builder.getOrCreate()
 
     yield spark
     spark.sparkContext.stop()
@@ -181,7 +195,9 @@ def spark(warehouse_dir, spark_metastore_dir, ivysettings_path, maven_packages, 
 
 
 @pytest.fixture(scope="session")
-def iceberg_warehouse_dir(tmp_path_factory):
-    path = tmp_path_factory.mktemp("iceberg-warehouse")
+def iceberg_warehouse_dir(tmp_path_factory, worker_id):
+    path = tmp_path_factory.mktemp("iceberg-warehouse") / worker_id
+    # Iceberg warehouse dir should be created beforehand
+    path.mkdir(exist_ok=True)
     yield path
     shutil.rmtree(path, ignore_errors=True)

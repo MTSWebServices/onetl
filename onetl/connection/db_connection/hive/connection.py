@@ -77,8 +77,6 @@ class Hive(DBConnection):
                 from pyspark.sql import SparkSession
 
                 # Create Spark session
-                # Use names "spark.yarn.access.hadoopFileSystems", "spark.yarn.principal"
-                # and "spark.yarn.keytab" for Spark 2
 
                 spark = (
                     SparkSession.builder.appName("spark-app-name")
@@ -145,15 +143,16 @@ class Hive(DBConnection):
 
             # injecting current cluster name via hooks mechanism
             hive = Hive.get_current(spark=spark)
-        """
+        """  # noqa: E501
 
         log.info("|%s| Detecting current cluster...", cls.__name__)
         current_cluster = cls.Slots.get_current_cluster()
         if not current_cluster:
-            raise RuntimeError(
+            msg = (
                 f"{cls.__name__}.get_current() can be used only if there are "
-                f"some hooks bound to {cls.__name__}.Slots.get_current_cluster",
+                f"some hooks bound to {cls.__name__}.Slots.get_current_cluster"
             )
+            raise RuntimeError(msg)
 
         log.info("|%s| Got %r", cls.__name__, current_cluster)
         return cls(cluster=current_cluster, spark=spark)  # type: ignore[arg-type]
@@ -170,7 +169,8 @@ class Hive(DBConnection):
         log.debug("|%s| Detecting current cluster...", self.__class__.__name__)
         current_cluster = self.Slots.get_current_cluster()
         if current_cluster and self.cluster != current_cluster:
-            raise ValueError("You can connect to a Hive cluster only from the same cluster")
+            msg = "You can connect to a Hive cluster only from the same cluster"
+            raise ValueError(msg)
 
         log.info("|%s| Checking connection availability...", self.__class__.__name__)
         self._log_parameters()
@@ -184,7 +184,8 @@ class Hive(DBConnection):
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
-            raise RuntimeError("Connection is unavailable") from e
+            msg = "Connection is unavailable"
+            raise RuntimeError(msg) from e
 
         return self
 
@@ -223,7 +224,7 @@ class Hive(DBConnection):
                 with override_job_description(self.spark, f"{self}.sql()"):
                     df = self._execute_sql(query)
             except Exception:
-                log.error("|%s| Query failed", self.__class__.__name__)
+                log.exception("|%s| Query failed", self.__class__.__name__)
 
                 metrics = recorder.metrics()
                 if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
@@ -271,7 +272,8 @@ class Hive(DBConnection):
                 with override_job_description(self.spark, f"{self}.execute()"):
                     self._execute_sql(statement).collect()
             except Exception:
-                log.error("|%s| Execution failed", self.__class__.__name__)
+                log.exception("|%s| Execution failed", self.__class__.__name__)
+
                 metrics = recorder.metrics()
                 if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
                     # as SparkListener results are not guaranteed to be received in time,
@@ -306,7 +308,8 @@ class Hive(DBConnection):
             return
 
         if write_options.if_exists == HiveTableExistBehavior.ERROR:
-            raise ValueError("Operation stopped due to Hive.WriteOptions(if_exists='error')")
+            msg = "Operation stopped due to Hive.WriteOptions(if_exists='error')"
+            raise ValueError(msg)
 
         if write_options.if_exists == HiveTableExistBehavior.IGNORE:
             log.info(
@@ -320,7 +323,7 @@ class Hive(DBConnection):
         self._insert_into(df, target, options)
 
     @slot
-    def read_source_as_df(
+    def read_source_as_df(  # noqa: PLR0913
         self,
         source: str,
         columns: list[str] | None = None,
@@ -401,14 +404,13 @@ class Hive(DBConnection):
         log.debug("|%s| Normalizing cluster %r name...", cls.__name__, cluster)
         validated_cluster = cls.Slots.normalize_cluster_name(cluster) or cluster
         if validated_cluster != cluster:
-            log.debug("|%s|   Got %r", cls.__name__)
+            log.debug("|%s|   Got %r", cls.__name__, validated_cluster)
 
         log.debug("|%s| Checking if cluster %r is a known cluster...", cls.__name__, validated_cluster)
         known_clusters = cls.Slots.get_known_clusters()
         if known_clusters and validated_cluster not in known_clusters:
-            raise ValueError(
-                f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}",
-            )
+            msg = f"Cluster {validated_cluster!r} is not in the known clusters list: {sorted(known_clusters)!r}"
+            raise ValueError(msg)
 
         return validated_cluster
 
@@ -539,7 +541,7 @@ class Hive(DBConnection):
         write_options = self.WriteOptions.parse(options)
 
         writer = df.write
-        for method, value in write_options.dict(  # noqa: WPS352
+        for method, value in write_options.dict(
             by_alias=True,
             exclude_none=True,
             exclude={"if_exists", "format", "table_properties"},

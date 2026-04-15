@@ -22,8 +22,6 @@ Oracle config, or reading data from some reference table. Method returns Spark D
 
 Method accepts :obj:`Oracle.FetchOptions <onetl.connection.db_connection.oracle.options.OracleFetchOptions>`.
 
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
-
 .. warning::
 
     Please take into account :ref:`oracle-types`.
@@ -61,8 +59,6 @@ Use ``Oracle.execute``
 Use this method to execute DDL and DML operations. Each method call runs operation in a separated transaction, and then commits it.
 
 Method accepts :obj:`Oracle.ExecuteOptions <onetl.connection.db_connection.oracle.options.OracleExecuteOptions>`.
-
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
 
 Syntax support
 ^^^^^^^^^^^^^^

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
-from onetl.base import BaseFileLimit
+if TYPE_CHECKING:
+    from onetl.base import BaseFileLimit
 
 log = logging.getLogger(__name__)
 

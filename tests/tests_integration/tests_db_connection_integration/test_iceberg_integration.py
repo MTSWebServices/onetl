@@ -1,11 +1,16 @@
 import logging
+import re
 
 import pytest
 
 try:
     import pandas
+    from pyspark import __version__ as spark_version
 except ImportError:
     pytest.skip("Missing pandas or pyspark", allow_module_level=True)
+
+if spark_version.startswith("4.1"):
+    pytest.skip("Iceberg is not supported in Spark 4.1", allow_module_level=True)
 
 pytestmark = pytest.mark.iceberg
 
@@ -26,10 +31,12 @@ def test_iceberg_connection_sql(iceberg_connection_fs_catalog_local_fs_warehouse
     database_table_column = database_name_column = "namespace"
     connection = iceberg_connection_fs_catalog_local_fs_warehouse
 
-    schema = f"{connection.catalog_name}.{load_table_data.schema}"
-    table = f"{connection.catalog_name}.{load_table_data.full_name}"
+    catalog = connection.catalog_name
+    schema = load_table_data.schema
+    table = load_table_data.table
+    full_table = f"{catalog}.{load_table_data.full_name}"
 
-    df = connection.sql(f"SELECT * FROM {table}{suffix}")
+    df = connection.sql(f"SELECT * FROM {full_table}{suffix}")
     table_df = processing.get_expected_dataframe(
         schema=load_table_data.schema,
         table=load_table_data.table,
@@ -37,17 +44,17 @@ def test_iceberg_connection_sql(iceberg_connection_fs_catalog_local_fs_warehouse
     )
     processing.assert_equal_df(df=df, other_frame=table_df, order_by="id_int")
 
-    df = connection.sql(f"SELECT * FROM {table} WHERE id_int < 50{suffix}")
+    df = connection.sql(f"SELECT * FROM {full_table} WHERE id_int < 50{suffix}")
     filtered_df = table_df[table_df.id_int < 50]
     processing.assert_equal_df(df=df, other_frame=filtered_df, order_by="id_int")
 
-    df = connection.sql("SHOW NAMESPACES")
-    result_df = pandas.DataFrame([["default"]], columns=[database_table_column])
+    df = connection.sql(f"SHOW NAMESPACES IN {catalog}{suffix}")
+    result_df = pandas.DataFrame([[schema]], columns=[database_table_column])
     processing.assert_equal_df(df=df, other_frame=result_df)
 
-    df = connection.sql(f"SHOW TABLES IN {schema}")
+    df = connection.sql(f"SHOW TABLES IN {catalog}.{schema} LIKE '{re.escape(table)}'{suffix}")
     result_df = pandas.DataFrame(
-        [[schema.split(".")[-1], load_table_data.table, False]],
+        [[schema, table, False]],
         columns=[database_name_column, "tableName", "isTemporary"],
     )
     processing.assert_equal_df(df=df, other_frame=result_df)
@@ -65,7 +72,7 @@ def test_iceberg_connection_execute_ddl(
     suffix,
 ):
     connection = iceberg_connection_fs_catalog_local_fs_warehouse
-    table_name, schema, table = get_schema_table
+    _table_name, schema, table = get_schema_table
     fields = {
         column_name: processing.get_column_type(column_name)
         for column_name in processing.column_names

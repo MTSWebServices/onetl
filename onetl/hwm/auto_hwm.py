@@ -31,7 +31,8 @@ class AutoDetectHWM(HWM):
 
     def update(self: AutoDetectHWM, value: Any) -> AutoDetectHWM:
         """Update current HWM value with some implementation-specific logic, and return HWM"""
-        raise NotImplementedError("update method should be implemented in auto detected subclasses")
+        msg = "update method should be implemented in auto detected subclasses"
+        raise NotImplementedError(msg)
 
     def reset(self: AutoDetectHWM) -> AutoDetectHWM:
         raise NotImplementedError

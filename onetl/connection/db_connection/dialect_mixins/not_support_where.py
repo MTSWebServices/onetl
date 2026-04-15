@@ -15,4 +15,5 @@ class NotSupportWhere:
         where: Any,
     ) -> None:
         if where is not None:
-            raise TypeError(f"'where' parameter is not supported by {self.connection.__class__.__name__}")
+            msg = f"'where' parameter is not supported by {self.connection.__class__.__name__}"
+            raise TypeError(msg)

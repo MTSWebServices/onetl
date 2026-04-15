@@ -5,3 +5,14 @@ from onetl.file.file_df_writer import FileDFWriter
 from onetl.file.file_downloader import DownloadResult, FileDownloader
 from onetl.file.file_mover import FileMover, MoveResult
 from onetl.file.file_uploader import FileUploader, UploadResult
+
+__all__ = [
+    "DownloadResult",
+    "FileDFReader",
+    "FileDFWriter",
+    "FileDownloader",
+    "FileMover",
+    "FileUploader",
+    "MoveResult",
+    "UploadResult",
+]

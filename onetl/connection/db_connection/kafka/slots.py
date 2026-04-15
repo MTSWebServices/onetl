@@ -135,7 +135,8 @@ class KafkaSlots:
         Returns
         -------
         list[str] | None
-            A collection of broker addresses for the specified Kafka cluster. If the hook cannot be applied, return ``None``.
+            A collection of broker addresses for the specified Kafka cluster.
+            If the hook cannot be applied, return ``None``.
 
         Examples
         --------

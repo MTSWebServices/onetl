@@ -29,7 +29,7 @@ NON_BYTE_SIZE = re.compile(r"^[^\d.]+|\(.*\)", flags=re.DOTALL)
 def _get_int(data: dict[SparkSQLMetricNames, list[str]], key: Any) -> int | None:
     try:
         return int(data[key][0])
-    except Exception:
+    except (IndexError, KeyError, ValueError, TypeError):
         return None
 
 
@@ -38,7 +38,7 @@ def _get_bytes(data: dict[SparkSQLMetricNames, list[str]], key: Any) -> int | No
         raw_value = data[key][0]
         normalized_value = NON_BYTE_SIZE.sub("", raw_value)
         return int(ByteSize.validate(normalized_value))
-    except Exception:
+    except (IndexError, KeyError, ValueError, TypeError):
         return None
 
 
@@ -70,7 +70,7 @@ def extract_metrics_from_execution(execution: SparkListenerExecution) -> SparkCo
             disk_spilled_bytes += stage.metrics.disk_spilled_bytes
             result_size_bytes += stage.metrics.result_size_bytes
 
-    # https://github.com/apache/spark/blob/v3.5.7/sql/core/src/main/scala/org/apache/spark/sql/execution/DataSourceScanExec.scala#L467-L473
+    # https://github.com/apache/spark/blob/v3.5.8/sql/core/src/main/scala/org/apache/spark/sql/execution/DataSourceScanExec.scala#L467-L473
     input_file_count = (
         _get_int(execution.metrics, SparkSQLMetricNames.NUMBER_OF_FILES_READ)
         or _get_int(execution.metrics, SparkSQLMetricNames.STATIC_NUMBER_OF_FILES_READ)

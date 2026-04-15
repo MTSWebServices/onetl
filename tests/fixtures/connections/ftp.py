@@ -1,6 +1,6 @@
 import os
-from collections import namedtuple
 from pathlib import PurePosixPath
+from typing import NamedTuple
 
 import pytest
 
@@ -14,7 +14,11 @@ from tests.util.upload_files import upload_files
     ],
 )
 def ftp_server():
-    FTPServer = namedtuple("FTPServer", ["host", "port", "user", "password"])
+    class FTPServer(NamedTuple):
+        host: str
+        port: str
+        user: str
+        password: str
 
     return FTPServer(
         host=os.getenv("ONETL_FTP_HOST"),
@@ -37,19 +41,16 @@ def ftp_file_connection(ftp_server):
 
 
 @pytest.fixture()
-def ftp_file_connection_with_path(request, ftp_file_connection):
+def ftp_file_connection_with_path(ftp_file_connection, worker_id):
     connection = ftp_file_connection
-    root = PurePosixPath("/data")
-
-    def finalizer():
-        connection.remove_dir(root, recursive=True)
-
-    request.addfinalizer(finalizer)
+    root = PurePosixPath("/data", worker_id)
 
     connection.remove_dir(root, recursive=True)
     connection.create_dir(root)
 
-    return connection, root
+    yield connection, root
+
+    connection.remove_dir(root, recursive=True)
 
 
 @pytest.fixture()

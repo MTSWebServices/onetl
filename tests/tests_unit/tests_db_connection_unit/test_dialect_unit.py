@@ -265,7 +265,7 @@ def test_db_dialect_get_sql_query_compact_true(spark_mock):
 
 
 @pytest.mark.parametrize(
-    "limit, where, expected_query",
+    ("limit", "where", "expected_query"),
     [
         (None, None, "SELECT\n       *\nFROM\n       default.test"),
         (0, None, "SELECT\n       *\nFROM\n       default.test\nWHERE\n       1=0"),
@@ -275,7 +275,10 @@ def test_db_dialect_get_sql_query_compact_true(spark_mock):
         (
             5,
             "column1 = 'value'",
-            "SELECT\n       *\nFROM\n       default.test\nWHERE\n       (column1 = 'value')\n  AND\n       (ROWNUM <= 5)",
+            "SELECT\n       *\n"
+            "FROM\n       default.test\n"
+            "WHERE\n       (column1 = 'value')\n  "
+            "AND\n       (ROWNUM <= 5)",
         ),
     ],
 )
@@ -286,7 +289,7 @@ def test_oracle_dialect_get_sql_query_limit_where(spark_mock, limit, where, expe
 
 
 @pytest.mark.parametrize(
-    "limit, where, expected_query",
+    ("limit", "where", "expected_query"),
     [
         (None, None, "SELECT\n       *\nFROM\n       default.test"),
         (0, None, "SELECT\n       *\nFROM\n       default.test\nWHERE\n       1 = 0"),

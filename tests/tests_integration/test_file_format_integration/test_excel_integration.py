@@ -10,6 +10,7 @@ from onetl.file import FileDFReader, FileDFWriter
 from onetl.file.format import Excel
 
 try:
+    from pyspark import __version__ as spark_version
     from pyspark.sql.functions import col
 
     from tests.util.assert_df import assert_equal_df
@@ -17,12 +18,14 @@ try:
 except ImportError:
     pytest.skip("Missing pandas or pyspark", allow_module_level=True)
 
+if spark_version.startswith("4.1"):
+    pytest.skip("Excel is not supported in Spark 4.1", allow_module_level=True)
+
 pytestmark = [pytest.mark.local_fs, pytest.mark.file_df_connection, pytest.mark.connection, pytest.mark.excel]
 
 
 @pytest.mark.parametrize("format", ["xlsx", "xls"])
 def test_excel_reader_with_infer_schema(
-    spark,
     local_fs_file_df_connection_with_path_and_files,
     file_df_dataframe,
     format,
@@ -56,7 +59,7 @@ def test_excel_reader_with_infer_schema(
 
 @pytest.mark.parametrize("format", ["xlsx", "xls"])
 @pytest.mark.parametrize(
-    "path, options",
+    ("path", "options"),
     [
         ("without_header", {}),
         ("with_header", {"header": True}),
@@ -66,7 +69,6 @@ def test_excel_reader_with_infer_schema(
     ids=["without_header", "with_header", "with_data_address", "with_encryption"],
 )
 def test_excel_reader_with_options(
-    spark,
     local_fs_file_df_connection_with_path_and_files,
     file_df_dataframe,
     format,
@@ -100,7 +102,6 @@ def test_excel_reader_with_options(
     ids=["without_header", "with_header"],
 )
 def test_excel_writer(
-    spark,
     local_fs_file_df_connection_with_path,
     file_df_dataframe,
     options,

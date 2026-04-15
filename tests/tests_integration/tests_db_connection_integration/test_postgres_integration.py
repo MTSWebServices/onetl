@@ -2,6 +2,8 @@ import logging
 
 import pytest
 
+from onetl._util.version import Version
+
 try:
     import pandas
 except ImportError:
@@ -299,7 +301,6 @@ def test_postgres_connection_dml(request, spark, processing, load_table_data, su
     assert not postgres.fetch(f"SELECT * FROM {temp_table}{suffix}").count()
 
 
-@pytest.mark.xfail(reason="Postgres prior to v11 does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_postgres_connection_execute_procedure(
     request,
@@ -316,6 +317,11 @@ def test_postgres_connection_execute_procedure(
         database=processing.database,
         spark=spark,
     )
+
+    df = postgres.fetch("SHOW server_version")
+    version = df.collect()[0][0]
+    if Version(version).major < 11:
+        pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = load_table_data.full_name
     proc = f"{load_table_data.table}_proc"
@@ -408,7 +414,6 @@ def test_postgres_connection_execute_procedure(
         )
 
 
-@pytest.mark.xfail(reason="Postgres prior to v11 does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_postgres_connection_execute_procedure_arguments(
     request,
@@ -425,6 +430,10 @@ def test_postgres_connection_execute_procedure_arguments(
         database=processing.database,
         spark=spark,
     )
+    df = postgres.fetch("SHOW server_version")
+    version = df.collect()[0][0]
+    if Version(version).major < 11:
+        pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = load_table_data.full_name
     proc = f"{load_table_data.table}_proc"
@@ -459,7 +468,6 @@ def test_postgres_connection_execute_procedure_arguments(
         postgres.execute(f"CALL {proc}(10, 1){suffix}")
 
 
-@pytest.mark.xfail(reason="Postgres prior to v11 does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_postgres_connection_execute_procedure_inout(
     request,
@@ -476,6 +484,10 @@ def test_postgres_connection_execute_procedure_inout(
         database=processing.database,
         spark=spark,
     )
+    df = postgres.fetch("SHOW server_version")
+    version = df.collect()[0][0]
+    if Version(version).major < 11:
+        pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = load_table_data.full_name
     proc = f"{load_table_data.table}_proc_inout"
@@ -515,7 +527,6 @@ def test_postgres_connection_execute_procedure_inout(
         postgres.execute(f"CALL {proc}(10, ?){suffix}")
 
 
-@pytest.mark.xfail(reason="Postgres prior to v11 does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_postgres_connection_execute_procedure_ddl(
     request,
@@ -532,6 +543,10 @@ def test_postgres_connection_execute_procedure_ddl(
         database=processing.database,
         spark=spark,
     )
+    df = postgres.fetch("SHOW server_version")
+    version = df.collect()[0][0]
+    if Version(version).major < 11:
+        pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = get_schema_table.full_name
     proc = f"{table}_ddl"
@@ -555,7 +570,6 @@ def test_postgres_connection_execute_procedure_ddl(
     assert not postgres.execute(f"DROP TABLE {table}")
 
 
-@pytest.mark.xfail(reason="Postgres prior to v11 does not support procedures")
 @pytest.mark.parametrize("suffix", ["", ";"])
 def test_postgres_connection_execute_procedure_dml(
     request,
@@ -572,6 +586,10 @@ def test_postgres_connection_execute_procedure_dml(
         database=processing.database,
         spark=spark,
     )
+    df = postgres.fetch("SHOW server_version")
+    version = df.collect()[0][0]
+    if Version(version).major < 11:
+        pytest.skip("Postgres prior to v11 does not support procedures")
 
     table = get_schema_table.full_name
     proc = f"{table}_dml"
@@ -997,7 +1015,7 @@ def test_postgres_connection_execute_function_dml(
 
 
 @pytest.mark.parametrize(
-    "options_class, options_kwargs, expected_warning",
+    ("options_class", "options_kwargs", "expected_warning"),
     [
         (Postgres.ReadOptions, {"fetchsize": 5000, "sessionInitStatement": "SET timezone TO 'UTC'"}, UserWarning),
         (Postgres.SQLOptions, {"fetchsize": 5000, "sessionInitStatement": "SET timezone TO 'UTC'"}, None),

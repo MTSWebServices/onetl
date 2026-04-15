@@ -6,17 +6,18 @@ import warnings
 from enum import Enum
 from typing import Optional
 
+from onetl.impl.generic_options import GenericOptions
+
 try:
     from pydantic.v1 import Field, root_validator
 except (ImportError, AttributeError):
     from pydantic import Field, root_validator  # type: ignore[no-redef, assignment]
 
 from onetl._util.alias import avoid_alias
-from onetl.connection.db_connection.jdbc_connection.options import JDBCSQLOptions
-from onetl.connection.db_connection.jdbc_mixin import JDBCOptions
-from onetl.connection.db_connection.jdbc_mixin.options import (
+from onetl.connection.db_connection.jdbc_mixin import (
     JDBCExecuteOptions,
     JDBCFetchOptions,
+    JDBCMixinOptions,
 )
 
 # options from which are populated by Greenplum class methods
@@ -59,8 +60,8 @@ class GreenplumTableExistBehavior(str, Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    @classmethod  # noqa: WPS120
-    def _missing_(cls, value: object):  # noqa: WPS120
+    @classmethod
+    def _missing_(cls, value: object):
         if str(value) == "overwrite":
             warnings.warn(
                 "Mode `overwrite` is deprecated since v0.9.0 and will be removed in v1.0.0. "
@@ -69,15 +70,17 @@ class GreenplumTableExistBehavior(str, Enum):
                 stacklevel=4,
             )
             return cls.REPLACE_ENTIRE_TABLE
+        return None
 
 
-class GreenplumReadOptions(JDBCOptions):
+class GreenplumReadOptions(GenericOptions):
     """VMware's Greenplum Spark connector reading options.
 
     .. warning::
 
         Some options, like ``url``, ``dbtable``, ``server.*``, ``pool.*``,
-        etc are populated from connection attributes, and cannot be overridden by the user in ``ReadOptions`` to avoid issues.
+        etc are populated from connection attributes,
+        and cannot be overridden by the user in ``ReadOptions`` to avoid issues.
 
     Examples
     --------
@@ -102,7 +105,8 @@ class GreenplumReadOptions(JDBCOptions):
 
     class Config:
         known_options = READ_OPTIONS | READ_WRITE_OPTIONS
-        prohibited_options = JDBCOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | WRITE_OPTIONS
+        prohibited_options = JDBCMixinOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | WRITE_OPTIONS
+        extra = "allow"
 
     partition_column: Optional[str] = Field(alias="partitionColumn")
     """Column used to parallelize reading from a table.
@@ -205,13 +209,14 @@ class GreenplumReadOptions(JDBCOptions):
     """
 
 
-class GreenplumWriteOptions(JDBCOptions):
+class GreenplumWriteOptions(GenericOptions):
     """VMware's Greenplum Spark connector writing options.
 
     .. warning::
 
         Some options, like ``url``, ``dbtable``, ``server.*``, ``pool.*``, etc
-        are populated from connection attributes, and cannot be overridden by the user in ``WriteOptions`` to avoid issues.
+        are populated from connection attributes, and cannot be overridden
+        by the user in ``WriteOptions`` to avoid issues.
 
     Examples
     --------
@@ -237,7 +242,8 @@ class GreenplumWriteOptions(JDBCOptions):
 
     class Config:
         known_options = WRITE_OPTIONS | READ_WRITE_OPTIONS
-        prohibited_options = JDBCOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | READ_OPTIONS
+        prohibited_options = JDBCMixinOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | READ_OPTIONS
+        extra = "allow"
 
     if_exists: GreenplumTableExistBehavior = Field(  # type: ignore[literal-required]
         default=GreenplumTableExistBehavior.APPEND,
@@ -320,13 +326,9 @@ class GreenplumWriteOptions(JDBCOptions):
                 "Option `Greenplum.WriteOptions(mode=...)` is deprecated since v0.9.0 and will be removed in v1.0.0. "
                 "Use `Greenplum.WriteOptions(if_exists=...)` instead",
                 category=UserWarning,
-                stacklevel=3,
+                stacklevel=5,
             )
         return values
-
-
-class GreenplumSQLOptions(JDBCSQLOptions):
-    __doc__ = JDBCSQLOptions.__doc__.replace("SomeDB", "Greenplum")  # type: ignore[assignment, union-attr]
 
 
 class GreenplumFetchOptions(JDBCFetchOptions):

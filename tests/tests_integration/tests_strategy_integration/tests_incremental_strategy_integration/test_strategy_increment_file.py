@@ -126,7 +126,8 @@ def test_file_downloader_incremental_strategy_fail(
                 available = downloader.view_files()
                 downloaded = downloader.run()
                 # simulating a failure after download
-                raise RuntimeError("some exception")
+                msg = "some exception"
+                raise RuntimeError(msg)
 
             assert len(available) == len(downloaded.successful) == 1
             assert downloaded.successful[0].name == new_file_name
@@ -193,9 +194,8 @@ def test_file_downloader_incremental_strategy_different_hwm_type_in_store(
     # HWM Store contains HWM with same name, but different type
     hwm_store.set_hwm(ColumnIntHWM(name=hwm_name, expression="hwm_int"))
 
-    with pytest.raises(TypeError, match="Cannot cast HWM of type .* as .*"):
-        with IncrementalStrategy():
-            downloader.run()
+    with pytest.raises(TypeError, match=r"Cannot cast HWM of type .* as .*"), IncrementalStrategy():
+        downloader.run()
 
 
 @pytest.mark.parametrize("hwm_type", SUPPORTED_HWM_TYPES)
@@ -219,9 +219,8 @@ def test_file_downloader_incremental_strategy_different_hwm_directory_in_store(
 
     # HWM Store contains HWM with same name, but different directory
     hwm_store.set_hwm(hwm_type(name=hwm_name, directory=local_path))
-    with pytest.raises(ValueError, match="Detected HWM with different `entity` attribute"):
-        with IncrementalStrategy():
-            downloader.run()
+    with pytest.raises(ValueError, match="Detected HWM with different `entity` attribute"), IncrementalStrategy():
+        downloader.run()
 
 
 @pytest.mark.parametrize("hwm_type", SUPPORTED_HWM_TYPES)
@@ -295,12 +294,12 @@ def test_file_downloader_incremental_strategy_hwm_set_twice(
 
         with pytest.raises(
             ValueError,
-            match="Detected wrong IncrementalStrategy usage.",
+            match="Detected wrong IncrementalStrategy usage",
         ):
             downloader2.run()
 
         with pytest.raises(
             ValueError,
-            match="Detected wrong IncrementalStrategy usage.",
+            match="Detected wrong IncrementalStrategy usage",
         ):
             downloader3.run()

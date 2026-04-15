@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import warnings
 from typing import ClassVar, Optional
 
 from etl_entities.instance import Host
@@ -62,9 +63,7 @@ class Clickhouse(JDBCConnection):
         Password for database connection
 
     database : str, optional
-        Database in RDBMS, NOT schema.
-
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+        Database (==schema) in Clickhouse.
 
     spark : :obj:`pyspark.sql.SparkSession`
         Spark session.
@@ -133,7 +132,9 @@ class Clickhouse(JDBCConnection):
         apache_http_client_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. Allows specifying custom JDBC and Apache HTTP Client versions. |support_hooks|
+        Get package names to be downloaded by Spark. |support_hooks|
+
+        Allows specifying custom JDBC and Apache HTTP Client versions.
 
         .. versionadded:: 0.9.0
 
@@ -193,7 +194,13 @@ class Clickhouse(JDBCConnection):
     @classproperty
     def package(self) -> str:
         """Get a single string of package names to be downloaded by Spark for establishing a Clickhouse connection."""
-        return "com.clickhouse:clickhouse-jdbc:0.7.2,com.clickhouse:clickhouse-http-client:0.7.2,org.apache.httpcomponents.client5:httpclient5:5.4.2"
+        msg = "`Clickhouse.package` will be removed in 1.0.0, use `Clickhouse.get_packages()` instead"
+        warnings.warn(msg, UserWarning, stacklevel=3)
+        return (
+            "com.clickhouse:clickhouse-jdbc:0.7.2,"
+            "com.clickhouse:clickhouse-http-client:0.7.2,"
+            "org.apache.httpcomponents.client5:httpclient5:5.4.2"
+        )
 
     @property
     def jdbc_url(self) -> str:

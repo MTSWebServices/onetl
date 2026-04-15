@@ -17,7 +17,7 @@ Version Compatibility
 * Hive Metastore version:
     * Officially declared: 0.12 - 3.1.3 (may require to add proper .jar file explicitly)
     * Actually tested: 1.2.100, 2.3.10, 3.1.3
-* Spark versions: 3.2.x - 4.0.x
+* Spark versions: 3.2.x - 4.1.x
 * Java versions: 8 - 22
 
 See `official documentation <https://spark.apache.org/docs/latest/sql-data-sources-hive-tables.html>`_.
@@ -110,23 +110,13 @@ Some of Hadoop managed clusters use Kerberos authentication. In this case, you s
 
 Sometimes it is also required to pass keytab file to Spark config, allowing Spark executors to generate own Kerberos tickets:
 
-.. tabs::
+.. code:: python
 
-    .. code-tab:: python Spark 3
-
-        SparkSession.builder
-            .option("spark.kerberos.access.hadoopFileSystems", "hdfs://namenode1.domain.com:9820,hdfs://namenode2.domain.com:9820")
-            .option("spark.kerberos.principal", "user")
-            .option("spark.kerberos.keytab", "/path/to/keytab")
-            .gerOrCreate()
-
-    .. code-tab:: python Spark 2
-
-        SparkSession.builder
-            .option("spark.yarn.access.hadoopFileSystems", "hdfs://namenode1.domain.com:9820,hdfs://namenode2.domain.com:9820")
-            .option("spark.yarn.principal", "user")
-            .option("spark.yarn.keytab", "/path/to/keytab")
-            .gerOrCreate()
+    SparkSession.builder
+        .option("spark.kerberos.access.hadoopFileSystems", "hdfs://namenode1.domain.com:9820,hdfs://namenode2.domain.com:9820")
+        .option("spark.kerberos.principal", "user")
+        .option("spark.kerberos.keytab", "/path/to/keytab")
+        .gerOrCreate()
 
 See `Spark security documentation <https://spark.apache.org/docs/latest/security.html#kerberos>`_
 for more details.

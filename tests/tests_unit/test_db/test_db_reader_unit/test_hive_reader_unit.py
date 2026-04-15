@@ -72,3 +72,12 @@ def test_hive_reader_wrong_where_type(spark_mock):
             where={"col1": 1},
             source="schema.table",
         )
+
+
+def test_hive_reader_no_read_options(spark_mock):
+    with pytest.raises(ValueError, match=r"Hive does not implement ReadOptions, but \{'some': 'option'\} is passed"):
+        DBReader(
+            connection=Hive(cluster="rnd-dwh", spark=spark_mock),
+            source="schema.table",
+            options={"some": "option"},
+        )

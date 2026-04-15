@@ -22,8 +22,6 @@ Greenplum config, or reading data from some reference table. Method returns Spar
 
 Method accepts :obj:`Greenplum.FetchOptions <onetl.connection.db_connection.greenplum.options.GreenplumFetchOptions>`.
 
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
-
 .. warning::
 
     ``Greenplum.fetch`` is implemented using Postgres JDBC connection,
@@ -61,8 +59,6 @@ Use ``Greenplum.execute``
 Use this method to execute DDL and DML operations. Each method call runs operation in a separated transaction, and then commits it.
 
 Method accepts :obj:`Greenplum.ExecuteOptions <onetl.connection.db_connection.greenplum.options.GreenplumExecuteOptions>`.
-
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
 
 Syntax support
 ^^^^^^^^^^^^^^

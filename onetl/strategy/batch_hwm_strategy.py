@@ -30,7 +30,8 @@ class BatchHWMStrategy(HWMStrategy):
     @validator("step", always=True)
     def step_is_not_none(cls, step):
         if not step:
-            raise ValueError(f"'step' argument of {cls.__name__} cannot be empty!")
+            msg = f"'step' argument of {cls.__name__} cannot be empty!"
+            raise ValueError(msg)
 
         return step
 
@@ -118,23 +119,26 @@ class BatchHWMStrategy(HWMStrategy):
         if next_value is not None and self.current.value >= next_value:
             # negative or zero step - exception
             # DateHWM with step value less than one day - exception
-            raise ValueError(
-                f"HWM value is not increasing, please check options passed to {self.__class__.__name__}!",
-            )
+            msg = f"HWM value is not increasing, please check options passed to {self.__class__.__name__}!"
+            raise ValueError(msg)
 
         if self.stop is not None:
             expected_iterations = int((self.stop - self.current.value) / self.step)
             if expected_iterations >= self.MAX_ITERATIONS:
-                raise ValueError(
+                msg = (
                     f"step={self.step!r} parameter of {self.__class__.__name__} leads to "
-                    f"generating too many iterations ({expected_iterations}+)",
+                    f"generating too many iterations ({expected_iterations}+)"
+                )
+                raise ValueError(
+                    msg,
                 )
 
     @property
     def next(self) -> Edge:
         if self.current.is_set():
             if not hasattr(self.current.value, "__add__"):
-                raise RuntimeError(f"HWM: {self.hwm!r} cannot be used with Batch strategies")
+                msg = f"HWM: {self.hwm!r} cannot be used with Batch strategies"
+                raise RuntimeError(msg)
 
             result = Edge(value=self.current.value + self.step)
         else:

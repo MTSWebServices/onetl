@@ -8,9 +8,10 @@ from onetl.connection.db_connection.jdbc_connection import JDBCDialect
 
 
 class OracleDialect(JDBCDialect):
-    def get_sql_query(
+    def get_sql_query(  # noqa: PLR0913
         self,
         table: str,
+        *,
         columns: list[str] | None = None,
         where: str | list[str] | None = None,
         hint: str | None = None,

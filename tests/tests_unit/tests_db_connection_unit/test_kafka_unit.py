@@ -34,12 +34,12 @@ def create_temp_file(tmp_path_factory):
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package",
+    ("spark_version", "scala_version", "package"),
     [
         ("3.2.0", None, "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0"),
         ("3.2.0", "2.12", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0"),
         ("3.2.0", "2.13", "org.apache.spark:spark-sql-kafka-0-10_2.13:3.2.0"),
-        ("3.5.7", "2.12.2", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.7"),
+        ("3.5.8", "2.12.2", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.8"),
     ],
 )
 def test_kafka_get_packages(spark_version, scala_version, package):
@@ -67,7 +67,7 @@ def test_kafka_spark_stopped(spark_stopped):
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("assign", "assign_value"),
         ("subscribe", "subscribe_value"),
@@ -84,7 +84,7 @@ def test_kafka_spark_stopped(spark_stopped):
     ],
 )
 @pytest.mark.parametrize(
-    "options_class, class_name",
+    ("options_class", "class_name"),
     [
         (Kafka.ReadOptions, "KafkaReadOptions"),
         (Kafka.WriteOptions, "KafkaWriteOptions"),
@@ -97,7 +97,7 @@ def test_kafka_options_prohibited(option, value, options_class, class_name):
 
 
 @pytest.mark.parametrize(
-    "options_class, class_name",
+    ("options_class", "class_name"),
     [
         (Kafka.ReadOptions, "KafkaReadOptions"),
         (Kafka.WriteOptions, "KafkaWriteOptions"),
@@ -112,7 +112,7 @@ def test_kafka_options_unknown(caplog, options_class, class_name):
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("failOnDataLoss", "false"),
         ("kafkaConsumer.pollTimeoutMs", "30000"),
@@ -247,7 +247,7 @@ def test_kafka_empty_cluster(spark_mock):
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("bootstrap.servers", "kafka.bootstrap.servers_value"),
         ("security.protocol", "ssl"),
@@ -270,7 +270,7 @@ def test_kafka_invalid_extras(option, value):
 
 
 @pytest.mark.parametrize(
-    "option, value",
+    ("option", "value"),
     [
         ("kafka.group.id", "group_id"),
         ("group.id", "group_id"),
@@ -282,7 +282,7 @@ def test_kafka_valid_extras(option, value):
 
 
 def test_kafka_kerberos_auth_not_enough_permissions_keytab_error(create_keytab):
-    os.chmod(create_keytab, 0o000)  # noqa: S103, WPS339
+    create_keytab.chmod(0o000)
 
     with pytest.raises(
         OSError,
@@ -356,9 +356,7 @@ def test_kafka_basic_auth(spark_mock):
         assert conf == {
             "sasl.mechanism": "PLAIN",
             "sasl.jaas.config": (
-                "org.apache.kafka.common.security.plain.PlainLoginModule required "
-                'username="user" '
-                'password="password";'
+                'org.apache.kafka.common.security.plain.PlainLoginModule required username="user" password="password";'
             ),
         }
 
@@ -391,9 +389,7 @@ def test_kafka_scram_auth_get_jaas_conf(spark_mock, digest):
     assert conf == {
         "sasl.mechanism": f"SCRAM-{digest}",
         "sasl.jaas.config": (
-            "org.apache.kafka.common.security.scram.ScramLoginModule required "
-            'username="user" '
-            'password="password";'
+            'org.apache.kafka.common.security.scram.ScramLoginModule required username="user" password="password";'
         ),
     }
 
@@ -419,9 +415,7 @@ def test_kafka_scram_auth_get_jaas_conf_custom_properties(spark_mock, digest):
     assert conf == {
         "sasl.mechanism": f"SCRAM-{digest}",
         "sasl.jaas.config": (
-            "org.apache.kafka.common.security.scram.ScramLoginModule required "
-            'username="user" '
-            'password="password";'
+            'org.apache.kafka.common.security.scram.ScramLoginModule required username="user" password="password";'
         ),
         "sasl.login.class": "com.example.CustomScramLogin",
         "sasl.login.some.option": "1",
@@ -653,7 +647,7 @@ def test_kafka_normalize_address_hook(request, spark_mock):
     def normalize_address(address: str, cluster: str):
         if cluster == "kafka-cluster":
             return f"{address}:9093"
-        elif cluster == "local":
+        if cluster == "local":
             return f"{address}:9092"
         return None
 
@@ -678,12 +672,12 @@ def test_kafka_get_cluster_addresses_hook(request, spark_mock):
         "192.168.1.2",
     ]
 
-    with pytest.raises(ValueError, match="Cluster 'kafka-cluster' does not contain addresses {'192.168.1.3'}"):
+    with pytest.raises(ValueError, match=r"Cluster 'kafka-cluster' does not contain addresses \{'192.168.1.3'\}"):
         Kafka(cluster="kafka-cluster", spark=spark_mock, addresses=["192.168.1.1", "192.168.1.3"])
 
 
 @pytest.mark.parametrize(
-    "options, value",
+    ("options", "value"),
     [
         ({}, KafkaTopicExistBehaviorKafka.APPEND),
         ({"if_exists": "append"}, KafkaTopicExistBehaviorKafka.APPEND),
@@ -695,7 +689,7 @@ def test_kafka_write_options_if_exists(options, value):
 
 
 @pytest.mark.parametrize(
-    "options, message",
+    ("options", "message"),
     [
         (
             {"mode": "append"},
@@ -757,8 +751,28 @@ def test_kafka_ssl_protocol_with_raw_strings(spark_mock, prefix):
     }
 
 
+def test_kafka_ssl_protocol_with_no_keystore_params(spark_mock):
+    kafka = Kafka(
+        spark=spark_mock,
+        addresses=["some_address"],
+        cluster="cluster",
+        protocol=Kafka.SSLProtocol(
+            truststore_type="PEM",
+            truststore_certificates="<trusted-certificates>",
+        ),
+    )
+
+    options = kafka.protocol.get_options(kafka)
+
+    assert options == {
+        "ssl.truststore.type": "PEM",
+        "ssl.truststore.certificates": "<trusted-certificates>",
+        "security.protocol": "SSL",
+    }
+
+
 @pytest.mark.parametrize(
-    "keystore_type,truststore_type",
+    ("keystore_type", "truststore_type"),
     [
         ("PEM", "PEM"),
         ("JKS", "JKS"),
@@ -876,7 +890,7 @@ def test_kafka_ssl_protocol_with_basic_auth(spark_mock):
 
 
 @pytest.mark.parametrize(
-    "columns,expected_schema",
+    ("columns", "expected_schema"),
     [
         (
             ["key", "value", "offset"],

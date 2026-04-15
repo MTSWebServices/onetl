@@ -93,17 +93,20 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
 
                     .. warning::
 
-                        Existing files still present in the root of directory, but Spark will ignore those files while reading,
+                        Existing files still present in the root of directory,
+                        but Spark will ignore those files while reading,
                         unless using ``recursive=True``.
 
                 * Directory exists and contains partitions, but :obj:`~partition_by` is not set
-                    Data is appended to a directory, but to the root of directory instead of nested partition directories.
+                    Data is appended to a directory, but to the root of
+                    directory instead of nested partition directories.
 
                     .. warning::
 
                         Spark will ignore such files while reading, unless using ``recursive=True``.
 
-                * Directory exists and contains partitions, but with different partitioning schema than :obj:`~partition_by`
+                * Directory exists and contains partitions,
+                  but with different partitioning schema than :obj:`~partition_by`
                     Data is appended to a directory with new partitioning schema.
 
                     .. warning::
@@ -111,13 +114,16 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
                         Spark cannot read directory with multiple partitioning schemas,
                         unless using ``recursive=True`` to disable partition scanning.
 
-                * Directory exists and partitioned according :obj:`~partition_by`, but partition is present only in dataframe
+                * Directory exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in dataframe
                     New partition directory is created.
 
-                * Directory exists and partitioned according :obj:`~partition_by`, partition is present in both dataframe and directory
+                * Directory exists and partitioned according :obj:`~partition_by`,
+                  partition is present in both dataframe and directory
                     New files are added to existing partition directory, existing files are sill present.
 
-                * Directory exists and partitioned according :obj:`~partition_by`, but partition is present only in directory, not dataframe
+                * Directory exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in directory, not dataframe
                     Existing partition is left intact.
 
         * ``replace_overlapping_partitions``
@@ -133,7 +139,8 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
             .. dropdown:: Behavior in details
 
                 * Directory does not exist
-                    Directory is created using all the provided options (``format``, ``partition_by``, etc).
+                    Directory is created using all the provided options
+                    (``format``, ``partition_by``, etc).
 
                 * Directory exists, does not contain partitions, but :obj:`~partition_by` is set
                     Directory **will be deleted**, and will be created with partitions.
@@ -141,7 +148,8 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
                 * Directory exists and contains partitions, but :obj:`~partition_by` is not set
                     Directory **will be deleted**, and will be created with partitions.
 
-                * Directory exists and contains partitions, but with different partitioning schema than :obj:`~partition_by`
+                * Directory exists and contains partitions,
+                  but with different partitioning schema than :obj:`~partition_by`
                     Data is appended to a directory with new partitioning schema.
 
                     .. warning::
@@ -149,13 +157,17 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
                         Spark cannot read directory with multiple partitioning schemas,
                         unless using ``recursive=True`` to disable partition scanning.
 
-                * Directory exists and partitioned according :obj:`~partition_by`, but partition is present only in dataframe
+                * Directory exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in dataframe
                     New partition directory is created.
 
-                * Directory exists and partitioned according :obj:`~partition_by`, partition is present in both dataframe and directory
-                    Partition directory **will be deleted**, and new one is created with files containing data from dataframe.
+                * Directory exists and partitioned according :obj:`~partition_by`,
+                  partition is present in both dataframe and directory
+                    Partition directory **will be deleted**,
+                    and new one is created with files containing data from dataframe.
 
-                * Directory exists and partitioned according :obj:`~partition_by`, but partition is present only in directory, not dataframe
+                * Directory exists and partitioned according :obj:`~partition_by`,
+                  but partition is present only in directory, not dataframe
                     Existing partition is left intact.
 
         * ``replace_entire_directory``
@@ -207,9 +219,9 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
             # format orc, parquet methods and format simultaneously
             if hasattr(writer, method):
                 if isinstance(value, Iterable) and not isinstance(value, str):
-                    writer = getattr(writer, method)(*value)  # noqa: WPS220
+                    writer = getattr(writer, method)(*value)
                 else:
-                    writer = getattr(writer, method)(value)  # noqa: WPS220
+                    writer = getattr(writer, method)(value)
             else:
                 writer = writer.option(method, value)
 
@@ -229,7 +241,8 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
     @root_validator(pre=True)
     def _mode_is_restricted(cls, values):
         if "mode" in values:
-            raise ValueError("Parameter `mode` is not allowed. Please use `if_exists` parameter instead.")
+            msg = "Parameter `mode` is not allowed. Please use `if_exists` parameter instead."
+            raise ValueError(msg)
         return values
 
     @root_validator
@@ -241,7 +254,6 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
             else:
                 recommended_mode = "replace_overlapping_partitions"
 
-            raise ValueError(
-                f"`partitionOverwriteMode` option should be replaced with if_exists='{recommended_mode}'",
-            )
+            msg = f"`partitionOverwriteMode` option should be replaced with if_exists='{recommended_mode}'"
+            raise ValueError(msg)
         return values

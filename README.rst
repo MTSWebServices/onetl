@@ -8,13 +8,13 @@ onETL
 
 .. |Repo Status| image:: https://www.repostatus.org/badges/latest/active.svg
     :alt: Repo status - Active
-    :target: https://github.com/MobileTeleSystems/onetl
+    :target: https://github.com/MTSWebServices/onetl
 .. |PyPI Latest Release| image:: https://img.shields.io/pypi/v/onetl
     :alt: PyPI - Latest Release
     :target: https://pypi.org/project/onetl/
 .. |PyPI License| image:: https://img.shields.io/pypi/l/onetl.svg
     :alt: PyPI - License
-    :target: https://github.com/MobileTeleSystems/onetl/blob/develop/LICENSE.txt
+    :target: https://github.com/MTSWebServices/onetl/blob/develop/LICENSE.txt
 .. |PyPI Python Version| image:: https://img.shields.io/pypi/pyversions/onetl.svg
     :alt: PyPI - Python Version
     :target: https://pypi.org/project/onetl/
@@ -24,21 +24,21 @@ onETL
 .. |Documentation| image:: https://readthedocs.org/projects/onetl/badge/?version=stable
     :alt: Documentation - ReadTheDocs
     :target: https://onetl.readthedocs.io/
-.. |CI Status| image:: https://github.com/MobileTeleSystems/onetl/workflows/Tests/badge.svg
+.. |CI Status| image:: https://github.com/MTSWebServices/onetl/workflows/Tests/badge.svg
     :alt: Github Actions - latest CI build status
-    :target: https://github.com/MobileTeleSystems/onetl/actions
+    :target: https://github.com/MTSWebServices/onetl/actions
 .. |Test Coverage| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/
     MTSOnGithub/03e73a82ecc4709934540ce8201cc3b4/raw/onetl_badge.json
-    :target: https://github.com/MobileTeleSystems/onetl/actions
-.. |pre-commit.ci Status| image:: https://results.pre-commit.ci/badge/github/MobileTeleSystems/onetl/develop.svg
+    :target: https://github.com/MTSWebServices/onetl/actions
+.. |pre-commit.ci Status| image:: https://results.pre-commit.ci/badge/github/MTSWebServices/onetl/develop.svg
     :alt: pre-commit.ci - status
-    :target: https://results.pre-commit.ci/latest/github/MobileTeleSystems/onetl/develop
+    :target: https://results.pre-commit.ci/latest/github/MTSWebServices/onetl/develop
 
 |Logo|
 
 .. |Logo| image:: docs/_static/logo_wide.svg
     :alt: onETL logo
-    :target: https://github.com/MobileTeleSystems/onetl
+    :target: https://github.com/MTSWebServices/onetl
 
 What is onETL?
 --------------
@@ -65,8 +65,8 @@ Non-goals
 Requirements
 ------------
 
-* **Python 3.7 - 3.13**
-* PySpark 3.2.x - 4.0.x (depends on used connector)
+* **Python 3.7 - 3.14**
+* PySpark 3.2.x - 4.1.x (depends on used connector)
 * Java 8+ (required by Spark, see below)
 * Kerberos libs & GCC (required by ``Hive``, ``HDFS`` and ``SparkHDFS`` connectors)
 
@@ -170,9 +170,9 @@ Firstly, you should install JDK. The exact installation instruction depends on y
 
 .. code:: bash
 
-    yum install java-1.8.0-openjdk-devel  # CentOS 7 + Spark 2
-    dnf install java-11-openjdk-devel  # CentOS 8 + Spark 3
-    apt-get install openjdk-11-jdk  # Debian-based + Spark 3
+    yum install java-1.8.0-openjdk-devel  # CentOS 7
+    dnf install java-11-openjdk-devel  # CentOS 8
+    apt-get install openjdk-11-jdk  # Debian-based
 
 .. _spark-compatibility-matrix:
 
@@ -180,17 +180,19 @@ Compatibility matrix
 ^^^^^^^^^^^^^^^^^^^^
 
 +--------------------------------------------------------------+-------------+-------------+-------+
-| Spark                                                        | Python      | Java        | Scala |
+| Spark                                                        |  Python     | Java        | Scala |
 +==============================================================+=============+=============+=======+
-| `3.2.x <https://spark.apache.org/docs/3.2.4/#downloading>`_  | 3.7 - 3.10  | 8u201 - 11  | 2.12  |
+| `3.2.x <https://spark.apache.org/docs/3.2.4/#downloading>`_  |  3.7 - 3.10 | 8u201 - 11  | 2.12  |
 +--------------------------------------------------------------+-------------+-------------+-------+
-| `3.3.x <https://spark.apache.org/docs/3.3.4/#downloading>`_  | 3.7 - 3.12  | 8u201 - 17  | 2.12  |
+| `3.3.x <https://spark.apache.org/docs/3.3.4/#downloading>`_  |  3.7 - 3.12 | 8u201 - 17  | 2.12  |
 +--------------------------------------------------------------+-------------+-------------+-------+
-| `3.4.x <https://spark.apache.org/docs/3.4.4/#downloading>`_  | 3.7 - 3.12  | 8u362 - 20  | 2.12  |
+| `3.4.x <https://spark.apache.org/docs/3.4.4/#downloading>`_  |  3.7 - 3.12 | 8u362 - 20  | 2.12  |
 +--------------------------------------------------------------+-------------+-------------+-------+
-| `3.5.x <https://spark.apache.org/docs/3.5.1/#downloading>`_  | 3.8 - 3.13  | 8u371 - 20  | 2.12  |
+| `3.5.x <https://spark.apache.org/docs/3.5.1/#downloading>`_  |  3.8 - 3.13 | 8u371 - 20  | 2.12  |
 +--------------------------------------------------------------+-------------+-------------+-------+
-| `4.0.x <https://spark.apache.org/docs/4.0.1/#downloading>`_  | 3.9 - 3.13  | 17 - 22     | 2.13  |
+| `4.0.x <https://spark.apache.org/docs/4.0.1/#downloading>`_  |  3.9 - 3.14 | 17 - 22     | 2.13  |
++--------------------------------------------------------------+-------------+-------------+-------+
+| `4.1.x <https://spark.apache.org/docs/4.1.1/#downloading>`_  | 3.10 - 3.14 | 17 - 22     | 2.13  |
 +--------------------------------------------------------------+-------------+-------------+-------+
 
 .. _pyspark-install:
@@ -205,7 +207,7 @@ or install PySpark explicitly:
 
 .. code:: bash
 
-    pip install onetl pyspark==3.5.7  # install a specific PySpark version
+    pip install onetl pyspark==3.5.8  # install a specific PySpark version
 
 or inject PySpark to ``sys.path`` in some other way BEFORE creating a class instance.
 **Otherwise connection object cannot be created.**
@@ -546,7 +548,7 @@ Read files directly from S3 path, convert them to dataframe, transform it and th
     setup_logging()
 
     # Initialize new SparkSession with Hadoop AWS libraries and Postgres driver loaded
-    maven_packages = SparkS3.get_packages(spark_version="3.5.7") + Postgres.get_packages()
+    maven_packages = SparkS3.get_packages(spark_version="3.5.8") + Postgres.get_packages()
     exclude_packages = SparkS3.get_exclude_packages()
     spark = (
         SparkSession.builder.appName("spark_app_onetl_demo")

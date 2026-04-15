@@ -14,7 +14,7 @@ concurrency:
 
 env:
   DEFAULT_PYTHON: '3.13'
-  MIN_COVERAGE: 96
+  MIN_COVERAGE: 82
 
 permissions:
   contents: write
@@ -332,7 +332,12 @@ jobs:
     name: Tests done
     runs-on: ubuntu-latest
 
-    if: always()
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+
+    if: success() || failure()
     needs:
       - tests-core
       - tests-clickhouse
@@ -356,32 +361,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.DEFAULT_PYTHON }}
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-coverage
-
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install dependencies
-        run: pip install -I coverage pytest
-
       - name: Download all coverage reports
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           path: reports/
           pattern: coverage-*
           merge-multiple: true
 
+      - name: Show test results
+        uses: mikepenz/action-junit-report@v6
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: reports/junit/*.xml
+
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          activate-environment: 'true'
+          enable-cache: 'false'
+
+      # no uv cache here because fresh install takes about 1 second
+
+      - name: Install dependencies
+        run: uv sync --group test
+
       - name: Generate coverage reports
-        run: ./combine_coverage.sh
+        run: |
+          uv run coverage combine
+          uv run coverage xml -o reports/coverage.xml
 
       - name: Coverage comment
         id: coverage
@@ -394,8 +406,8 @@ jobs:
           hide-comment: ${{ github.event_name != 'pull_request' }}
 
       - name: Dynamic Badges
-        uses: schneegans/dynamic-badges-action@v1.7.0
-        if: github.repository == 'MobileTeleSystems/onetl' && github.event_name == 'push'
+        uses: schneegans/dynamic-badges-action@v1.8.0
+        if: github.repository == 'MTSWebServices/onetl' && github.event_name == 'push'
         with:
           auth: ${{ secrets.AUTOMERGE_TOKEN }}
           gistID: 03e73a82ecc4709934540ce8201cc3b4

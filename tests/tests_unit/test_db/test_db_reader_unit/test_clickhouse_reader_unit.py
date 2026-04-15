@@ -36,11 +36,19 @@ def test_clickhouse_reader_snapshot_error_pass_df_schema(spark_mock):
 
 
 def test_clickhouse_reader_wrong_table_name(spark_mock):
-    clickhouse = Clickhouse(host="some_host", user="user", database="database", password="passwd", spark=spark_mock)
+    clickhouse_with_db = Clickhouse(
+        host="some_host", user="user", database="database", password="passwd", spark=spark_mock
+    )
+    clickhouse_without_db = Clickhouse(host="some_host", user="user", password="passwd", spark=spark_mock)
 
-    with pytest.raises(ValueError, match="Name should be passed in `schema.name` format"):
+    DBReader(
+        connection=clickhouse_with_db,
+        source="table",
+    )
+
+    with pytest.raises(ValueError, match=r"Name should be passed in `schema\.name` format"):
         DBReader(
-            connection=clickhouse,
+            connection=clickhouse_without_db,
             source="table",  # Required format: source="schema.table"
         )
 

@@ -77,7 +77,7 @@ class BaseFileDFConnection(BaseConnection):
     @abstractmethod
     def check_if_format_supported(
         self,
-        format: BaseReadableFileFormat | BaseWritableFileFormat,  # noqa: WPS125
+        format: BaseReadableFileFormat | BaseWritableFileFormat,
     ) -> None:
         """
         Validate if specific file format is supported. |support_hooks|
@@ -110,7 +110,7 @@ class BaseFileDFConnection(BaseConnection):
     def read_files_as_df(
         self,
         paths: list[PurePathProtocol],
-        format: BaseReadableFileFormat,  # noqa: WPS125
+        format: BaseReadableFileFormat,
         root: PurePathProtocol | None = None,
         df_schema: StructType | None = None,
         options: FileDFReadOptions | None = None,
@@ -126,7 +126,7 @@ class BaseFileDFConnection(BaseConnection):
         self,
         df: DataFrame,
         path: PurePathProtocol,
-        format: BaseWritableFileFormat,  # noqa: WPS125
+        format: BaseWritableFileFormat,
         options: FileDFWriteOptions | None = None,
     ) -> None:
         """

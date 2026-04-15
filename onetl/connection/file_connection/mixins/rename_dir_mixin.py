@@ -18,6 +18,7 @@ class RenameDirMixin(BaseFileConnection):
         self,
         source_dir_path: os.PathLike | str,
         target_dir_path: os.PathLike | str,
+        *,
         replace: bool = False,
     ) -> RemoteDirectory:
         """
@@ -71,7 +72,8 @@ class RenameDirMixin(BaseFileConnection):
         if self.path_exists(target_dir):
             directory = self.resolve_dir(target_dir)
             if not replace:
-                raise DirectoryExistsError(f"Directory {path_repr(directory)} already exists")
+                msg = f"Directory {path_repr(directory)} already exists"
+                raise DirectoryExistsError(msg)
 
             log.warning("|%s| Directory %s already exists, removing", self.__class__.__name__, path_repr(directory))
             self.remove_dir(target_dir, recursive=True)

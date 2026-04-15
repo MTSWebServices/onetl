@@ -8,18 +8,18 @@ pytestmark = [pytest.mark.avro]
 
 
 @pytest.mark.parametrize(
-    "spark_version, scala_version, package",
+    ("spark_version", "scala_version", "package"),
     [
         # Detect Scala version by Spark version
         ("3.2.0", None, "org.apache.spark:spark-avro_2.12:3.2.0"),
-        ("3.5.7", None, "org.apache.spark:spark-avro_2.12:3.5.7"),
+        ("3.5.8", None, "org.apache.spark:spark-avro_2.12:3.5.8"),
         # Override Scala version
         ("3.2.0", "2.12", "org.apache.spark:spark-avro_2.12:3.2.0"),
         ("3.2.0", "2.12", "org.apache.spark:spark-avro_2.12:3.2.0"),
-        ("3.5.7", "2.12", "org.apache.spark:spark-avro_2.12:3.5.7"),
-        ("3.5.7", "2.13", "org.apache.spark:spark-avro_2.13:3.5.7"),
+        ("3.5.8", "2.12", "org.apache.spark:spark-avro_2.12:3.5.8"),
+        ("3.5.8", "2.13", "org.apache.spark:spark-avro_2.13:3.5.8"),
         # Scala version contain three digits when only two needed
-        ("3.5.7", "2.12.1", "org.apache.spark:spark-avro_2.12:3.5.7"),
+        ("3.5.8", "2.12.1", "org.apache.spark:spark-avro_2.12:3.5.8"),
     ],
 )
 def test_avro_get_packages(spark_version, scala_version, package):
@@ -27,7 +27,7 @@ def test_avro_get_packages(spark_version, scala_version, package):
 
 
 @pytest.mark.parametrize(
-    "value, real_value",
+    ("value", "real_value"),
     [
         ({"name": "abc", "type": "string"}, {"name": "abc", "type": "string"}),
         ('{"name": "abc", "type": "string"}', {"name": "abc", "type": "string"}),
@@ -39,7 +39,7 @@ def test_avro_options_schema(value, real_value):
 
 
 @pytest.mark.parametrize(
-    "name, real_name, value",
+    ("name", "real_name", "value"),
     [
         ("avroSchema", "schema_dict", {"name": "abc", "type": "string"}),
         ("avroSchemaUrl", "schema_url", "http://example.com"),
@@ -51,7 +51,7 @@ def test_avro_options_alias(name, real_name, value):
 
 
 @pytest.mark.parametrize(
-    "known_option, value, expected_value",
+    ("known_option", "value", "expected_value"),
     [
         ("positionalFieldMatching", True, True),
         ("mode", "PERMISSIVE", "PERMISSIVE"),
@@ -84,9 +84,12 @@ def test_avro_options_repr():
         mode="PERMISSIVE",
         unknownOption="abc",
     )
-    assert (
-        repr(avro)
-        == "Avro(avroSchema={'name': 'abc', 'type': 'string'}, compression='snappy', mode='PERMISSIVE', unknownOption='abc')"
+    assert repr(avro) == (
+        "Avro("
+        "avroSchema={'name': 'abc', 'type': 'string'}, "
+        "compression='snappy', "
+        "mode='PERMISSIVE', "
+        "unknownOption='abc')"
     )
 
 

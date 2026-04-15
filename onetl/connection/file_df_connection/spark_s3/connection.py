@@ -137,7 +137,7 @@ class SparkS3(SparkFileDFConnection):
             from pyspark.sql import SparkSession
 
             # Create Spark session with Hadoop AWS libraries loaded
-            maven_packages = SparkS3.get_packages(spark_version="3.5.7")
+            maven_packages = SparkS3.get_packages(spark_version="3.5.8")
             # Some packages are not used, but downloading takes a lot of time. Skipping them.
             excluded_packages = SparkS3.get_exclude_packages()
             spark = (
@@ -239,8 +239,8 @@ class SparkS3(SparkFileDFConnection):
 
             from onetl.connection import SparkS3
 
-            SparkS3.get_packages(spark_version="3.5.7")
-            SparkS3.get_packages(spark_version="3.5.7", scala_version="2.12")
+            SparkS3.get_packages(spark_version="3.5.8")
+            SparkS3.get_packages(spark_version="3.5.8", scala_version="2.12")
 
         """
 
@@ -358,7 +358,7 @@ class SparkS3(SparkFileDFConnection):
     def read_files_as_df(
         self,
         paths: list[PurePathProtocol],
-        format: BaseReadableFileFormat,  # noqa: WPS125
+        format: BaseReadableFileFormat,
         root: PurePathProtocol | None = None,
         df_schema: StructType | None = None,
         options: FileDFReadOptions | None = None,
@@ -371,7 +371,7 @@ class SparkS3(SparkFileDFConnection):
         self,
         df: DataFrame,
         path: PurePathProtocol,
-        format: BaseWritableFileFormat,  # noqa: WPS125
+        format: BaseWritableFileFormat,
         options: FileDFWriteOptions | None = None,
     ) -> None:
         self._patch_hadoop_conf()
@@ -412,9 +412,9 @@ class SparkS3(SparkFileDFConnection):
     def _region_is_recommended(cls, value):
         if not value:
             warnings.warn(
-                f"It is highly recommended to specify {cls.__name__}(region=...)" " to avoid potential access errors",
+                f"It is highly recommended to specify {cls.__name__}(region=...) to avoid potential access errors",
                 category=UserWarning,
-                stacklevel=3,
+                stacklevel=5,
             )
         return value
 
@@ -509,7 +509,7 @@ class SparkS3(SparkFileDFConnection):
             self._get_spark_fs().close()
 
             log.debug("Set Hadoop configuration")
-            for key in real_values.keys():
+            for key in real_values:
                 hadoop_config.unset(key)
 
             for key, value in expected_values.items():

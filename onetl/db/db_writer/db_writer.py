@@ -122,9 +122,8 @@ class DBWriter(FrozenModel):
             return write_options_class.parse(options)
 
         if options:
-            raise ValueError(
-                f"{connection.__class__.__name__} does not implement WriteOptions, but {options!r} is passed",
-            )
+            msg = f"{connection.__class__.__name__} does not implement WriteOptions, but {options!r} is passed"
+            raise ValueError(msg)
 
         return None
 
@@ -152,7 +151,8 @@ class DBWriter(FrozenModel):
             writer.run(df)
         """
         if df.isStreaming:
-            raise ValueError(f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames.")
+            msg = f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames."
+            raise ValueError(msg)
 
         entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")
 
@@ -176,12 +176,12 @@ class DBWriter(FrozenModel):
                 # SparkListener is not a reliable source of information, metrics may or may not be present.
                 # Because of this we also do not return these metrics as method result
                 if metrics.output.is_empty:
-                    log.error(
+                    log.error(  # noqa: TRY400
                         "|%s| Error while writing dataframe.",
                         self.__class__.__name__,
                     )
                 else:
-                    log.error(
+                    log.error(  # noqa: TRY400
                         "|%s| Error while writing dataframe. Target MAY contain partially written data!",
                         self.__class__.__name__,
                     )

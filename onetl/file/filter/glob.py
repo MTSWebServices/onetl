@@ -45,7 +45,7 @@ class Glob(BaseFileFilter, FrozenModel):
 
     def __init__(self, pattern: str):
         # this is only to allow passing glob as positional argument
-        super().__init__(pattern=pattern)  # type: ignore
+        super().__init__(pattern=pattern)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.pattern!r})"
@@ -59,6 +59,7 @@ class Glob(BaseFileFilter, FrozenModel):
     @validator("pattern", pre=True)
     def _validate_pattern(cls, value: str) -> str:
         if not glob.has_magic(value):
-            raise ValueError(f"Invalid glob: {value!r}")
+            msg = f"Invalid glob: {value!r}"
+            raise ValueError(msg)
 
         return value

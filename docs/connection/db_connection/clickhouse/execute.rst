@@ -22,8 +22,6 @@ Clickhouse config, or reading data from some reference table. Method returns Spa
 
 Method accepts :obj:`Clickhouse.FetchOptions <onetl.connection.db_connection.clickhouse.options.ClickhouseFetchOptions>`.
 
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
-
 .. warning::
 
     Please take into account :ref:`clickhouse-types`.
@@ -61,8 +59,6 @@ Use ``Clickhouse.execute``
 Use this method to execute DDL and DML operations. Each method call runs operation in a separated transaction, and then commits it.
 
 Method accepts :obj:`Clickhouse.ExecuteOptions <onetl.connection.db_connection.clickhouse.options.ClickhouseExecuteOptions>`.
-
-Connection opened using this method should be then closed with ``connection.close()`` or ``with connection:``.
 
 Syntax support
 ^^^^^^^^^^^^^^

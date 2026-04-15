@@ -3,7 +3,7 @@ from etl_entities.hwm_store import MemoryHWMStore
 
 
 @pytest.fixture(scope="function", autouse=True)
-def global_hwm_store(request):  # noqa: WPS325
+def global_hwm_store(request):
     test_function = request.function
     entities = set(test_function.__name__.split("_")) if test_function else set()
 
