@@ -101,9 +101,11 @@ So it should **NOT** be used to read large amounts of data. Use [DBReader][DBR-o
         inherited_members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false
 
 ::: onetl.connection.db_connection.clickhouse.options.ClickhouseExecuteOptions
     options:
         inherited_members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false

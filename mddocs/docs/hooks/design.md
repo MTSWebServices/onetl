@@ -307,7 +307,7 @@ def callback(obj, arg):
 
 - The callback will be called with the same arguments as the original method.
 
-  - If slot is a regular method:
+    - If slot is a regular method:
 
     ```python
     callback_result = callback(self, *args, **kwargs)
@@ -315,7 +315,7 @@ def callback(obj, arg):
 
     Here `self` is a class instance (`obj`).
 
-  - If slot is a class method:
+    - If slot is a class method:
 
     ```python
     callback_result = callback(cls, *args, **kwargs)
@@ -323,7 +323,7 @@ def callback(obj, arg):
 
     Here `cls` is the class itself (`MyClass`).
 
-  - If slot is a static method:
+    - If slot is a static method:
 
     ```python
     callback_result = callback(*args, **kwargs)
@@ -343,15 +343,15 @@ def callback(obj, arg):
 
 - Process `original_result`:
 
-  - If `callback_result` object has method `process_result`, or is a generator wrapped with `@hook`, call it:
+    - If `callback_result` object has method `process_result`, or is a generator wrapped with `@hook`, call it:
 
     ```python
     new_result = callback_result.process_result(original_result)
     ```
 
-  - Otherwise set `new_result = callback_result`.
+    - Otherwise set `new_result = callback_result`.
 
-  - If there are multiple hooks bound the the method, pass `new_result` through the chain:
+    - If there are multiple hooks bound the the method, pass `new_result` through the chain:
 
     ```python
     new_result = callback1_result.process_result(original_result)
@@ -593,26 +593,26 @@ You can enable/disable/temporary disable hooks on 4 different levels:
 
 - Manage global hooks state (level 1):
 
-  - [`onetl.hooks.hooks_state.stop_all_hooks`][onetl.hooks.hooks_state.stop_all_hooks]
-  - [`onetl.hooks.hooks_state.resume_all_hooks`][onetl.hooks.hooks_state.resume_all_hooks]
-  - [`onetl.hooks.hooks_state.skip_all_hooks`][onetl.hooks.hooks_state.skip_all_hooks]
+    - [`onetl.hooks.hooks_state.stop_all_hooks`][onetl.hooks.hooks_state.stop_all_hooks]
+    - [`onetl.hooks.hooks_state.resume_all_hooks`][onetl.hooks.hooks_state.resume_all_hooks]
+    - [`onetl.hooks.hooks_state.skip_all_hooks`][onetl.hooks.hooks_state.skip_all_hooks]
 
 - Manage all hooks bound to a specific class (level 2):
 
-  - [`onetl.hooks.support_hooks.suspend_hooks`][onetl.hooks.support_hooks.suspend_hooks]
-  - [`onetl.hooks.support_hooks.resume_hooks`][onetl.hooks.support_hooks.resume_hooks]
-  - [`onetl.hooks.support_hooks.skip_hooks`][onetl.hooks.support_hooks.skip_hooks]
+    - [`onetl.hooks.support_hooks.suspend_hooks`][onetl.hooks.support_hooks.suspend_hooks]
+    - [`onetl.hooks.support_hooks.resume_hooks`][onetl.hooks.support_hooks.resume_hooks]
+    - [`onetl.hooks.support_hooks.skip_hooks`][onetl.hooks.support_hooks.skip_hooks]
 
 - Manage all hooks bound to a specific slot (level 3):
 
-  - [`onetl.hooks.slot.Slot.suspend_hooks`][onetl.hooks.slot.Slot.suspend_hooks]
-  - [`onetl.hooks.slot.Slot.resume_hooks`][onetl.hooks.slot.Slot.resume_hooks]
-  - [`onetl.hooks.slot.Slot.skip_hooks`][onetl.hooks.slot.Slot.skip_hooks]
+    - [`onetl.hooks.slot.Slot.suspend_hooks`][onetl.hooks.slot.Slot.suspend_hooks]
+    - [`onetl.hooks.slot.Slot.resume_hooks`][onetl.hooks.slot.Slot.resume_hooks]
+    - [`onetl.hooks.slot.Slot.skip_hooks`][onetl.hooks.slot.Slot.skip_hooks]
 
 - Manage state of a specific hook (level 4):
 
-  - [`onetl.hooks.hook.Hook.enable`][onetl.hooks.hook.Hook.enable]
-  - [`onetl.hooks.hook.Hook.disable`][onetl.hooks.hook.Hook.disable]
+    - [`onetl.hooks.hook.Hook.enable`][onetl.hooks.hook.Hook.enable]
+    - [`onetl.hooks.hook.Hook.disable`][onetl.hooks.hook.Hook.disable]
 
 More details in the documentation above.
 

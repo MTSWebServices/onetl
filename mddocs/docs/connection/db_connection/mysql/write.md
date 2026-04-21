@@ -42,6 +42,8 @@ Method above accepts [MySQL.WriteOptions][onetl.connection.db_connection.mysql.o
 
 ::: onetl.connection.db_connection.mysql.options.MySQLWriteOptions
     options:
+        inherited_members: true
         members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false

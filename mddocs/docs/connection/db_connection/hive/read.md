@@ -8,10 +8,10 @@ but does not support custom queries, like `JOIN`.
 - ✅︎ `columns`
 - ✅︎ `where`
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ✅︎ `hint`
 - ❌ `df_schema`
 - ❌ `options` (only Spark config params are used)
@@ -68,6 +68,7 @@ Prefer these write formats:
 
 - [ORC](https://spark.apache.org/docs/latest/sql-data-sources-orc.html)
 - [Parquet](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html)
+
 For colum-based write formats, each file contains separated sections there column data is stored. The file footer contains location of each column section/group. Spark can use this information to load only sections required by specific query, e.g. only selected columns, to drastically speed up the query.
 
 Another advantage is high compression ratio, e.g. 10x-100x in comparison to JSON or CSV.

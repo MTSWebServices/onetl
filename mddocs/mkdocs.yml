@@ -31,6 +31,9 @@ theme:
 extra_css:
   - _static/stylesheets/autodoc_pydantic.css         # CSS is shared by all languages
 
+extra_javascript:
+  - _static/javascripts/mermaid_zoom.js
+
 extra:                                              # Language Selection
   onetl_logo_wide: '[![onETL logo](_static/images/logo_wide.svg)](https://github.com/MTSWebServices/onetl)'
   repo_status_badge: '[![Repo status - Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/MTSWebServices/onetl)'
@@ -43,6 +46,7 @@ extra:                                              # Language Selection
   precommit_badge: '[![pre-commit.ci Status](https://results.pre-commit.ci/badge/github/MTSWebServices/onetl/develop.svg)](https://results.pre-commit.ci/latest/github/MTSWebServices/onetl/develop)'
   test_cov_badge: '[![Test coverage - percent](https://codecov.io/gh/MTSWebServices/onetl/branch/develop/graph/badge.svg?token=RIO8URKNZJ)](https://codecov.io/gh/MTSWebServices/onetl)'
   etl_entities_link: '[`etl-entities`](https://github.com/MTSWebServices/etl-entities)'
+  support_hooks: '[![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](hooks/index.md)'
 
 plugins:
   - autorefs
@@ -52,11 +56,16 @@ plugins:
       default_handler: python
       handlers:
         python:
+          paths: [".."]
           options:
             show_source: false
             show_root_heading: false
             show_root_toc_entry: false
-            # extensions:
+            docstring_style: numpy
+            docstring_section_style: list
+            extensions:
+              - scripts/griffe_expand_refs.py:ExpandShortRefs
+              - griffe_inherited_docstrings
             # - griffe_sphinx
             # - griffe_pydantic: {schema: false}
   - macros

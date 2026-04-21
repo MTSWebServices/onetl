@@ -36,3 +36,4 @@ Method above accepts [MongoDB.WriteOptions][onetl.connection.db_connection.mongo
     options:
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false

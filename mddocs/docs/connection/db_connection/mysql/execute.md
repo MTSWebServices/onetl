@@ -91,12 +91,16 @@ mysql.execute(
 
 ::: onetl.connection.db_connection.mysql.options.MySQLFetchOptions
     options:
+        inherited_members: true
         members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false
 
 ::: onetl.connection.db_connection.mysql.options.MySQLExecuteOptions
     options:
+        inherited_members: true
         members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false

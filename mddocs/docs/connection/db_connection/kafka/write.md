@@ -68,3 +68,4 @@ writer.run(write_df)
         inherited_members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false

@@ -11,10 +11,10 @@
 - ✅︎ `columns`
 - ✅︎ `where`
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ✅︎ `hint` (see [official documentation](https://docs.oracle.com/cd/B10500_01/server.920/a96533/hintsref.htm))
 - ❌ `df_schema`
 - ✅︎ `options` (see [Oracle.ReadOptions][onetl.connection.db_connection.oracle.options.OracleReadOptions])
@@ -83,3 +83,4 @@ Especially if there are indexes or partitions for columns used in `where` clause
         inherited_members: true
         heading_level: 3
         show_root_heading: true
+        show_root_full_path: false
