@@ -56,7 +56,7 @@ plugins:
       default_handler: python
       handlers:
         python:
-          paths: [".."]
+          paths: [..]
           options:
             show_source: false
             show_root_heading: false

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2025-present MTS PJSC
+# SPDX-License-Identifier: Apache-2.0
 """
 Generate anchors for all headings in docs/ following the pattern:
   {prefix}-{file_path_id}-{heading_id}
@@ -16,25 +18,25 @@ are updated to [text][new].
 import argparse
 import re
 import sys
-from pathlib import Path
 from collections import Counter, defaultdict
+from pathlib import Path
 from typing import NamedTuple
 
-HEADING_RE = re.compile(r'^(#{1,6}) (.+)$')
-ANCHOR_IN_HEADING_RE = re.compile(r'\s*\{\s*#([^}]+?)\s*\}\s*$')
-REF_LINK_RE = re.compile(r'\]\[([^\]]+)\]')
+HEADING_RE = re.compile(r"^(#{1,6}) (.+)$")
+ANCHOR_IN_HEADING_RE = re.compile(r"\s*\{\s*#([^}]+?)\s*\}\s*$")
+REF_LINK_RE = re.compile(r"\]\[([^\]]+)\]")
 SNIPPET_RE = re.compile(r'--8<--\s*["\']([^"\']+)["\']')
 EMOJI_RE = re.compile(
-    r'[\U0001F600-\U0001F64F'  # emoticons
-    r'\U0001F300-\U0001F5FF'   # misc symbols & pictographs
-    r'\U0001F680-\U0001F6FF'   # transport & map
-    r'\U0001F700-\U0001F9FF'   # alchemical, geometric, arrows, supplemental
-    r'\U0001FA00-\U0001FAFF'   # chess, symbols & pictographs extended-a
-    r'\U00002702-\U000027B0'   # dingbats
-    r'\U000024C2-\U0001F251'   # enclosed characters
-    r']'
+    r"[\U0001F600-\U0001F64F"  # emoticons
+    r"\U0001F300-\U0001F5FF"  # misc symbols & pictographs
+    r"\U0001F680-\U0001F6FF"  # transport & map
+    r"\U0001F700-\U0001F9FF"  # alchemical, geometric, arrows, supplemental
+    r"\U0001FA00-\U0001FAFF"  # chess, symbols & pictographs extended-a
+    r"\U00002702-\U000027B0"  # dingbats
+    r"\U000024C2-\U0001F251"  # enclosed characters
+    r"]"
 )
-DATE_RE = re.compile(r'\s*\(\d{4}(?:-\d{2}(?:-\d{2})?)?\)')
+DATE_RE = re.compile(r"\s*\(\d{4}(?:-\d{2}(?:-\d{2})?)?\)")
 
 Heading = tuple[int, str, str, str | None]  # (line_idx, level, display, existing_anchor)
 
@@ -49,18 +51,16 @@ class FileInfo(NamedTuple):
 # Anchor ID construction
 # ---------------------------------------------------------------------------
 
+
 def file_path_to_parts(fp: Path, docs_dir: Path) -> list[str]:
     """Return normalized, deduplicated path segments used to build the anchor."""
-    parts = [
-        p.replace("_", "-").replace(".", "-").lower()
-        for p in fp.relative_to(docs_dir).with_suffix("").parts
-    ]
+    parts = [p.replace("_", "-").replace(".", "-").lower() for p in fp.relative_to(docs_dir).with_suffix("").parts]
     if parts and parts[-1] == "index":
         parts = parts[:-1]
     # Skip a segment if its info is already carried by the remainder
     result = []
     for i, part in enumerate(parts):
-        remaining = "-".join(parts[i + 1:])
+        remaining = "-".join(parts[i + 1 :])
         if remaining == part or remaining.startswith(part + "-"):
             continue
         result.append(part)
@@ -68,12 +68,12 @@ def file_path_to_parts(fp: Path, docs_dir: Path) -> list[str]:
 
 
 def heading_text_to_id(display_text: str) -> str:
-    text = re.sub(r'`([^`]*)`', r'\1', display_text)  # strip backtick spans
-    text = EMOJI_RE.sub('', text)
-    text = DATE_RE.sub('', text)
+    text = re.sub(r"`([^`]*)`", r"\1", display_text)  # strip backtick spans
+    text = EMOJI_RE.sub("", text)
+    text = DATE_RE.sub("", text)
     text = text.strip().lower().replace(" ", "-").replace("_", "-").replace(".", "-")
-    text = re.sub(r'[^\w\-]', '', text)
-    return re.sub(r'-{2,}', '-', text).strip('-')
+    text = re.sub(r"[^\w\-]", "", text)
+    return re.sub(r"-{2,}", "-", text).strip("-")
 
 
 def make_anchor(prefix: str, file_parts: list[str], heading_base: str) -> str:
@@ -87,13 +87,14 @@ def make_anchor(prefix: str, file_parts: list[str], heading_base: str) -> str:
         if heading_base == tail:
             return f"{prefix}-{file_id}"
         if heading_base.startswith(tail + "-"):
-            return f"{prefix}-{file_id}-{heading_base[len(tail) + 1:]}"
+            return f"{prefix}-{file_id}-{heading_base[len(tail) + 1 :]}"
     return f"{prefix}-{file_id}-{heading_base}"
 
 
 # ---------------------------------------------------------------------------
 # Parsing
 # ---------------------------------------------------------------------------
+
 
 def split_heading(raw: str) -> tuple[str, str | None]:
     """Return (display_text, existing_anchor_or_None) from a raw heading text."""
@@ -121,9 +122,7 @@ def parse_file(content: str) -> tuple[list[Heading], list[str]]:
     return headings, snippets
 
 
-def generate_new_anchors(
-    prefix: str, file_parts: list[str], headings: list[Heading]
-) -> dict[int, str]:
+def generate_new_anchors(prefix: str, file_parts: list[str], headings: list[Heading]) -> dict[int, str]:
     """Returns {line_idx: new_anchor_id}."""
     bases = {line_idx: heading_text_to_id(display) for line_idx, _, display, _ in headings}
     base_counts = Counter(bases.values())
@@ -142,17 +141,15 @@ def generate_new_anchors(
 # Main pipeline steps
 # ---------------------------------------------------------------------------
 
-def parse_all_files(
-    all_files: list[Path], docs_dir: Path, prefix: str
-) -> dict[Path, FileInfo]:
+
+def parse_all_files(all_files: list[Path], docs_dir: Path, prefix: str) -> dict[Path, FileInfo]:
     file_data: dict[Path, FileInfo] = {}
     for fp in all_files:
         content = fp.read_text(encoding="utf-8")
         headings, snippets = parse_file(content)
         if snippets:
             print(
-                f"WARNING: {fp.relative_to(docs_dir)} uses snippets {snippets}"
-                " — included headings won't be processed",
+                f"WARNING: {fp.relative_to(docs_dir)} uses snippets {snippets} — included headings won't be processed",
                 file=sys.stderr,
             )
         file_data[fp] = FileInfo(
@@ -253,10 +250,9 @@ def write_files(
 
 # ---------------------------------------------------------------------------
 
+
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Generate structured anchors for all MkDocs headings."
-    )
+    parser = argparse.ArgumentParser(description="Generate structured anchors for all MkDocs headings.")
     parser.add_argument(
         "docs_dir",
         nargs="?",
@@ -270,18 +266,21 @@ def parse_args() -> argparse.Namespace:
         help="Anchor prefix (default: DBR-onetl)",
     )
     parser.add_argument(
-        "--dry-run", "-n",
+        "--dry-run",
+        "-n",
         action="store_true",
         help="Preview changes without writing files",
     )
     verbosity = parser.add_mutually_exclusive_group()
     verbosity.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Print all anchor remappings",
     )
     verbosity.add_argument(
-        "--quiet", "-q",
+        "--quiet",
+        "-q",
         action="store_true",
         help="Print only the final summary line",
     )

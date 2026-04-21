@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2025-present MTS PJSC
+# SPDX-License-Identifier: Apache-2.0
 """
 Fix unresolved doc-anchor references in converted docstrings.
 
@@ -28,7 +30,6 @@ import re
 import sys
 from pathlib import Path
 
-
 # ---------------------------------------------------------------------------
 # Mapping: RST :ref: label → (link text, absolute docs path)
 #
@@ -38,56 +39,50 @@ from pathlib import Path
 
 REF_MAP: dict[str, tuple[str, str]] = {
     # Core classes
-    "db-reader":            ("DB Reader",           "/db/reader/"),
-    "file-downloader":      ("File Downloader",     "/file/file_downloader/"),
-    "file-uploader":        ("File Uploader",       "/file/file_uploader/"),
-    "file-mover":           ("File Mover",          "/file/file_mover/"),
-
+    "db-reader": ("DB Reader", "/db/reader/"),
+    "file-downloader": ("File Downloader", "/file/file_downloader/"),
+    "file-uploader": ("File Uploader", "/file/file_uploader/"),
+    "file-mover": ("File Mover", "/file/file_mover/"),
     # Strategies
-    "strategy":             ("Read Strategies",     "/strategy/"),
-
+    "strategy": ("Read Strategies", "/strategy/"),
     # Connections
-    "db-connections":       ("DB Connections",      "/connection/db_connection/"),
-    "file-connections":     ("File Connections",    "/connection/file_connection/"),
-    "file-df-connections":  ("File DF Connections", "/connection/file_df_connection/"),
-
+    "db-connections": ("DB Connections", "/connection/db_connection/"),
+    "file-connections": ("File Connections", "/connection/file_connection/"),
+    "file-df-connections": ("File DF Connections", "/connection/file_df_connection/"),
     # File utilities
-    "file-filters":         ("File Filters",        "/file/file_filters/"),
-    "file-limits":          ("File Limits",         "/file/file_limits/"),
-
+    "file-filters": ("File Filters", "/file/file_filters/"),
+    "file-limits": ("File Limits", "/file/file_limits/"),
     # HWM
-    "hwm":                  ("HWM",                 "/hwm_store/"),
-
+    "hwm": ("HWM", "/hwm_store/"),
     # Hooks
-    "hooks-design":         ("Hooks design",        "/hooks/design/"),
-    "slot-decorator":       ("@slot decorator",     "/hooks/slot/"),
-    "slot":                 ("@slot",               "/hooks/slot/"),
-
+    "hooks-design": ("Hooks design", "/hooks/design/"),
+    "slot-decorator": ("@slot decorator", "/hooks/slot/"),
+    "slot": ("@slot", "/hooks/slot/"),
     # Installation
-    "install-files":        ("File connections install", "/install/files/"),
-    "install-spark":        ("Spark install",       "/install/spark/"),
-    "install-kerberos":     ("Kerberos support",    "/install/kerberos/"),
-
+    "install-files": ("File connections install", "/install/files/"),
+    "install-spark": ("Spark install", "/install/spark/"),
+    "install-kerberos": ("Kerberos support", "/install/kerberos/"),
     # Prerequisites per connector
-    "kafka-prerequisites":          ("Kafka prerequisites",      "/connection/db_connection/kafka/prerequisites/"),
-    "clickhouse-prerequisites":     ("Clickhouse prerequisites", "/connection/db_connection/clickhouse/prerequisites/"),
-    "greenplum-prerequisites":      ("Greenplum prerequisites",  "/connection/db_connection/greenplum/prerequisites/"),
-    "hive-prerequisites":           ("Hive prerequisites",       "/connection/db_connection/hive/prerequisites/"),
-    "iceberg-prerequisites":        ("Iceberg prerequisites",    "/connection/db_connection/iceberg/prerequisites/"),
-    "mongodb-prerequisites":        ("MongoDB prerequisites",    "/connection/db_connection/mongodb/prerequisites/"),
-    "mssql-prerequisites":          ("MSSQL prerequisites",      "/connection/db_connection/mssql/prerequisites/"),
-    "mysql-prerequisites":          ("MySQL prerequisites",      "/connection/db_connection/mysql/prerequisites/"),
-    "oracle-prerequisites":         ("Oracle prerequisites",     "/connection/db_connection/oracle/prerequisites/"),
-    "postgres-prerequisites":       ("Postgres prerequisites",   "/connection/db_connection/postgres/prerequisites/"),
-    "spark-hdfs-prerequisites":     ("Spark HDFS prerequisites", "/connection/file_df_connection/spark_hdfs/prerequisites/"),
-    "spark-s3-prerequisites":       ("Spark S3 prerequisites",   "/connection/file_df_connection/spark_s3/prerequisites/"),
-
+    "kafka-prerequisites": ("Kafka prerequisites", "/connection/db_connection/kafka/prerequisites/"),
+    "clickhouse-prerequisites": ("Clickhouse prerequisites", "/connection/db_connection/clickhouse/prerequisites/"),
+    "greenplum-prerequisites": ("Greenplum prerequisites", "/connection/db_connection/greenplum/prerequisites/"),
+    "hive-prerequisites": ("Hive prerequisites", "/connection/db_connection/hive/prerequisites/"),
+    "iceberg-prerequisites": ("Iceberg prerequisites", "/connection/db_connection/iceberg/prerequisites/"),
+    "mongodb-prerequisites": ("MongoDB prerequisites", "/connection/db_connection/mongodb/prerequisites/"),
+    "mssql-prerequisites": ("MSSQL prerequisites", "/connection/db_connection/mssql/prerequisites/"),
+    "mysql-prerequisites": ("MySQL prerequisites", "/connection/db_connection/mysql/prerequisites/"),
+    "oracle-prerequisites": ("Oracle prerequisites", "/connection/db_connection/oracle/prerequisites/"),
+    "postgres-prerequisites": ("Postgres prerequisites", "/connection/db_connection/postgres/prerequisites/"),
+    "spark-hdfs-prerequisites": (
+        "Spark HDFS prerequisites",
+        "/connection/file_df_connection/spark_hdfs/prerequisites/",
+    ),
+    "spark-s3-prerequisites": ("Spark S3 prerequisites", "/connection/file_df_connection/spark_s3/prerequisites/"),
     # Slots
-    "hdfs-slots":           ("HDFS Slots",          "/connection/file_connection/hdfs/slots/"),
-    "spark-hdfs-slots":     ("Spark HDFS Slots",    "/connection/file_df_connection/spark_hdfs/slots/"),
-
+    "hdfs-slots": ("HDFS Slots", "/connection/file_connection/hdfs/slots/"),
+    "spark-hdfs-slots": ("Spark HDFS Slots", "/connection/file_df_connection/spark_hdfs/slots/"),
     # Other
-    "kafka":                ("Kafka",               "/connection/db_connection/kafka/"),
+    "kafka": ("Kafka", "/connection/db_connection/kafka/"),
 }
 
 
@@ -101,63 +96,34 @@ REF_MAP: dict[str, tuple[str, str]] = {
 
 PYTHON_PATH_MAP: dict[str, str] = {
     # Strategies
-    "onetl.strategy.incremental_strategy.IncrementalStrategy":
-        "/strategy/incremental_strategy/#DBR-onetl-strategy-incremental-strategy",
-    "onetl.strategy.snapshot_strategy.SnapshotStrategy":
-        "/strategy/snapshot_strategy/#DBR-onetl-strategy-snapshot-strategy",
-    "onetl.strategy.snapshot_strategy.SnapshotBatchStrategy":
-        "/strategy/snapshot_batch_strategy/#DBR-onetl-strategy-snapshot-batch-strategy",
-
+    "onetl.strategy.incremental_strategy.IncrementalStrategy": "/strategy/incremental_strategy/#DBR-onetl-strategy-incremental-strategy",
+    "onetl.strategy.snapshot_strategy.SnapshotStrategy": "/strategy/snapshot_strategy/#DBR-onetl-strategy-snapshot-strategy",
+    "onetl.strategy.snapshot_strategy.SnapshotBatchStrategy": "/strategy/snapshot_batch_strategy/#DBR-onetl-strategy-snapshot-batch-strategy",
     # DB
-    "onetl.db.db_reader.db_reader.DBReader":
-        "/db/reader/#DBR-onetl-db-reader",
-
-    "onetl.connection.file_connection.hdfs.connection.HDFS":
-        "/connection/file_connection/hdfs/connection/#DBR-onetl-connection-file-connection-hdfs-connection-0",
-    "onetl.connection.file_connection.s3.S3":
-        "/connection/file_connection/s3/#DBR-onetl-connection-file-connection-s3-connection",
-
+    "onetl.db.db_reader.db_reader.DBReader": "/db/reader/#DBR-onetl-db-reader",
+    "onetl.connection.file_connection.hdfs.connection.HDFS": "/connection/file_connection/hdfs/connection/#DBR-onetl-connection-file-connection-hdfs-connection-0",
+    "onetl.connection.file_connection.s3.S3": "/connection/file_connection/s3/#DBR-onetl-connection-file-connection-s3-connection",
     # File downloader
-    "onetl.file.file_downloader.file_downloader.FileDownloader":
-        "/file/file_downloader/file_downloader/#DBR-onetl-file-downloader-0",
-    "onetl.file.file_downloader.options.FileDownloaderOptions":
-        "/file/file_downloader/options/#DBR-onetl-file-downloader-options",
-    "onetl.file.file_downloader.file_downloader.FileDownloader.Options.delete_source":
-        "/file/file_downloader/options/#onetl.file.file_downloader.options.FileDownloaderOptions.delete_source",
-    "onetl.file.file_downloader.file_downloader.FileDownloader.Options.mode":
-        "/file/file_downloader/options/#DBR-onetl-file-downloader-options",
-
+    "onetl.file.file_downloader.file_downloader.FileDownloader": "/file/file_downloader/file_downloader/#DBR-onetl-file-downloader-0",
+    "onetl.file.file_downloader.options.FileDownloaderOptions": "/file/file_downloader/options/#DBR-onetl-file-downloader-options",
+    "onetl.file.file_downloader.file_downloader.FileDownloader.Options.delete_source": "/file/file_downloader/options/#onetl.file.file_downloader.options.FileDownloaderOptions.delete_source",
+    "onetl.file.file_downloader.file_downloader.FileDownloader.Options.mode": "/file/file_downloader/options/#DBR-onetl-file-downloader-options",
     # File mover / uploader
-    "onetl.file.file_mover.options.FileMoverOptions":
-        "/file/file_mover/options/#DBR-onetl-file-mover-options",
-    "onetl.file.file_uploader.options.FileUploaderOptions":
-        "/file/file_uploader/options/#DBR-onetl-file-uploader-options",
-
+    "onetl.file.file_mover.options.FileMoverOptions": "/file/file_mover/options/#DBR-onetl-file-mover-options",
+    "onetl.file.file_uploader.options.FileUploaderOptions": "/file/file_uploader/options/#DBR-onetl-file-uploader-options",
     # File DF
-    "onetl.file.file_df_reader.file_df_reader.FileDFReader":
-        "/file_df/file_df_reader/file_df_reader/#DBR-onetl-file-df-reader-filedf-reader-0",
-    "onetl.file.file_df_writer.file_df_writer.FileDFWriter":
-        "/file_df/file_df_writer/file_df_writer/#DBR-onetl-file-df-writer-filedf-writer-0",
-
+    "onetl.file.file_df_reader.file_df_reader.FileDFReader": "/file_df/file_df_reader/file_df_reader/#DBR-onetl-file-df-reader-filedf-reader-0",
+    "onetl.file.file_df_writer.file_df_writer.FileDFWriter": "/file_df/file_df_writer/file_df_writer/#DBR-onetl-file-df-writer-filedf-writer-0",
     # Filters
-    "onetl.file.filter.exclude_dir.ExcludeDir":
-        "/file/file_filters/exclude_dir/#DBR-onetl-file-filters-exclude-dir-excludedir",
-    "onetl.file.filter.glob.Glob":
-        "/file/file_filters/glob/#DBR-onetl-file-filters-glob",
-    "onetl.file.filter.regexp.Regexp":
-        "/file/file_filters/regexp/#DBR-onetl-file-filters-regexp",
-
+    "onetl.file.filter.exclude_dir.ExcludeDir": "/file/file_filters/exclude_dir/#DBR-onetl-file-filters-exclude-dir-excludedir",
+    "onetl.file.filter.glob.Glob": "/file/file_filters/glob/#DBR-onetl-file-filters-glob",
+    "onetl.file.filter.regexp.Regexp": "/file/file_filters/regexp/#DBR-onetl-file-filters-regexp",
     # Formats
-    "onetl.file.format.jsonline.JSONLine":
-        "/file_df/file_formats/jsonline/#DBR-onetl-file-df-file-formats-jsonline",
-
+    "onetl.file.format.jsonline.JSONLine": "/file_df/file_formats/jsonline/#DBR-onetl-file-df-file-formats-jsonline",
     # Limits
-    "onetl.file.limit.max_files_count.MaxFilesCount":
-        "/file/file_limits/max_files_count/#DBR-onetl-file-limits-max-files-count-maxfilescount",
-
+    "onetl.file.limit.max_files_count.MaxFilesCount": "/file/file_limits/max_files_count/#DBR-onetl-file-limits-max-files-count-maxfilescount",
     # Postgres options (wrong python path used in docstrings → correct anchor)
-    "onetl.connection.db_connection.postgres.Postgres.ReadOptions.fetchsize":
-        "/connection/db_connection/postgres/read/#onetl.connection.db_connection.postgres.options.PostgresReadOptions.fetchsize",
+    "onetl.connection.db_connection.postgres.Postgres.ReadOptions.fetchsize": "/connection/db_connection/postgres/read/#onetl.connection.db_connection.postgres.options.PostgresReadOptions.fetchsize",
 }
 
 
@@ -169,8 +135,7 @@ PYTHON_PATH_MAP: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 LABEL_MAP: dict[str, str] = {
-    "MongoDBReadOptions":
-        "/connection/db_connection/mongodb/read/#onetl.connection.db_connection.mongodb.options.MongoDBReadOptions",
+    "MongoDBReadOptions": "/connection/db_connection/mongodb/read/#onetl.connection.db_connection.mongodb.options.MongoDBReadOptions",
 }
 
 
@@ -280,10 +245,10 @@ SHORTNAME_MAP: dict[str, str] = {
     # Field refs that have no anchor in generated docs → inline code
     "escape": "`escape`",
     # Hook slot methods → links to docs pages
-    "skip_hooks":      "[skip_hooks](/hooks/support_hooks/#onetl.hooks.support_hooks.skip_hooks)",
-    "suspend_hooks":   "[suspend_hooks](/hooks/support_hooks/#onetl.hooks.support_hooks.suspend_hooks)",
-    "resume_hooks":    "[resume_hooks](/hooks/support_hooks/#onetl.hooks.support_hooks.resume_hooks)",
-    "stop_all_hooks":  "[stop_all_hooks](/hooks/global_state/#onetl.hooks.hooks_state.stop_all_hooks)",
+    "skip_hooks": "[skip_hooks](/hooks/support_hooks/#onetl.hooks.support_hooks.skip_hooks)",
+    "suspend_hooks": "[suspend_hooks](/hooks/support_hooks/#onetl.hooks.support_hooks.suspend_hooks)",
+    "resume_hooks": "[resume_hooks](/hooks/support_hooks/#onetl.hooks.support_hooks.resume_hooks)",
+    "stop_all_hooks": "[stop_all_hooks](/hooks/global_state/#onetl.hooks.hooks_state.stop_all_hooks)",
     "resume_all_hooks": "[resume_all_hooks](/hooks/global_state/#onetl.hooks.hooks_state.resume_all_hooks)",
     # Type refs in parameter type fields → plain name (mkdocstrings resolves them)
     "IcebergCatalog": "IcebergCatalog",
@@ -296,6 +261,7 @@ SHORTNAME_MAP: dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Transformer
 # ---------------------------------------------------------------------------
+
 
 def _fix_refs(text: str) -> tuple[str, list[str]]:
     """Replace [label][] and [text][onetl.*] with explicit Markdown links."""
@@ -367,15 +333,17 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
         """Remove RST-style backticks from NumPy parameter type fields."""
         prefix, type_str = m.group(1), m.group(2)
         # `T` or `T2` → T | T2  (both sides backticked)
-        fixed = re.sub(r'`([^`]+)`\s+or\s+`([^`]+)`', r'\1 | \2', type_str)
+        fixed = re.sub(r"`([^`]+)`\s+or\s+`([^`]+)`", r"\1 | \2", type_str)
         # remaining `T` → T  (covers single types and default values)
-        fixed = re.sub(r'`([^`]+)`', r'\1', fixed)
+        fixed = re.sub(r"`([^`]+)`", r"\1", fixed)
         # T or T2 → T | T2  (residual after backtick removal, or pre-existing)
-        fixed = re.sub(r'(\S)\s+or\s+(\S)', r'\1 | \2', fixed)
+        fixed = re.sub(r"(\S)\s+or\s+(\S)", r"\1 | \2", fixed)
         # list/Iterable of X → list[X] / Iterable[X]
-        fixed = re.sub(r'\b(list|List|Iterable) of ([^\s,]+)', lambda mm: f'{mm.group(1).lower()}[{mm.group(2)}]', fixed)
+        fixed = re.sub(
+            r"\b(list|List|Iterable) of ([^\s,]+)", lambda mm: f"{mm.group(1).lower()}[{mm.group(2)}]", fixed
+        )
         # typing.X → X  (griffe cannot parse fully-qualified typing module refs)
-        fixed = re.sub(r'\btyping\.(\w+)', r'\1', fixed)
+        fixed = re.sub(r"\btyping\.(\w+)", r"\1", fixed)
         if fixed != type_str:
             changes.append(f"type: {type_str!r} → {fixed!r}")
             return prefix + fixed
@@ -388,25 +356,26 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
           1. Items over-indented by 4 spaces (RST style) → normalize to See: indent.
           2. No blank line before items → add one.
         """
-        see_indent = m.group(1)   # indentation of 'See:'
+        see_indent = m.group(1)  # indentation of 'See:'
         item_indent = m.group(2)  # indentation of first '*'
-        rest = m.group(3)         # everything from '*' to end of list block
+        rest = m.group(3)  # everything from '*' to end of list block
 
         # Normalize item indent to match See: indent
         if len(item_indent) > len(see_indent):
             # Re-indent all list items to See: indent level
             def reindent(mm: re.Match) -> str:
-                return see_indent + '* ' + mm.group(1)
-            rest = re.sub(r'[ \t]+\* (.+)', reindent, rest)
+                return see_indent + "* " + mm.group(1)
+
+            rest = re.sub(r"[ \t]+\* (.+)", reindent, rest)
             item_indent = see_indent
 
         changes.append("see-list: added blank line before list after 'See:'")
-        return f'{see_indent}See:\n\n{item_indent}* {rest}'
+        return f"{see_indent}See:\n\n{item_indent}* {rest}"
 
     def fix_label_list(m: re.Match) -> str:
         """Ensure blank line between any indented label ending with ':' and a bullet list."""
         changes.append(f"label-list: added blank line after '{m.group(1).strip()}'")
-        return m.group(1) + '\n\n' + m.group(2)
+        return m.group(1) + "\n\n" + m.group(2)
 
     def fix_numpy_params(txt: str) -> str:
         """Remove extra indentation from numpy-style Parameters/Returns/etc. sections.
@@ -428,20 +397,20 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
         This function normalizes them to the expected format.
         """
         section_re = re.compile(
-            r'^( *)(Parameters|Returns|Raises|Attributes|Notes|References|Examples|See Also|Yields)\s*\n'
-            r'\1-{3,}\s*\n',
+            r"^( *)(Parameters|Returns|Raises|Attributes|Notes|References|Examples|See Also|Yields)\s*\n"
+            r"\1-{3,}\s*\n",
             re.MULTILINE,
         )
-        lines = txt.split('\n')
+        lines = txt.split("\n")
         out: list[str] = []
         i = 0
         while i < len(lines):
             line = lines[i]
             # Look for section header + underline
-            header_match = re.match(r'^( *)\S', line)
+            header_match = re.match(r"^( *)\S", line)
             if header_match and i + 1 < len(lines):
                 underline = lines[i + 1]
-                if re.match(r'^ *-{3,}\s*$', underline) and line.rstrip() and not line.lstrip().startswith('-'):
+                if re.match(r"^ *-{3,}\s*$", underline) and line.rstrip() and not line.lstrip().startswith("-"):
                     base_indent = len(header_match.group(1))
                     expected_param_indent = base_indent
                     # Scan ahead to find actual param indent
@@ -463,9 +432,9 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
                                 bl_stripped = bl.lstrip()
                                 bl_indent = len(bl) - len(bl_stripped) if bl_stripped else 0
                                 # Section ends when a non-blank line is at base_indent level (new section or end)
-                                if bl_stripped and bl_indent <= base_indent and not re.match(r'-{3,}', bl_stripped):
+                                if bl_stripped and bl_indent <= base_indent and not re.match(r"-{3,}", bl_stripped):
                                     break
-                                if bl_stripped and bl[:extra] == ' ' * extra:
+                                if bl_stripped and bl[:extra] == " " * extra:
                                     out.append(bl[extra:])
                                     fixed_any = True
                                 else:
@@ -476,7 +445,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
                             continue
             out.append(line)
             i += 1
-        return '\n'.join(out)
+        return "\n".join(out)
 
     def fix_over_indented_lists(txt: str) -> str:
         """De-indent bullet list blocks that are over-indented relative to their label.
@@ -489,7 +458,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
         a list item (e.g. an admonition or new paragraph at the same level).
         Idempotent: no-op if item indent already equals label indent.
         """
-        lines = txt.split('\n')
+        lines = txt.split("\n")
         out: list[str] = []
         i = 0
         while i < len(lines):
@@ -498,8 +467,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
             label_indent = len(s) - len(s.lstrip()) if s.strip() else 0
 
             # Check: indented line ending with ':', followed by a blank line
-            if (s and label_indent > 0 and s[-1] == ':'
-                    and i + 1 < len(lines) and not lines[i + 1].strip()):
+            if s and label_indent > 0 and s[-1] == ":" and i + 1 < len(lines) and not lines[i + 1].strip():
                 # Skip the blank line(s) to find the list
                 j = i + 1
                 while j < len(lines) and not lines[j].strip():
@@ -512,7 +480,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
                     extra = nxt_indent - label_indent
 
                     # Only fix when items are strictly deeper than label
-                    if extra > 0 and nxt_s and nxt_s[0] in '*-+':
+                    if extra > 0 and nxt_s and nxt_s[0] in "*-+":
                         # Collect block continuing past blank lines.
                         # Terminate when a non-blank line satisfies:
                         #   - indent < nxt_indent  (de-indented past items), OR
@@ -533,8 +501,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
                                 nb_indent = len(nb) - len(nb_s)
                                 if nb_indent < nxt_indent:
                                     break  # de-indented: end of block
-                                if nb_indent == nxt_indent and not (
-                                        nb_s and nb_s[0] in '*-+' and nb_s[1:2] == ' '):
+                                if nb_indent == nxt_indent and not (nb_s and nb_s[0] in "*-+" and nb_s[1:2] == " "):
                                     break  # same-level non-list content: end of block
                                 block.append(bl)
                                 k += 1
@@ -546,13 +513,8 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
                             k += 1
 
                         # De-indent each block line by `extra` spaces
-                        new_block = [
-                            bl[extra:] if bl[:extra] == ' ' * extra else bl
-                            for bl in block
-                        ]
-                        changes.append(
-                            f"label-list: de-indented {extra}sp after '{s.strip()}'"
-                        )
+                        new_block = [bl[extra:] if bl[:extra] == " " * extra else bl for bl in block]
+                        changes.append(f"label-list: de-indented {extra}sp after '{s.strip()}'")
                         out.append(line)
                         # Preserve blank lines between label and block
                         for bi in range(i + 1, j):
@@ -563,22 +525,22 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
 
             out.append(line)
             i += 1
-        return '\n'.join(out)
+        return "\n".join(out)
 
-    new_text = re.sub(r'\[([a-z][a-z0-9-]*(?:-[a-z][a-z0-9-]*)*)\]\[\]', replace_ref, text)
-    new_text = re.sub(r'\[([^\]]+)\]\[([a-z][a-z0-9-]*(?:-[a-z0-9]+)*)\]', replace_text_ref, new_text)
-    new_text = re.sub(r'\[([^\]]+)\]\[([A-Z][A-Za-z0-9]*)\]', replace_label_ref, new_text)
-    new_text = re.sub(r'\[([^\]]+)\]\[(onetl\.[a-zA-Z0-9_.]+)\]', replace_python_path, new_text)
-    new_text = re.sub(r'\[(onetl\.[a-zA-Z0-9_.]+)\]\[\]', replace_python_path_self, new_text)
-    new_text = re.sub(r'\[([A-Za-z][\w.]*)\]\[\]', replace_shortname, new_text)
+    new_text = re.sub(r"\[([a-z][a-z0-9-]*(?:-[a-z][a-z0-9-]*)*)\]\[\]", replace_ref, text)
+    new_text = re.sub(r"\[([^\]]+)\]\[([a-z][a-z0-9-]*(?:-[a-z0-9]+)*)\]", replace_text_ref, new_text)
+    new_text = re.sub(r"\[([^\]]+)\]\[([A-Z][A-Za-z0-9]*)\]", replace_label_ref, new_text)
+    new_text = re.sub(r"\[([^\]]+)\]\[(onetl\.[a-zA-Z0-9_.]+)\]", replace_python_path, new_text)
+    new_text = re.sub(r"\[(onetl\.[a-zA-Z0-9_.]+)\]\[\]", replace_python_path_self, new_text)
+    new_text = re.sub(r"\[([A-Za-z][\w.]*)\]\[\]", replace_shortname, new_text)
     # Global: List of X → list[X] (Returns sections and body text)
-    new_text = re.sub(r'\bList of ([^\s,]+)', r'list[\1]', new_text)
-    new_text = re.sub(r'^( {1,}\w+ : )(.+)$', fix_numpy_type, new_text, flags=re.MULTILINE)
+    new_text = re.sub(r"\bList of ([^\s,]+)", r"list[\1]", new_text)
+    new_text = re.sub(r"^( {1,}\w+ : )(.+)$", fix_numpy_type, new_text, flags=re.MULTILINE)
     # Fix See: blocks: ensure blank line before bullet list, normalize over-indented items.
     # Only fires when there is NO blank line between See: and the first * (i.e. \n followed
     # immediately by optional spaces + *), leaving already-correct blocks untouched.
     new_text = re.sub(
-        r'^( *)See:\n(?!\n)( *)\* (.+(?:\n(?!\n)[ \t]*\* .+)*)',
+        r"^( *)See:\n(?!\n)( *)\* (.+(?:\n(?!\n)[ \t]*\* .+)*)",
         fix_see_list,
         new_text,
         flags=re.MULTILINE,
@@ -587,7 +549,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
     # (no blank line between them). Applied after fix_see_list so 'See:' blocks are already
     # handled and won't be double-processed.
     new_text = re.sub(
-        r'^( +\w[^\n]*:)\n(?!\n)( +[*-] )',
+        r"^( +\w[^\n]*:)\n(?!\n)( +[*-] )",
         fix_label_list,
         new_text,
         flags=re.MULTILINE,
@@ -610,33 +572,32 @@ _TRIPLE_QUOTED = re.compile(
 )
 
 
-_NOQA_RE = re.compile(r'\s*#\s*noqa[^\n]*$')
+_NOQA_RE = re.compile(r"\s*#\s*noqa[^\n]*$")
 
 
 def find_docstrings(source: str) -> list[tuple[int, int]]:
     # Characters that indicate we're mid-expression (function call, list, etc.)
-    _EXPR_CHARS = frozenset('(,[{+-*/%&|^~\\')
+    _EXPR_CHARS = frozenset("(,[{+-*/%&|^~\\")
     results = []
     for m in _TRIPLE_QUOTED.finditer(source):
-        preceding = _NOQA_RE.sub('', source[: m.start()].rstrip()).rstrip()
+        preceding = _NOQA_RE.sub("", source[: m.start()].rstrip()).rstrip()
         # Standard positions: module start, after 'def foo():', 'class Foo:', etc.
-        if preceding.endswith(':') or not preceding or preceding[-1] in ('\n', '#'):
+        if preceding.endswith(":") or not preceding or preceding[-1] in ("\n", "#"):
             results.append((m.start(), m.end()))
             continue
         # Field docstring: """ starts at the beginning of an indented line
         # (only whitespace before it on the current line) and we're not mid-expression.
-        line_start = source.rfind('\n', 0, m.start()) + 1
-        if (source[line_start:m.start()].strip() == ''
-                and preceding[-1] not in _EXPR_CHARS):
+        line_start = source.rfind("\n", 0, m.start()) + 1
+        if source[line_start : m.start()].strip() == "" and preceding[-1] not in _EXPR_CHARS:
             results.append((m.start(), m.end()))
     return results
 
 
 def process_file(path: Path, dry_run: bool) -> bool:
     try:
-        source = path.read_text(encoding='utf-8')
+        source = path.read_text(encoding="utf-8")
     except Exception as e:
-        print(f'  ERROR reading {path}: {e}', file=sys.stderr)
+        print(f"  ERROR reading {path}: {e}", file=sys.stderr)
         return False
 
     docstrings = find_docstrings(source)
@@ -667,14 +628,14 @@ def process_file(path: Path, dry_run: bool) -> bool:
         return False
 
     if dry_run:
-        print(f'\n  {path}')
+        print(f"\n  {path}")
         seen = set()
         for c in file_changes:
             if c not in seen:
-                print(f'    · {c}')
+                print(f"    · {c}")
                 seen.add(c)
     else:
-        path.write_text(new_source, encoding='utf-8')
+        path.write_text(new_source, encoding="utf-8")
 
     return True
 
@@ -683,11 +644,12 @@ def process_file(path: Path, dry_run: bool) -> bool:
 # Docs .md file processor
 # ---------------------------------------------------------------------------
 
+
 def process_md_file(path: Path, dry_run: bool) -> bool:
     try:
-        source = path.read_text(encoding='utf-8')
+        source = path.read_text(encoding="utf-8")
     except Exception as e:
-        print(f'  ERROR reading {path}: {e}', file=sys.stderr)
+        print(f"  ERROR reading {path}: {e}", file=sys.stderr)
         return False
 
     new_source = source
@@ -702,11 +664,11 @@ def process_md_file(path: Path, dry_run: bool) -> bool:
         return False
 
     if dry_run:
-        print(f'\n  {path}')
+        print(f"\n  {path}")
         for c in file_changes:
-            print(f'    · {c}')
+            print(f"    · {c}")
     else:
-        path.write_text(new_source, encoding='utf-8')
+        path.write_text(new_source, encoding="utf-8")
 
     return True
 
@@ -715,47 +677,48 @@ def process_md_file(path: Path, dry_run: bool) -> bool:
 # Entry point
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description='Fix doc-anchor cross-references in converted docstrings.',
+        description="Fix doc-anchor cross-references in converted docstrings.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--dry-run', action='store_true', help='Show changes without writing files')
-    parser.add_argument('--path', default='onetl/', help='Directory to process (default: onetl/)')
-    parser.add_argument('--file', help='Process a single file')
-    parser.add_argument('--docs-path', help='Also fix broken links in docs .md files under PATH')
+    parser.add_argument("--dry-run", action="store_true", help="Show changes without writing files")
+    parser.add_argument("--path", default="onetl/", help="Directory to process (default: onetl/)")
+    parser.add_argument("--file", help="Process a single file")
+    parser.add_argument("--docs-path", help="Also fix broken links in docs .md files under PATH")
     args = parser.parse_args()
 
-    mode = 'dry-run' if args.dry_run else 'write'
+    mode = "dry-run" if args.dry_run else "write"
 
     if args.file:
         files = [Path(args.file)]
     else:
-        files = sorted(Path(args.path).rglob('*.py'))
+        files = sorted(Path(args.path).rglob("*.py"))
 
-    print(f'Processing {len(files)} file(s) [{mode}]...')
+    print(f"Processing {len(files)} file(s) [{mode}]...")
 
     changed = 0
     for f in files:
         if process_file(f, dry_run=args.dry_run):
             changed += 1
             if not args.dry_run:
-                print(f'  ✓ {f}')
+                print(f"  ✓ {f}")
 
-    label = 'would be changed' if args.dry_run else 'changed'
-    print(f'\nDone: {changed}/{len(files)} files {label}.')
+    label = "would be changed" if args.dry_run else "changed"
+    print(f"\nDone: {changed}/{len(files)} files {label}.")
 
     if args.docs_path:
-        md_files = sorted(Path(args.docs_path).rglob('*.md'))
-        print(f'\nProcessing {len(md_files)} docs .md file(s) [{mode}]...')
+        md_files = sorted(Path(args.docs_path).rglob("*.md"))
+        print(f"\nProcessing {len(md_files)} docs .md file(s) [{mode}]...")
         md_changed = 0
         for f in md_files:
             if process_md_file(f, dry_run=args.dry_run):
                 md_changed += 1
                 if not args.dry_run:
-                    print(f'  ✓ {f}')
-        print(f'Done: {md_changed}/{len(md_files)} docs files {label}.')
+                    print(f"  ✓ {f}")
+        print(f"Done: {md_changed}/{len(md_files)} docs files {label}.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

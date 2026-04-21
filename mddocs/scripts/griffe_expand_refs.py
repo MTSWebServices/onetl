@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025-present MTS PJSC
+# SPDX-License-Identifier: Apache-2.0
 """
 Griffe extension: expands short cross-references in docstrings,
 and resolves __doc__ = Parent.__doc__.replace("X", "Y") assignments.
@@ -16,9 +18,10 @@ fires, the item is retried in every subsequent on_module call.
 
 import ast as pyast
 import re
+
 from griffe import Class, Docstring, Extension, Module
 
-XREF_RE = re.compile(r'\[(\w+)\]\[\]')
+XREF_RE = re.compile(r"\[(\w+)\]\[\]")
 
 
 class ExpandShortRefs(Extension):
@@ -49,7 +52,7 @@ class ExpandShortRefs(Extension):
 
         def replace(m):
             name = m.group(1)
-            return f'[{name}][{available[name]}]' if name in available else m.group(0)
+            return f"[{name}][{available[name]}]" if name in available else m.group(0)
 
         _rewrite(cls.docstring, replace)
         for member in cls.members.values():
@@ -72,15 +75,15 @@ def _parse_doc_assignment(cls):
         for stmt in node.body:
             if not isinstance(stmt, pyast.Assign):
                 continue
-            if not any(isinstance(t, pyast.Name) and t.id == '__doc__' for t in stmt.targets):
+            if not any(isinstance(t, pyast.Name) and t.id == "__doc__" for t in stmt.targets):
                 continue
             call = stmt.value
             if not (
                 isinstance(call, pyast.Call)
                 and isinstance(call.func, pyast.Attribute)
-                and call.func.attr == 'replace'
+                and call.func.attr == "replace"
                 and isinstance(call.func.value, pyast.Attribute)
-                and call.func.value.attr == '__doc__'
+                and call.func.value.attr == "__doc__"
                 and isinstance(call.func.value.value, pyast.Name)
                 and len(call.args) == 2
                 and all(isinstance(a, pyast.Constant) for a in call.args)
