@@ -130,13 +130,9 @@ The only port used while interacting with Greenplum in this case is `5432` (Gree
 ::: onetl.connection.db_connection.greenplum.options.GreenplumFetchOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true
-        show_root_full_path: false
 
 ::: onetl.connection.db_connection.greenplum.options.GreenplumExecuteOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true
-        show_root_full_path: false

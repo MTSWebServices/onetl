@@ -19,12 +19,8 @@ Especially if there are indexes for columns used in `pipeline` value.
 
 ::: onetl.connection.db_connection.mongodb.connection.MongoDB.pipeline
     options:
-        heading_level: 3
         show_root_heading: true
-        show_root_full_path: false
 
 ::: onetl.connection.db_connection.mongodb.options.MongoDBPipelineOptions
     options:
-        heading_level: 3
         show_root_heading: true
-        show_root_full_path: false
