@@ -527,8 +527,8 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
             i += 1
         return "\n".join(out)
 
-    new_text = re.sub(r"\[([a-z][a-z0-9-]*(?:-[a-z][a-z0-9-]*)*)\]\[\]", replace_ref, text)
-    new_text = re.sub(r"\[([^\]]+)\]\[([a-z][a-z0-9-]*(?:-[a-z0-9]+)*)\]", replace_text_ref, new_text)
+    new_text = re.sub(r"\[([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\]\[\]", replace_ref, text)
+    new_text = re.sub(r"\[([^\]]+)\]\[([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\]", replace_text_ref, new_text)
     new_text = re.sub(r"\[([^\]]+)\]\[([A-Z][A-Za-z0-9]*)\]", replace_label_ref, new_text)
     new_text = re.sub(r"\[([^\]]+)\]\[(onetl\.[a-zA-Z0-9_.]+)\]", replace_python_path, new_text)
     new_text = re.sub(r"\[(onetl\.[a-zA-Z0-9_.]+)\]\[\]", replace_python_path_self, new_text)
