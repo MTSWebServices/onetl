@@ -16,14 +16,14 @@ log = logging.getLogger(__name__)
 
 
 class MaxFilesCount(BaseFileLimit, FrozenModel):
-    """Limits the total number of files handled by :ref:`file-downloader` or :ref:`file-mover`.
+    """Limits the total number of files handled by [file-downloader][] or [file-mover][].
 
-    All files until specified limit (including) will be downloaded/moved, but ``limit+1`` will not.
+    All files until specified limit (including) will be downloaded/moved, but `limit+1` will not.
 
     This doesn't apply to directories.
 
-    .. versionadded:: 0.8.0
-        Replaces deprecated ``onetl.core.FileLimit``
+    !!! success "Added in 0.8.0"
+        Replaces deprecated `onetl.core.FileLimit`
 
     Parameters
     ----------
@@ -35,11 +35,11 @@ class MaxFilesCount(BaseFileLimit, FrozenModel):
 
     Create filter which allows to download/move up to 100 files, but stops on 101:
 
-    .. code:: python
+    ```python
+    from onetl.file.limit import MaxFilesCount
 
-        from onetl.file.limit import MaxFilesCount
-
-        limit = MaxFilesCount(100)
+    limit = MaxFilesCount(100)
+    ```
     """
 
     limit: int

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 @runtime_checkable
 class ContainsGetDFSchemaMethod(Protocol):
     """
-    Protocol for objects containing ``get_df_schema`` method
+    Protocol for objects containing `get_df_schema` method
     """
 
     def get_df_schema(
@@ -22,6 +22,6 @@ class ContainsGetDFSchemaMethod(Protocol):
         columns: list[str] | None = None,
     ) -> StructType:
         """
-        Description of the dataframe schema. |support_hooks|
+        Description of the dataframe schema. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
         """
         ...

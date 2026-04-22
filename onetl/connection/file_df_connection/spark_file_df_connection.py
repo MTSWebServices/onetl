@@ -129,7 +129,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
     @abstractmethod
     def _convert_to_url(self, path: PurePathProtocol) -> str:
         """
-        Return path with Spark-specific schema prefix, like ``file://``, ``hdfs://``, ``s3a://bucket``.
+        Return path with Spark-specific schema prefix, like `file://`, `hdfs://`, `s3a://bucket`.
         """
 
     @abstractmethod
@@ -137,12 +137,12 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
         """
         Return default path.
 
-        Used by :obj:`~check` method to check connection availability.
+        Used by [check][] method to check connection availability.
         """
 
     def _get_spark_default_path(self):
         """
-        Return object of ``org.apache.hadoop.fs.Path`` class for :obj:`~_get_default_path`.
+        Return object of `org.apache.hadoop.fs.Path` class for [_get_default_path][].
         """
         url = self._convert_to_url(self._get_default_path())
         jvm = self.spark._jvm  # noqa: SLF001
@@ -150,7 +150,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
 
     def _get_spark_fs(self):
         """
-        Return object of ``org.apache.hadoop.fs.FileSystem`` class for :obj:`~_get_default_path`.
+        Return object of `org.apache.hadoop.fs.FileSystem` class for [_get_default_path][].
         """
         path = self._get_spark_default_path()
         conf = get_hadoop_config(self.spark)

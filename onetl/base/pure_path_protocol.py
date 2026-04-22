@@ -12,7 +12,7 @@ T = TypeVar("T", bound="PurePathProtocol", covariant=True)  # noqa: PLC0105
 @runtime_checkable
 class PurePathProtocol(Protocol[T]):
     """
-    Generic protocol for :obj:`pathlib.PurePath` like objects.
+    Generic protocol for `pathlib.PurePath` like objects.
 
     Includes only minimal set of methods which allow to get path items, like parent, name, etc
     """

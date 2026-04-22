@@ -51,29 +51,28 @@ log = logging.getLogger(__name__)
 
 @support_hooks
 class S3(FileConnection):
-    """S3 file connection. |support_hooks|
+    """S3 file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `minio-py client <https://pypi.org/project/minio/>`_.
+    Based on [minio-py client](https://pypi.org/project/minio/).
 
-    .. warning::
+    !!! warning
 
         Since onETL v0.7.0 to use S3 connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[s3]"
 
-            pip install "onetl[s3]"
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
-            # or
-            pip install "onetl[files]"
-
-        See :ref:`install-files` installation instruction for more details.
-
-    .. versionadded:: 0.5.1
+    !!! success "Added in 0.5.1"
 
     Parameters
     ----------
     host : str
-        Host of S3 source. For example: ``s3.domain.com``
+        Host of S3 source. For example: `s3.domain.com`
 
     port : int, optional
         Port of S3 source
@@ -87,11 +86,11 @@ class S3(FileConnection):
     secret_key : str
         Secret key (aka password) of an account in the S3 service
 
-    protocol : str, default : ``https``
-        Connection protocol. Allowed values: ``https`` or ``http``
+    protocol : str, default : `https`
+        Connection protocol. Allowed values: `https` or `http`
 
-        .. versionchanged:: 0.6.0
-            Renamed ``secure: bool`` to ``protocol: Literal["https", "http"]``
+        !!! info "Changed in 0.6.0"
+            Renamed `secure: bool` to `protocol: Literal["https", "http"]`
 
     region : str, optional
         Region name of bucket in S3 service.
@@ -105,19 +104,18 @@ class S3(FileConnection):
 
     Create and check S3 connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import S3
 
-        from onetl.connection import S3
-
-        s3 = S3(
-            host="s3.domain.com",
-            protocol="http",
-            bucket="my-bucket",
-            access_key="ACCESS_KEY",
-            secret_key="SECRET_KEY",
-            region="us-east-1",
-        ).check()
-
+    s3 = S3(
+        host="s3.domain.com",
+        protocol="http",
+        bucket="my-bucket",
+        access_key="ACCESS_KEY",
+        secret_key="SECRET_KEY",
+        region="us-east-1",
+    ).check()
+    ```
     """
 
     host: Host

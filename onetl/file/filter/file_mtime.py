@@ -19,50 +19,49 @@ from onetl.impl import FrozenModel
 class FileModifiedTime(BaseFileFilter, FrozenModel):
     """Filter files matching a specified modification time.
 
-    If file modification time (``.stat().st_mtime``) doesn't match range, it will be excluded.
-    Doesn't affect directories or paths without ``.stat()`` method.
+    If file modification time (`.stat().st_mtime`) doesn't match range, it will be excluded.
+    Doesn't affect directories or paths without `.stat()` method.
 
-    .. note::
+    !!! note
 
         Some filesystems return timestamps truncated to whole seconds (without millisecond part).
-        obj:`~since` and :obj`~until`` values should be adjusted accordingly.
+        [since][] and [until][] values should be adjusted accordingly.
 
-    .. versionadded:: 0.13.0
+    !!! success "Added in 0.13.0"
 
     Parameters
     ----------
 
     since : datetime, optional
 
-        Minimal allowed file modification time. ``None`` means no limit.
+        Minimal allowed file modification time. `None` means no limit.
 
     until : datetime, optional
 
-        Maximum allowed file modification time. ``None`` means no limit.
+        Maximum allowed file modification time. `None` means no limit.
 
     Examples
     --------
 
-    Select files modified between start of the day (``00:00:00``) and hour ago:
+    Select files modified between start of the day (`00:00:00`) and hour ago:
 
-    .. code:: python
+    ```python
+    from datetime import datetime, timedelta
+    from onetl.file.filter import FileModifiedTime
 
-        from datetime import datetime, timedelta
-        from onetl.file.filter import FileModifiedTime
-
-        hour_ago = datetime.now() - timedelta(hours=1)
-        day_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        file_mtime = FileModifiedTime(since=day_start, until=hour_ago)
-
+    hour_ago = datetime.now() - timedelta(hours=1)
+    day_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    file_mtime = FileModifiedTime(since=day_start, until=hour_ago)
+    ```
     Select only files modified since hour ago:
 
-    .. code:: python
+    ```python
+    from datetime import datetime, timedelta
+    from onetl.file.filter import FileModifiedTime
 
-        from datetime import datetime, timedelta
-        from onetl.file.filter import FileModifiedTime
-
-        hour_ago = datetime.now() - timedelta(hours=1)
-        file_mtime = FileModifiedTime(since=hour_ago)
+    hour_ago = datetime.now() - timedelta(hours=1)
+    file_mtime = FileModifiedTime(since=hour_ago)
+    ```
     """
 
     since: Optional[datetime] = None

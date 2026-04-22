@@ -79,102 +79,100 @@ class OracleExtra(GenericOptions):
 
 @support_hooks
 class Oracle(JDBCConnection):
-    """Oracle JDBC connection. |support_hooks|
+    """Oracle JDBC connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on Maven package `com.oracle.database.jdbc:ojdbc8:23.26.0.0.0 <https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8/23.26.0.0.0>`_
-    (`official Oracle JDBC driver <https://www.oracle.com/cis/database/technologies/appdev/jdbc-downloads.html>`_).
+    Based on Maven package [com.oracle.database.jdbc:ojdbc8:23.26.0.0.0](https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8/23.26.0.0.0)
+    ([official Oracle JDBC driver](https://www.oracle.com/cis/database/technologies/appdev/jdbc-downloads.html)).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`oracle-prerequisites`
+        Before using this connector please take into account [oracle-prerequisites][]
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     host : str
-        Host of Oracle database. For example: ``test.oracle.domain.com`` or ``193.168.1.10``
+        Host of Oracle database. For example: `test.oracle.domain.com` or `193.168.1.10`
 
-    port : int, default: ``1521``
+    port : int, default: `1521`
         Port of Oracle database
 
     user : str
-        User, which have proper access to the database. For example: ``SOME_USER``
+        User, which have proper access to the database. For example: `SOME_USER`
 
     password : str
         Password for database connection
 
-    sid : str, default: ``None``
-        Sid of oracle database. For example: ``XE``
+    sid : str, default: `None`
+        Sid of oracle database. For example: `XE`
 
-        .. warning ::
+        !!! warning
 
-            You should provide either ``sid`` or ``service_name``, not both of them
+            You should provide either `sid` or `service_name`, not both of them
 
-    service_name : str, default: ``None``
+    service_name : str, default: `None`
         Specifies one or more names by which clients can connect to the instance.
 
-        For example: ``PDB1``.
+        For example: `PDB1`.
 
-        .. warning ::
+        !!! warning
 
-            You should provide either ``sid`` or ``service_name``, not both of them
+            You should provide either `sid` or `service_name`, not both of them
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"remarksReporting": "false"}``
+        For example: `{"remarksReporting": "false"}`
 
         See official documentation:
-            * `Connection parameters <https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/jdbc/OracleDriver.html>`_
-            * `Connection properties <https://docs.oracle.com/cd/A97335_02/apps.102/a83724/basic1.htm#1024018>`_
+            * [Connection parameters](https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/jdbc/OracleDriver.html)
+            * [Connection properties](https://docs.oracle.com/cd/A97335_02/apps.102/a83724/basic1.htm#1024018)
 
     Examples
     --------
 
-    Create and check Oracle connection with ``sid``:
+    Create and check Oracle connection with `sid`:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Oracle
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import Oracle
-        from pyspark.sql import SparkSession
+    # Create Spark session with Oracle driver loaded
+    maven_packages = Oracle.get_packages()
+    spark = (
+        SparkSession.builder.appName("spark-app-name")
+        .config("spark.jars.packages", ",".join(maven_packages))
+        .getOrCreate()
+    )
 
-        # Create Spark session with Oracle driver loaded
-        maven_packages = Oracle.get_packages()
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .getOrCreate()
-        )
+    # Create connection
+    oracle = Oracle(
+        host="database.host.or.ip",
+        user="user",
+        password="*****",
+        sid="XE",
+        extra={"remarksReporting": "false"},
+        spark=spark,
+    ).check()
+    ```
+    or with `service_name`:
 
-        # Create connection
-        oracle = Oracle(
-            host="database.host.or.ip",
-            user="user",
-            password="*****",
-            sid="XE",
-            extra={"remarksReporting": "false"},
-            spark=spark,
-        ).check()
+    ```python
+    ...
 
-    or with ``service_name``:
-
-    .. code:: python
-
-        ...
-
-        oracle = Oracle(
-            host="database.host.or.ip",
-            user="user",
-            password="*****",
-            service_name="PDB1",  # <--- instead of SID
-            extra={"remarksReporting": "false"},
-            spark=spark,
-        ).check()
-
+    oracle = Oracle(
+        host="database.host.or.ip",
+        user="user",
+        password="*****",
+        service_name="PDB1",  # <--- instead of SID
+        extra={"remarksReporting": "false"},
+        spark=spark,
+    ).check()
+    ```
     """
 
     host: Host
@@ -203,7 +201,7 @@ class Oracle(JDBCConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Allows specifying custom JDBC driver versions for Oracle.
 
@@ -217,14 +215,14 @@ class Oracle(JDBCConnection):
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Oracle
 
-            from onetl.connection import Oracle
+        Oracle.get_packages()
 
-            Oracle.get_packages()
-
-            # specify Java and package versions
-            Oracle.get_packages(java_version="8", package_version="23.26.0.0.0")
+        # specify Java and package versions
+        Oracle.get_packages(java_version="8", package_version="23.26.0.0.0")
+        ```
         """
 
         default_java_version = "8"
@@ -325,12 +323,12 @@ class Oracle(JDBCConnection):
 
     def _parse_create_statement(self, statement: str) -> tuple[str, str, str] | None:
         """
-        Parses ``CREATE ... type_name [schema.]object_name ...`` statement
-        and return parsed values, or ``None``.
+        Parses `CREATE ... type_name [schema.]object_name ...` statement
+        and return parsed values, or `None`.
 
-        ``type_name`` is something like ``PROCEDURE``, ``FUNCTION``, ``PACKAGE``.
+        `type_name` is something like `PROCEDURE`, `FUNCTION`, `PACKAGE`.
 
-        If ``schema`` is not set implicitly, it is replaced by current user name.
+        If `schema` is not set implicitly, it is replaced by current user name.
         """
 
         match = CREATE_DDL_PATTERN.match(statement)
@@ -357,7 +355,7 @@ class Oracle(JDBCConnection):
         """
         Get compile errors for the object.
 
-        See Oracle documentation about ``ALL_ERRORS`` VIEW:
+        See Oracle documentation about `ALL_ERRORS` VIEW:
         https://docs.oracle.com/cd/B19306_01/server.102/b14237/statviews_1052.htm#i1577005
         """
 
@@ -390,7 +388,7 @@ class Oracle(JDBCConnection):
     def _aggregate_compile_errors(self, raw_errors: list[tuple[ErrorPosition, str]]) -> OrderedDict[ErrorPosition, str]:
         """
         If error message is large, its lines are stored as different rows
-        in ``ALL_ERRORS`` view in with same line+position+level.
+        in `ALL_ERRORS` view in with same line+position+level.
 
         This method merges these lines back into one text message.
         """
@@ -429,10 +427,10 @@ class Oracle(JDBCConnection):
         Instead, user should call "SHOW ERRORS" statement to get the message. But it cannot be called via JDBC.
 
         So this method is fetching errors from the system views:
-        1. ``SELECT * FROM ALL_ERRORS``
+        1. `SELECT * FROM ALL_ERRORS`
         2. Parse resulting dataframe into list of compilation errors
         3. Generate error message from errors list
-        4. If there are records with ``ERROR`` level, method throws ValueError, otherwise prints warning to log
+        4. If there are records with `ERROR` level, method throws ValueError, otherwise prints warning to log
         """
 
         parsed_statement = self._parse_create_statement(statement)

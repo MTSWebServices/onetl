@@ -42,57 +42,56 @@ class TLSfix(ftplib.FTP_TLS):
 
 
 class FTPS(FTP):
-    """FTPS file connection. |support_hooks|
+    """FTPS file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `FTPUtil library <https://pypi.org/project/ftputil/>`_.
+    Based on [FTPUtil library](https://pypi.org/project/ftputil/).
 
-    .. warning::
+    !!! warning
 
         Since onETL v0.7.0 to use FTPS connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[ftps]"
 
-            pip install "onetl[ftps]"
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
-            # or
-            pip install "onetl[files]"
-
-        See :ref:`install-files` installation instruction for more details.
-
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     host : str
-        Host of FTPS source. For example: ``ftps.domain.com``
+        Host of FTPS source. For example: `ftps.domain.com`
 
-    port : int, default: ``21``
+    port : int, default: `21`
         Port of FTPS source
 
-    user : str, default: ``None``
-        User, which have access to the file source. For example: ``someuser``.
+    user : str, default: `None`
+        User, which have access to the file source. For example: `someuser`.
 
-        ``None`` means that the user is anonymous.
+        `None` means that the user is anonymous.
 
-    password : str, default: ``None``
+    password : str, default: `None`
         Password for file source connection.
 
-        ``None`` means that the user is anonymous.
+        `None` means that the user is anonymous.
 
     Examples
     --------
 
     Create and check FTPS connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import FTPS
 
-        from onetl.connection import FTPS
-
-        ftps = FTPS(
-            host="ftps.domain.com",
-            user="someuser",
-            password="*****",
-        ).check()
+    ftps = FTPS(
+        host="ftps.domain.com",
+        user="someuser",
+        password="*****",
+    ).check()
+    ```
     """
 
     def _get_client(self) -> FTPHost:

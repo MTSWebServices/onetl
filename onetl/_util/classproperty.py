@@ -5,11 +5,12 @@ from __future__ import annotations
 
 class classproperty(property):  # noqa: N801
     """
-    Like ``@property``, but can be used to decorate class methods.
+    Like `@property`, but can be used to decorate class methods.
 
     Examples
     --------
 
+    ```python
     >>> class My:
     ...    @classproperty
     ...    def attribute(cls):
@@ -17,6 +18,7 @@ class classproperty(property):  # noqa: N801
     >>> # no call
     >>> My.attribute
     123
+    ```
     """
 
     def __init__(self, f):

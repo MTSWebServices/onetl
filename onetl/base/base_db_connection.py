@@ -24,7 +24,7 @@ class BaseDBDialect(ABC):
 
     @abstractmethod
     def validate_name(self, value: str) -> str:
-        """Check if ``source`` or ``target`` value is valid.
+        """Check if `source` or `target` value is valid.
 
         Raises
         ------
@@ -36,7 +36,7 @@ class BaseDBDialect(ABC):
 
     @abstractmethod
     def validate_columns(self, columns: str | list[str] | None) -> list[str] | None:
-        """Check if ``columns`` value is valid.
+        """Check if `columns` value is valid.
 
         Raises
         ------
@@ -48,7 +48,7 @@ class BaseDBDialect(ABC):
 
     @abstractmethod
     def validate_hwm(self, hwm: HWM | None) -> HWM | None:
-        """Check if ``HWM`` class is valid.
+        """Check if `HWM` class is valid.
 
         Raises
         ------
@@ -60,7 +60,7 @@ class BaseDBDialect(ABC):
 
     @abstractmethod
     def validate_df_schema(self, df_schema: StructType | None) -> StructType | None:
-        """Check if ``df_schema`` value is valid.
+        """Check if `df_schema` value is valid.
 
         Raises
         ------
@@ -72,7 +72,7 @@ class BaseDBDialect(ABC):
 
     @abstractmethod
     def validate_where(self, where: Any) -> Any | None:
-        """Check if ``where`` value is valid.
+        """Check if `where` value is valid.
 
         Raises
         ------
@@ -84,7 +84,7 @@ class BaseDBDialect(ABC):
 
     @abstractmethod
     def validate_hint(self, hint: Any) -> Any | None:
-        """Check if ``hint`` value is valid.
+        """Check if `hint` value is valid.
 
         Raises
         ------
@@ -132,10 +132,10 @@ class BaseDBConnection(BaseConnection):
         limit: int | None = None,
     ) -> DataFrame:
         """
-        Reads the source to dataframe. |support_hooks|
+        Reads the source to dataframe. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionchanged:: 0.9.0
-            Renamed ``read_df`` → ``read_source_as_df``
+        !!! info "Changed in 0.9.0"
+            Renamed `read_df` → `read_source_as_df`
         """
 
     @abstractmethod
@@ -145,8 +145,8 @@ class BaseDBConnection(BaseConnection):
         target: str,
     ) -> None:
         """
-        Saves dataframe to a specific target. |support_hooks|
+        Saves dataframe to a specific target. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionchanged:: 0.9.0
-            Renamed ``write_df`` → ``write_df_to_target``
+        !!! info "Changed in 0.9.0"
+            Renamed `write_df` → `write_df_to_target`
         """

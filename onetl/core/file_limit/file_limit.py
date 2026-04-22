@@ -20,9 +20,9 @@ from onetl.impl import FrozenModel
 class FileLimit(BaseFileLimit, FrozenModel):
     """Limits the number of downloaded files.
 
-    .. deprecated:: 0.8.0
+    !!! warning "Deprecated since 0.8.0"
 
-        Use :obj:`MaxFilesCount <onetl.file.limit.max_files_count.MaxFilesCount>` instead.
+        Use [MaxFilesCount][onetl.file.limit.max_files_count.MaxFilesCount] instead.
 
     Parameters
     ----------
@@ -36,13 +36,12 @@ class FileLimit(BaseFileLimit, FrozenModel):
 
     Create a FileLimit object and set the amount in it:
 
-    .. code:: python
+    ```python
+    from onetl.core import FileLimit
 
-        from onetl.core import FileLimit
-
-        limit = FileLimit(count_limit=1500)
-
-    If you create a :obj:`onetl.file.file_downloader.file_downloader.FileDownloader` object without
+    limit = FileLimit(count_limit=1500)
+    ```
+    If you create a [onetl.file.file_downloader.file_downloader.FileDownloader][] object without
     specifying the limit option, it will download with a limit of 100 files.
     """
 

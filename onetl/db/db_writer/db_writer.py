@@ -34,36 +34,36 @@ log = logging.getLogger(__name__)
 
 @support_hooks
 class DBWriter(FrozenModel):
-    """Class specifies schema and table where you can write your dataframe. |support_hooks|
+    """Class specifies schema and table where you can write your dataframe. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
-    .. versionchanged:: 0.8.0
-        Moved ``onetl.core.DBReader`` → ``onetl.db.DBReader``
+    !!! info "Changed in 0.8.0"
+        Moved `onetl.core.DBReader` → `onetl.db.DBReader`
 
     Parameters
     ----------
-    connection : :obj:`onetl.connection.DBConnection`
-        Class which contains DB connection properties. See :ref:`db-connections` section.
+    connection : [onetl.connection.DBConnection][]
+        Class which contains DB connection properties. See [db-connections][] section.
 
     target : str
         Table/collection/etc name to write data to.
 
         If connection has schema support, you need to specify the full name of the source
-        including the schema, e.g. ``schema.name``.
+        including the schema, e.g. `schema.name`.
 
-        .. versionchanged:: 0.7.0
-            Renamed ``table`` → ``target``
+        !!! info "Changed in 0.7.0"
+            Renamed `table` → `target`
 
-    options : dict, :obj:`onetl.connection.DBConnection.WriteOptions`, default: ``None``
-        Spark write options. Can be in form of special ``WriteOptions`` object or a dict.
+    options : dict, [onetl.connection.DBConnection.WriteOptions][], default: `None`
+        Spark write options. Can be in form of special `WriteOptions` object or a dict.
 
         For example:
-        ``{"if_exists": "replace_entire_table", "compression": "snappy"}``
+        `{"if_exists": "replace_entire_table", "compression": "snappy"}`
         or
-        ``Hive.WriteOptions(if_exists="replace_entire_table", compression="snappy")``
+        `Hive.WriteOptions(if_exists="replace_entire_table", compression="snappy")`
 
-        .. note::
+        !!! note
 
             Some sources does not support writing options.
 
@@ -71,34 +71,33 @@ class DBWriter(FrozenModel):
     Examples
     --------
 
-    .. tabs::
+    === "Minimal example"
+        ```python
+        from onetl.connection import Postgres
+        from onetl.db import DBWriter
 
-        .. code-tab:: py Minimal example
+        postgres = Postgres(...)
 
-            from onetl.connection import Postgres
-            from onetl.db import DBWriter
+        writer = DBWriter(
+            connection=postgres,
+            target="fiddle.dummy",
+        )
+        ```
+    === "With custom write options"
+        ```python
+        from onetl.connection import Postgres
+        from onetl.db import DBWriter
 
-            postgres = Postgres(...)
+        postgres = Postgres(...)
 
-            writer = DBWriter(
-                connection=postgres,
-                target="fiddle.dummy",
-            )
+        options = Postgres.WriteOptions(if_exists="replace_entire_table", batchsize=1000)
 
-        .. code-tab:: py With custom write options
-
-            from onetl.connection import Postgres
-            from onetl.db import DBWriter
-
-            postgres = Postgres(...)
-
-            options = Postgres.WriteOptions(if_exists="replace_entire_table", batchsize=1000)
-
-            writer = DBWriter(
-                connection=postgres,
-                target="fiddle.dummy",
-                options=options,
-            )
+        writer = DBWriter(
+            connection=postgres,
+            target="fiddle.dummy",
+            options=options,
+        )
+        ```
     """
 
     connection: BaseDBConnection
@@ -130,11 +129,12 @@ class DBWriter(FrozenModel):
     @slot
     def run(self, df: DataFrame) -> None:
         """
-        Method for writing your df to specified target. |support_hooks|
+        Method for writing your df to specified target. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note :: Method does support only **batching** DataFrames.
+        !!! note
+            Method does support only **batching** DataFrames.
 
-        .. versionadded:: 0.1.0
+        !!! success "Added in 0.1.0"
 
         Parameters
         ----------
@@ -146,9 +146,9 @@ class DBWriter(FrozenModel):
 
         Write dataframe to target:
 
-        .. code:: python
-
-            writer.run(df)
+        ```python
+        writer.run(df)
+        ```
         """
         if df.isStreaming:
             msg = f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames."

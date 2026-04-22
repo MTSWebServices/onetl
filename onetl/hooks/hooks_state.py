@@ -22,20 +22,20 @@ class HooksState:
         """
         Stop all hooks for all classes.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.hooks import stop_all_hooks
 
-            from onetl.hooks import stop_all_hooks
+        # hooks are executed
 
-            # hooks are executed
+        stop_all_hooks()
 
-            stop_all_hooks()
-
-            # all hooks are stopped now
+        # all hooks are stopped now
+        ```
         """
         if cls._enabled:
             logger.log(NOTICE, "|Hooks| Stopping all hooks")
@@ -48,27 +48,27 @@ class HooksState:
         """
         Resume all onETL hooks.
 
-        .. note::
+        !!! note
 
-            This function does not enable hooks which were disabled by :obj:`onetl.hooks.hook.Hook.disable`,
-            or stopped by :obj:`onetl.hooks.support_hooks.suspend_hooks`.
+            This function does not enable hooks which were disabled by [onetl.hooks.hook.Hook.disable][],
+            or stopped by [onetl.hooks.support_hooks.suspend_hooks][].
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.hooks import resume_all_hooks, stop_all_hooks
 
-            from onetl.hooks import resume_all_hooks, stop_all_hooks
+        stop_all_hooks()
 
-            stop_all_hooks()
+        # hooks are stopped
 
-            # hooks are stopped
+        resume_all_hooks()
 
-            resume_all_hooks()
-
-            # all hooks are executed now
+        # all hooks are executed now
+        ```
         """
         if cls._enabled:
             logger.log(NOTICE, "|Hooks| Hooks are not stopped, nothing to resume")
@@ -80,47 +80,46 @@ class HooksState:
     @contextmanager
     def skip(cls):
         """
-        Temporary stop all onETL hooks. Designed to be used as context manager or decorator.
+            Temporary stop all onETL hooks. Designed to be used as context manager or decorator.
 
-        .. note::
+            !!! note
 
-            If hooks were stopped by :obj:`~stop_all_hooks`, they will not be resumed
-            after exiting the context/decorated function.
-            You should call :obj:`~resume_all_hooks` explicitly.
+                If hooks were stopped by [stop_all_hooks][], they will not be resumed
+                after exiting the context/decorated function.
+                You should call [resume_all_hooks][] explicitly.
 
-        .. versionadded:: 0.7.0
+            !!! success "Added in 0.7.0"
 
-        Examples
-        --------
+            Examples
+            --------
 
-        .. tabs::
+        === "Context manager syntax"
+            ```python
+            from onetl.hooks import skip_all_hooks
 
-            .. code-tab:: py Context manager syntax
+            # hooks are enabled
 
-                from onetl.hooks import skip_all_hooks
+            with skip_all_hooks():
+                # hooks are stopped here
+                ...
 
-                # hooks are enabled
+            # hook state is restored
+            ```
+        === "Decorator syntax"
+            ```python
+            from onetl.hooks import skip_all_hooks
 
-                with skip_all_hooks():
-                    # hooks are stopped here
-                    ...
-
-                # hook state is restored
-
-            .. code-tab:: py Decorator syntax
-
-                from onetl.hooks import skip_all_hooks
-
-                # hooks are enabled
+            # hooks are enabled
 
 
-                @skip_all_hooks()
-                def main():
-                    # hooks are stopped here
-                    ...
+            @skip_all_hooks()
+            def main():
+                # hooks are stopped here
+                ...
 
 
-                main()
+            main()
+            ```
         """
 
         if not cls._enabled:

@@ -9,6 +9,7 @@ def clear_statement(statement: str) -> str:
     Examples
     --------
 
+    ```python
     >>> clear_statement("SELECT * FROM mytable")
     'SELECT * FROM mytable'
     >>> clear_statement("SELECT * FROM mytable ; ")
@@ -17,6 +18,7 @@ def clear_statement(statement: str) -> str:
     'CREATE TABLE mytable (id NUMBER)'
     >>> clear_statement("BEGIN ... END")
     'BEGIN ... END;'
+    ```
     """
 
     statement = statement.rstrip().lstrip("\n\r").rstrip(";").rstrip()

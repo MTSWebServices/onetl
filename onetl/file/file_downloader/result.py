@@ -17,16 +17,17 @@ class DownloadResult(FileResult):
 
     Container for file paths, divided into certain categories:
 
-    * :obj:`~successful`
-    * :obj:`~failed`
-    * :obj:`~skipped`
-    * :obj:`~missing`
+    * [successful][]
+    * [failed][]
+    * [skipped][]
+    * [missing][]
 
-    .. versionadded:: 0.3.0
+    !!! success "Added in 0.3.0"
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file import FileDownloader
     >>> downloader = FileDownloader(local_path="/local", ...)
     >>> download_result = downloader.run(
@@ -54,6 +55,7 @@ class DownloadResult(FileResult):
             RemotePath("/missing/file")
         ]),
     )
+    ```
     """
 
     successful: FileSet[LocalPath] = Field(default_factory=FileSet)

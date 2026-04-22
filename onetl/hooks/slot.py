@@ -41,7 +41,7 @@ def get_hooks_hierarchy(cls: type, method_name: str) -> HookCollection:
     Return all hooks registered for a specific method,
     sorted by priority and class nested level.
 
-    See :ref:`hooks-design` for more details.
+    See [hooks-design][] for more details.
     """
 
     hooks_by_priority: dict[tuple[HookPriority, int], HookCollection] = defaultdict(HookCollection)
@@ -65,41 +65,41 @@ def bind_hook(method: Callable, inp=None):
     """
     Bind a hook to the slot.
 
-    See :ref:`hooks-design` for more details.
+    See [hooks-design][] for more details.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. code:: python
-
-        from onetl.hooks import support_hooks, slot, hook, HookPriority
-
-
-        @support_hooks
-        class MyClass:
-            @slot
-            def method(self, arg):
-                pass
+    ```python
+    from onetl.hooks import support_hooks, slot, hook, HookPriority
 
 
-        @MyClass.method.bind
-        @hook
-        def callable(self, arg):
-            if arg == "some":
-                do_something()
+    @support_hooks
+    class MyClass:
+        @slot
+        def method(self, arg):
+            pass
 
 
-        @MyClass.method.bind
-        @hook(priority=HookPriority.FIRST, enabled=True)
-        def another_callable(self, arg):
-            if arg == "another":
-                raise NotAllowed()
+    @MyClass.method.bind
+    @hook
+    def callable(self, arg):
+        if arg == "some":
+            do_something()
 
 
-        obj = MyClass()
-        obj.method(1)  # will call both callable(obj, 1) and another_callable(obj, 1)
+    @MyClass.method.bind
+    @hook(priority=HookPriority.FIRST, enabled=True)
+    def another_callable(self, arg):
+        if arg == "another":
+            raise NotAllowed()
+
+
+    obj = MyClass()
+    obj.method(1)  # will call both callable(obj, 1) and another_callable(obj, 1)
+    ```
     """
 
     def inner_wrapper(hook):
@@ -137,44 +137,39 @@ def _prepare_hook_args(
 
     For example, if method has signature:
 
-    .. code:: python
-
-        @support_hooks
-        class MyClass:
-            @slot
-            def method(self, some, named="abc"): ...
-
+    ```python
+    @support_hooks
+    class MyClass:
+        @slot
+        def method(self, some, named="abc"): ...
+    ```
     then hook should have a compatible signature, like these ones:
 
-    .. code:: python
+    ```python
+    @MyClass.method.bind
+    @hook
+    def callback(self, some, named): ...
+    ```
+    ```python
+    @MyClass.method.bind
+    @hook
+    def callback(self, some, **kwargs): ...
+    ```
+    ```python
+    @MyClass.method.bind
+    @hook
+    def callback(my_class_instance, *args, **kwargs): ...
+    ```
+    !!! note
 
+        If hook signature contains arg with name `method_name`, slot method name will be passed into it:
+
+        ```python
         @MyClass.method.bind
         @hook
-        def callback(self, some, named): ...
-
-    .. code:: python
-
-        @MyClass.method.bind
-        @hook
-        def callback(self, some, **kwargs): ...
-
-    .. code:: python
-
-        @MyClass.method.bind
-        @hook
-        def callback(my_class_instance, *args, **kwargs): ...
-
-    .. note::
-
-        If hook signature contains arg with name ``method_name``, slot method name will be passed into it:
-
-        .. code:: python
-
-            @MyClass.method.bind
-            @hook
-            def callback(self, method_name, *args, **kwargs):
-                assert method_name == "method"
-
+        def callback(self, method_name, *args, **kwargs):
+            assert method_name == "method"
+        ```
         This can be useful for adding multiple hooks on the same callback function.
     """
     try:
@@ -232,9 +227,9 @@ def _execute_hook(hook: Hook, args: inspect.BoundArguments):
 
 def _handle_context_result(result: Any, context: CanProcessResult, hook: Hook):
     """
-    Calls ``context.process_result(result)`` and handles exception, if any.
+    Calls `context.process_result(result)` and handles exception, if any.
 
-    See :obj:`onetl.hooks.hook.hook` for more details.
+    See [onetl.hooks.hook.hook][] for more details.
     """
     try:
         return context.process_result(result)
@@ -249,36 +244,36 @@ def _handle_context_result(result: Any, context: CanProcessResult, hook: Hook):
 
 def register_slot(cls: type, method_name: str):  # noqa: C901, PLR0915
     """
-    Internal callback to register ``SomeClass.some_method`` as a slot.
+    Internal callback to register `SomeClass.some_method` as a slot.
 
     It is not applied as decorator because decorators have no access to the class but only to a specific method.
 
-    Also ``@classmethod`` is a descriptor, and it can be called only my accessing the class itself,
+    Also `@classmethod` is a descriptor, and it can be called only my accessing the class itself,
     which is not possible within a decorator.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. code:: python
+    ```python
+    class MyClass:
+        def method(self, arg1):
+            pass
 
-        class MyClass:
-            def method(self, arg1):
-                pass
+        @classmethod
+        def class_method(cls):
+            pass
 
-            @classmethod
-            def class_method(cls):
-                pass
-
-            @staticmethod
-            def static_method(arg1, arg2):
-                pass
+        @staticmethod
+        def static_method(arg1, arg2):
+            pass
 
 
-        MyClass.method = register_slot(MyClass, "method")
-        MyClass.class_method = register_slot(MyClass, "class_method")
-        MyClass.static_method = register_slot(MyClass, "static_method")
+    MyClass.method = register_slot(MyClass, "method")
+    MyClass.class_method = register_slot(MyClass, "class_method")
+    MyClass.static_method = register_slot(MyClass, "static_method")
+    ```
     """
 
     # <function MyClass.method>
@@ -468,9 +463,9 @@ def is_slot(method: Callable) -> bool:
 
 
 class Slot(Protocol):
-    """Protocol which is implemented by a method after applying :obj:`~slot` decorator.
+    """Protocol which is implemented by a method after applying [slot][] decorator.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
     """
 
     def __call__(self, *args, **kwargs): ...
@@ -481,72 +476,71 @@ class Slot(Protocol):
 
     def skip_hooks(self) -> ContextManager[None]:
         """
-        Context manager which temporary stops all the hooks bound to the slot.
+            Context manager which temporary stops all the hooks bound to the slot.
 
-        .. note::
+            !!! note
 
-            If hooks were stopped by :obj:`~suspend_hooks`, they will not be resumed
-            after exiting the context/decorated function.
-            You should call :obj:`~resume_hooks` explicitly.
+                If hooks were stopped by [suspend_hooks][], they will not be resumed
+                after exiting the context/decorated function.
+                You should call [resume_hooks][] explicitly.
 
-        Examples
-        --------
+            Examples
+            --------
 
-        .. tabs::
-
-            .. code-tab:: py Context manager syntax
-
-                from onetl.hooks.hook import hook, support_hooks, slot
+        === "Context manager syntax"
+            ```python
+            from onetl.hooks.hook import hook, support_hooks, slot
 
 
-                @support_hooks
-                class MyClass:
-                    @slot
-                    def my_method(self, arg):
-                        ...
-
-
-                @MyClass.my_method.bind
-                @hook
-                def callback1(self, arg):
+            @support_hooks
+            class MyClass:
+                @slot
+                def my_method(self, arg):
                     ...
 
-                obj = MyClass()
-                obj.my_method(1)  # will call callback1(obj, 1)
 
-                with MyClass.my_method.skip_hooks():
-                    obj.my_method(1)  # will NOT call callback1
+            @MyClass.my_method.bind
+            @hook
+            def callback1(self, arg):
+                ...
 
-                obj.my_method(2)  # will call callback1(obj, 2)
+            obj = MyClass()
+            obj.my_method(1)  # will call callback1(obj, 1)
 
-            .. code-tab:: py Decorator syntax
+            with MyClass.my_method.skip_hooks():
+                obj.my_method(1)  # will NOT call callback1
 
-                from onetl.hooks.hook import hook, support_hooks, slot
-
-
-                @support_hooks
-                class MyClass:
-                    @slot
-                    def my_method(self, arg):
-                        ...
+            obj.my_method(2)  # will call callback1(obj, 2)
+            ```
+        === "Decorator syntax"
+            ```python
+            from onetl.hooks.hook import hook, support_hooks, slot
 
 
-                @MyClass.my_method.bind
-                @hook
-                def callback1(self, arg):
+            @support_hooks
+            class MyClass:
+                @slot
+                def my_method(self, arg):
                     ...
 
-                @MyClass.my_method.skip_hooks()
-                def method_without_hooks(obj, arg):
-                    obj.my_method(arg)
+
+            @MyClass.my_method.bind
+            @hook
+            def callback1(self, arg):
+                ...
+
+            @MyClass.my_method.skip_hooks()
+            def method_without_hooks(obj, arg):
+                obj.my_method(arg)
 
 
-                obj = MyClass()
-                obj.my_method(1)  # will call callback1(obj, 1)
+            obj = MyClass()
+            obj.my_method(1)  # will call callback1(obj, 1)
 
-                method_without_hooks(obj, 1)  # will NOT call callback1
+            method_without_hooks(obj, 1)  # will NOT call callback1
 
-                obj.my_method(2)  # will call callback1(obj, 2)
+            obj.my_method(2)  # will call callback1(obj, 2)
+            ```
         """
 
     def suspend_hooks(self):
@@ -556,65 +550,65 @@ class Slot(Protocol):
         Examples
         --------
 
-        .. code:: python
-
-            from onetl.hooks.hook import hook, support_hooks, slot
-
-
-            @support_hooks
-            class MyClass:
-                @slot
-                def my_method(self, arg): ...
+        ```python
+        from onetl.hooks.hook import hook, support_hooks, slot
 
 
-            @MyClass.my_method.bind
-            @hook
-            def callback1(self, arg): ...
+        @support_hooks
+        class MyClass:
+            @slot
+            def my_method(self, arg): ...
 
 
-            obj = MyClass()
-            obj.my_method(1)  # will call callback1(obj, 1)
+        @MyClass.my_method.bind
+        @hook
+        def callback1(self, arg): ...
 
-            MyClass.my_method.suspend_hooks()
-            obj.my_method(1)  # will NOT call callback1
+
+        obj = MyClass()
+        obj.my_method(1)  # will call callback1(obj, 1)
+
+        MyClass.my_method.suspend_hooks()
+        obj.my_method(1)  # will NOT call callback1
+        ```
         """
 
     def resume_hooks(self):
         """
         Resume all hooks bound to the slot.
 
-        .. note::
+        !!! note
 
-            If hook is disabled by :obj:`onetl.hooks.hook.Hook.disable`, it will stay disabled.
-            You should call :obj:`onetl.hooks.hook.Hook.enable` explicitly.
+            If hook is disabled by [onetl.hooks.hook.Hook.disable][], it will stay disabled.
+            You should call [onetl.hooks.hook.Hook.enable][] explicitly.
 
         Examples
         --------
 
-        .. code:: python
-
-            from onetl.hooks.hook import hook, support_hooks, slot
-
-
-            @support_hooks
-            class MyClass:
-                @slot
-                def my_method(self, arg): ...
+        ```python
+        from onetl.hooks.hook import hook, support_hooks, slot
 
 
-            @MyClass.my_method.bind
-            @hook
-            def callback1(self, arg): ...
+        @support_hooks
+        class MyClass:
+            @slot
+            def my_method(self, arg): ...
 
 
-            obj = MyClass()
-            obj.my_method(1)  # will call callback1(obj, 1)
+        @MyClass.my_method.bind
+        @hook
+        def callback1(self, arg): ...
 
-            MyClass.my_method.suspend_hooks()
-            obj.my_method(1)  # will NOT call callback1
 
-            MyClass.my_method.resume_hooks()
-            obj.my_method(2)  # will call callback1(obj, 2)
+        obj = MyClass()
+        obj.my_method(1)  # will call callback1(obj, 1)
+
+        MyClass.my_method.suspend_hooks()
+        obj.my_method(1)  # will NOT call callback1
+
+        MyClass.my_method.resume_hooks()
+        obj.my_method(2)  # will call callback1(obj, 2)
+        ```
         """
 
     @wraps(bind_hook)
@@ -627,65 +621,65 @@ def slot(method: Method) -> Method:
 
     Decorated methods get additional nested methods:
 
-        * :obj:`onetl.hooks.slot.Slot.bind`
-        * :obj:`onetl.hooks.slot.Slot.suspend_hooks`
-        * :obj:`onetl.hooks.slot.Slot.resume_hooks`
-        * :obj:`onetl.hooks.slot.Slot.skip_hooks`
+        * [onetl.hooks.slot.Slot.bind][]
+        * [onetl.hooks.slot.Slot.suspend_hooks][]
+        * [onetl.hooks.slot.Slot.resume_hooks][]
+        * [onetl.hooks.slot.Slot.skip_hooks][]
 
-    .. note::
+    !!! note
 
         Supported method types are:
 
             * Regular methods
-            * ``@classmethod``
-            * ``@staticmethod``
+            * `@classmethod`
+            * `@staticmethod`
 
-        It is not allowed to use this decorator over ``_private`` and ``__protected`` methods and ``@property``.
-        But is allowed to use on ``__dunder__`` methods, like ``__init__``.
+        It is not allowed to use this decorator over `_private` and `__protected` methods and `@property`.
+        But is allowed to use on `__dunder__` methods, like `__init__`.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. code:: python
-
-        from onetl.hooks import support_hooks, slot, hook
-
-
-        @support_hooks
-        class MyClass:
-            @slot
-            def my_method(self, arg): ...
-
-            @slot  # decorator should be on top of all other decorators
-            @classmethod
-            def class_method(cls): ...
-
-            @slot  # decorator should be on top of all other decorators
-            @staticmethod
-            def static_method(arg): ...
+    ```python
+    from onetl.hooks import support_hooks, slot, hook
 
 
-        @MyClass.my_method.bind
-        @hook
-        def callback1(self, arg): ...
+    @support_hooks
+    class MyClass:
+        @slot
+        def my_method(self, arg): ...
+
+        @slot  # decorator should be on top of all other decorators
+        @classmethod
+        def class_method(cls): ...
+
+        @slot  # decorator should be on top of all other decorators
+        @staticmethod
+        def static_method(arg): ...
 
 
-        @MyClass.class_method.bind
-        @hook
-        def callback2(cls): ...
+    @MyClass.my_method.bind
+    @hook
+    def callback1(self, arg): ...
 
 
-        @MyClass.static_method.bind
-        @hook
-        def callback3(arg): ...
+    @MyClass.class_method.bind
+    @hook
+    def callback2(cls): ...
 
 
-        obj = MyClass()
-        obj.my_method(1)  # will execute callback1(obj, 1)
-        MyClass.class_method(2)  # will execute callback2(MyClass, 2)
-        MyClass.static_method(3)  # will execute callback3(3)
+    @MyClass.static_method.bind
+    @hook
+    def callback3(arg): ...
+
+
+    obj = MyClass()
+    obj.my_method(1)  # will execute callback1(obj, 1)
+    MyClass.class_method(2)  # will execute callback2(MyClass, 2)
+    MyClass.static_method(3)  # will execute callback3(3)
+    ```
     """
 
     if hasattr(method, "__hooks__"):

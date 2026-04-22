@@ -48,12 +48,12 @@ class IcebergWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * ``append`` (default)
+        * `append` (default)
             Appends data into existing table, or create table if it does not exist.
 
-            Same as Spark's ``df.writeTo(table).using("iceberg").append()``.
+            Same as Spark's `df.writeTo(table).using("iceberg").append()`.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created.
@@ -67,28 +67,28 @@ class IcebergWriteOptions(GenericOptions):
                     If a partition is present in both dataframe and table
                         Data is appended to existing partition.
 
-                    .. warning::
+                    !!! warning
 
                         This mode does not check whether table already contains
                         rows from dataframe, so duplicated rows can be created.
 
                         To implement deduplication, write data to staging table first,
-                        and then perform some deduplication logic using :obj:`~sql`.
+                        and then perform some deduplication logic using [sql][].
 
                 * Table exists and partitioned, but some partitions are present only in table, not dataframe
                     Existing partitions are left intact.
 
-        * ``replace_overlapping_partitions``
+        * `replace_overlapping_partitions`
             Overwrites data in the existing partitions, or create table if it does not exist.
 
-            Same as Spark's ``df.writeTo(table).using("iceberg").overwritePartitions()``
+            Same as Spark's `df.writeTo(table).using("iceberg").overwritePartitions()`
 
-            .. DANGER::
+            !!! danger
 
                 This mode does make sense **ONLY** if the table is partitioned.
                 **IF NOT, YOU'LL LOSE YOUR DATA!**
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created.
@@ -104,21 +104,21 @@ class IcebergWriteOptions(GenericOptions):
                     If a partition is present only in table, not dataframe
                         Existing partition is left intact.
 
-        * ``replace_entire_table``
-            **Recreates table** (via ``DROP + CREATE``), **deleting all existing data**.
+        * `replace_entire_table`
+            **Recreates table** (via `DROP + CREATE`), **deleting all existing data**.
             **All existing partitions are dropped.**
 
-            Same as Spark's ``df.writeTo(table).createOrReplace()``
+            Same as Spark's `df.writeTo(table).createOrReplace()`
 
-            .. warning::
+            !!! warning
 
                 Table is recreated
                 **instead of using original table options**. Be careful
 
-        * ``ignore``
+        * `ignore`
             Ignores the write operation if the table already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created.
@@ -126,10 +126,10 @@ class IcebergWriteOptions(GenericOptions):
                 * Table exists
                     If the table exists, **no further action is taken**.
 
-        * ``error``
+        * `error`
             Raises an error if the table already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created.
@@ -141,9 +141,9 @@ class IcebergWriteOptions(GenericOptions):
     table_properties: Dict[str, Any] = Field(default_factory=dict)
     """TBLPROPERTIES to add to freshly created table.
 
-    Examples: ``{"location": "/path"}``
+    Examples: `{"location": "/path"}`
 
-    .. warning::
+    !!! warning
 
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """

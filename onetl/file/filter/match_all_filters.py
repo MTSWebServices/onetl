@@ -14,25 +14,26 @@ def match_all_filters(path: PathProtocol, filters: Iterable[BaseFileFilter]) -> 
     """
     Check if input path satisfies all the filters.
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
 
     Parameters
     ----------
-    path : :obj:`onetl.base.path_protocol.PathProtocol`
+    path : [onetl.base.path_protocol.PathProtocol][]
         Path to check.
 
-    filters : Iterable of :obj:`onetl.base.base_file_filter.BaseFileFilter`
+    filters : Iterable of [onetl.base.base_file_filter.BaseFileFilter][]
         Filters to test path against.
 
     Returns
     -------
-    ``True`` if path matches all the filters, ``False`` otherwise.
+    `True` if path matches all the filters, `False` otherwise.
 
-    If filters are empty, returns ``True``.
+    If filters are empty, returns `True`.
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file.filter import Glob, ExcludeDir, match_all_filters
     >>> from onetl.impl import RemoteFile, RemotePathStat
     >>> filters = [Glob("*.csv"), ExcludeDir("/excluded")]
@@ -42,6 +43,7 @@ def match_all_filters(path: PathProtocol, filters: Iterable[BaseFileFilter]) -> 
     False
     >>> match_all_filters(RemoteFile("/excluded/path/file.csv", stats=RemotePathStat()), filters)
     False
+    ```
     """
 
     empty = True

@@ -51,261 +51,252 @@ if TYPE_CHECKING:
 @support_hooks
 class DBReader(FrozenModel):
     """Allows you to read data from a table with specified database connection
-    and parameters, and return its content as Spark dataframe. |support_hooks|
+    and parameters, and return its content as Spark dataframe. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. note::
+    !!! note
 
-        DBReader can return different results depending on :ref:`strategy`
+        DBReader can return different results depending on [strategy][]
 
-    .. note::
+    !!! note
 
         This class operates with only one source at a time. It does NOT support executing queries
-        to multiple source, like ``SELECT ... JOIN``.
+        to multiple source, like `SELECT ... JOIN`.
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
-    .. versionchanged:: 0.8.0
-        Moved ``onetl.core.DBReader`` → ``onetl.db.DBReader``
+    !!! info "Changed in 0.8.0"
+        Moved `onetl.core.DBReader` → `onetl.db.DBReader`
 
     Parameters
     ----------
-    connection : :obj:`onetl.connection.BaseDBConnection`
-        Class which contains DB connection properties. See :ref:`db-connections` section
+    connection : [onetl.connection.BaseDBConnection][]
+        Class which contains DB connection properties. See [db-connections][] section
 
     source : str
         Table/collection/etc name to read data from.
 
         If connection has schema support, you need to specify the full name of the source
-        including the schema, e.g. ``schema.name``.
+        including the schema, e.g. `schema.name`.
 
-        .. versionchanged:: 0.7.0
-            Renamed ``table`` → ``source``
+        !!! info "Changed in 0.7.0"
+            Renamed `table` → `source`
 
     columns : list of str, default: None
         The list of columns to be read.
 
         If RDBMS supports any kind of expressions, you can pass them too.
 
-        .. code:: python
-
-            columns = [
-                "mycolumn",
-                "another_column as alias",
-                "count(*) over ()",
-                "some(function) as alias2",
-            ]
-
-        .. note::
+        ```python
+        columns = [
+            "mycolumn",
+            "another_column as alias",
+            "count(*) over ()",
+            "some(function) as alias2",
+        ]
+        ```
+        !!! note
 
             Some sources does not have columns.
 
-        .. note::
+        !!! note
 
             It is recommended to pass column names explicitly to avoid selecting too many columns,
             and to avoid adding unexpected columns to dataframe if source DDL is changed.
 
-        .. deprecated:: 0.10.0
+        !!! warning "Deprecated since 0.10.0"
 
-            Syntax ``DBReader(columns="col1, col2")`` (string instead of list) is not supported,
+            Syntax `DBReader(columns="col1, col2")` (string instead of list) is not supported,
             and will be removed in v1.0.0
 
-    where : Any, default: ``None``
-        Custom ``where`` for SQL query or MongoDB pipeline.
+    where : Any, default: `None`
+        Custom `where` for SQL query or MongoDB pipeline.
 
-        ``where`` syntax depends on the source. For example, SQL sources
-        accept ``where`` as a string, but MongoDB sources accept ``where`` as a dictionary.
+        `where` syntax depends on the source. For example, SQL sources
+        accept `where` as a string, but MongoDB sources accept `where` as a dictionary.
 
-        .. code:: python
+        ```python
+        # SQL database connection
+        where = "column_1 > 2"
 
-            # SQL database connection
-            where = "column_1 > 2"
-
-            # MongoDB connection
-            where = {
-                "col_1": {"$gt": 1, "$lt": 100},
-                "col_2": {"$gt": 2},
-                "col_3": {"$eq": "hello"},
-            }
-
-        .. note::
+        # MongoDB connection
+        where = {
+            "col_1": {"$gt": 1, "$lt": 100},
+            "col_2": {"$gt": 2},
+            "col_3": {"$eq": "hello"},
+        }
+        ```
+        !!! note
 
             Some sources does not support data filtering.
 
-    hwm : type[HWM] | None, default: ``None``
-        HWM class to be used as :etl-entities:`HWM <hwm/index.html>` value.
+    hwm : type[HWM] | None, default: `None`
+        HWM class to be used as [HWM](https://etl-entities.readthedocs.io/en/stable/hwm/index.html) value.
 
-        .. code:: python
-
-            hwm = DBReader.AutoDetectHWM(
-                name="some_unique_hwm_name",
-                expression="hwm_column",
-            )
-
-        HWM value will be fetched using ``hwm_column`` SQL query.
+        ```python
+        hwm = DBReader.AutoDetectHWM(
+            name="some_unique_hwm_name",
+            expression="hwm_column",
+        )
+        ```
+        HWM value will be fetched using `hwm_column` SQL query.
 
         If you want to use some SQL expression as HWM value, you can use it as well:
 
-        .. code:: python
-
-            hwm = DBReader.AutoDetectHWM(
-                name="some_unique_hwm_name",
-                expression="cast(hwm_column_orig as date)",
-            )
-
-        .. note::
+        ```python
+        hwm = DBReader.AutoDetectHWM(
+            name="some_unique_hwm_name",
+            expression="cast(hwm_column_orig as date)",
+        )
+        ```
+        !!! note
 
             Some sources does not support passing expressions and can be used only with column/field
             names which present in the source.
 
-        .. versionchanged:: 0.10.0
-            Replaces deprecated ``hwm_column`` and ``hwm_expression``  attributes
+        !!! info "Changed in 0.10.0"
+            Replaces deprecated `hwm_column` and `hwm_expression`  attributes
 
-    hint : Any, default: ``None``
+    hint : Any, default: `None`
         Hint expression used for querying the data.
 
-        ``hint`` syntax depends on the source. For example, SQL sources
-        accept ``hint`` as a string, but MongoDB sources accept ``hint`` as a dictionary.
+        `hint` syntax depends on the source. For example, SQL sources
+        accept `hint` as a string, but MongoDB sources accept `hint` as a dictionary.
 
-        .. code:: python
+        ```python
+        # SQL database connection
+        hint = "index(myschema.mytable mycolumn)"
 
-            # SQL database connection
-            hint = "index(myschema.mytable mycolumn)"
-
-            # MongoDB connection
-            hint = {
-                "mycolumn": 1,
-            }
-
-        .. note::
+        # MongoDB connection
+        hint = {
+            "mycolumn": 1,
+        }
+        ```
+        !!! note
 
             Some sources does not support hints.
 
-    df_schema : StructType, optional, default: ``None``
+    df_schema : StructType, optional, default: `None`
         Spark DataFrame schema, used for proper type casting of the rows.
 
-        .. code:: python
+        ```python
+        from pyspark.sql.types import (
+            DoubleType,
+            IntegerType,
+            StringType,
+            StructField,
+            StructType,
+            TimestampType,
+        )
 
-            from pyspark.sql.types import (
-                DoubleType,
-                IntegerType,
-                StringType,
-                StructField,
-                StructType,
-                TimestampType,
-            )
+        df_schema = StructType(
+            [
+                StructField("_id", IntegerType()),
+                StructField("text_string", StringType()),
+                StructField("hwm_int", IntegerType()),
+                StructField("hwm_datetime", TimestampType()),
+                StructField("float_value", DoubleType()),
+            ],
+        )
 
-            df_schema = StructType(
-                [
-                    StructField("_id", IntegerType()),
-                    StructField("text_string", StringType()),
-                    StructField("hwm_int", IntegerType()),
-                    StructField("hwm_datetime", TimestampType()),
-                    StructField("float_value", DoubleType()),
-                ],
-            )
-
-            reader = DBReader(
-                connection=connection,
-                source="fiddle.dummy",
-                df_schema=df_schema,
-            )
-
-        .. note::
+        reader = DBReader(
+            connection=connection,
+            source="fiddle.dummy",
+            df_schema=df_schema,
+        )
+        ```
+        !!! note
 
             Some sources does not support passing dataframe schema.
 
-    options : dict, :obj:`onetl.connection.BaseDBConnection.ReadOptions`, default: ``None``
+    options : dict, [onetl.connection.BaseDBConnection.ReadOptions][], default: `None`
         Spark read options, like partitioning mode.
 
-        .. code:: python
-
-            Postgres.ReadOptions(
-                partitioningMode="hash",
-                partitionColumn="some_column",
-                numPartitions=20,
-                fetchsize=1000,
-            )
-
-        .. note::
+        ```python
+        Postgres.ReadOptions(
+            partitioningMode="hash",
+            partitionColumn="some_column",
+            numPartitions=20,
+            fetchsize=1000,
+        )
+        ```
+        !!! note
 
             Some sources does not support reading options.
 
     Examples
     --------
 
-    .. tabs::
+    === "Minimal example"
+        ```python
+        from onetl.db import DBReader
+        from onetl.connection import Postgres
 
-        .. code-tab:: py Minimal example
+        postgres = Postgres(...)
 
-            from onetl.db import DBReader
-            from onetl.connection import Postgres
+        # create reader
+        reader = DBReader(connection=postgres, source="fiddle.dummy")
 
-            postgres = Postgres(...)
+        # read data from table "fiddle.dummy"
+        df = reader.run()
+        ```
+    === "With custom reading options"
+        ```python
+        from onetl.connection import Postgres
+        from onetl.db import DBReader
 
-            # create reader
-            reader = DBReader(connection=postgres, source="fiddle.dummy")
+        postgres = Postgres(...)
+        options = Postgres.ReadOptions(sessionInitStatement="select 300", fetchsize="100")
 
-            # read data from table "fiddle.dummy"
-            df = reader.run()
+        # create reader and pass some options to the underlying connection object
+        reader = DBReader(connection=postgres, source="fiddle.dummy", options=options)
 
-        .. code-tab:: py With custom reading options
+        # read data from table "fiddle.dummy"
+        df = reader.run()
+        ```
+    === "Full example"
+        ```python
+        from onetl.db import DBReader
+        from onetl.connection import Postgres
 
-            from onetl.connection import Postgres
-            from onetl.db import DBReader
+        postgres = Postgres(...)
+        options = Postgres.ReadOptions(sessionInitStatement="select 300", fetchsize="100")
 
-            postgres = Postgres(...)
-            options = Postgres.ReadOptions(sessionInitStatement="select 300", fetchsize="100")
+        # create reader with specific columns, rows filter
+        reader = DBReader(
+            connection=postgres,
+            source="default.test",
+            where="d_id > 100",
+            hint="NOWAIT",
+            columns=["d_id", "d_name", "d_age"],
+            options=options,
+        )
 
-            # create reader and pass some options to the underlying connection object
-            reader = DBReader(connection=postgres, source="fiddle.dummy", options=options)
+        # read data from table "fiddle.dummy"
+        df = reader.run()
+        ```
+    === "Incremental reading"
 
-            # read data from table "fiddle.dummy"
-            df = reader.run()
+            See [strategy][] for more examples
 
-        .. code-tab:: py Full example
+            ```python
+            from onetl.strategy import IncrementalStrategy
 
-            from onetl.db import DBReader
-            from onetl.connection import Postgres
+            ...
 
-            postgres = Postgres(...)
-            options = Postgres.ReadOptions(sessionInitStatement="select 300", fetchsize="100")
-
-            # create reader with specific columns, rows filter
             reader = DBReader(
                 connection=postgres,
-                source="default.test",
-                where="d_id > 100",
-                hint="NOWAIT",
-                columns=["d_id", "d_name", "d_age"],
-                options=options,
+                source="fiddle.dummy",
+                hwm=DBReader.AutoDetectHWM(  # mandatory for IncrementalStrategy
+                    name="some_unique_hwm_name",
+                    expression="d_age",
+                ),
             )
 
             # read data from table "fiddle.dummy"
-            df = reader.run()
-
-        .. tab:: Incremental reading
-
-            See :ref:`strategy` for more examples
-
-            .. code:: python
-
-                from onetl.strategy import IncrementalStrategy
-
-                ...
-
-                reader = DBReader(
-                    connection=postgres,
-                    source="fiddle.dummy",
-                    hwm=DBReader.AutoDetectHWM(  # mandatory for IncrementalStrategy
-                        name="some_unique_hwm_name",
-                        expression="d_age",
-                    ),
-                )
-
-                # read data from table "fiddle.dummy"
-                # but only with new rows (`WHERE d_age > previous_hwm_value`)
-                with IncrementalStrategy():
-                    df = reader.run()
+            # but only with new rows (`WHERE d_age > previous_hwm_value`)
+            with IncrementalStrategy():
+                df = reader.run()
+            ```
     """
 
     connection: BaseDBConnection
@@ -452,19 +443,19 @@ class DBReader(FrozenModel):
 
     @slot
     def has_data(self) -> bool:
-        """Returns ``True`` if there is some data in the source, ``False`` otherwise. |support_hooks|
+        """Returns `True` if there is some data in the source, `False` otherwise. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
-            This method can return different results depending on :ref:`strategy`
+            This method can return different results depending on [strategy][]
 
-        .. warning::
+        !!! warning
 
-            If :etl-entities:`hwm <hwm/index.html>` is used,
-            then method should be called inside :ref:`strategy` context.
+            If [hwm](https://etl-entities.readthedocs.io/en/stable/hwm/index.html) is used,
+            then method should be called inside [strategy][] context.
             And vise-versa, if HWM is not used, this method should not be called within strategy.
 
-        .. versionadded:: 0.10.0
+        !!! success "Added in 0.10.0"
 
         Raises
         ------
@@ -474,16 +465,16 @@ class DBReader(FrozenModel):
         Examples
         --------
 
-        .. code:: python
+        ```python
+        reader = DBReader(...)
 
-            reader = DBReader(...)
-
-            # handle situation when there is no data in the source
-            if reader.has_data():
-                df = reader.run()
-            else:
-                # implement your handling logic here
-                ...
+        # handle situation when there is no data in the source
+        if reader.has_data():
+            df = reader.run()
+        else:
+            # implement your handling logic here
+            ...
+        ```
         """
 
         entity_boundary_log(log, msg=f"{self.__class__.__name__}.has_data() starts")
@@ -516,37 +507,37 @@ class DBReader(FrozenModel):
 
     @slot
     def raise_if_no_data(self) -> None:
-        """Raises exception ``NoDataError`` if source does not contain any data. |support_hooks|
+        """Raises exception `NoDataError` if source does not contain any data. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
-            This method can return different results depending on :ref:`strategy`
+            This method can return different results depending on [strategy][]
 
-        .. warning::
+        !!! warning
 
-            If :etl-entities:`hwm <hwm/index.html>` is used,
-            then method should be called inside :ref:`strategy` context.
+            If [hwm](https://etl-entities.readthedocs.io/en/stable/hwm/index.html) is used,
+            then method should be called inside [strategy][] context.
             And vise-versa, if HWM is not used, this method should not be called within strategy.
 
-        .. versionadded:: 0.10.0
+        !!! success "Added in 0.10.0"
 
         Raises
         ------
         RuntimeError
             Current strategy is not compatible with HWM parameter.
 
-        :obj:`onetl.exception.NoDataError`
+        [onetl.exception.NoDataError][]
             There is no data in source.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        reader = DBReader(...)
 
-            reader = DBReader(...)
-
-            # ensure that there is some data in the source before reading it using Spark
-            reader.raise_if_no_data()
+        # ensure that there is some data in the source before reading it using Spark
+        reader.raise_if_no_data()
+        ```
         """
 
         if not self.has_data():
@@ -556,19 +547,19 @@ class DBReader(FrozenModel):
     @slot
     def run(self) -> DataFrame:
         """
-        Reads data from source table and saves as Spark dataframe. |support_hooks|
+        Reads data from source table and saves as Spark dataframe. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
-            This method can return different results depending on :ref:`strategy`
+            This method can return different results depending on [strategy][]
 
-        .. warning::
+        !!! warning
 
-            If :etl-entities:`hwm <index.html>` is used,
-            then method should be called inside :ref:`strategy` context.
+            If [hwm](https://etl-entities.readthedocs.io/en/stable/index.html) is used,
+            then method should be called inside [strategy][] context.
             And vise-versa, if HWM is not used, this method should not be called within strategy.
 
-        .. versionadded:: 0.1.0
+        !!! success "Added in 0.1.0"
 
         Returns
         -------
@@ -580,9 +571,9 @@ class DBReader(FrozenModel):
 
         Read data to Spark dataframe:
 
-        .. code:: python
-
-            df = reader.run()
+        ```python
+        df = reader.run()
+        ```
         """
 
         entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")

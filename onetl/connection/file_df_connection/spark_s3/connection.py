@@ -48,28 +48,28 @@ log = logging.getLogger(__name__)
 @support_hooks
 class SparkS3(SparkFileDFConnection):
     """
-    Spark connection to S3 filesystem. |support_hooks|
+    Spark connection to S3 filesystem. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Hadoop-AWS module <https://hadoop.apache.org/docs/current3/hadoop-aws/tools/hadoop-aws/index.html>`_
-    and `Spark integration with Cloud Infrastructures <https://spark.apache.org/docs/latest/cloud-integration.html>`_.
+    Based on [Hadoop-AWS module](https://hadoop.apache.org/docs/current3/hadoop-aws/tools/hadoop-aws/index.html)
+    and [Spark integration with Cloud Infrastructures](https://spark.apache.org/docs/latest/cloud-integration.html).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`spark-s3-prerequisites`
+        Before using this connector please take into account [spark-s3-prerequisites][]
 
-    .. note::
+    !!! note
 
         Supports only reading files as Spark DataFrame and writing DataFrame to files.
 
         Does NOT support file operations, like create, delete, rename, etc. For these operations,
-        use :obj:`S3 <onetl.connection.file_connection.s3.S3>` connection.
+        use [S3][onetl.connection.file_connection.s3.S3] connection.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Parameters
     ----------
     host : str
-        Host of S3 source. For example: ``domain.com``
+        Host of S3 source. For example: `domain.com`
 
     port : int, optional
         Port of S3 source
@@ -77,8 +77,8 @@ class SparkS3(SparkFileDFConnection):
     bucket : str
         Bucket name in the S3 file source
 
-    protocol : str, default : ``https``
-        Connection protocol. Allowed values: ``https`` or ``http``
+    protocol : str, default : `https`
+        Connection protocol. Allowed values: `https` or `http`
 
     access_key : str, optional
         Access key (aka user ID) of an account in the S3 service
@@ -91,8 +91,8 @@ class SparkS3(SparkFileDFConnection):
         Optional for some S3 implementations (MinIO, Ozone), but could be mandatory for others.
 
     path_style_access : bool, optional
-        ``True`` to connect to bucket as ``protocol://host/bucket``,
-        ``False`` to use ``protocol://bucket.host`` instead.
+        `True` to connect to bucket as `protocol://host/bucket`,
+        `False` to use `protocol://bucket.host` instead.
         This depends on S3 implementation.
 
     session_token : str, optional
@@ -103,92 +103,90 @@ class SparkS3(SparkFileDFConnection):
 
         These are Hadoop AWS specific properties, see links below:
 
-        * `Hadoop AWS <https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/index.html#General_S3A_Client_configuration>`_
-        * `Hadoop AWS committers options <https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/committers.html>`_
+        * [Hadoop AWS](https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/index.html#General_S3A_Client_configuration)
+        * [Hadoop AWS committers options](https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/committers.html)
 
-        Options are passed without prefixes ``spark.hadoop.``, ``fs.s3a.`` and ``fs.s3a.bucket.$BUCKET.``, for example:
+        Options are passed without prefixes `spark.hadoop.`, `fs.s3a.` and `fs.s3a.bucket.$BUCKET.`, for example:
 
-        .. code:: python
-
-            extra = {
-                "committer.magic.enabled": True,
-                "committer.name": "magic",
-                "connection.timeout": 300000,
-            }
-
-        .. warning::
+        ```python
+        extra = {
+            "committer.magic.enabled": True,
+            "committer.name": "magic",
+            "connection.timeout": 300000,
+        }
+        ```
+        !!! warning
 
             Options that populated from connection
-            attributes (like ``endpoint``, ``access.key``) are not allowed to override.
+            attributes (like `endpoint`, `access.key`) are not allowed to override.
 
-            But you may override ``aws.credentials.provider`` and pass custom credential options.
+            But you may override `aws.credentials.provider` and pass custom credential options.
 
-    spark : :class:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session
 
     Examples
     --------
 
-    .. tabs::
+    === "Create S3 connection with bucket as subdomain (`my-bucket.domain.com`):"
+        ```python
+        from onetl.connection import SparkS3
+        from pyspark.sql import SparkSession
 
-        .. code-tab:: py Create S3 connection with bucket as subdomain (``my-bucket.domain.com``):
-
-            from onetl.connection import SparkS3
-            from pyspark.sql import SparkSession
-
-            # Create Spark session with Hadoop AWS libraries loaded
-            maven_packages = SparkS3.get_packages(spark_version="3.5.8")
-            # Some packages are not used, but downloading takes a lot of time. Skipping them.
-            excluded_packages = SparkS3.get_exclude_packages()
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .config("spark.jars.excludes", ",".join(excluded_packages))
-                .config("spark.hadoop.fs.s3a.committer.magic.enabled", "true")
-                .config("spark.hadoop.fs.s3a.committer.name", "magic")
-                .config(
-                    "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a",
-                    "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
-                )
-                .config(
-                    "spark.sql.parquet.output.committer.class",
-                    "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter",
-                )
-                .config(
-                    "spark.sql.sources.commitProtocolClass",
-                    "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
-                )
-                .getOrCreate()
+        # Create Spark session with Hadoop AWS libraries loaded
+        maven_packages = SparkS3.get_packages(spark_version="3.5.8")
+        # Some packages are not used, but downloading takes a lot of time. Skipping them.
+        excluded_packages = SparkS3.get_exclude_packages()
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .config("spark.jars.excludes", ",".join(excluded_packages))
+            .config("spark.hadoop.fs.s3a.committer.magic.enabled", "true")
+            .config("spark.hadoop.fs.s3a.committer.name", "magic")
+            .config(
+                "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a",
+                "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
             )
+            .config(
+                "spark.sql.parquet.output.committer.class",
+                "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter",
+            )
+            .config(
+                "spark.sql.sources.commitProtocolClass",
+                "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
+            )
+            .getOrCreate()
+        )
 
-            # Create connection
-            s3 = SparkS3(
-                host="domain.com",
-                protocol="http",
-                bucket="my-bucket",
-                access_key="ACCESS_KEY",
-                secret_key="SECRET_KEY",
-                path_style_access=False,
-                region="us-east-1",
-                spark=spark,
-            ).check()
+        # Create connection
+        s3 = SparkS3(
+            host="domain.com",
+            protocol="http",
+            bucket="my-bucket",
+            access_key="ACCESS_KEY",
+            secret_key="SECRET_KEY",
+            path_style_access=False,
+            region="us-east-1",
+            spark=spark,
+        ).check()
+        ```
+    === "Create S3 connection with bucket as subpath (`domain.com/my-bucket`)"
+        ```python
+        # Create Spark session with Hadoop AWS libraries loaded
+        ...
 
-        .. code-tab:: py Create S3 connection with bucket as subpath (``domain.com/my-bucket``)
-
-            # Create Spark session with Hadoop AWS libraries loaded
-            ...
-
-            # Create connection
-            s3 = SparkS3(
-                host="domain.com",
-                protocol="http",
-                bucket="my-bucket",
-                access_key="ACCESS_KEY",
-                secret_key="SECRET_KEY",
-                path_style_access=True,
-                region="us-east-1",
-                spark=spark,
-            ).check()
+        # Create connection
+        s3 = SparkS3(
+            host="domain.com",
+            protocol="http",
+            bucket="my-bucket",
+            access_key="ACCESS_KEY",
+            secret_key="SECRET_KEY",
+            path_style_access=True,
+            region="us-east-1",
+            spark=spark,
+        ).check()
+        ```
     """
 
     Extra = SparkS3Extra
@@ -218,30 +216,29 @@ class SparkS3(SparkFileDFConnection):
         scala_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         spark_version : str
-            Spark version in format ``major.minor.patch``.
+            Spark version in format `major.minor.patch`.
 
         scala_version : str, optional
-            Scala version in format ``major.minor``.
+            Scala version in format `major.minor`.
 
-            If ``None``, ``spark_version`` is used to determine Scala version.
+            If `None`, `spark_version` is used to determine Scala version.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkS3
 
-            from onetl.connection import SparkS3
-
-            SparkS3.get_packages(spark_version="3.5.8")
-            SparkS3.get_packages(spark_version="3.5.8", scala_version="2.12")
-
+        SparkS3.get_packages(spark_version="3.5.8")
+        SparkS3.get_packages(spark_version="3.5.8", scala_version="2.12")
+        ```
         """
 
         spark_ver = Version(spark_version).min_digits(3)
@@ -253,19 +250,18 @@ class SparkS3(SparkFileDFConnection):
     @classmethod
     def get_exclude_packages(cls) -> list[str]:
         """
-        Get package names to be excluded by Spark. |support_hooks|
+        Get package names to be excluded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.13.0
+        !!! success "Added in 0.13.0"
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkS3
 
-            from onetl.connection import SparkS3
-
-            SparkS3.get_exclude_packages()
-
+        SparkS3.get_exclude_packages()
+        ```
         """
 
         return [
@@ -313,11 +309,11 @@ class SparkS3(SparkFileDFConnection):
     @slot
     def close(self):
         """
-        Close all connections created to S3. |support_hooks|
+        Close all connections created to S3. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Also resets all ``fs.s3a.bucket.$BUCKET.*`` properties of Hadoop configuration.
+        Also resets all `fs.s3a.bucket.$BUCKET.*` properties of Hadoop configuration.
 
-        .. note::
+        !!! note
 
             Connection can be used again after it was closed.
 
@@ -330,17 +326,15 @@ class SparkS3(SparkFileDFConnection):
 
         Close connection automatically:
 
-        .. code:: python
-
-            with connection:
-                ...
-
+        ```python
+        with connection:
+            ...
+        ```
         Close connection manually:
 
-        .. code:: python
-
-            connection.close()
-
+        ```python
+        connection.close()
+        ```
         """
         with suppress(Exception):
             self._reset_hadoop_conf()
@@ -423,8 +417,8 @@ class SparkS3(SparkFileDFConnection):
 
     def _fix_root_conf(self, conf: dict, prefix: str) -> None:
         """
-        Some keys are read only from Hadoop ``fs.s3a.*`` config instead of ``fs.s3a.bucket.$BUCKET.*``, like
-        ``fs.s3a.committer.name``. Move them from bucket config to root.
+        Some keys are read only from Hadoop `fs.s3a.*` config instead of `fs.s3a.bucket.$BUCKET.*`, like
+        `fs.s3a.committer.name`. Move them from bucket config to root.
         """
         for key in self._ROOT_CONFIG_KEYS:
             prefixed_key = f"{prefix}.{key}"
@@ -470,13 +464,13 @@ class SparkS3(SparkFileDFConnection):
     def _patch_hadoop_conf(self) -> None:
         """
         Spark relies on Hadoop AWS library to access S3 as FileSystem.
-        It uses Hadoop configuration with prefix ``fs.s3a.`` and ``fs.s3a.bucket.$BUCKET.``.
+        It uses Hadoop configuration with prefix `fs.s3a.` and `fs.s3a.bucket.$BUCKET.`.
 
-        Instead of passing them in Spark config session with additional ``spark.hadoop.`` prefix
+        Instead of passing them in Spark config session with additional `spark.hadoop.` prefix
         (which is inconvenient and not consistent with other Connection classes),
         we can change these options in runtime by altering Hadoop configuration object.
 
-        But if someone already accessed path like ``s3a://$BUCKET/...``, Spark will use existing configuration,
+        But if someone already accessed path like `s3a://$BUCKET/...`, Spark will use existing configuration,
         because Hadoop FileSystem properties are cached after creating a FileSystem object.
         So we need to both write new options to Hadoop configuration and call FileSystem.close() to clear cache.
 
@@ -520,12 +514,12 @@ class SparkS3(SparkFileDFConnection):
 
     def _reset_hadoop_conf(self):
         """
-        Reset changes made by :obj:`~_patch_hadoop_conf`.
+        Reset changes made by [_patch_hadoop_conf][].
 
         We cannot return default values which were set before patching because it requires rereading .xml files,
-        undoing all customization made by Spark's ``spark.hadoop.`` options and by classes like SparkS3.
+        undoing all customization made by Spark's `spark.hadoop.` options and by classes like SparkS3.
 
-        So just call ``unset`` on specific keys. Hadoop source code are already contains default values for
+        So just call `unset` on specific keys. Hadoop source code are already contains default values for
         these options, this this should not be an issue.
         """
         log.debug("Unset Hadoop configuration")

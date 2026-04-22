@@ -27,55 +27,53 @@ PARQUET_LIBRARY_OPTIONS = frozenset(
 @support_hooks
 class Parquet(ReadWriteFileFormat):
     """
-    Parquet file format (columnar). |support_hooks|
+    Parquet file format (columnar). [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Spark Parquet Files <https://spark.apache.org/docs/latest/sql-data-sources-parquet.html>`_ file format.
+    Based on [Spark Parquet Files](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html) file format.
 
-    Supports reading/writing files with ``.parquet`` extension.
+    Supports reading/writing files with `.parquet` extension.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any option mentioned in
-        `official documentation <https://spark.apache.org/docs/latest/sql-data-sources-parquet.html>`_.
-        **Option names should be in** ``camelCase``!
+        [official documentation](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html).
+        **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version.
 
         You may also set options mentioned
-        `parquet-hadoop documentation <https://github.com/apache/parquet-java/blob/master/parquet-hadoop/README.md>`_.
-        They are prefixed with ``parquet.`` with dots in names,
-        so instead of calling constructor ``Parquet(parquet.option=True)`` (invalid in Python)
-        you should call method ``Parquet.parse({"parquet.option": True})``.
+        [parquet-hadoop documentation](https://github.com/apache/parquet-java/blob/master/parquet-hadoop/README.md).
+        They are prefixed with `parquet.` with dots in names,
+        so instead of calling constructor `Parquet(parquet.option=True)` (invalid in Python)
+        you should call method `Parquet.parse({"parquet.option": True})`.
 
-    .. tabs::
+    === "Reading files"
+        ```python
+        from onetl.file.format import Parquet
 
-        .. code-tab:: py Reading files
+        parquet = Parquet(mergeSchema=True)
+        ```
+    === "Writing files"
+        ```python
+        from onetl.file.format import Parquet
 
-            from onetl.file.format import Parquet
-
-            parquet = Parquet(mergeSchema=True)
-
-        .. code-tab:: py Writing files
-
-            from onetl.file.format import Parquet
-
-            parquet = Parquet.parse(
-                {
-                    "compression": "snappy",
-                    # Enable Bloom filter for columns 'id' and 'name'
-                    "parquet.bloom.filter.enabled#id": True,
-                    "parquet.bloom.filter.enabled#name": True,
-                    # Set expected number of distinct values for column 'id'
-                    "parquet.bloom.filter.expected.ndv#id": 10_000_000,
-                    # other options
-                }
-            )
-
+        parquet = Parquet.parse(
+            {
+                "compression": "snappy",
+                # Enable Bloom filter for columns 'id' and 'name'
+                "parquet.bloom.filter.enabled#id": True,
+                "parquet.bloom.filter.enabled#name": True,
+                # Set expected number of distinct values for column 'id'
+                "parquet.bloom.filter.expected.ndv#id": 10_000_000,
+                # other options
+            }
+        )
+        ```
     """
 
     name: ClassVar[str] = "parquet"
@@ -83,9 +81,9 @@ class Parquet(ReadWriteFileFormat):
     mergeSchema: Optional[bool] = None
     """
     Merge schemas of all Parquet files being read into a single schema.
-    By default, Spark config option ``spark.sql.parquet.mergeSchema`` value is used (``false``).
+    By default, Spark config option `spark.sql.parquet.mergeSchema` value is used (`false`).
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -97,9 +95,9 @@ class Parquet(ReadWriteFileFormat):
     ] = None
     """
     Compression codec of the Parquet files.
-    By default, Spark config option ``spark.sql.parquet.compression.codec`` value is used (``snappy``).
+    By default, Spark config option `spark.sql.parquet.compression.codec` value is used (`snappy`).
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """

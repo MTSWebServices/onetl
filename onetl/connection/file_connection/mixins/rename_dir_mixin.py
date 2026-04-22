@@ -24,18 +24,18 @@ class RenameDirMixin(BaseFileConnection):
         """
         Rename or move dir on remote filesystem.
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Parameters
         ----------
-        source_dir_path : str or :obj:`os.PathLike`
+        source_dir_path : str or `os.PathLike`
             Old directory path
 
-        target_dir_path : str or :obj:`os.PathLike`
+        target_dir_path : str or `os.PathLike`
             New directory path
 
-        replace : bool, default ``False``
-            If ``True``, existing directory will be replaced.
+        replace : bool, default `False`
+            If `True`, existing directory will be replaced.
 
         Returns
         -------
@@ -46,15 +46,16 @@ class RenameDirMixin(BaseFileConnection):
         NotADirectoryError
             Path is not a directory
 
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
             Path does not exist
 
-        :obj:`onetl.exception.DirectoryExistsError`
-            Directory already exists, and ``replace=False``
+        [onetl.exception.DirectoryExistsError][]
+            Directory already exists, and `replace=False`
 
         Examples
         --------
 
+        ```python
         >>> new_dir = connection.rename_dir("/path/to/dir1", "/path/to/dir2")
         >>> os.fspath(new_dir)
         '/path/to/dir2'
@@ -62,6 +63,7 @@ class RenameDirMixin(BaseFileConnection):
         False
         >>> connection.path_exists("/path/to/dir2")
         True
+        ```
         """
 
         log.debug("|%s| Renaming directory '%s' to '%s'", self.__class__.__name__, source_dir_path, target_dir_path)

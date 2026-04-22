@@ -18,26 +18,25 @@ if TYPE_CHECKING:
 
 class KafkaBasicAuth(KafkaAuth, GenericOptions):
     """
-    Connect to Kafka using ``sasl.mechanism="PLAIN"``.
+    Connect to Kafka using `sasl.mechanism="PLAIN"`.
 
-    For more details see `Kafka Documentation <https://kafka.apache.org/documentation/#security_sasl_plain>`_.
+    For more details see [Kafka Documentation](https://kafka.apache.org/documentation/#security_sasl_plain).
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
     Auth in Kafka with user and password:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Kafka
 
-        from onetl.connection import Kafka
-
-        auth = Kafka.BasicAuth(
-            user="some_user",
-            password="abc",
-        )
-
+    auth = Kafka.BasicAuth(
+        user="some_user",
+        password="abc",
+    )
+    ```
     """
 
     user: str = Field(alias="username")

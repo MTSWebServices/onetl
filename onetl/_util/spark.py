@@ -27,17 +27,18 @@ def stringify(value: Any, *, quote: bool = False) -> Any:
     """
     Convert values to strings.
 
-    Values ``True``, ``False`` and ``None`` become ``"true"``, ``"false"`` and ``"null"``.
+    Values `True`, `False` and `None` become `"true"`, `"false"` and `"null"`.
 
     If input is dict, return dict with stringified values and keys (recursive).
 
     If input is list, return list with stringified values (recursive).
 
-    If ``quote=True``, wrap string values with double quotes.
+    If `quote=True`, wrap string values with double quotes.
 
     Examples
     --------
 
+    ```python
     >>> stringify(1)
     '1'
     >>> stringify(True)
@@ -54,6 +55,7 @@ def stringify(value: Any, *, quote: bool = False) -> Any:
     {'abc': '1'}
     >>> stringify([1, True, False, None, "string"])
     ['1', 'true', 'false', 'null', 'string']
+    ```
     """
 
     if isinstance(value, dict):
@@ -85,7 +87,7 @@ def inject_spark_param(conf: RuntimeConfig, name: str, value: Any):
     """
     Inject a parameter into a Spark session, and return previous value after exit.
 
-    If value is ``None``, parameter will be reset to default.
+    If value is `None`, parameter will be reset to default.
     """
     original_value = conf.get(name, None)
 
@@ -133,7 +135,7 @@ def estimate_dataframe_size(df: DataFrame) -> int:
     """
     Estimate in-memory DataFrame size in bytes. If cannot be estimated, return 0.
 
-    Using Spark's `SizeEstimator <https://spark.apache.org/docs//api/java/org/apache/spark/util/SizeEstimator.html>`_.
+    Using Spark's [SizeEstimator](https://spark.apache.org/docs//api/java/org/apache/spark/util/SizeEstimator.html).
     """
 
     try:
@@ -204,7 +206,7 @@ def override_job_description(spark_session: SparkSession, job_description: str):
     """
     Override Spark job description.
 
-    Unlike ``spark_session.sparkContext.setJobDescription``, this method resets job description
+    Unlike `spark_session.sparkContext.setJobDescription`, this method resets job description
     before exiting the context manager, instead of keeping it.
 
     If user set custom description, it will be left intact.

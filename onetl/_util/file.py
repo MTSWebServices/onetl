@@ -62,6 +62,7 @@ def generate_temp_path(root: PurePath) -> PurePath:
     Examples
     --------
 
+    ```python
     >>> from etl_entities.process import Process
     >>> from pathlib import Path
     >>> generate_temp_path(Path("/tmp")) # doctest: +SKIP
@@ -69,6 +70,7 @@ def generate_temp_path(root: PurePath) -> PurePath:
     >>> with Process(dag="mydag", task="mytask"): # doctest: +SKIP
     ...    generate_temp_path(Path("/abc"))
     Path("/abc/onetl/currenthost/mydag.mytask.myprocess/20230524122150")
+    ```
     """
 
     from etl_entities.process import ProcessStackManager

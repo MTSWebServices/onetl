@@ -18,54 +18,52 @@ from onetl.impl import FrozenModel
 class FileSizeRange(BaseFileFilter, FrozenModel):
     """Filter files matching a specified size.
 
-    If file size (``.stat().st_size``) doesn't match the range, it will be excluded.
-    Doesn't affect directories or paths without ``.stat()`` method.
+    If file size (`.stat().st_size`) doesn't match the range, it will be excluded.
+    Doesn't affect directories or paths without `.stat()` method.
 
-    .. versionadded:: 0.13.0
+    !!! success "Added in 0.13.0"
 
-    .. note::
+    !!! note
 
-        `SI unit prefixes <https://en.wikipedia.org/wiki/Byte#Multiple-byte_units>`_
-        means that ``1KB`` == ``1 kilobyte`` == ``1000 bytes``.
-        If you need ``1024 bytes``, use ``1 KiB`` == ``1 kibibyte``.
+        [SI unit prefixes](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units)
+        means that `1KB` == `1 kilobyte` == `1000 bytes`.
+        If you need `1024 bytes`, use `1 KiB` == `1 kibibyte`.
 
     Parameters
     ----------
 
     min : int or str, optional
 
-        Minimal allowed file size. ``None`` means no limit.
+        Minimal allowed file size. `None` means no limit.
 
     max : int or str, optional
 
-        Maximum allowed file size. ``None`` means no limit.
+        Maximum allowed file size. `None` means no limit.
 
     Examples
     --------
 
     Specify min and max file sizes:
 
-    .. code:: python
+    ```python
+    from onetl.file.filter import FileSizeRange
 
-        from onetl.file.filter import FileSizeRange
-
-        file_size = FileSizeRange(min="1KiB", max="100MiB")
-
+    file_size = FileSizeRange(min="1KiB", max="100MiB")
+    ```
     Specify only min file size:
 
-    .. code:: python
+    ```python
+    from onetl.file.filter import FileSizeRange
 
-        from onetl.file.filter import FileSizeRange
-
-        file_size = FileSizeRange(min="1KiB")
-
+    file_size = FileSizeRange(min="1KiB")
+    ```
     Specify only max file size:
 
-    .. code:: python
+    ```python
+    from onetl.file.filter import FileSizeRange
 
-        from onetl.file.filter import FileSizeRange
-
-        file_size = FileSizeRange(max="100MiB")
+    file_size = FileSizeRange(max="100MiB")
+    ```
     """
 
     min: Optional[ByteSize] = None

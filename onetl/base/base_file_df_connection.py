@@ -19,24 +19,24 @@ class FileDFReadOptions(ABC):
     """
     Protocol for objects supporting altering Spark DataFrameReader options.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     @abstractmethod
     def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader | ContextManager[DataFrameReader]:
         """
-        Apply provided format to :obj:`pyspark.sql.DataFrameReader`.
+        Apply provided format to `pyspark.sql.DataFrameReader`.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Returns
         -------
-        :obj:`pyspark.sql.DataFrameReader`
+        `pyspark.sql.DataFrameReader`
             DataFrameReader with options applied.
 
-        ``ContextManager[DataFrameReader]``
+        `ContextManager[DataFrameReader]`
             If returned context manager, it will be entered before reading data and exited after creating a DataFrame.
-            Context manager's ``__enter__`` method should return :obj:`pyspark.sql.DataFrameReader` instance.
+            Context manager's `__enter__` method should return `pyspark.sql.DataFrameReader` instance.
         """
 
 
@@ -44,24 +44,24 @@ class FileDFWriteOptions(ABC):
     """
     Protocol for objects supporting altering Spark DataFrameWriter options.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     @abstractmethod
     def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter | ContextManager[DataFrameWriter]:
         """
-        Apply provided format to :obj:`pyspark.sql.DataFrameWriter`.
+        Apply provided format to `pyspark.sql.DataFrameWriter`.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Returns
         -------
-        :obj:`pyspark.sql.DataFrameWriter`
+        `pyspark.sql.DataFrameWriter`
             DataFrameWriter with options applied.
 
-        ``ContextManager[DataFrameWriter]``
+        `ContextManager[DataFrameWriter]`
             If returned context manager, it will be entered before writing and exited after writing a DataFrame.
-            Context manager's ``__enter__`` method should return :obj:`pyspark.sql.DataFrameWriter` instance.
+            Context manager's `__enter__` method should return `pyspark.sql.DataFrameWriter` instance.
         """
 
 
@@ -69,7 +69,7 @@ class BaseFileDFConnection(BaseConnection):
     """
     Implements generic methods for reading  and writing dataframe as files.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     spark: SparkSession
@@ -80,9 +80,9 @@ class BaseFileDFConnection(BaseConnection):
         format: BaseReadableFileFormat | BaseWritableFileFormat,
     ) -> None:
         """
-        Validate if specific file format is supported. |support_hooks|
+        Validate if specific file format is supported. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Raises
         ------
@@ -93,9 +93,9 @@ class BaseFileDFConnection(BaseConnection):
     @abstractmethod
     def path_from_string(self, path: os.PathLike | str) -> PurePathProtocol:
         """
-        Convert path from string to object. |support_hooks|
+        Convert path from string to object. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
         """
 
     @property
@@ -103,7 +103,7 @@ class BaseFileDFConnection(BaseConnection):
     def instance_url(self) -> str:
         """Instance URL.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
         """
 
     @abstractmethod
@@ -116,9 +116,9 @@ class BaseFileDFConnection(BaseConnection):
         options: FileDFReadOptions | None = None,
     ) -> DataFrame:
         """
-        Read files in some paths list as dataframe. |support_hooks|
+        Read files in some paths list as dataframe. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
         """
 
     @abstractmethod
@@ -130,7 +130,7 @@ class BaseFileDFConnection(BaseConnection):
         options: FileDFWriteOptions | None = None,
     ) -> None:
         """
-        Write dataframe as files in some path. |support_hooks|
+        Write dataframe as files in some path. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
         """

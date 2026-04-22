@@ -10,7 +10,7 @@ class IcebergCatalog(ABC):
     """
     Base Iceberg catalog interface.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
     """
 
     @abstractmethod

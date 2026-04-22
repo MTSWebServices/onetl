@@ -11,14 +11,14 @@ from onetl.impl import FrozenModel
 class FileHWMFilter(BaseFileFilter, FrozenModel):
     """Filter files which are not covered by FileHWM.
 
-    .. warning::
+    !!! warning
 
         Only for onETL internal use.
 
     Parameters
     ----------
 
-    hwm : :obj:`etl_entities.hwm.FileHWM`
+    hwm : [etl_entities.hwm.FileHWM][]
 
         File HWM instance
     """

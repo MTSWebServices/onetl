@@ -17,38 +17,37 @@ from onetl.impl import FrozenModel
 class Regexp(BaseFileFilter, FrozenModel):
     r"""Filter files or directories with path matching a regular expression.
 
-    .. versionadded:: 0.8.0
-        Replaces deprecated ``onetl.core.FileFilter``
+    !!! success "Added in 0.8.0"
+        Replaces deprecated `onetl.core.FileFilter`
 
     Parameters
     ----------
 
-    pattern : :obj:`re.Pattern`
+    pattern : [re.Pattern][]
 
-        Regular expression (e.g. ``\d+\.csv``) for which any **file** (only file) path should match.
+        Regular expression (e.g. `\d+\.csv`) for which any **file** (only file) path should match.
 
-        If input is a string, regular expression will be compiles using ``re.IGNORECASE`` and ``re.DOTALL`` flags.
+        If input is a string, regular expression will be compiles using `re.IGNORECASE` and `re.DOTALL` flags.
 
     Examples
     --------
 
     Create regexp filter from string:
 
-    .. code:: python
+    ```python
+    from onetl.file.filter import Regexp
 
-        from onetl.file.filter import Regexp
+    regexp = Regexp(r"\d+\.csv")
+    ```
+    Create regexp filter from [re.Pattern][]:
 
-        regexp = Regexp(r"\d+\.csv")
+    ```python
+    import re
 
-    Create regexp filter from :obj:`re.Pattern`:
+    from onetl.file.filter import Regexp
 
-    .. code:: python
-
-        import re
-
-        from onetl.file.filter import Regexp
-
-        regexp = Regexp(re.compile(r"\d+\.csv", re.IGNORECASE | re.DOTALL))
+    regexp = Regexp(re.compile(r"\d+\.csv", re.IGNORECASE | re.DOTALL))
+    ```
     """
 
     class Config:

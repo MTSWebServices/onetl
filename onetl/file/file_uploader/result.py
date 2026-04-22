@@ -17,16 +17,17 @@ class UploadResult(FileResult):
 
     Container for file paths, divided into certain categories:
 
-    * :obj:`~successful`
-    * :obj:`~failed`
-    * :obj:`~skipped`
-    * :obj:`~missing`
+    * [successful][]
+    * [failed][]
+    * [skipped][]
+    * [missing][]
 
-    .. versionadded:: 0.3.0
+    !!! success "Added in 0.3.0"
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file import FileUploader
     >>> uploader = FileUploader(target_path="/remote", ...)
     >>> upload_result = uploader.run(
@@ -54,6 +55,7 @@ class UploadResult(FileResult):
             LocalPath("/missing/file")
         ]),
     )
+    ```
     """
 
     successful: FileSet[RemoteFile] = Field(default_factory=FileSet)

@@ -13,7 +13,7 @@ class BaseConnection(ABC):
 
     @abstractmethod
     def check(self: T) -> T:
-        """Check source availability. |support_hooks|
+        """Check source availability. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         If not, an exception will be raised.
 
@@ -29,7 +29,7 @@ class BaseConnection(ABC):
         Examples
         --------
 
-        .. code:: python
-
-            connection.check()
+        ```python
+        connection.check()
+        ```
         """

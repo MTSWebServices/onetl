@@ -16,26 +16,26 @@ from onetl.impl import FrozenModel
 class Glob(BaseFileFilter, FrozenModel):
     """Filter files or directories with path matching a glob expression.
 
-    .. versionadded:: 0.8.0
-        Replaces deprecated ``onetl.core.FileFilter``
+    !!! success "Added in 0.8.0"
+        Replaces deprecated `onetl.core.FileFilter`
 
     Parameters
     ----------
 
     pattern : str
 
-        Pattern (e.g. ``*.csv``) for which any **file** (only file) path should match
+        Pattern (e.g. `*.csv`) for which any **file** (only file) path should match
 
     Examples
     --------
 
     Create glob filter:
 
-    .. code:: python
+    ```python
+    from onetl.file.filter import Glob
 
-        from onetl.file.filter import Glob
-
-        glob = Glob("*.csv")
+    glob = Glob("*.csv")
+    ```
     """
 
     class Config:

@@ -31,28 +31,28 @@ class FileDFExistBehavior(str, Enum):
 
 @support_hooks
 class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
-    """Options for :obj:`FileDFWriter <onetl.file.file_df_writer.file_df_writer.FileDFWriter>`.
+    """Options for [FileDFWriter][onetl.file.file_df_writer.file_df_writer.FileDFWriter].
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
-    .. note::
+    !!! note
 
-        You can pass any value `supported by Spark <https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        You can pass any value [supported by Spark](https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version.
 
-    .. code:: python
+    ```python
+    from onetl.file import FileDFWriter
 
-        from onetl.file import FileDFWriter
-
-        options = FileDFWriter.Options(
-            if_exists="replace_overlapping_partitions",
-            partitionBy="month",
-        )
+    options = FileDFWriter.Options(
+        if_exists="replace_overlapping_partitions",
+        partitionBy="month",
+    )
+    ```
     """
 
     class Config:
@@ -65,154 +65,154 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
     If target directory does not exist, it will be created.
     But if it does exist, then behavior is different for each value.
 
-    .. versionchanged:: 0.13.0
+    !!! info "Changed in 0.13.0"
 
-        Default value was changed from ``error`` to ``append``
+        Default value was changed from `error` to `append`
 
     Possible values:
-        * ``error``
+        * `error`
             If folder already exists, raise an exception.
 
-            Same as Spark's ``df.write.mode("error").save()``.
+            Same as Spark's `df.write.mode("error").save()`.
 
-        * ``skip_entire_directory``
+        * `skip_entire_directory`
             If folder already exists, left existing files intact and stop immediately without any errors.
 
-            Same as Spark's ``df.write.mode("ignore").save()``.
+            Same as Spark's `df.write.mode("ignore").save()`.
 
-        * ``append`` (default)
+        * `append` (default)
             Appends data into existing directory.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Directory does not exist
-                    Directory is created using all the provided options (``format``, ``partition_by``, etc).
+                    Directory is created using all the provided options (`format`, `partition_by`, etc).
 
-                * Directory exists, does not contain partitions, but :obj:`~partition_by` is set
+                * Directory exists, does not contain partitions, but [partition_by][] is set
                     Data is appended to a directory, but to partitioned directory structure.
 
-                    .. warning::
+                    !!! warning
 
                         Existing files still present in the root of directory,
                         but Spark will ignore those files while reading,
-                        unless using ``recursive=True``.
+                        unless using `recursive=True`.
 
-                * Directory exists and contains partitions, but :obj:`~partition_by` is not set
+                * Directory exists and contains partitions, but [partition_by][] is not set
                     Data is appended to a directory, but to the root of
                     directory instead of nested partition directories.
 
-                    .. warning::
+                    !!! warning
 
-                        Spark will ignore such files while reading, unless using ``recursive=True``.
+                        Spark will ignore such files while reading, unless using `recursive=True`.
 
                 * Directory exists and contains partitions,
-                  but with different partitioning schema than :obj:`~partition_by`
+                  but with different partitioning schema than [partition_by][]
                     Data is appended to a directory with new partitioning schema.
 
-                    .. warning::
+                    !!! warning
 
                         Spark cannot read directory with multiple partitioning schemas,
-                        unless using ``recursive=True`` to disable partition scanning.
+                        unless using `recursive=True` to disable partition scanning.
 
-                * Directory exists and partitioned according :obj:`~partition_by`,
+                * Directory exists and partitioned according [partition_by][],
                   but partition is present only in dataframe
                     New partition directory is created.
 
-                * Directory exists and partitioned according :obj:`~partition_by`,
+                * Directory exists and partitioned according [partition_by][],
                   partition is present in both dataframe and directory
                     New files are added to existing partition directory, existing files are sill present.
 
-                * Directory exists and partitioned according :obj:`~partition_by`,
+                * Directory exists and partitioned according [partition_by][],
                   but partition is present only in directory, not dataframe
                     Existing partition is left intact.
 
-        * ``replace_overlapping_partitions``
+        * `replace_overlapping_partitions`
             If partitions from dataframe already exist in directory structure, they will be overwritten.
 
-            Same as Spark's ``df.write.option("partitionOverwriteMode", "dynamic").mode("overwrite").save()``.
+            Same as Spark's `df.write.option("partitionOverwriteMode", "dynamic").mode("overwrite").save()`.
 
-            .. DANGER::
+            !!! danger
 
                 This mode does make sense **ONLY** if the directory is partitioned.
                 **IF NOT, YOU'LL LOOSE YOUR DATA!**
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Directory does not exist
                     Directory is created using all the provided options
-                    (``format``, ``partition_by``, etc).
+                    (`format`, `partition_by`, etc).
 
-                * Directory exists, does not contain partitions, but :obj:`~partition_by` is set
+                * Directory exists, does not contain partitions, but [partition_by][] is set
                     Directory **will be deleted**, and will be created with partitions.
 
-                * Directory exists and contains partitions, but :obj:`~partition_by` is not set
+                * Directory exists and contains partitions, but [partition_by][] is not set
                     Directory **will be deleted**, and will be created with partitions.
 
                 * Directory exists and contains partitions,
-                  but with different partitioning schema than :obj:`~partition_by`
+                  but with different partitioning schema than [partition_by][]
                     Data is appended to a directory with new partitioning schema.
 
-                    .. warning::
+                    !!! warning
 
                         Spark cannot read directory with multiple partitioning schemas,
-                        unless using ``recursive=True`` to disable partition scanning.
+                        unless using `recursive=True` to disable partition scanning.
 
-                * Directory exists and partitioned according :obj:`~partition_by`,
+                * Directory exists and partitioned according [partition_by][],
                   but partition is present only in dataframe
                     New partition directory is created.
 
-                * Directory exists and partitioned according :obj:`~partition_by`,
+                * Directory exists and partitioned according [partition_by][],
                   partition is present in both dataframe and directory
                     Partition directory **will be deleted**,
                     and new one is created with files containing data from dataframe.
 
-                * Directory exists and partitioned according :obj:`~partition_by`,
+                * Directory exists and partitioned according [partition_by][],
                   but partition is present only in directory, not dataframe
                     Existing partition is left intact.
 
-        * ``replace_entire_directory``
+        * `replace_entire_directory`
             Remove existing directory and create new one, **overwriting all existing data**.
             **All existing partitions are dropped.**
 
-            Same as Spark's ``df.write.option("partitionOverwriteMode", "static").mode("overwrite").save()``.
+            Same as Spark's `df.write.option("partitionOverwriteMode", "static").mode("overwrite").save()`.
 
-    .. note::
+    !!! note
 
-        Unlike using pure Spark, config option ``spark.sql.sources.partitionOverwriteMode``
-        does not affect behavior of any ``mode``
+        Unlike using pure Spark, config option `spark.sql.sources.partitionOverwriteMode`
+        does not affect behavior of any `mode`
     """
 
     partition_by: Optional[Union[List[str], str]] = Field(default=None, alias="partitionBy")
     """
-    List of columns should be used for data partitioning. ``None`` means partitioning is disabled.
+    List of columns should be used for data partitioning. `None` means partitioning is disabled.
 
     Each partition is a folder which contains only files with the specific column value,
-    like ``some.csv/col1=value1``, ``some.csv/col1=value2``, and so on.
+    like `some.csv/col1=value1`, `some.csv/col1=value2`, and so on.
 
-    Multiple partitions columns means nested folder structure, like ``some.csv/col1=val1/col2=val2``.
+    Multiple partitions columns means nested folder structure, like `some.csv/col1=val1/col2=val2`.
 
-    If ``WHERE`` clause in the query contains expression like ``partition = value``,
+    If `WHERE` clause in the query contains expression like `partition = value`,
     Spark will scan only files in a specific partition.
 
-    Examples: ``reg_id`` or ``["reg_id", "business_dt"]``
+    Examples: `reg_id` or `["reg_id", "business_dt"]`
 
-    .. note::
+    !!! note
 
         Values should be scalars (integers, strings),
-        and either static (``countryId``) or incrementing (dates, years), with low
+        and either static (`countryId`) or incrementing (dates, years), with low
         number of distinct values.
 
-        Columns like ``userId`` or ``datetime``/``timestamp`` should **NOT** be used for partitioning.
+        Columns like `userId` or `datetime`/`timestamp` should **NOT** be used for partitioning.
     """
 
     @slot
     def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter:
         """
-        Apply provided format to :obj:`pyspark.sql.DataFrameWriter`. |support_hooks|
+        Apply provided format to `pyspark.sql.DataFrameWriter`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Returns
         -------
-        :obj:`pyspark.sql.DataFrameWriter` with options applied
+        `pyspark.sql.DataFrameWriter` with options applied
         """
         for method, value in self.dict(by_alias=True, exclude_none=True, exclude={"if_exists"}).items():
             # <value> is the arguments that will be passed to the <method>

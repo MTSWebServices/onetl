@@ -37,30 +37,29 @@ class MSSQLExtra(GenericOptions):
 
 @support_hooks
 class MSSQL(JDBCConnection):
-    """MSSQL JDBC connection. |support_hooks|
+    """MSSQL JDBC connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on Maven package `com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre8 <https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc/13.2.1.jre8>`_
-    (`official MSSQL JDBC driver
-    <https://docs.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server>`_).
+    Based on Maven package [com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre8](https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc/13.2.1.jre8)
+    ([official MSSQL JDBC driver](https://docs.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server)).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`mssql-prerequisites`
+        Before using this connector please take into account [mssql-prerequisites][]
 
     Parameters
     ----------
     host : str
-        Host of MSSQL database. For example: ``test.mssql.domain.com`` or ``192.168.1.14``
+        Host of MSSQL database. For example: `test.mssql.domain.com` or `192.168.1.14`
 
-    port : int, default: ``None``
+    port : int, default: `None`
         Port of MSSQL database
 
-        .. versionchanged:: 0.11.1
-            Default value was changed from ``1433`` to ``None``,
-            to allow automatic port discovery with ``instanceName``.
+        !!! info "Changed in 0.11.1"
+            Default value was changed from `1433` to `None`,
+            to allow automatic port discovery with `instanceName`.
 
     user : str
-        User, which have proper access to the database. For example: ``some_user``
+        User, which have proper access to the database. For example: `some_user`
 
     password : str
         Password for database connection
@@ -68,107 +67,105 @@ class MSSQL(JDBCConnection):
     database : str
         Database in RDBMS, NOT schema.
 
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+        See [this page](https://www.educba.com/postgresql-database-vs-schema/) for more details
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"connectRetryCount": 3, "connectRetryInterval": 10}``
+        For example: `{"connectRetryCount": 3, "connectRetryInterval": 10}`
 
-        See `MSSQL JDBC driver properties documentation
-        <https://learn.microsoft.com/en-us/sql/connect/jdbc/setting-the-connection-properties#properties>`_
+        See [MSSQL JDBC driver properties documentation](https://learn.microsoft.com/en-us/sql/connect/jdbc/setting-the-connection-properties#properties)
         for more details
 
     Examples
     --------
 
-    .. tabs::
+    === "Create MSSQL connection with plain auth"
+        ```python
+        from onetl.connection import MSSQL
+        from pyspark.sql import SparkSession
 
-        .. code-tab:: py Create MSSQL connection with plain auth
+        # Create Spark session with MSSQL driver loaded
+        maven_packages = MSSQL.get_packages()
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .getOrCreate()
+        )
 
-            from onetl.connection import MSSQL
-            from pyspark.sql import SparkSession
+        # Create connection
+        mssql = MSSQL(
+            host="database.host.or.ip",
+            port=1433,
+            user="user",
+            password="*****",
+            extra={
+                "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
+            },
+            spark=spark,
+        )
+        ```
+    === "Create MSSQL connection with domain auth"
+        ```python
+        # Create Spark session with MSSQL driver loaded
+        ...
 
-            # Create Spark session with MSSQL driver loaded
-            maven_packages = MSSQL.get_packages()
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .getOrCreate()
-            )
+        # Create connection
+        mssql = MSSQL(
+            host="database.host.or.ip",
+            port=1433,
+            user="user",
+            password="*****",
+            extra={
+                "domain": "some.domain.com",  # add here your domain
+                "integratedSecurity": "true",
+                "authenticationScheme": "NTLM",
+                "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
+            },
+            spark=spark,
+        )
+        ```
+    === "Create MSSQL connection with instance name"
+        ```python
+        # Create Spark session with MSSQL driver loaded
+        ...
 
-            # Create connection
-            mssql = MSSQL(
-                host="database.host.or.ip",
-                port=1433,
-                user="user",
-                password="*****",
-                extra={
-                    "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
-                },
-                spark=spark,
-            )
+        # Create connection
+        mssql = MSSQL(
+            host="database.host.or.ip",
+            # !!! no port !!!
+            user="user",
+            password="*****",
+            extra={
+                "instanceName": "myinstance",  # add here your instance name
+                "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
+            },
+            spark=spark,
+        )
+        ```
+    === "Create MSSQL read-only connection"
+        ```python
+        # Create Spark session with MSSQL driver loaded
+        ...
 
-        .. code-tab:: py Create MSSQL connection with domain auth
-
-            # Create Spark session with MSSQL driver loaded
-            ...
-
-            # Create connection
-            mssql = MSSQL(
-                host="database.host.or.ip",
-                port=1433,
-                user="user",
-                password="*****",
-                extra={
-                    "domain": "some.domain.com",  # add here your domain
-                    "integratedSecurity": "true",
-                    "authenticationScheme": "NTLM",
-                    "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
-                },
-                spark=spark,
-            )
-
-        .. code-tab:: py Create MSSQL connection with instance name
-
-            # Create Spark session with MSSQL driver loaded
-            ...
-
-            # Create connection
-            mssql = MSSQL(
-                host="database.host.or.ip",
-                # !!! no port !!!
-                user="user",
-                password="*****",
-                extra={
-                    "instanceName": "myinstance",  # add here your instance name
-                    "trustServerCertificate": "true",  # add this to avoid SSL certificate issues
-                },
-                spark=spark,
-            )
-
-        .. code-tab:: py Create MSSQL read-only connection
-
-            # Create Spark session with MSSQL driver loaded
-            ...
-
-            # Create connection
-            mssql = MSSQL(
-                host="database.host.or.ip",
-                port=1433,
-                user="user",
-                password="*****",
-                extra={
-                    # driver will open read-only connection, to avoid writing to the database
-                    "applicationIntent": "ReadOnly",
-                    # add this to avoid SSL certificate issues
-                    "trustServerCertificate": "true",
-                },
-                spark=spark,
-            ).check()
+        # Create connection
+        mssql = MSSQL(
+            host="database.host.or.ip",
+            port=1433,
+            user="user",
+            password="*****",
+            extra={
+                # driver will open read-only connection, to avoid writing to the database
+                "applicationIntent": "ReadOnly",
+                # add this to avoid SSL certificate issues
+                "trustServerCertificate": "true",
+            },
+            spark=spark,
+        ).check()
+        ```
     """
 
     database: str
@@ -196,29 +193,29 @@ class MSSQL(JDBCConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Allows specifying custom JDBC driver versions for MSSQL.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         java_version : str, optional
-            Java major version, defaults to ``8``. Must be ``8`` or ``11``.
+            Java major version, defaults to `8`. Must be `8` or `11`.
         package_version : str, optional
-            Specifies the version of the MSSQL JDBC driver to use. Defaults to ``13.2.1.``.
+            Specifies the version of the MSSQL JDBC driver to use. Defaults to `13.2.1.`.
 
         Examples
         --------
-        .. code:: python
+        ```python
+        from onetl.connection import MSSQL
 
-            from onetl.connection import MSSQL
+        MSSQL.get_packages()
 
-            MSSQL.get_packages()
-
-            # specify Java and package versions
-            MSSQL.get_packages(java_version="8", package_version="13.2.1.jre11")
+        # specify Java and package versions
+        MSSQL.get_packages(java_version="8", package_version="13.2.1.jre11")
+        ```
         """
         default_java_version = "8"
         default_package_version = "13.2.1"

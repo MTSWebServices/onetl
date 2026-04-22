@@ -96,12 +96,12 @@ class JDBCMixin:
     @slot
     def close(self):
         """
-        Close all connections, opened by ``.fetch()``, ``.execute()`` or ``.check()`` methods. |support_hooks|
+        Close all connections, opened by `.fetch()`, `.execute()` or `.check()` methods. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. deprecated:: 0.13.0
+        !!! warning "Deprecated since 0.13.0"
             Connections are now closed immediately. Method is now no-op.
 
-        .. note::
+        !!! note
 
             Connection can be used again after it was closed.
 
@@ -114,17 +114,16 @@ class JDBCMixin:
 
         Read data and close connection:
 
-        .. code:: python
+        ```python
+        df = connection.fetch("SELECT * FROM mytable LIMIT 10")
+        connection.close()
 
-            df = connection.fetch("SELECT * FROM mytable LIMIT 10")
-            connection.close()
+        # or
 
-            # or
-
-            with connection:
-                connection.execute("CREATE TABLE target_table(id NUMBER, data VARCHAR)")
-                connection.execute("CREATE INDEX target_table_idx ON target_table (id)")
-
+        with connection:
+            connection.execute("CREATE TABLE target_table(id NUMBER, data VARCHAR)")
+            connection.execute("CREATE INDEX target_table_idx ON target_table (id)")
+        ```
         """
 
         warnings.warn(
@@ -147,16 +146,16 @@ class JDBCMixin:
         options: JDBCFetchOptions | dict | None = None,
     ) -> DataFrame:
         """
-        **Immediately** execute SELECT statement **on Spark driver** and return in-memory DataFrame. |support_hooks|
+        **Immediately** execute SELECT statement **on Spark driver** and return in-memory DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Works almost the same like :obj:`~sql`, but Spark executor is not used.
+        Works almost the same like [sql][], but Spark executor is not used.
 
-        .. note::
+        !!! note
 
             Statement is executed in read-only connection, so it should not change any data in the database.
             However, behavior may depend on RDBMS type and JDBC driver options.
 
-        .. versionadded:: 0.2.0
+        !!! success "Added in 0.2.0"
 
         Parameters
         ----------
@@ -164,13 +163,13 @@ class JDBCMixin:
 
             SQL query to be executed.
 
-        options : dict, :obj:`~FetchOptions`, default: ``None``
+        options : dict, [FetchOptions][], default: `None`
 
-            Options to be passed directly to JDBC driver, like ``fetchsize`` or ``queryTimeout``
+            Options to be passed directly to JDBC driver, like `fetchsize` or `queryTimeout`
 
-            .. note::
+            !!! note
 
-                You cannot use :obj:`~ReadOptions`, they are handled by Spark, not by JDBC driver itself
+                You cannot use [ReadOptions][], they are handled by Spark, not by JDBC driver itself
 
         Returns
         -------
@@ -216,12 +215,12 @@ class JDBCMixin:
         options: JDBCExecuteOptions | dict | None = None,
     ) -> DataFrame | None:
         """
-        **Immediately** execute DDL, DML or procedure/function **on Spark driver**. |support_hooks|
+        **Immediately** execute DDL, DML or procedure/function **on Spark driver**. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        There is no method like this in :obj:`pyspark.sql.SparkSession` object,
+        There is no method like this in `pyspark.sql.SparkSession` object,
         but Spark internal methods works almost the same (but on executor side).
 
-        .. versionadded:: 0.2.0
+        !!! success "Added in 0.2.0"
 
         Parameters
         ----------
@@ -229,13 +228,13 @@ class JDBCMixin:
 
             Statement to be executed.
 
-        options : dict, :obj:`~JDBCExecuteOptions`, default: ``None``
+        options : dict, [JDBCExecuteOptions][], default: `None`
 
-            Options to be passed directly to JDBC driver, like ``queryTimeout``
+            Options to be passed directly to JDBC driver, like `queryTimeout`
 
-            .. note::
+            !!! note
 
-                You cannot use :obj:`~WriteOptions`, they are handled by Spark, not by JDBC driver itself
+                You cannot use [WriteOptions][], they are handled by Spark, not by JDBC driver itself
 
         Returns
         -------
@@ -243,8 +242,8 @@ class JDBCMixin:
 
             Spark DataFrame.
 
-            DataFrame is returned only if input is DML statement with ``RETURNING ...`` clause,
-            or a procedure/function call. In other cases returns ``None``.
+            DataFrame is returned only if input is DML statement with `RETURNING ...` clause,
+            or a procedure/function call. In other cases returns `None`.
         """
 
         statement = clear_statement(statement)
@@ -334,9 +333,9 @@ class JDBCMixin:
 
     def _options_to_connection_properties(self, options: JDBCFetchOptions | JDBCExecuteOptions):
         """
-        Converts human-readable Options class to ``java.util.Properties``.
+        Converts human-readable Options class to `java.util.Properties`.
 
-        Spark's internal class ``JDBCOptions`` already contains all the magic we need.
+        Spark's internal class `JDBCOptions` already contains all the magic we need.
 
         See:
         * https://github.com/apache/spark/blob/v3.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCOptions.scala#L237
@@ -396,7 +395,7 @@ class JDBCMixin:
         """
         Actually execute statement on driver.
 
-        Almost like ``org.apache.spark.sql.execution.datasources.jdbc.JDBCRDD`` is fetching data:
+        Almost like `org.apache.spark.sql.execution.datasources.jdbc.JDBCRDD` is fetching data:
         * https://github.com/apache/spark/blob/v3.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCRDD.scala#L352-L363
 
         Each time new connection is opened to execute the statement, and then closed.
@@ -418,7 +417,7 @@ class JDBCMixin:
         read_only: bool,  # noqa: FBT001
     ) -> T:
         """
-        Executes ``java.sql.Statement`` or child class and passes it into the callback function.
+        Executes `java.sql.Statement` or child class and passes it into the callback function.
 
         See:
         * https://github.com/apache/spark/blob/v3.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L261-L264
@@ -458,11 +457,11 @@ class JDBCMixin:
         statement_args,
     ):
         """
-        Builds ``java.sql.Statement``, ``java.sql.PreparedStatement`` or ``java.sql.CallableStatement``,
-        depending on ``statement_type`` argument value.
+        Builds `java.sql.Statement`, `java.sql.PreparedStatement` or `java.sql.CallableStatement`,
+        depending on `statement_type` argument value.
 
-        Raw ``java.sql.Statement`` does not support some features provided by db driver, like ``{call ...}`` syntax.
-        This is handled by ``java.sql.PreparedStatement`` or ``java.sql.CallableStatement``.
+        Raw `java.sql.Statement` does not support some features provided by db driver, like `{call ...}` syntax.
+        This is handled by `java.sql.PreparedStatement` or `java.sql.CallableStatement`.
 
         See:
         * https://github.com/apache/spark/blob/v3.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCRDD.scala#L354-L355
@@ -483,9 +482,9 @@ class JDBCMixin:
 
     def _statement_to_optional_dataframe(self, jdbc_connection, jdbc_statement) -> DataFrame | None:
         """
-        Returns ``org.apache.spark.sql.DataFrame`` or ``None``, if ResultSet is does not contain any columns.
+        Returns `org.apache.spark.sql.DataFrame` or `None`, if ResultSet is does not contain any columns.
 
-        DDL or DML statement without ``RETURNING`` clause usually do not return anything.
+        DDL or DML statement without `RETURNING` clause usually do not return anything.
         """
 
         result_set = jdbc_statement.getResultSet()
@@ -502,7 +501,7 @@ class JDBCMixin:
 
     def _resultset_to_dataframe(self, jdbc_connection, result_set) -> DataFrame:
         """
-        Converts ``java.sql.ResultSet`` to ``org.apache.spark.sql.DataFrame`` using Spark's internal methods.
+        Converts `java.sql.ResultSet` to `org.apache.spark.sql.DataFrame` using Spark's internal methods.
 
         That's almost exactly like Spark is fetching the data, but on driver.
 

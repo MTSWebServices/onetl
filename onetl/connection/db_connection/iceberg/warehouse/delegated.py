@@ -20,15 +20,15 @@ from onetl.impl.frozen_model import FrozenModel
 
 @support_hooks
 class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
-    """Delegate configuring Iceberg warehouse to Iceberg catalog. |support_hooks|
+    """Delegate configuring Iceberg warehouse to Iceberg catalog. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
     Used by some Iceberg catalog implementations like:
-      * `Lakekeeper <https://docs.lakekeeper.io/docs/latest/storage/#s3>`_
-      * `Polaris <https://polaris.apache.org/in-dev/unreleased/polaris-spark-client/>`_
-      * `Apache Gravitino <https://gravitino.apache.org/docs/1.0.0/security/credential-vending/>`_
-      * `Databricks Unity Catalog <https://docs.databricks.com/aws/en/external-access/iceberg#use-iceberg-tables-with-apache-spark>`_
+      * [Lakekeeper](https://docs.lakekeeper.io/docs/latest/storage/#s3)
+      * [Polaris](https://polaris.apache.org/in-dev/unreleased/polaris-spark-client/)
+      * [Apache Gravitino](https://gravitino.apache.org/docs/1.0.0/security/credential-vending/)
+      * [Databricks Unity Catalog](https://docs.databricks.com/aws/en/external-access/iceberg#use-iceberg-tables-with-apache-spark)
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
         Warehouse name/alias, if supported by specific Iceberg catalog
 
     access_delegation : "vended-credentials" | "remote-signing"
-        Value of `X-Iceberg-Access-Delegation <https://github.com/apache/iceberg/blob/apache-iceberg-1.10.0/open-api/rest-catalog-open-api.yaml#L1854>`_ header.
+        Value of [X-Iceberg-Access-Delegation](https://github.com/apache/iceberg/blob/apache-iceberg-1.10.0/open-api/rest-catalog-open-api.yaml#L1854) header.
 
     extra : Dict[str, str], default: {}
         Additional configuration parameters
@@ -44,29 +44,28 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
     Examples
     --------
 
-    .. tabs::
+    === "S3 client with vended credentials"
+        ```python
+        from onetl.connection import Iceberg
 
-        .. code-tab:: python S3 client with vended credentials
+        warehouse = Iceberg.DeletatedWarehouse(
+            name="my-warehouse",
+            access_delegation="vended-credentials",
+            # other params passed to S3 client (optional)
+            extra={"client.region": "us-east-1"},
+        )
+        ```
+    === "S3 client with remote signing"
+        ```python
+        from onetl.connection import Iceberg
 
-            from onetl.connection import Iceberg
-
-            warehouse = Iceberg.DeletatedWarehouse(
-                name="my-warehouse",
-                access_delegation="vended-credentials",
-                # other params passed to S3 client (optional)
-                extra={"client.region": "us-east-1"},
-            )
-
-        .. code-tab:: python S3 client with remote signing
-
-            from onetl.connection import Iceberg
-
-            warehouse = Iceberg.DeletatedWarehouse(
-                name="my-warehouse",
-                access_delegation="remote-signing",
-                # other params passed to S3 client (optional)
-                extra={"client.region": "us-east-1"},
-            )
+        warehouse = Iceberg.DeletatedWarehouse(
+            name="my-warehouse",
+            access_delegation="remote-signing",
+            # other params passed to S3 client (optional)
+            extra={"client.region": "us-east-1"},
+        )
+        ```
     """  # noqa: E501
 
     name: Optional[str] = None

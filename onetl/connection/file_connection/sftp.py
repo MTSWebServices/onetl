@@ -48,49 +48,48 @@ log = getLogger(__name__)
 
 @support_hooks
 class SFTP(FileConnection, RenameDirMixin):
-    """SFTP file connection. |support_hooks|
+    """SFTP file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Paramiko library <https://pypi.org/project/paramiko/>`_.
+    Based on [Paramiko library](https://pypi.org/project/paramiko/).
 
-    .. warning::
+    !!! warning
 
         Since onETL v0.7.0 to use SFTP connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[s3]"
 
-            pip install "onetl[s3]"
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
-            # or
-            pip install "onetl[files]"
-
-        See :ref:`install-files` installation instruction for more details.
-
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     host : str
-        Host of SFTP source. For example: ``192.168.1.19``
+        Host of SFTP source. For example: `192.168.1.19`
 
-    port : int, default: ``22``
+    port : int, default: `22`
         Port of SFTP source
 
     user : str
-        User, which have access to the file source. For example: ``someuser``
+        User, which have access to the file source. For example: `someuser`
 
-    password : str, default: ``None``
+    password : str, default: `None`
         Password for file source connection
 
-    key_file : str, default: ``None``
+    key_file : str, default: `None`
         the filename of optional private key(s) and/or certs to try for authentication
 
-    timeout : int, default: ``10``
+    timeout : int, default: `10`
         How long to wait for the server to send data before giving up
 
-    host_key_check : bool, default: ``False``
-        set to True to enable searching for discoverable private key files in ``~/.ssh/``
+    host_key_check : bool, default: `False`
+        set to True to enable searching for discoverable private key files in `~/.ssh/`
 
-    compress : bool, default: ``True``
+    compress : bool, default: `True`
         Set to True to turn on compression
 
     Examples
@@ -98,15 +97,15 @@ class SFTP(FileConnection, RenameDirMixin):
 
     Create and check SFTP connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import SFTP
 
-        from onetl.connection import SFTP
-
-        sftp = SFTP(
-            host="192.168.1.19",
-            user="someuser",
-            password="*****",
-        ).check()
+    sftp = SFTP(
+        host="192.168.1.19",
+        user="someuser",
+        password="*****",
+    ).check()
+    ```
     """
 
     host: Host

@@ -21,50 +21,46 @@ if TYPE_CHECKING:
 @support_hooks
 class JSONLine(ReadWriteFileFormat):
     """
-    JSONLine file format (each line of file contains a JSON object). |support_hooks|
+    JSONLine file format (each line of file contains a JSON object). [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Spark JSON <https://spark.apache.org/docs/latest/sql-data-sources-json.html>`_ file format.
+    Based on [Spark JSON](https://spark.apache.org/docs/latest/sql-data-sources-json.html) file format.
 
-    Supports reading/writing files with ``.json`` extension with content like:
+    Supports reading/writing files with `.json` extension with content like:
 
-    .. code-block:: json
-        :caption: example.json
-
-        {"key": "value1"}
-        {"key": "value2"}
-
-    .. versionadded:: 0.9.0
+    ```json title="example.json"
+    {"key": "value1"}
+    {"key": "value2"}
+    ```
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any option mentioned in
-        `official documentation <https://spark.apache.org/docs/latest/sql-data-sources-json.html>`_.
-        **Option names should be in** ``camelCase``!
+        [official documentation](https://spark.apache.org/docs/latest/sql-data-sources-json.html).
+        **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version.
 
-    .. tabs::
+    === "Reading files"
+        ```python
+        from onetl.file.format import JSONLine
 
-        .. code-tab:: py Reading files
+        jsonline = JSONLine(encoding="UTF-8", mode="PERMISSIVE")
+        ```
+    === "Writing files"
 
+            !!! warning
+
+                Written files have extension `.json`, not `.jsonl` or `.jsonline`.
+
+            ```python
             from onetl.file.format import JSONLine
 
-            jsonline = JSONLine(encoding="UTF-8", mode="PERMISSIVE")
-
-        .. tab:: Writing files
-
-            .. warning::
-
-                Written files have extension ``.json``, not ``.jsonl`` or ``.jsonline``.
-
-            .. code:: python
-
-                from onetl.file.format import JSONLine
-
-                jsonline = JSONLine(encoding="UTF-8", compression="gzip")
+            jsonline = JSONLine(encoding="UTF-8", compression="gzip")
+            ```
     """
 
     name: ClassVar[str] = "json"
@@ -74,7 +70,7 @@ class JSONLine(ReadWriteFileFormat):
     encoding: Optional[str] = None
     """
     Encoding of the JSONLine files.
-    Default ``UTF-8``.
+    Default `UTF-8`.
     """
 
     lineSep: Optional[str] = None
@@ -82,101 +78,101 @@ class JSONLine(ReadWriteFileFormat):
     Character used to separate lines in the JSONLine files.
 
     Defaults:
-      * Try to detect for reading (``\\r\\n``, ``\\r``, ``\\n``)
-      * ``\\n`` for writing.
+      * Try to detect for reading (`\\r\\n`, `\\r`, `\\n`)
+      * `\\n` for writing.
     """
 
     compression: Union[str, Literal["none", "bzip2", "gzip", "lz4", "snappy", "deflate"], None] = None
     """
     Compression codec of the JSONLine file.
-    Default ``none``.
+    Default `none`.
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """
 
     ignoreNullFields: Optional[bool] = None
     """
-    If ``True`` and field value is ``null``, don't add field into resulting object
-    Default is value of ``spark.sql.jsonGenerator.ignoreNullFields`` (``True``).
+    If `True` and field value is `null`, don't add field into resulting object
+    Default is value of `spark.sql.jsonGenerator.ignoreNullFields` (`True`).
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """
 
     allowComments: Optional[bool] = None
     """
-    If ``True``, add support for C/C++/Java style comments (``//``, ``/* */``).
-    Default ``False``, meaning that JSONLine files should not contain comments.
+    If `True`, add support for C/C++/Java style comments (`//`, `/* */`).
+    Default `False`, meaning that JSONLine files should not contain comments.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     allowUnquotedFieldNames: Optional[bool] = None
     """
-    If ``True``, allow JSON object field names without quotes (JavaScript-style).
-    Default ``False``.
+    If `True`, allow JSON object field names without quotes (JavaScript-style).
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     allowSingleQuotes: Optional[bool] = None
     """
-    If ``True``, allow JSON object field names to be wrapped with single quotes (``'``).
-    Default ``True``.
+    If `True`, allow JSON object field names to be wrapped with single quotes (`'`).
+    Default `True`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     allowNumericLeadingZeros: Optional[bool] = None
     """
-    If ``True``, allow leading zeros in numbers (e.g. ``00012``).
-    Default ``False``.
+    If `True`, allow leading zeros in numbers (e.g. `00012`).
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     allowNonNumericNumbers: Optional[bool] = None
     """
-    If ``True``, allow numbers to contain non-numeric characters, like:
-      * scientific notation (e.g. ``12e10``).
-      * positive infinity floating point value (``Infinity``, ``+Infinity``, ``+INF``).
-      * negative infinity floating point value (``-Infinity``, ``-INF``).
-      * Not-a-Number floating point value (``NaN``).
+    If `True`, allow numbers to contain non-numeric characters, like:
+      * scientific notation (e.g. `12e10`).
+      * positive infinity floating point value (`Infinity`, `+Infinity`, `+INF`).
+      * negative infinity floating point value (`-Infinity`, `-INF`).
+      * Not-a-Number floating point value (`NaN`).
 
-    Default ``True``.
+    Default `True`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     allowBackslashEscapingAnyCharacter: Optional[bool] = None
     """
-    If ``True``, prefix ``\\`` can escape any character.
-    Default ``False``.
+    If `True`, prefix `\\` can escape any character.
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     allowUnquotedControlChars: Optional[bool] = None
     """
-    If ``True``, allow unquoted control characters (ASCII values 0-31) in strings without escaping them with ``\\``.
-    Default ``False``.
+    If `True`, allow unquoted control characters (ASCII values 0-31) in strings without escaping them with `\\`.
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -184,13 +180,13 @@ class JSONLine(ReadWriteFileFormat):
     mode: Optional[Literal["PERMISSIVE", "DROPMALFORMED", "FAILFAST"]] = None
     """
     How to handle parsing errors:
-      * ``PERMISSIVE`` - set field value as ``null``, move raw data to :obj:`~columnNameOfCorruptRecord` column.
-      * ``DROPMALFORMED`` - skip the malformed row.
-      * ``FAILFAST`` - throw an error immediately.
+      * `PERMISSIVE` - set field value as `null`, move raw data to [columnNameOfCorruptRecord][] column.
+      * `DROPMALFORMED` - skip the malformed row.
+      * `FAILFAST` - throw an error immediately.
 
-    Default is ``PERMISSIVE``.
+    Default is `PERMISSIVE`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -198,39 +194,38 @@ class JSONLine(ReadWriteFileFormat):
     columnNameOfCorruptRecord: Optional[str] = Field(default=None, min_length=1)
     """
     Name of column to put corrupt records in.
-    Default is ``_corrupt_record``.
+    Default is `_corrupt_record`.
 
-    .. warning::
+    !!! warning
 
         If DataFrame schema is provided, this column should be added to schema explicitly:
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import JSONLine
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import JSONLine
+        from pyspark.sql.types import StructType, StructField, TimestampType, StringType
 
-            from pyspark.sql.types import StructType, StructField, TimestampType, StringType
+        spark = ...
 
-            spark = ...
+        schema = StructType(
+            [
+                StructField("my_field", TimestampType()),
+                StructField("_corrupt_record", StringType()),  # <-- important
+            ]
+        )
 
-            schema = StructType(
-                [
-                    StructField("my_field", TimestampType()),
-                    StructField("_corrupt_record", StringType()),  # <-- important
-                ]
-            )
+        jsonline = JSONLine(mode="PERMISSIVE", columnNameOfCorruptRecord="_corrupt_record")
 
-            jsonline = JSONLine(mode="PERMISSIVE", columnNameOfCorruptRecord="_corrupt_record")
-
-            reader = FileDFReader(
-                connection=connection,
-                format=jsonline,
-                df_schema=schema,  # < ---
-            )
-            df = reader.run(["/some/file.jsonl"])
-
-    .. note::
+        reader = FileDFReader(
+            connection=connection,
+            format=jsonline,
+            df_schema=schema,  # < ---
+        )
+        df = reader.run(["/some/file.jsonl"])
+        ```
+    !!! note
 
         Used only for reading files.
     """
@@ -238,61 +233,61 @@ class JSONLine(ReadWriteFileFormat):
     samplingRatio: Optional[float] = Field(default=None, ge=0, le=1)
     """
     While inferring schema, read the specified fraction of file rows.
-    Default ``1``.
+    Default `1`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     primitivesAsString: Optional[bool] = None
     """
-    If ``True``, infer all primitive types (string, integer, float, boolean) as strings.
-    Default ``False``.
+    If `True`, infer all primitive types (string, integer, float, boolean) as strings.
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     prefersDecimal: Optional[bool] = None
     """
-    If ``True``, infer all floating-point values as ``Decimal``.
-    Default ``False``.
+    If `True`, infer all floating-point values as `Decimal`.
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     dropFieldIfAllNull: Optional[bool] = None
     """
-    If ``True`` and inferred column is always null or empty array, exclude if from DataFrame schema.
-    Default ``False``.
+    If `True` and inferred column is always null or empty array, exclude if from DataFrame schema.
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     dateFormat: Optional[str] = Field(default=None, min_length=1)
     """
-    String format for ``DateType()`` representation.
-    Default is ``yyyy-MM-dd``.
+    String format for `DateType()` representation.
+    Default is `yyyy-MM-dd`.
     """
 
     timestampFormat: Optional[str] = Field(default=None, min_length=1)
     """
-    String format for `TimestampType()`` representation.
-    Default is ``yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]``.
+    String format for `TimestampType()` representation.
+    Default is `yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX]`.
     """
 
     timestampNTZFormat: Optional[str] = Field(default=None, min_length=1)
     """
-    String format for `TimestampNTZType()`` representation.
-    Default is ``yyyy-MM-dd'T'HH:mm:ss[.SSS]``.
+    String format for `TimestampNTZType()` representation.
+    Default is `yyyy-MM-dd'T'HH:mm:ss[.SSS]`.
 
-    .. note::
+    !!! note
 
         Added in Spark 3.2.0
     """
@@ -300,15 +295,15 @@ class JSONLine(ReadWriteFileFormat):
     timezone: Optional[str] = Field(default=None, min_length=1, alias="timeZone")
     """
     Allows to override timezone used for parsing or serializing date and timestamp values.
-    By default, ``spark.sql.session.timeZone`` is used.
+    By default, `spark.sql.session.timeZone` is used.
     """
 
     locale: Optional[str] = Field(default=None, min_length=1)
     """
     Locale name used to parse dates and timestamps.
-    Default is ``en-US``.
+    Default is `en-US`.
 
-    ..  note::
+    !!! note
 
         Used only for reading files.
     """

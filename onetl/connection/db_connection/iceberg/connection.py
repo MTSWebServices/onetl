@@ -52,153 +52,150 @@ log = logging.getLogger(__name__)
 
 @support_hooks
 class Iceberg(DBConnection):
-    """Iceberg connection. |support_hooks|
+    """Iceberg connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`iceberg-prerequisites`
+        Before using this connector please take into account [iceberg-prerequisites][]
 
-    .. versionadded:: 0.14.0
+    !!! success "Added in 0.14.0"
 
     Parameters
     ----------
     catalog_name : str
-        Catalog name. Arbitrary string used by Spark to identify catalog and tables (``mycatalog.myschema.mytable``).
+        Catalog name. Arbitrary string used by Spark to identify catalog and tables (`mycatalog.myschema.mytable`).
 
-    catalog : :obj:`IcebergCatalog`
+    catalog : [IcebergCatalog][]
         Iceberg catalog configuration
 
-    warehouse : :obj:`IcebergWarehouse`
+    warehouse : [IcebergWarehouse][]
         Iceberg warehouse configuration
 
-    extra : dict | None, default: ``None``
+    extra : dict | None, default: `None`
         A dictionary of additional properties to be used when configuring Iceberg catalog.
 
         These are Iceberg-specific properties that control behavior of the catalog.
-        See `Iceberg Spark configuration documentation <https://iceberg.apache.org/docs/latest/spark-configuration/>`_
+        See [Iceberg Spark configuration documentation](https://iceberg.apache.org/docs/latest/spark-configuration/)
 
         Pass properties **without catalog prefix**. For example:
 
-        .. code:: python
-
-            extra = {
-                "cache-enabled": "true",
-                "cache.expiration-interval-ms": "40000",
-            }
-
+        ```python
+        extra = {
+            "cache-enabled": "true",
+            "cache.expiration-interval-ms": "40000",
+        }
+        ```
         This will be translated to:
 
-        .. code:: ini
-
-            spark.sql.catalog.my_catalog.cache-enabled = 'true'
-            spark.sql.catalog.my_catalog.cache.expiration-interval-ms = '40000'
-
-    spark : :obj:`pyspark.sql.SparkSession`
+        ```ini
+        spark.sql.catalog.my_catalog.cache-enabled = 'true'
+        spark.sql.catalog.my_catalog.cache.expiration-interval-ms = '40000'
+        ```
+    spark : `pyspark.sql.SparkSession`
         Spark session
 
     Examples
     --------
 
-    .. tabs::
+    === "REST catalog with Bearer token auth, S3 warehouse with explicit credentials"
+        ```python
+        from onetl.connection import Iceberg
+        from pyspark.sql import SparkSession
 
-        .. code-tab:: python REST catalog with Bearer token auth, S3 warehouse with explicit credentials
+        maven_packages = [
+            *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
+            *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
+        ]
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .getOrCreate()
+        )
 
-            from onetl.connection import Iceberg
-            from pyspark.sql import SparkSession
-
-            maven_packages = [
-                *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
-                *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
-            ]
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .getOrCreate()
-            )
-
-            iceberg = Iceberg(
-                catalog_name="my_catalog",
-                spark=spark,
-                catalog=Iceberg.RESTCatalog(
-                    url="http://my.rest.catalog/iceberg",
-                    auth=Iceberg.RESTCatalog.OAuth2BearerToken(
-                        token="my_token",
-                    ),
+        iceberg = Iceberg(
+            catalog_name="my_catalog",
+            spark=spark,
+            catalog=Iceberg.RESTCatalog(
+                url="http://my.rest.catalog/iceberg",
+                auth=Iceberg.RESTCatalog.OAuth2BearerToken(
+                    token="my_token",
                 ),
-                # explicit S3 warehouse params
-                warehouse=Iceberg.S3Warehouse(
-                    path="/warehouse",
-                    host="s3.domain.com",
-                    protocol="http",
-                    bucket="my-bucket",
-                    path_style_access=True,
-                    region="us-east-1",
-                    access_key="access_key",
-                    secret_key="secret_key"
+            ),
+            # explicit S3 warehouse params
+            warehouse=Iceberg.S3Warehouse(
+                path="/warehouse",
+                host="s3.domain.com",
+                protocol="http",
+                bucket="my-bucket",
+                path_style_access=True,
+                region="us-east-1",
+                access_key="access_key",
+                secret_key="secret_key"
+            ),
+        )
+        ```
+    === "REST catalog with OAuth2 client credentials, S3 warehouse with vended credentials"
+        ```python
+        from onetl.connection import Iceberg
+        from pyspark.sql import SparkSession
+
+        maven_packages = [
+            *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
+            # required to use S3 warehouse
+            *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
+        ]
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .getOrCreate()
+        )
+
+        iceberg = Iceberg(
+            catalog_name="my_catalog",
+            spark=spark,
+            catalog=Iceberg.RESTCatalog(
+                url="http://my.rest.catalog/iceberg",
+                auth=Iceberg.RESTCatalog.OAuth2ClientCredentials(
+                    client_id="my_client",
+                    client_secret="my_secret",
+                    oauth2_token_endpoint="http://keycloak.domain.com/realms/my-realm/protocol/openid-connect/token",
                 ),
-            )
+            ),
+            # S3 warehouse params and credentials are provided by REST Catalog
+            warehouse=Iceberg.DeletatedWarehouse(
+                name="my-warehouse",
+                access_delegation="vended-credentials",
+            ),
+        )
+        ```
+    === "HDFS Filesystem catalog, HDFS warehouse"
+        ```python
+        from onetl.connection import Iceberg, SparkHDFS
+        from pyspark.sql import SparkSession
 
-        .. code-tab:: python REST catalog with OAuth2 client credentials, S3 warehouse with vended credentials
+        maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .getOrCreate()
+        )
 
-            from onetl.connection import Iceberg
-            from pyspark.sql import SparkSession
+        hdfs_connection = SparkHDFS(
+            host="namenode",
+            cluster="my-cluster",
+            spark=spark
+        )
 
-            maven_packages = [
-                *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
-                # required to use S3 warehouse
-                *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
-            ]
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .getOrCreate()
-            )
-
-            iceberg = Iceberg(
-                catalog_name="my_catalog",
-                spark=spark,
-                catalog=Iceberg.RESTCatalog(
-                    url="http://my.rest.catalog/iceberg",
-                    auth=Iceberg.RESTCatalog.OAuth2ClientCredentials(
-                        client_id="my_client",
-                        client_secret="my_secret",
-                        oauth2_token_endpoint="http://keycloak.domain.com/realms/my-realm/protocol/openid-connect/token",
-                    ),
-                ),
-                # S3 warehouse params and credentials are provided by REST Catalog
-                warehouse=Iceberg.DeletatedWarehouse(
-                    name="my-warehouse",
-                    access_delegation="vended-credentials",
-                ),
-            )
-
-        .. code-tab:: python HDFS Filesystem catalog, HDFS warehouse
-
-            from onetl.connection import Iceberg, SparkHDFS
-            from pyspark.sql import SparkSession
-
-            maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .getOrCreate()
-            )
-
-            hdfs_connection = SparkHDFS(
-                host="namenode",
-                cluster="my-cluster",
-                spark=spark
-            )
-
-            iceberg = Iceberg(
-                catalog_name="my_catalog",
-                spark=spark,
-                catalog=Iceberg.FilesystemCatalog(),
-                warehouse=Iceberg.FilesystemWarehouse(
-                    connection=hdfs_connection,
-                    path="/warehouse/path",
-                ),
-            )
+        iceberg = Iceberg(
+            catalog_name="my_catalog",
+            spark=spark,
+            catalog=Iceberg.FilesystemCatalog(),
+            warehouse=Iceberg.FilesystemWarehouse(
+                connection=hdfs_connection,
+                path="/warehouse/path",
+            ),
+        )
+        ```
     """
 
     catalog_name: str
@@ -261,23 +258,23 @@ class Iceberg(DBConnection):
         scala_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        See `Maven package index <https://mvnrepository.com/artifact/org.apache.iceberg/iceberg-spark>`_
+        See [Maven package index](https://mvnrepository.com/artifact/org.apache.iceberg/iceberg-spark)
         for all available packages.
 
         Parameters
         ----------
         package_version : str
-            Iceberg package version in format ``major.minor.patch``.
+            Iceberg package version in format `major.minor.patch`.
 
         spark_version : str
-            Spark version in format ``major.minor``.
+            Spark version in format `major.minor`.
 
         scala_version : str, optional
-            Scala version in format ``major.minor``.
+            Scala version in format `major.minor`.
 
-            If ``None``, ``spark_version`` is used to determine Scala version.
+            If `None`, `spark_version` is used to determine Scala version.
 
         Returns
         -------
@@ -286,12 +283,12 @@ class Iceberg(DBConnection):
 
         Examples
         --------
-        .. code:: python
+        ```python
+        from onetl.connection import Iceberg
 
-            from onetl.connection import Iceberg
-
-            # Note: Iceberg 1.10.0 requires Java 11+
-            Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
+        # Note: Iceberg 1.10.0 requires Java 11+
+        Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
+        ```
         """
 
         version = Version(package_version).min_digits(3)
@@ -350,9 +347,9 @@ class Iceberg(DBConnection):
         query: str,
     ) -> DataFrame:
         """
-        Lazily execute SELECT statement and return DataFrame. |support_hooks|
+        Lazily execute SELECT statement and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Same as ``spark.sql(query)``.
+        Same as `spark.sql(query)`.
 
         Parameters
         ----------
@@ -404,7 +401,7 @@ class Iceberg(DBConnection):
         statement: str,
     ) -> None:
         """
-        Execute DDL or DML statement. |support_hooks|
+        Execute DDL or DML statement. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Parameters
         ----------

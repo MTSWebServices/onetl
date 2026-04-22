@@ -18,22 +18,22 @@ log = logging.getLogger(__name__)
 
 
 class TotalFilesSize(BaseFileLimit, FrozenModel):
-    """Limits the total size of files handled by :ref:`file-downloader` or :ref:`file-mover`.
+    """Limits the total size of files handled by [file-downloader][] or [file-mover][].
 
-    Calculates the sum of downloaded/moved files size (``.stat().st_size``),
+    Calculates the sum of downloaded/moved files size (`.stat().st_size`),
     and checks that this sum is less or equal to specified limit.
 
     After limit is reached, no more files will be downloaded/moved.
 
-    Doesn't affect directories, paths without ``.stat()`` method or files with zero size.
+    Doesn't affect directories, paths without `.stat()` method or files with zero size.
 
-    .. versionadded:: 0.13.0
+    !!! success "Added in 0.13.0"
 
-    .. note::
+    !!! note
 
-        `SI unit prefixes <https://en.wikipedia.org/wiki/Byte#Multiple-byte_units>`_
-        means that ``1KB`` == ``1 kilobyte`` == ``1000 bytes``.
-        If you need ``1024 bytes``, use ``1 KiB`` == ``1 kibibyte``.
+        [SI unit prefixes](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units)
+        means that `1KB` == `1 kilobyte` == `1000 bytes`.
+        If you need `1024 bytes`, use `1 KiB` == `1 kibibyte`.
 
     Parameters
     ----------
@@ -45,11 +45,11 @@ class TotalFilesSize(BaseFileLimit, FrozenModel):
 
     Create filter which allows to download/move files with total size up to 1GiB, but not higher:
 
-    .. code:: python
+    ```python
+    from onetl.file.limit import MaxFilesCount
 
-        from onetl.file.limit import MaxFilesCount
-
-        limit = TotalFilesSize("1GiB")
+    limit = TotalFilesSize("1GiB")
+    ```
     """
 
     limit: ByteSize

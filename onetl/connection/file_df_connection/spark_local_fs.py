@@ -22,47 +22,47 @@ from onetl.impl import LocalPath
 @support_hooks
 class SparkLocalFS(SparkFileDFConnection):
     """
-    Spark connection to local filesystem. |support_hooks|
+    Spark connection to local filesystem. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Spark Generic File Data Source <https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html>`_.
+    Based on [Spark Generic File Data Source](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html).
 
-    .. warning::
+    !!! warning
 
-        To use SparkHDFS connector you should have PySpark installed (or injected to ``sys.path``)
+        To use SparkHDFS connector you should have PySpark installed (or injected to `sys.path`)
         BEFORE creating the connector instance.
 
-        See :ref:`install-spark` installation instruction for more details.
+        See [install-spark][] installation instruction for more details.
 
-    .. warning::
+    !!! warning
 
-        Currently supports only Spark sessions created with option ``spark.master: local``.
+        Currently supports only Spark sessions created with option `spark.master: local`.
 
-    .. note::
+    !!! note
 
         Supports only reading files as Spark DataFrame and writing DataFrame to files.
 
         Does NOT support file operations, like create, delete, rename, etc.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Parameters
     ----------
-    spark : :class:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session
 
     Examples
     --------
 
-    .. code:: python
+    ```python
+    from onetl.connection import SparkLocalFS
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import SparkLocalFS
-        from pyspark.sql import SparkSession
+    # create Spark session
+    spark = SparkSession.builder.master("local").appName("spark-app-name").getOrCreate()
 
-        # create Spark session
-        spark = SparkSession.builder.master("local").appName("spark-app-name").getOrCreate()
-
-        # create connection
-        local_fs = SparkLocalFS(spark=spark).check()
+    # create connection
+    local_fs = SparkLocalFS(spark=spark).check()
+    ```
     """
 
     @slot

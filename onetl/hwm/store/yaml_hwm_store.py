@@ -32,21 +32,20 @@ def default_hwm_store_class(klass: type[BaseHWMStore]) -> type[BaseHWMStore]:
     Examples
     --------
 
-    .. code:: python
-
-        from onetl.hwm.store import (
-            HWMStoreClassRegistry,
-            default_hwm_store_class,
-            BaseHWMStore,
-        )
-
-
-        @default_hwm_store_class
-        class MyClass(BaseHWMStore): ...
+    ```python
+    from onetl.hwm.store import (
+        HWMStoreClassRegistry,
+        default_hwm_store_class,
+        BaseHWMStore,
+    )
 
 
-        HWMStoreClassRegistry.get() == MyClass  # default
+    @default_hwm_store_class
+    class MyClass(BaseHWMStore): ...
 
+
+    HWMStoreClassRegistry.get() == MyClass  # default
+    ```
     """
 
     HWMStoreClassRegistry.set_default(klass)
@@ -57,21 +56,21 @@ def default_hwm_store_class(klass: type[BaseHWMStore]) -> type[BaseHWMStore]:
 @register_hwm_store_class("yaml")
 @support_hooks
 class YAMLHWMStore(BaseHWMStore, FrozenModel):
-    r"""YAML **local store** for HWM values. Used as default HWM store. |support_hooks|
+    r"""YAML **local store** for HWM values. Used as default HWM store. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
     Parameters
     ----------
-    path : :obj:`pathlib.Path` or `str`
+    path : `pathlib.Path` or `str`
 
         Folder name there HWM value files will be stored.
 
         Default:
 
-        * ``~/.local/share/onETL/yml_hwm_store`` on Linux
-        * ``C:\Documents and Settings\<User>\Application Data\oneTools\onETL\yml_hwm_store`` on Windows
-        * ``~/Library/Application Support/onETL/yml_hwm_store`` on MacOS
+        * `~/.local/share/onETL/yml_hwm_store` on Linux
+        * `C:\Documents and Settings\<User>\Application Data\oneTools\onETL\yml_hwm_store` on Windows
+        * `~/Library/Application Support/onETL/yml_hwm_store` on MacOS
 
-    encoding : str, default: ``utf-8``
+    encoding : str, default: `utf-8`
 
         Encoding of files with HWM value
 
@@ -80,81 +79,79 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
 
     Default parameters
 
-    .. code:: python
+    ```python
+    from onetl.connection import Hive, Postgres
+    from onetl.db import DBReader, DBWriter
+    from onetl.strategy import IncrementalStrategy
+    from onetl.hwm.store import YAMLHWMStore
 
-        from onetl.connection import Hive, Postgres
-        from onetl.db import DBReader, DBWriter
-        from onetl.strategy import IncrementalStrategy
-        from onetl.hwm.store import YAMLHWMStore
+    postgres = Postgres(...)
+    hive = Hive(...)
 
-        postgres = Postgres(...)
-        hive = Hive(...)
+    reader = DBReader(
+        connection=postgres,
+        source="public.mydata",
+        columns=["id", "data"],
+        hwm=DBReader.AutoDetectHWM(name="some_unique_name", expression="id"),
+    )
 
-        reader = DBReader(
-            connection=postgres,
-            source="public.mydata",
-            columns=["id", "data"],
-            hwm=DBReader.AutoDetectHWM(name="some_unique_name", expression="id"),
-        )
+    writer = DBWriter(connection=hive, target="db.newtable")
 
-        writer = DBWriter(connection=hive, target="db.newtable")
+    with YAMLHWMStore():
+        with IncrementalStrategy():
+            df = reader.run()
+            writer.run(df)
 
-        with YAMLHWMStore():
-            with IncrementalStrategy():
-                df = reader.run()
-                writer.run(df)
-
-        # will create file
-        # "~/.local/share/onETL/id__public.mydata__postgres_postgres.domain.com_5432__myprocess__myhostname.yml"
-        # with encoding="utf-8" and save a serialized HWM values to this file
-
+    # will create file
+    # "~/.local/share/onETL/id__public.mydata__postgres_postgres.domain.com_5432__myprocess__myhostname.yml"
+    # with encoding="utf-8" and save a serialized HWM values to this file
+    ```
     With all options
 
-    .. code:: python
+    ```python
+    with YAMLHWMStore(path="/my/store", encoding="utf-8"):
+        with IncrementalStrategy():
+            df = reader.run()
+            writer.run(df)
 
-        with YAMLHWMStore(path="/my/store", encoding="utf-8"):
-            with IncrementalStrategy():
-                df = reader.run()
-                writer.run(df)
-
-        # will create file
-        # "/my/store/id__public.mydata__postgres_postgres.domain.com_5432__myprocess__myhostname.yml"
-        # with encoding="utf-8" and save a serialized HWM values to this file
-
+    # will create file
+    # "/my/store/id__public.mydata__postgres_postgres.domain.com_5432__myprocess__myhostname.yml"
+    # with encoding="utf-8" and save a serialized HWM values to this file
+    ```
     File content example:
 
-    .. code:: yaml
-
-        - column:
-            name: id
-            partition: {}
-          modified_time: '2023-02-11T17:10:49.659019'
-          process:
-              dag: ''
-              host: myhostname
-              name: myprocess
-              task: ''
-          source:
-              db: public
-              instance: postgres://postgres.domain.com:5432/target_database
-              name: mydata
-          type: int
-          value: '1500'
-        - column:
-              name: id
-              partition: {}
-          modified_time: '2023-02-11T16:00:31.962150'
-          process:
-              dag: ''
-              host: myhostname
-              name: myprocess
-              task: ''
-          source:
-              db: public
-              instance: postgres://postgres.domain.com:5432/target_database
-              name: mydata
-          type: int
-          value: '1000'
+    ```yaml
+    - column:
+        name: id
+        partition: {}
+      modified_time: '2023-02-11T17:10:49.659019'
+      process:
+          dag: ''
+          host: myhostname
+          name: myprocess
+          task: ''
+      source:
+          db: public
+          instance: postgres://postgres.domain.com:5432/target_database
+          name: mydata
+      type: int
+      value: '1500'
+    - column:
+          name: id
+          partition: {}
+      modified_time: '2023-02-11T16:00:31.962150'
+      process:
+          dag: ''
+          host: myhostname
+          name: myprocess
+          task: ''
+      source:
+          db: public
+          instance: postgres://postgres.domain.com:5432/target_database
+          name: mydata
+      type: int
+      value: '1000'
+    ```
     """
 
     class Config:

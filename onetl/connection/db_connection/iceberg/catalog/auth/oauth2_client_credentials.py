@@ -19,11 +19,11 @@ class IcebergRESTCatalogOAuth2ClientCredentials(IcebergRESTCatalogAuth, FrozenMo
     """OAuth2 Client Credentials Flow authentication for Iceberg REST Catalog.
 
     While creating new REST catalog session, new access token is fetched via OAuth2 server HTTP endpoint
-    with `grant_type=client_credentials <https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/>`_.
+    with [grant_type=client_credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/).
 
-    After that, all requests to REST catalog are made with a HTTP header ``Authorization: Bearer {access_token}``.
+    After that, all requests to REST catalog are made with a HTTP header `Authorization: Bearer {access_token}`.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
 
     Parameters
     ----------
@@ -31,52 +31,51 @@ class IcebergRESTCatalogOAuth2ClientCredentials(IcebergRESTCatalogAuth, FrozenMo
         OAuth2 client secret.
 
     client_id : str, optional
-        OAuth2 client ID. In most OAuth2 server implementations it is `mandatory <https://www.oauth.com/oauth2-servers/client-registration/client-id-secret/>`_.
+        OAuth2 client ID. In most OAuth2 server implementations it is [mandatory](https://www.oauth.com/oauth2-servers/client-registration/client-id-secret/).
 
     token_refresh_interval : timedelta, optional
-        Interval for `automatic token refresh <https://www.oauth.com/oauth2-servers/access-tokens/refreshing-access-tokens/>`_.
+        Interval for [automatic token refresh](https://www.oauth.com/oauth2-servers/access-tokens/refreshing-access-tokens/).
         Default: 1 hour. Set to `None` to disable automatic refresh.
 
     oauth2_token_endpoint : str, optional
         OAuth2 endpoint for fetching tokens. If not provided, uses the REST catalog's
-        ``v1/oauth/tokens`` endpoint.
+        `v1/oauth/tokens` endpoint.
 
     scopes : List[str], default: []
-        `OAuth2 scopes <https://www.oauth.com/oauth2-servers/scope/>`_ to request.
+        [OAuth2 scopes](https://www.oauth.com/oauth2-servers/scope/) to request.
 
     audience : str, optional
-        OAuth2 ``audience`` param.
+        OAuth2 `audience` param.
 
     resource : str, optional
-        OAuth2 ``resource`` param.
+        OAuth2 `resource` param.
 
     Examples
     --------
 
-    .. tabs::
+    === "OAuth2"
+        ```python
+        from onetl.connection import Iceberg
 
-        .. code-tab:: python OAuth2
+        auth = Iceberg.RESTCatalog.OAuth2ClientCredentials(
+            client_id="my_client_id",
+            client_secret="my_client_secret",
+        )
+        ```
+    === "OAuth2 with optional fields"
+        ```python
+        from datetime import timedelta
+        from onetl.connection import Iceberg
 
-            from onetl.connection import Iceberg
-
-            auth = Iceberg.RESTCatalog.OAuth2ClientCredentials(
-                client_id="my_client_id",
-                client_secret="my_client_secret",
-            )
-
-        .. code-tab:: python OAuth2 with optional fields
-
-            from datetime import timedelta
-            from onetl.connection import Iceberg
-
-            auth = Iceberg.RESTCatalog.OAuth2ClientCredentials(
-                client_id="my_client_id",
-                client_secret="my_client_secret",
-                scopes=["catalog:read"],
-                oauth2_token_endpoint="http://keycloak.domain.com/realms/my-realm/protocol/openid-connect/token",
-                token_refresh_interval=timedelta(minutes=30),
-                audience="iceberg-catalog",
-            )
+        auth = Iceberg.RESTCatalog.OAuth2ClientCredentials(
+            client_id="my_client_id",
+            client_secret="my_client_secret",
+            scopes=["catalog:read"],
+            oauth2_token_endpoint="http://keycloak.domain.com/realms/my-realm/protocol/openid-connect/token",
+            token_refresh_interval=timedelta(minutes=30),
+            audience="iceberg-catalog",
+        )
+        ```
     """
 
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Manager.java#L81-L95

@@ -74,9 +74,9 @@ class FileConnection(BaseFileConnection, FrozenModel):
     @slot
     def close(self):
         """
-        Close all connections, opened by other methods call. |support_hooks|
+        Close all connections, opened by other methods call. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
             Connection can be used again after it was closed.
 
@@ -89,17 +89,16 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Get directory content and close connection:
 
-        .. code:: python
+        ```python
+        content = connection.list_dir("/mydir")
+        connection.close()
 
+        # or
+
+        with connection:
             content = connection.list_dir("/mydir")
-            connection.close()
-
-            # or
-
-            with connection:
-                content = connection.list_dir("/mydir")
-                content = connection.list_dir("/mydir/abc")
-
+            content = connection.list_dir("/mydir/abc")
+        ```
         """
 
         try:
@@ -594,23 +593,22 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Get a entries:
 
-        .. code:: python
+        ```python
+        entry_iterable = connection._scan_entries(path="/a/path/to/the/directory")
 
-            entry_iterable = connection._scan_entries(path="/a/path/to/the/directory")
+        print(entry_iterable)
 
-            print(entry_iterable)
-
-            [
-                {
-                    "created": "2023-12-08T18:33:39Z",
-                    "owner": None,
-                    "size": "23",
-                    "modified": "2023-12-08 18:33:20",
-                    "isdir": False,
-                    "path": "/path/to/the/file.txt",
-                },
-            ]
-
+        [
+            {
+                "created": "2023-12-08T18:33:39Z",
+                "owner": None,
+                "size": "23",
+                "modified": "2023-12-08 18:33:20",
+                "isdir": False,
+                "path": "/path/to/the/file.txt",
+            },
+        ]
+        ```
         """
 
     @abstractmethod
@@ -621,7 +619,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         Parameters
         ----------
         entry
-            One of the elements retrieved from the list (returned by :obj:`~_scan_entries`).
+            One of the elements retrieved from the list (returned by [_scan_entries][]).
 
         Returns
         -------
@@ -632,6 +630,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Get an entry name:
 
+        ```python
         >>> for entry in connection._scan_entries(path="/a/path/to/the/directory"):
         ...     break
         >>> entry
@@ -646,15 +645,16 @@ class FileConnection(BaseFileConnection, FrozenModel):
         }
         >>> entry._extract_name_from_entry(entry)
         'file.txt'
+        ```
         """
 
     @abstractmethod
     def _is_dir_entry(self, top: RemotePath, entry) -> bool:
         """
-        Returns ``True`` if the object that describes the entry is a directory.
+        Returns `True` if the object that describes the entry is a directory.
 
         If entry object does not contain such information, you could construct a path
-        from ``top / entry.name`` and pass it into :obj:`~_is_dir` method.
+        from `top / entry.name` and pass it into [_is_dir][] method.
         But this should be avoided because such implementation sends multiple requests per file.
 
         Parameters
@@ -662,7 +662,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         top : RemotePath
             Root directory
         entry
-            One of the elements retrieved from the list (returned by :obj:`~_scan_entries`).
+            One of the elements retrieved from the list (returned by [_scan_entries][]).
 
         Returns
         -------
@@ -673,6 +673,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Show if the entry is a directory:
 
+        ```python
         >>> for entry in connection._scan_entries(path="/a/path/to/the/directory"):
         ...     break
         >>> entry
@@ -686,15 +687,16 @@ class FileConnection(BaseFileConnection, FrozenModel):
         }
         >>> connection._is_dir_entry(root="/a/path/to/the/directory", entry)
         True
+        ```
         """
 
     @abstractmethod
     def _is_file_entry(self, top: RemotePath, entry) -> bool:
         """
-        Returns ``True`` if the object that describes the entry is a file.
+        Returns `True` if the object that describes the entry is a file.
 
         If entry object does not contain such information, you could construct a path
-        from ``top / entry.name`` and pass it into :obj:`~_is_file` method.
+        from `top / entry.name` and pass it into [_is_file][] method.
         But this should be avoided because such implementation sends multiple requests per file.
 
         Parameters
@@ -702,7 +704,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         top : RemotePath
             Root directory
         entry
-            One of the elements retrieved from the list (returned by :obj:`~_scan_entries`).
+            One of the elements retrieved from the list (returned by [_scan_entries][]).
 
         Returns
         -------
@@ -713,6 +715,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Show if the entry is a file:
 
+        ```python
         >>> for entry in connection._scan_entries(path="/a/path/to/the/directory"):
         ...     break
         >>> entry
@@ -726,6 +729,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         }
         >>> connection._is_file_entry(root="/a/path/to/the/directory", entry)
         True
+        ```
         """
 
     @abstractmethod
@@ -734,10 +738,10 @@ class FileConnection(BaseFileConnection, FrozenModel):
         Returns an object containing information about file size, modification date,
         owner, POSIX-compatible permissions and so on.
 
-        Object should be compatible with :obj:`onetl.base.path_stat_protocol.PathStatProtocol` interface.
+        Object should be compatible with [onetl.base.path_stat_protocol.PathStatProtocol][] interface.
 
         If entry object does not contain such information, you could construct a path
-        from ``top / entry.name`` and pass it into :obj:`~_get_stat` method.
+        from `top / entry.name` and pass it into [_get_stat][] method.
         But this should be avoided because such implementation sends multiple requests per file.
 
         Parameters
@@ -745,7 +749,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         top : RemotePath
             Root directory.
         entry
-            One of the elements retrieved from the list (returned by :obj:`~_scan_entries`).
+            One of the elements retrieved from the list (returned by [_scan_entries][]).
 
         Returns
         -------
@@ -756,6 +760,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Get statistics object from the entry:
 
+        ```python
         >>> for entry in connection._scan_entries(path="/a/path/to/the/directory"):
         ...     break
         >>> entry
@@ -775,6 +780,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
             st_uid=None,
             st_gid=None,
         )
+        ```
         """
 
     def _log_parameters(self):
@@ -797,7 +803,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         """
         Check if client is closed.
 
-        Returns ``False`` if client does not support closing,
+        Returns `False` if client does not support closing,
         or bool indicating if client is closed or not.
         """
 

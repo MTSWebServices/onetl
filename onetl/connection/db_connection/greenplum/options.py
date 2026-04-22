@@ -76,31 +76,31 @@ class GreenplumTableExistBehavior(str, Enum):
 class GreenplumReadOptions(GenericOptions):
     """VMware's Greenplum Spark connector reading options.
 
-    .. warning::
+    !!! warning
 
-        Some options, like ``url``, ``dbtable``, ``server.*``, ``pool.*``,
+        Some options, like `url`, `dbtable`, `server.*`, `pool.*`,
         etc are populated from connection attributes,
-        and cannot be overridden by the user in ``ReadOptions`` to avoid issues.
+        and cannot be overridden by the user in `ReadOptions` to avoid issues.
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by connector <https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/read_from_gpdb.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by connector](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/read_from_gpdb.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on connector version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import Greenplum
 
-        from onetl.connection import Greenplum
-
-        options = Greenplum.ReadOptions(
-            partitionColumn="reg_id",
-            partitions=10,
-        )
+    options = Greenplum.ReadOptions(
+        partitionColumn="reg_id",
+        partitions=10,
+    )
+    ```
     """
 
     class Config:
@@ -111,17 +111,17 @@ class GreenplumReadOptions(GenericOptions):
     partition_column: Optional[str] = Field(alias="partitionColumn")
     """Column used to parallelize reading from a table.
 
-    .. warning::
+    !!! warning
 
         You should not change this option, unless you know what you're doing.
 
         It's preferable to use default values to read data parallel by number of segments in Greenplum cluster.
 
     Possible values:
-        * ``None`` (default):
+        * `None` (default):
             Spark generates N jobs (where N == number of segments in Greenplum cluster),
             each job is reading only data from a specific segment
-            (filtering data by ``gp_segment_id`` column).
+            (filtering data by `gp_segment_id` column).
 
             This is very effective way to fetch the data from a cluster.
 
@@ -132,112 +132,109 @@ class GreenplumReadOptions(GenericOptions):
 
             Executor 1:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (partition_column >= lowerBound
-                        OR partition_column IS NULL)
-                AND partition_column < (lower_bound + stride)
-
+            ```sql
+            SELECT ... FROM table
+            WHERE (partition_column >= lowerBound
+                    OR partition_column IS NULL)
+            AND partition_column < (lower_bound + stride)
+            ```
             Executor 2:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE partition_column >= (lower_bound + stride)
-                AND partition_column < (lower_bound + 2 * stride)
-
+            ```sql
+            SELECT ... FROM table
+            WHERE partition_column >= (lower_bound + stride)
+            AND partition_column < (lower_bound + 2 * stride)
+            ```
             ...
 
             Executor N:
 
-            .. code:: sql
+            ```sql
+            SELECT ... FROM table
+            WHERE partition_column >= (lower_bound + (N-1) * stride)
+            AND partition_column <= upper_bound
+            ```
+            Where `stride=(upper_bound - lower_bound) / num_partitions`,
+            `lower_bound=MIN(partition_column)`, `upper_bound=MAX(partition_column)`.
 
-                SELECT ... FROM table
-                WHERE partition_column >= (lower_bound + (N-1) * stride)
-                AND partition_column <= upper_bound
-
-            Where ``stride=(upper_bound - lower_bound) / num_partitions``,
-            ``lower_bound=MIN(partition_column)``, ``upper_bound=MAX(partition_column)``.
-
-            .. note::
+            !!! note
 
                 Column type must be numeric. Other types are not supported.
 
-            .. note::
+            !!! note
 
-                :obj:`~num_partitions` is used just to
+                [num_partitions][] is used just to
                 calculate the partition stride, **NOT** for filtering the rows in table.
-                So all rows in the table will be returned (unlike *Incremental* :ref:`strategy`).
+                So all rows in the table will be returned (unlike *Incremental* [strategy][]).
 
-            .. note::
+            !!! note
 
-                All queries are executed in parallel. To execute them sequentially, use *Batch* :ref:`strategy`.
+                All queries are executed in parallel. To execute them sequentially, use *Batch* [strategy][].
 
-    .. warning::
+    !!! warning
 
-        Both options :obj:`~partition_column` and :obj:`~num_partitions` should have a value,
-        or both should be ``None``
+        Both options [partition_column][] and [num_partitions][] should have a value,
+        or both should be `None`
 
     Examples
     --------
 
-    Read data in 10 parallel jobs by range of values in ``id_column`` column:
+    Read data in 10 parallel jobs by range of values in `id_column` column:
 
-    .. code:: python
-
-        Greenplum.ReadOptions(
-            partitionColumn="id_column",
-            partitions=10,
-        )
+    ```python
+    Greenplum.ReadOptions(
+        partitionColumn="id_column",
+        partitions=10,
+    )
+    ```
     """
 
     num_partitions: Optional[int] = Field(alias="partitions")
     """Number of jobs created by Spark to read the table content in parallel.
 
-    See documentation for :obj:`~partition_column` for more details
+    See documentation for [partition_column][] for more details
 
-    .. warning::
+    !!! warning
 
         By default connector uses number of segments in the Greenplum cluster.
         You should not change this option, unless you know what you're doing
 
-    .. warning::
+    !!! warning
 
-        Both options :obj:`~partition_column` and :obj:`~num_partitions` should have a value,
-        or both should be ``None``
+        Both options [partition_column][] and [num_partitions][] should have a value,
+        or both should be `None`
     """
 
 
 class GreenplumWriteOptions(GenericOptions):
     """VMware's Greenplum Spark connector writing options.
 
-    .. warning::
+    !!! warning
 
-        Some options, like ``url``, ``dbtable``, ``server.*``, ``pool.*``, etc
+        Some options, like `url`, `dbtable`, `server.*`, `pool.*`, etc
         are populated from connection attributes, and cannot be overridden
-        by the user in ``WriteOptions`` to avoid issues.
+        by the user in `WriteOptions` to avoid issues.
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by connector <https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/write_to_gpdb.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by connector](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/write_to_gpdb.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on connector version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import Greenplum
 
-        from onetl.connection import Greenplum
-
-        options = Greenplum.WriteOptions(
-            if_exists="append",
-            truncate="false",
-            distributedBy="mycolumn",
-        )
+    options = Greenplum.WriteOptions(
+        if_exists="append",
+        truncate="false",
+        distributedBy="mycolumn",
+    )
+    ```
     """
 
     class Config:
@@ -252,71 +249,71 @@ class GreenplumWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * ``append`` (default)
+        * `append` (default)
             Adds new rows into existing table.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``distributedBy`` and others).
+                    (`distributedBy` and others).
 
                 * Table exists
                     Data is appended to a table. Table has the same DDL as before writing data.
 
-                    .. warning::
+                    !!! warning
 
                         This mode does not check whether table already contains
                         rows from dataframe, so duplicated rows can be created.
 
                         Also Spark does not support passing custom options to
-                        insert statement, like ``ON CONFLICT``, so don't try to
+                        insert statement, like `ON CONFLICT`, so don't try to
                         implement deduplication using unique indexes or constraints.
 
                         Instead, write to staging table and perform deduplication
-                        using :obj:`~execute` method.
+                        using [execute][] method.
 
-        * ``replace_entire_table``
+        * `replace_entire_table`
             **Table is dropped and then created**.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``distributedBy`` and others).
+                    (`distributedBy` and others).
 
                 * Table exists
                     Table content is replaced with dataframe content.
 
                     After writing completed, target table could either have the same DDL as
-                    before writing data (``truncate=True``), or can be recreated (``truncate=False``).
+                    before writing data (`truncate=True`), or can be recreated (`truncate=False`).
 
-        * ``ignore``
+        * `ignore`
             Ignores the write operation if the table already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``distributedBy`` and others).
+                    (`distributedBy` and others).
 
                 * Table exists
                     The write operation is ignored, and no data is written to the table.
 
-        * ``error``
+        * `error`
             Raises an error if the table already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``distributedBy`` and others).
+                    (`distributedBy` and others).
 
                 * Table exists
                     An error is raised, and no data is written to the table.
 
-    .. versionchanged:: 0.9.0
-        Renamed ``mode`` → ``if_exists``
+    !!! info "Changed in 0.9.0"
+        Renamed `mode` → `if_exists`
     """
 
     @root_validator(pre=True)
