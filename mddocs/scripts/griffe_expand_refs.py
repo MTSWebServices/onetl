@@ -66,7 +66,7 @@ def _parse_doc_assignment(cls):
     try:
         src = cls.filepath.read_text()
         tree = pyast.parse(src)
-    except Exception:
+    except Exception:  # noqa: BLE001
         return None
 
     for node in pyast.walk(tree):
@@ -85,7 +85,7 @@ def _parse_doc_assignment(cls):
                 and isinstance(call.func.value, pyast.Attribute)
                 and call.func.value.attr == "__doc__"
                 and isinstance(call.func.value.value, pyast.Name)
-                and len(call.args) == 2
+                and len(call.args) == 2  # noqa: PLR2004
                 and all(isinstance(a, pyast.Constant) for a in call.args)
             ):
                 return None

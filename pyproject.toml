@@ -306,6 +306,10 @@ ignore = [
 ]
 "tests/tests_unit/test_hooks/*" = ["C901"]
 "tests/libs/*" = ["INP001"]
+"mddocs/scripts/fix_refs.py" = ["E501", "T201"]
+"mddocs/scripts/generate_anchors.py" = ["T201"]
+"mddocs/scripts/griffe_expand_refs.py" = ["INP001"]
+"mddocs/scripts/links2anchors.py" = ["T201"]
 
 [tool.mypy]
 python_version = "3.7"

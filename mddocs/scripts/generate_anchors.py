@@ -15,6 +15,8 @@ For headings with an existing { #old } anchor, all [text][old] references in all
 are updated to [text][new].
 """
 
+from __future__ import annotations
+
 import argparse
 import re
 import sys
@@ -110,7 +112,7 @@ def parse_file(content: str) -> tuple[list[Heading], list[str]]:
     snippets: list[str] = []
     in_code_block = False
     for i, line in enumerate(content.split("\n")):
-        if line.startswith("```") or line.startswith("~~~"):
+        if line.startswith(("```", "~~~")):
             in_code_block = not in_code_block
         if in_code_block:
             continue
@@ -227,6 +229,7 @@ def resolve_duplicates(file_data: dict[Path, FileInfo], remappings: dict[str, st
 def write_files(
     file_data: dict[Path, FileInfo],
     remappings: dict[str, str],
+    *,
     dry_run: bool,
 ) -> tuple[int, int]:
     """Write updated files. Returns (changed, unchanged) counts."""
@@ -317,7 +320,7 @@ def main() -> None:
         for old, new in sorted(remappings.items()):
             print(f"  {old!r:50s} → {new!r}")
 
-    changed, unchanged = write_files(file_data, remappings, dry_run)
+    changed, unchanged = write_files(file_data, remappings, dry_run=dry_run)
     action = "Would change" if dry_run else "Changed"
     print(f"{action}: {changed} files, {unchanged} unchanged.")
 

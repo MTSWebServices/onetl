@@ -263,7 +263,7 @@ SHORTNAME_MAP: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 
-def _fix_refs(text: str) -> tuple[str, list[str]]:
+def _fix_refs(text: str) -> tuple[str, list[str]]:  # noqa: C901, PLR0915
     """Replace [label][] and [text][onetl.*] with explicit Markdown links."""
     changes: list[str] = []
 
@@ -377,7 +377,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
         changes.append(f"label-list: added blank line after '{m.group(1).strip()}'")
         return m.group(1) + "\n\n" + m.group(2)
 
-    def fix_numpy_params(txt: str) -> str:
+    def fix_numpy_params(txt: str) -> str:  # noqa: C901
         """Remove extra indentation from numpy-style Parameters/Returns/etc. sections.
 
         Griffe expects:
@@ -396,11 +396,6 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
 
         This function normalizes them to the expected format.
         """
-        section_re = re.compile(
-            r"^( *)(Parameters|Returns|Raises|Attributes|Notes|References|Examples|See Also|Yields)\s*\n"
-            r"\1-{3,}\s*\n",
-            re.MULTILINE,
-        )
         lines = txt.split("\n")
         out: list[str] = []
         i = 0
@@ -447,7 +442,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
             i += 1
         return "\n".join(out)
 
-    def fix_over_indented_lists(txt: str) -> str:
+    def fix_over_indented_lists(txt: str) -> str:  # noqa: C901, PLR0915
         """De-indent bullet list blocks that are over-indented relative to their label.
 
         Targets blocks like:
@@ -517,8 +512,7 @@ def _fix_refs(text: str) -> tuple[str, list[str]]:
                         changes.append(f"label-list: de-indented {extra}sp after '{s.strip()}'")
                         out.append(line)
                         # Preserve blank lines between label and block
-                        for bi in range(i + 1, j):
-                            out.append(lines[bi])
+                        out.extend(lines[i + 1 : j])
                         out.extend(new_block)
                         i = k
                         continue
@@ -577,7 +571,7 @@ _NOQA_RE = re.compile(r"\s*#\s*noqa[^\n]*$")
 
 def find_docstrings(source: str) -> list[tuple[int, int]]:
     # Characters that indicate we're mid-expression (function call, list, etc.)
-    _EXPR_CHARS = frozenset("(,[{+-*/%&|^~\\")
+    _expr_chars = frozenset("(,[{+-*/%&|^~\\")
     results = []
     for m in _TRIPLE_QUOTED.finditer(source):
         preceding = _NOQA_RE.sub("", source[: m.start()].rstrip()).rstrip()
@@ -588,15 +582,15 @@ def find_docstrings(source: str) -> list[tuple[int, int]]:
         # Field docstring: """ starts at the beginning of an indented line
         # (only whitespace before it on the current line) and we're not mid-expression.
         line_start = source.rfind("\n", 0, m.start()) + 1
-        if source[line_start : m.start()].strip() == "" and preceding[-1] not in _EXPR_CHARS:
+        if source[line_start : m.start()].strip() == "" and preceding[-1] not in _expr_chars:
             results.append((m.start(), m.end()))
     return results
 
 
-def process_file(path: Path, dry_run: bool) -> bool:
+def process_file(path: Path, *, dry_run: bool) -> bool:
     try:
         source = path.read_text(encoding="utf-8")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"  ERROR reading {path}: {e}", file=sys.stderr)
         return False
 
@@ -645,10 +639,10 @@ def process_file(path: Path, dry_run: bool) -> bool:
 # ---------------------------------------------------------------------------
 
 
-def process_md_file(path: Path, dry_run: bool) -> bool:
+def process_md_file(path: Path, *, dry_run: bool) -> bool:
     try:
         source = path.read_text(encoding="utf-8")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"  ERROR reading {path}: {e}", file=sys.stderr)
         return False
 
@@ -691,10 +685,7 @@ def main() -> None:
 
     mode = "dry-run" if args.dry_run else "write"
 
-    if args.file:
-        files = [Path(args.file)]
-    else:
-        files = sorted(Path(args.path).rglob("*.py"))
+    files = [Path(args.file)] if args.file else sorted(Path(args.path).rglob("*.py"))
 
     print(f"Processing {len(files)} file(s) [{mode}]...")
 

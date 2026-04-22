@@ -57,7 +57,7 @@ def _first_anchor(md_file: Path) -> str | None:
     """Return the first { #anchor } found in a MD file."""
     try:
         text = md_file.read_text(encoding="utf-8")
-    except Exception:
+    except Exception:  # noqa: BLE001
         return None
     m = _ANCHOR_RE.search(text)
     return m.group(1) if m else None
@@ -82,7 +82,7 @@ def build_anchor_index(docs_dir: Path) -> dict[str, str]:
             url = "/" + "/".join(parts[:-1]) + "/"
         else:
             # docs/foo/bar.md → /foo/bar/
-            url = "/" + "/".join(parts[:-1] + [parts[-1][:-3]]) + "/"
+            url = "/" + "/".join([*parts[:-1], parts[-1][:-3]]) + "/"
 
         index[url] = anchor
     return index
@@ -146,10 +146,10 @@ def find_docstrings(source: str) -> list[tuple[int, int]]:
     return results
 
 
-def process_file(path: Path, anchor_index: dict[str, str], dry_run: bool) -> bool:
+def process_file(path: Path, anchor_index: dict[str, str], *, dry_run: bool) -> bool:
     try:
         source = path.read_text(encoding="utf-8")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"  ERROR reading {path}: {e}", file=sys.stderr)
         return False
 
@@ -220,10 +220,7 @@ def main() -> None:
 
     mode = "dry-run" if args.dry_run else "write"
 
-    if args.file:
-        files = [Path(args.file)]
-    else:
-        files = sorted(Path(args.path).rglob("*.py"))
+    files = [Path(args.file)] if args.file else sorted(Path(args.path).rglob("*.py"))
 
     print(f"Processing {len(files)} file(s) [{mode}]...")
 
