@@ -11,10 +11,10 @@
 - ✅︎ `columns`
 - ✅︎ `where`
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ❌ `hint` (MSSQL does support hints, but DBReader not, at least for now)
 - ❌ `df_schema`
 - ✅︎ `options` (see [MSSQL.ReadOptions][onetl.connection.db_connection.mssql.options.MSSQLReadOptions])
@@ -79,5 +79,4 @@ Especially if there are indexes or partitions for columns used in `where` clause
 ::: onetl.connection.db_connection.mssql.options.MSSQLReadOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true

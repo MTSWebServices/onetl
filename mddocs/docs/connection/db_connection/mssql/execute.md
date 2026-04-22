@@ -91,11 +91,9 @@ mssql.execute(
 ::: onetl.connection.db_connection.mssql.options.MSSQLFetchOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true
 
 ::: onetl.connection.db_connection.mssql.options.MSSQLExecuteOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true

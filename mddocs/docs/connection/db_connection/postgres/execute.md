@@ -90,11 +90,9 @@ postgres.execute(
 ::: onetl.connection.db_connection.postgres.options.PostgresFetchOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true
 
 ::: onetl.connection.db_connection.postgres.options.PostgresExecuteOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true

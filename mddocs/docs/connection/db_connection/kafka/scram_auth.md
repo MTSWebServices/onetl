@@ -4,5 +4,4 @@
 ::: onetl.connection.db_connection.kafka.kafka_scram_auth.KafkaScramAuth
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true

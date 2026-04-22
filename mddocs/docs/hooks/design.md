@@ -62,26 +62,26 @@ obj.method(2)  # will call callback(obj, 1)
 
 - Create a class with a method:
 
-```python
-class MyClass:
-    def __init__(self, data):
-        self.data = data
+    ```python
+    class MyClass:
+        def __init__(self, data):
+            self.data = data
 
-    def method(self, arg):
-        return self.data, arg
-```
+        def method(self, arg):
+            return self.data, arg
+    ```
 
 - Add [`slot-decorator`][DBR-onetl-hooks-slot-decorator] to the method:
 
-```python
-from onetl.hooks import support_hooks, slot, hook
+    ```python
+    from onetl.hooks import support_hooks, slot, hook
 
 
-class MyClass:
-    @slot
-    def method(self, arg):
-        return self.data, arg
-```
+    class MyClass:
+        @slot
+        def method(self, arg):
+            return self.data, arg
+    ```
 
 If method has other decorators like `@classmethod` or `@staticmethod`, `@slot` should be placed on the top:
 
@@ -103,16 +103,16 @@ class MyClass:
 
 - Add [`support-hooks-decorator`][DBR-onetl-hooks-support-hooks-decorator] to the class:
 
-```python
-from onetl.hooks import support_hooks, slot, hook
+    ```python
+    from onetl.hooks import support_hooks, slot, hook
 
 
-@support_hooks
-class MyClass:
-    @slot
-    def method(self, arg):
-        return self.data, arg
-```
+    @support_hooks
+    class MyClass:
+        @slot
+        def method(self, arg):
+            return self.data, arg
+    ```
 
 Slot is created.
 
@@ -307,27 +307,27 @@ def callback(obj, arg):
 
 - The callback will be called with the same arguments as the original method.
 
-  - If slot is a regular method:
+    - If slot is a regular method:
 
-    ```python
-    callback_result = callback(self, *args, **kwargs)
-    ```
+        ```python
+        callback_result = callback(self, *args, **kwargs)
+        ```
 
     Here `self` is a class instance (`obj`).
 
-  - If slot is a class method:
+    - If slot is a class method:
 
-    ```python
-    callback_result = callback(cls, *args, **kwargs)
-    ```
+        ```python
+        callback_result = callback(cls, *args, **kwargs)
+        ```
 
     Here `cls` is the class itself (`MyClass`).
 
-  - If slot is a static method:
+    - If slot is a static method:
 
-    ```python
-    callback_result = callback(*args, **kwargs)
-    ```
+        ```python
+        callback_result = callback(*args, **kwargs)
+        ```
 
     Neither object not class are passed to the callback in this case.
 
@@ -337,33 +337,33 @@ def callback(obj, arg):
 
 - Then call the original method wrapped by `@slot`:
 
-  ```python
-  original_result = method(*args, **kwargs)
-  ```
+    ```python
+    original_result = method(*args, **kwargs)
+    ```
 
 - Process `original_result`:
 
-  - If `callback_result` object has method `process_result`, or is a generator wrapped with `@hook`, call it:
+    - If `callback_result` object has method `process_result`, or is a generator wrapped with `@hook`, call it:
 
-    ```python
-    new_result = callback_result.process_result(original_result)
-    ```
+        ```python
+        new_result = callback_result.process_result(original_result)
+        ```
 
-  - Otherwise set `new_result = callback_result`.
+    - Otherwise set `new_result = callback_result`.
 
-  - If there are multiple hooks bound the the method, pass `new_result` through the chain:
+    - If there are multiple hooks bound the the method, pass `new_result` through the chain:
 
-    ```python
-    new_result = callback1_result.process_result(original_result)
-    new_result = callback2_result.process_result(new_result or original_result)
-    new_result = callback3_result.process_result(new_result or original_result)
-    ```
+        ```python
+        new_result = callback1_result.process_result(original_result)
+        new_result = callback2_result.process_result(new_result or original_result)
+        new_result = callback3_result.process_result(new_result or original_result)
+        ```
 
 - Finally return:
 
-  ```python
-  return new_result or original_result
-  ```
+    ```python
+    return new_result or original_result
+    ```
 
   All `None` values are ignored on every step above.
 
@@ -593,26 +593,26 @@ You can enable/disable/temporary disable hooks on 4 different levels:
 
 - Manage global hooks state (level 1):
 
-  - [`onetl.hooks.hooks_state.stop_all_hooks`][onetl.hooks.hooks_state.stop_all_hooks]
-  - [`onetl.hooks.hooks_state.resume_all_hooks`][onetl.hooks.hooks_state.resume_all_hooks]
-  - [`onetl.hooks.hooks_state.skip_all_hooks`][onetl.hooks.hooks_state.skip_all_hooks]
+    - [`onetl.hooks.hooks_state.stop_all_hooks`][onetl.hooks.hooks_state.stop_all_hooks]
+    - [`onetl.hooks.hooks_state.resume_all_hooks`][onetl.hooks.hooks_state.resume_all_hooks]
+    - [`onetl.hooks.hooks_state.skip_all_hooks`][onetl.hooks.hooks_state.skip_all_hooks]
 
 - Manage all hooks bound to a specific class (level 2):
 
-  - [`onetl.hooks.support_hooks.suspend_hooks`][onetl.hooks.support_hooks.suspend_hooks]
-  - [`onetl.hooks.support_hooks.resume_hooks`][onetl.hooks.support_hooks.resume_hooks]
-  - [`onetl.hooks.support_hooks.skip_hooks`][onetl.hooks.support_hooks.skip_hooks]
+    - [`onetl.hooks.support_hooks.suspend_hooks`][onetl.hooks.support_hooks.suspend_hooks]
+    - [`onetl.hooks.support_hooks.resume_hooks`][onetl.hooks.support_hooks.resume_hooks]
+    - [`onetl.hooks.support_hooks.skip_hooks`][onetl.hooks.support_hooks.skip_hooks]
 
 - Manage all hooks bound to a specific slot (level 3):
 
-  - [`onetl.hooks.slot.Slot.suspend_hooks`][onetl.hooks.slot.Slot.suspend_hooks]
-  - [`onetl.hooks.slot.Slot.resume_hooks`][onetl.hooks.slot.Slot.resume_hooks]
-  - [`onetl.hooks.slot.Slot.skip_hooks`][onetl.hooks.slot.Slot.skip_hooks]
+    - [`onetl.hooks.slot.Slot.suspend_hooks`][onetl.hooks.slot.Slot.suspend_hooks]
+    - [`onetl.hooks.slot.Slot.resume_hooks`][onetl.hooks.slot.Slot.resume_hooks]
+    - [`onetl.hooks.slot.Slot.skip_hooks`][onetl.hooks.slot.Slot.skip_hooks]
 
 - Manage state of a specific hook (level 4):
 
-  - [`onetl.hooks.hook.Hook.enable`][onetl.hooks.hook.Hook.enable]
-  - [`onetl.hooks.hook.Hook.disable`][onetl.hooks.hook.Hook.disable]
+    - [`onetl.hooks.hook.Hook.enable`][onetl.hooks.hook.Hook.enable]
+    - [`onetl.hooks.hook.Hook.disable`][onetl.hooks.hook.Hook.disable]
 
 More details in the documentation above.
 

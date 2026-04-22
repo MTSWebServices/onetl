@@ -3,8 +3,8 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-greenplum-prerequisites-version-compatibility }
 
 - Greenplum server versions:
-  - Officially declared: 5.x, 6.x, and 7.x (which requires `Greenplum.get_packages(package_version="2.3.0")` or higher)
-  - Actually tested: 6.23, 7.0
+    - Officially declared: 5.x, 6.x, and 7.x (which requires `Greenplum.get_packages(package_version="2.3.0")` or higher)
+    - Actually tested: 6.23, 7.0
 - Spark versions: 3.2.x (Spark 3.3+ is not supported yet)
 - Java versions: 8 - 11
 

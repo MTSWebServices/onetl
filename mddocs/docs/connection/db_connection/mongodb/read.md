@@ -11,11 +11,11 @@
 - ❌ `columns` (for now, all document fields are read)
 - ✅︎ `where` (passed to `{"$match": ...}` aggregation pipeline)
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
-  - Note that `expression` field of HWM can only be a field name, not a custom expression
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - Note that `expression` field of HWM can only be a field name, not a custom expression
 - ✅︎ `hint` (see [official documentation](https://www.mongodb.com/docs/v5.0/reference/operator/meta/hint/))
 - ✅︎ `df_schema` (mandatory)
 - ✅︎ `options` (see [MongoDB.ReadOptions][onetl.connection.db_connection.mongodb.options.MongoDBReadOptions])
@@ -127,5 +127,4 @@ Especially if there are indexes for columns used in `where` clause.
 
 ::: onetl.connection.db_connection.mongodb.options.MongoDBReadOptions
     options:
-        heading_level: 3
         show_root_heading: true

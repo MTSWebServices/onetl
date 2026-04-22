@@ -11,10 +11,10 @@
 - ✅︎ `columns`
 - ✅︎ `where`
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ✅︎ `hint` (see [official documentation](https://dev.mysql.com/doc/refman/en/optimizer-hints.html))
 - ❌ `df_schema`
 - ✅︎ `options` (see [MySQL.ReadOptions][onetl.connection.db_connection.mysql.options.MySQLReadOptions])
@@ -80,6 +80,6 @@ Especially if there are indexes for columns used in `where` clause.
 
 ::: onetl.connection.db_connection.mysql.options.MySQLReadOptions
     options:
+        inherited_members: true
         members: true
-        heading_level: 3
         show_root_heading: true
