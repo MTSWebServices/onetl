@@ -94,12 +94,9 @@ def build_anchor_index(docs_dir: Path) -> dict[str, str]:
 # Matches [Any Text](/absolute/path/) — absolute docs links only
 _LINK_RE = re.compile(r"\[([^\]]+)\]\((/[^)]*?/)\)")
 
-# Matches [![alt](img_url)](/absolute/path/) — badge/image links
-_IMAGE_LINK_RE = re.compile(r"(\[!\[[^\]]*\]\([^)]*\))\]\((/[^)]*?/)\)")
-
 
 def _fix_links(text: str, anchor_index: dict[str, str]) -> tuple[str, list[str]]:
-    """Replace [Text](/path/) and [![img](url)](/path/) with anchor-style refs."""
+    """Replace [Text](/path/) with anchor-style refs."""
     changes: list[str] = []
 
     def replace(m: re.Match) -> str:
@@ -111,17 +108,7 @@ def _fix_links(text: str, anchor_index: dict[str, str]) -> tuple[str, list[str]]
             return f"[{label}][{anchor}]"
         return m.group(0)
 
-    def replace_image(m: re.Match) -> str:
-        img_part = m.group(1)  # [![alt](img_url)]
-        path = m.group(2)
-        anchor = anchor_index.get(path)
-        if anchor:
-            changes.append(f"image-link: {img_part}({path}) → {img_part}[{anchor}]")
-            return f"{img_part}[{anchor}]"
-        return m.group(0)
-
-    new_text = _IMAGE_LINK_RE.sub(replace_image, text)
-    new_text = _LINK_RE.sub(replace, new_text)
+    new_text = _LINK_RE.sub(replace, text)
     return new_text, changes
 
 
