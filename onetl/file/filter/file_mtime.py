@@ -25,7 +25,7 @@ class FileModifiedTime(BaseFileFilter, FrozenModel):
     !!! note
 
         Some filesystems return timestamps truncated to whole seconds (without millisecond part).
-        [since][] and [until][] values should be adjusted accordingly.
+        `since` and `until` values should be adjusted accordingly.
 
     !!! success "Added in 0.13.0"
 

@@ -80,18 +80,18 @@ class HooksState:
     @contextmanager
     def skip(cls):
         """
-            Temporary stop all onETL hooks. Designed to be used as context manager or decorator.
+        Temporary stop all onETL hooks. Designed to be used as context manager or decorator.
 
-            !!! note
+        !!! note
 
-                If hooks were stopped by [stop_all_hooks][], they will not be resumed
-                after exiting the context/decorated function.
-                You should call [resume_all_hooks][] explicitly.
+            If hooks were stopped by [stop_all_hooks][], they will not be resumed
+            after exiting the context/decorated function.
+            You should call [resume_all_hooks][] explicitly.
 
-            !!! success "Added in 0.7.0"
+        !!! success "Added in 0.7.0"
 
-            Examples
-            --------
+        Examples
+        --------
 
         === "Context manager syntax"
             ```python

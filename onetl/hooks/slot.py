@@ -476,16 +476,16 @@ class Slot(Protocol):
 
     def skip_hooks(self) -> ContextManager[None]:
         """
-            Context manager which temporary stops all the hooks bound to the slot.
+        Context manager which temporary stops all the hooks bound to the slot.
 
-            !!! note
+        !!! note
 
-                If hooks were stopped by [suspend_hooks][], they will not be resumed
-                after exiting the context/decorated function.
-                You should call [resume_hooks][] explicitly.
+            If hooks were stopped by [suspend_hooks][], they will not be resumed
+            after exiting the context/decorated function.
+            You should call [resume_hooks][] explicitly.
 
-            Examples
-            --------
+        Examples
+        --------
 
         === "Context manager syntax"
             ```python
@@ -621,7 +621,7 @@ def slot(method: Method) -> Method:
 
     Decorated methods get additional nested methods:
 
-        * [onetl.hooks.slot.Slot.bind][]
+        * `Slot.bind`
         * [onetl.hooks.slot.Slot.suspend_hooks][]
         * [onetl.hooks.slot.Slot.resume_hooks][]
         * [onetl.hooks.slot.Slot.skip_hooks][]

@@ -144,51 +144,49 @@ class Hook(Generic[T]):
     @contextmanager
     def skip(self):
         """
-            Temporary disable the hook.
+        Temporary disable the hook.
 
-            !!! note
+        !!! note
 
-                If hook was created with `enabled=False`, or was disabled by [disable][],
-                its state will left intact after exiting the context.
+            If hook was created with `enabled=False`, or was disabled by [disable][],
+            its state will left intact after exiting the context.
 
-                You should call [enable][] explicitly to change its state.
+            You should call [enable][] explicitly to change its state.
 
-            !!! success "Added in 0.7.0"
+        !!! success "Added in 0.7.0"
 
-            Examples
-            --------
+        Examples
+        --------
 
         === "Context manager syntax"
-
-                    ```python
-                    >>> def func1(): ...
-                    >>> hook = Hook(callback=func1, enabled=True)
-                    >>> hook.enabled
-                    True
-                    >>> with hook.skip():
-                    ...     print(hook.enabled)
-                    False
-                    >>> # hook state is restored as it was before entering the context manager
-                    >>> hook.enabled
-                    True
-                    ```
+            ```python
+            >>> def func1(): ...
+            >>> hook = Hook(callback=func1, enabled=True)
+            >>> hook.enabled
+            True
+            >>> with hook.skip():
+            ...     print(hook.enabled)
+            False
+            >>> # hook state is restored as it was before entering the context manager
+            >>> hook.enabled
+            True
+            ```
 
         === "Decorator syntax"
-
-                    ```python
-                    >>> def func1(): ...
-                    >>> hook = Hook(callback=func1, enabled=True)
-                    >>> hook.enabled
-                    True
-                    >>> @hook.skip()
-                    ... def hook_disabled():
-                    ...     print(hook.enabled)
-                    >>> hook_disabled()
-                    False
-                    >>> # hook state is restored as it was before entering the context manager
-                    >>> hook.enabled
-                    True
-                    ```
+            ```python
+            >>> def func1(): ...
+            >>> hook = Hook(callback=func1, enabled=True)
+            >>> hook.enabled
+            True
+            >>> @hook.skip()
+            ... def hook_disabled():
+            ...     print(hook.enabled)
+            >>> hook_disabled()
+            False
+            >>> # hook state is restored as it was before entering the context manager
+            >>> hook.enabled
+            True
+            ```
         """
         if not self.enabled:
             logger.log(
