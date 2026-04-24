@@ -19,7 +19,8 @@ class BaseConnection(ABC):
 
         Returns
         -------
-        Connection itself
+        Self
+            Connection itself
 
         Raises
         ------

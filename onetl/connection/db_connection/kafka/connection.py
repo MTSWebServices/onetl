@@ -470,7 +470,8 @@ class Kafka(DBConnection):
 
         Returns
         -------
-        Connection itself
+        Self
+            Connection itself
 
         Examples
         --------

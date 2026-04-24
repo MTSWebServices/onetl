@@ -27,9 +27,10 @@ def limits_stop_at(path: PathProtocol, limits: Iterable[BaseFileLimit]) -> bool:
 
     Returns
     -------
-    `True` if any of limit is reached while handling the path, `False` otherwise.
+    bool
+        `True` if any of limit is reached while handling the path, `False` otherwise.
 
-    If no limits are passed, returns `False`.
+        If no limits are passed, returns `False`.
 
     Examples
     --------

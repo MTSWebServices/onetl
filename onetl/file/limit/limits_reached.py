@@ -24,9 +24,10 @@ def limits_reached(limits: Iterable[BaseFileLimit]) -> bool:
 
     Returns
     -------
-    `True` if any of limits is reached, `False` otherwise.
+    bool
+        `True` if any of limits is reached, `False` otherwise.
 
-    If no limits are passed, returns `False`.
+        If no limits are passed, returns `False`.
 
     Examples
     --------

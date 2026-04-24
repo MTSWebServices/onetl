@@ -22,10 +22,11 @@ def reset_limits(limits: Iterable[BaseFileLimit]) -> list[BaseFileLimit]:
 
     Returns
     -------
-    List with limits, but with reset state.
+    list of BaseFileLimit
+        List with limits, but with reset state.
 
-    List may contain original filters with reset state, or new copies.
-    This is an implementation detail of [reset][onetl.base.base_file_limit.BaseFileLimit.reset] method.
+        List may contain original filters with reset state, or new copies.
+        This is an implementation detail of [reset][onetl.base.base_file_limit.BaseFileLimit.reset] method.
 
     Examples
     --------

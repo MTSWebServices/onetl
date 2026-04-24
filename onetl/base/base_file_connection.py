@@ -34,7 +34,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        `True` if path exists, `False` otherwise
+        bool
+            `True` if path exists, `False` otherwise
 
         Examples
         --------
@@ -63,7 +64,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        `True` if path is a file, `False` otherwise.
+        bool
+            `True` if path is a file, `False` otherwise.
 
         Raises
         ------
@@ -95,7 +97,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        `True` if path is a directory, `False` otherwise.
+        bool
+            `True` if path is a directory, `False` otherwise.
 
         Raises
         ------
@@ -127,7 +130,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        Stats object
+        PathStatProtocol
+            Stats object
 
         Raises
         ------
@@ -159,7 +163,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        Directory path with stats
+        PathWithStatsProtocol
+            Directory path with stats
 
         Raises
         ------
@@ -195,7 +200,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        File path with stats
+        PathWithStatsProtocol
+            File path with stats
 
         Raises
         ------
@@ -231,7 +237,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        Created directory with stats
+        PathWithStatsProtocol
+            Created directory with stats
 
         Raises
         ------
@@ -269,7 +276,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        `True` if file was removed, `False` if file does not exist in the first place.
+        bool
+            `True` if file was removed, `False` if file does not exist in the first place.
 
         Raises
         ------
@@ -310,7 +318,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        `True` if directory was removed, `False` if directory does not exist in the first place.
+        bool
+            `True` if directory was removed, `False` if directory does not exist in the first place.
 
         Raises
         ------

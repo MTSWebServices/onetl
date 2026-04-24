@@ -319,7 +319,8 @@ class SparkS3(SparkFileDFConnection):
 
         Returns
         -------
-        Connection itself
+        Self
+            Connection itself
 
         Examples
         --------

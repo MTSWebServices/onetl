@@ -30,9 +30,10 @@ class BaseFileLimit(ABC):
 
         Returns
         -------
-        Returns a filter of the same type, but with non-reached state.
+        Self
+            Returns a filter of the same type, but with non-reached state.
 
-        It could be the same filter or a new one, this is an implementation detail.
+            It could be the same filter or a new one, this is an implementation detail.
 
         Examples
         --------
@@ -60,7 +61,8 @@ class BaseFileLimit(ABC):
 
         Returns
         -------
-        `True` if limit is reached, `False` otherwise.
+        bool
+            `True` if limit is reached, `False` otherwise.
 
         Examples
         --------
@@ -91,7 +93,8 @@ class BaseFileLimit(ABC):
 
         Returns
         -------
-        `True` if limit is reached, `False` otherwise.
+        bool
+            `True` if limit is reached, `False` otherwise.
 
         Examples
         --------

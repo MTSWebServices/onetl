@@ -26,9 +26,10 @@ def match_all_filters(path: PathProtocol, filters: Iterable[BaseFileFilter]) -> 
 
     Returns
     -------
-    `True` if path matches all the filters, `False` otherwise.
+    bool
+        `True` if path matches all the filters, `False` otherwise.
 
-    If filters are empty, returns `True`.
+        If filters are empty, returns `True`.
 
     Examples
     --------
