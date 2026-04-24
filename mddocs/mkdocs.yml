@@ -65,6 +65,7 @@ plugins:
             heading_level: 3
             docstring_style: numpy
             docstring_section_style: list
+            inherited_members: true
             extensions:
               - scripts/griffe_expand_refs.py:ExpandShortRefs
               - griffe_inherited_docstrings
