@@ -23,6 +23,7 @@ class IncrementalStrategy(HWMStrategy):
         ```sql
         SELECT id, data FROM mydata;
         ```
+
         Then the max value of `id` column (e.g. `1000`) will be saved as `HWM` to [HWM Store][hwm].
 
         Next incremental run will read only new data from the source:
@@ -30,6 +31,7 @@ class IncrementalStrategy(HWMStrategy):
         ```sql
         SELECT id, data FROM mydata WHERE id > 1000; -- hwm value
         ```
+
         Pay attention to resulting dataframe **does not include** row with `id=1000` because it has been read before.
 
         !!! warning
@@ -59,6 +61,7 @@ class IncrementalStrategy(HWMStrategy):
         /path/my/file1
         /path/my/file2
         ```
+
         ```python
         DownloadResult(
             ...,
@@ -68,6 +71,7 @@ class IncrementalStrategy(HWMStrategy):
             },
         )
         ```
+
         Then the list of original file paths is saved as `FileListHWM` object into [HWM Store][hwm]:
 
         ```python
@@ -80,6 +84,7 @@ class IncrementalStrategy(HWMStrategy):
             ],
         )
         ```
+
         Next incremental run will download only new files which were added to the source since previous run:
 
         ```bash
@@ -89,6 +94,7 @@ class IncrementalStrategy(HWMStrategy):
         /path/my/file2
         /path/my/file3
         ```
+
         ```python
         # only files which are not covered by FileListHWM
         DownloadResult(
@@ -98,6 +104,7 @@ class IncrementalStrategy(HWMStrategy):
             },
         )
         ```
+
         Value of `FileListHWM` will be updated and saved to [HWM Store][hwm]:
 
         ```python
@@ -111,6 +118,7 @@ class IncrementalStrategy(HWMStrategy):
             ],
         )
         ```
+
     === "FileModifiedTimeHWM"
 
         First incremental run is just the same as
@@ -122,6 +130,7 @@ class IncrementalStrategy(HWMStrategy):
         /path/my/file1
         /path/my/file2
         ```
+
         ```python
         DownloadResult(
             ...,
@@ -131,6 +140,7 @@ class IncrementalStrategy(HWMStrategy):
             },
         )
         ```
+
         Then the maximum modified time of original files is saved as
         `FileModifiedTimeHWM` object into [HWM Store][hwm]:
 
@@ -141,6 +151,7 @@ class IncrementalStrategy(HWMStrategy):
             value=datetime.datetime(2025, 1, 1, 11, 22, 33, 456789, tzinfo=timezone.utc),
         )
         ```
+
         Next incremental run will download only files from the source
         which were modified or created since previous run:
 
@@ -151,6 +162,7 @@ class IncrementalStrategy(HWMStrategy):
         /path/my/file2
         /path/my/file3
         ```
+
         ```python
         # only files which are not covered by FileModifiedTimeHWM
         DownloadResult(
@@ -160,6 +172,7 @@ class IncrementalStrategy(HWMStrategy):
             },
         )
         ```
+
         Value of `FileModifiedTimeHWM` will be updated and and saved to [HWM Store][hwm]:
 
         ```python
@@ -169,6 +182,7 @@ class IncrementalStrategy(HWMStrategy):
             value=datetime.datetime(2025, 1, 1, 22, 33, 44, 567890, tzinfo=timezone.utc),
         )
         ```
+
         !!! warning
 
             FileDownloader updates HWM in HWM Store at the end of `.run()` call,
@@ -192,16 +206,19 @@ class IncrementalStrategy(HWMStrategy):
         For example, previous incremental run returned rows:
 
         ```
+
         898
         899
         900
         1000
         ```
+
         Current HWM value is 1000.
 
         But since then few more rows appeared in the source:
 
         ```
+
         898
         899
         900
@@ -211,6 +228,7 @@ class IncrementalStrategy(HWMStrategy):
         999 # new
         1000
         ```
+
         and you need to read them too.
 
         So you can set `offset=100`, so a next incremental run will generate SQL query like:
@@ -219,6 +237,7 @@ class IncrementalStrategy(HWMStrategy):
         SELECT id, data FROM public.mydata WHERE id > 900;
         -- 900 = 1000 - 100 = hwm - offset
         ```
+
         and return rows since 901 (**not** 900), **including** 1000 which was already captured by HWM.
 
         !!! warning
@@ -258,6 +277,7 @@ class IncrementalStrategy(HWMStrategy):
             df = reader.run()
             writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was 1000
         -- DBReader will generate query like:
@@ -266,6 +286,7 @@ class IncrementalStrategy(HWMStrategy):
         FROM public.mydata
         WHERE id > 1000; --- from HWM (EXCLUDING first row)
         ```
+
     === "Incremental run with [db-reader][] and `IncrementalStrategy(offset=...)`"
 
         ```python
@@ -285,6 +306,7 @@ class IncrementalStrategy(HWMStrategy):
             df = reader.run()
             writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was 1000
         -- DBReader will generate query like:
@@ -293,6 +315,7 @@ class IncrementalStrategy(HWMStrategy):
         FROM public.mydata
         WHERE id > 900; -- from HWM-offset (EXCLUDING first row)
         ```
+
         `offset` and `hwm.expression` can be a date or datetime, not only integer:
 
         ```python
@@ -312,6 +335,7 @@ class IncrementalStrategy(HWMStrategy):
             df = reader.run()
             writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was '2021-01-10'
         -- DBReader will generate query like:
@@ -320,6 +344,7 @@ class IncrementalStrategy(HWMStrategy):
         FROM public.mydata
         WHERE business_dt > CAST('2021-01-09' AS DATE); -- from HWM-offset (EXCLUDING first row)
         ```
+
     === "Incremental run with [db-reader][] and [kafka][]"
         ```python
         from onetl.db import DBReader, DBWriter
@@ -338,6 +363,7 @@ class IncrementalStrategy(HWMStrategy):
 
         # current run will fetch only messages which were added since previous run
         ```
+
     === "Incremental run with [file-downloader][] and `hwm=FileListHWM(...)`"
         ```python
         from onetl.file import FileDownloader
@@ -358,6 +384,7 @@ class IncrementalStrategy(HWMStrategy):
 
         # current run will download only files which were added since previous run
         ```
+
     === "Incremental run with [file-downloader][] and `hwm=FileModifiedTimeHWM(...)`"
         ```python
         from onetl.file import FileDownloader
@@ -378,6 +405,7 @@ class IncrementalStrategy(HWMStrategy):
 
         # current run will download only files which were modified/created since previous run
         ```
+
     """
 
     hwm: Optional[HWM] = None
@@ -426,6 +454,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
                 writer.run(df)  # or here
                 # or here...
         ```
+
         DBReader will **NOT** update HWM in HWM Store for the failed batch.
 
         All of that allows to resume reading process from the *last successful batch*.
@@ -449,6 +478,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         FROM public.mydata
         WHERE id > 1000 AND id <= 1100; -- 1000 is previous HWM value, step is 100
         ```
+
         !!! note
 
             Step defines a range of values will be fetched by each batch. This is **not**
@@ -472,6 +502,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         FROM public.mydata
         WHERE id > 1000; -- 1000 is previous HWM value (if any)
         ```
+
         !!! note
 
             `stop` should be the same type as `hwm.expression` value,
@@ -484,16 +515,19 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         For example, previous incremental run returned rows:
 
         ```
+
         898
         899
         900
         1000
         ```
+
         Current HWM value is 1000.
 
         But since then few more rows appeared in the source:
 
         ```
+
         898
         899
         900
@@ -503,6 +537,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         999 # new
         1000
         ```
+
         and you need to read them too.
 
         So you can set `offset=100`, so the first batch of a next incremental run will look like:
@@ -512,6 +547,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         FROM public.mydata
         WHERE id > 900 AND id <= 1000; -- 900 = 1000 - 100 = HWM - offset
         ```
+
         and return rows from 901 (**not** 900) to **1000** (duplicate).
 
         !!! warning
@@ -548,6 +584,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was 1000
         -- each batch (1..N) will perform a query which return some part of input data
@@ -559,6 +596,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         2:  WHERE id > 1200 AND id <= 1300; -- + step
         N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
         ```
+
     === "IncrementalBatch run with `stop` value"
 
         ```python
@@ -569,6 +607,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was 1000
         -- each batch (1..N) will perform a query which return some part of input data
@@ -581,6 +620,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         ...
         N:  WHERE id > 1900 AND id <= 2000; -- until stop
         ```
+
     === "IncrementalBatch run with `offset` value"
 
         ```python
@@ -591,6 +631,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was 1000
         -- each batch (1..N) will perform a query which return some part of input data
@@ -604,6 +645,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         ...
         N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
         ```
+
     === "IncrementalBatch run with all possible options"
 
         ```python
@@ -618,6 +660,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was 1000
         -- each batch (1..N) will perform a query which return some part of input data
@@ -631,6 +674,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         ...
         N:  WHERE id > 1900 AND id <= 2000; -- until stop
         ```
+
     === "IncrementalBatch run over non-integer column"
 
         `hwm.expression`, `offset` and `stop` can be a date or datetime, not only integer:
@@ -657,6 +701,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- previous HWM value was '2021-01-10'
         -- each batch (1..N) will perform a query which return some part of input data
@@ -677,6 +722,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         N:  WHERE business_dt  > CAST('2021-01-29' AS DATE)
             AND   business_dt <= CAST('2021-01-31' AS DATE); -- until stop
         ```
+
     """
 
     hwm: Optional[HWM] = None

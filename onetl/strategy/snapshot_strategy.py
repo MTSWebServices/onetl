@@ -25,6 +25,7 @@ class SnapshotStrategy(BaseStrategy):
         ```sql
         SELECT id, data FROM public.mydata;
         ```
+
     For [file-downloader][]:
         Every snapshot run is downloading all the files (from the source, or user-defined list):
 
@@ -34,6 +35,7 @@ class SnapshotStrategy(BaseStrategy):
         /path/my/file1
         /path/my/file2
         ```
+
         ```python
         DownloadResult(
             ...,
@@ -43,6 +45,7 @@ class SnapshotStrategy(BaseStrategy):
             },
         )
         ```
+
     !!! success "Added in 0.1.0"
 
     Examples
@@ -70,6 +73,7 @@ class SnapshotStrategy(BaseStrategy):
 
         # SELECT id, data FROM public.mydata;
         ```
+
     === "Snapshot run with [file-downloader][]"
         ```python
         from onetl.file import FileDownloader
@@ -86,6 +90,7 @@ class SnapshotStrategy(BaseStrategy):
 
         # current run will download all files from 'source_path'
         ```
+
     """
 
 
@@ -141,6 +146,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         FROM public.mydata
         WHERE id >= 1000 AND id <= 1100; -- 1000 is start value, step is 100
         ```
+
         !!! note
 
             Step defines a range of values will be fetched by each batch. This is **not**
@@ -164,6 +170,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         FROM public.mydata
         WHERE id <= 1400; -- 1400 here is stop value (if set)
         ```
+
         !!! note
 
             `start` should be the same type as `hwm.expression` value,
@@ -181,6 +188,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         FROM public.mydata
         WHERE id >= 1000; -- 1000 here is start value (if set)
         ```
+
         !!! note
 
             `stop` should be the same type as `hwm.expression` value,
@@ -209,6 +217,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- get start and stop values
 
@@ -227,6 +236,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         3:  WHERE id > 1200 AND id <= 1300; -- + step
         N:  WHERE id > 2300 AND id <= 2345; -- until stop
         ```
+
     === "SnapshotBatch run with `stop` value"
 
         ```python
@@ -237,6 +247,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- stop value is set, so there is no need to fetch it from DB
         -- get start value
@@ -256,6 +267,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         3:  WHERE id >  1200 AND id <= 1300; -- + step
         N:  WHERE id >  1300 AND id <= 1234; -- until stop
         ```
+
     === "SnapshotBatch run with `start` value"
 
         ```python
@@ -266,6 +278,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- start value is set, so there is no need to fetch it from DB
         -- get only stop value
@@ -286,6 +299,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         ...
         N:  WHERE id > 2300 AND id <= 2345; -- until stop
         ```
+
     === "SnapshotBatch run with all options"
 
         ```python
@@ -300,6 +314,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- start and stop values are set, so no need to fetch boundaries from DB
         -- each batch (1..N) will perform a query which return some part of input data
@@ -313,6 +328,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         ...
         N:  WHERE id >  1900 AND id <= 2000; -- until stop
         ```
+
     === "SnapshotBatch run over non-integer column"
 
         `hwm.expression`, `start` and `stop` can be a date or datetime, not only integer:
@@ -336,6 +352,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
                 df = reader.run()
                 writer.run(df)
         ```
+
         ```sql
         -- start and stop values are set, so no need to fetch boundaries from DB
         -- each batch will perform a query which return some part of input data
@@ -358,6 +375,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         N:  WHERE business_dt >  CAST('2021-01-30' AS DATE)
             AND   business_dt <= CAST('2021-01-31' AS DATE); -- until stop
         ```
+
     """
 
     def fetch_hwm(self) -> None:
