@@ -241,85 +241,85 @@ class IncrementalStrategy(HWMStrategy):
 
     === "Incremental run with [db-reader][]"
 
-            ```python
-            from onetl.db import DBReader, DBWriter
-            from onetl.strategy import IncrementalStrategy
+        ```python
+        from onetl.db import DBReader, DBWriter
+        from onetl.strategy import IncrementalStrategy
 
-            reader = DBReader(
-                connection=postgres,
-                source="public.mydata",
-                columns=["id", "data"],
-                hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="id"),
-            )
+        reader = DBReader(
+            connection=postgres,
+            source="public.mydata",
+            columns=["id", "data"],
+            hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="id"),
+        )
 
-            writer = DBWriter(connection=hive, target="db.newtable")
+        writer = DBWriter(connection=hive, target="db.newtable")
 
-            with IncrementalStrategy():
-                df = reader.run()
-                writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was 1000
-            -- DBReader will generate query like:
+        with IncrementalStrategy():
+            df = reader.run()
+            writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was 1000
+        -- DBReader will generate query like:
 
-            SELECT id, data
-            FROM public.mydata
-            WHERE id > 1000; --- from HWM (EXCLUDING first row)
-            ```
+        SELECT id, data
+        FROM public.mydata
+        WHERE id > 1000; --- from HWM (EXCLUDING first row)
+        ```
     === "Incremental run with [db-reader][] and `IncrementalStrategy(offset=...)`"
 
-            ```python
-            from onetl.db import DBReader, DBWriter
-            from onetl.strategy import IncrementalStrategy
+        ```python
+        from onetl.db import DBReader, DBWriter
+        from onetl.strategy import IncrementalStrategy
 
-            reader = DBReader(
-                connection=postgres,
-                source="public.mydata",
-                columns=["id", "data"],
-                hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="id"),
-            )
+        reader = DBReader(
+            connection=postgres,
+            source="public.mydata",
+            columns=["id", "data"],
+            hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="id"),
+        )
 
-            writer = DBWriter(connection=hive, target="db.newtable")
+        writer = DBWriter(connection=hive, target="db.newtable")
 
-            with IncrementalStrategy(offset=100):
-                df = reader.run()
-                writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was 1000
-            -- DBReader will generate query like:
+        with IncrementalStrategy(offset=100):
+            df = reader.run()
+            writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was 1000
+        -- DBReader will generate query like:
 
-            SELECT id, data
-            FROM public.mydata
-            WHERE id > 900; -- from HWM-offset (EXCLUDING first row)
-            ```
-            `offset` and `hwm.expression` can be a date or datetime, not only integer:
+        SELECT id, data
+        FROM public.mydata
+        WHERE id > 900; -- from HWM-offset (EXCLUDING first row)
+        ```
+        `offset` and `hwm.expression` can be a date or datetime, not only integer:
 
-            ```python
-            from onetl.db import DBReader, DBWriter
-            from datetime import timedelta
+        ```python
+        from onetl.db import DBReader, DBWriter
+        from datetime import timedelta
 
-            reader = DBReader(
-                connection=postgres,
-                source="public.mydata",
-                columns=["business_dt", "data"],
-                hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="business_dt"),
-            )
+        reader = DBReader(
+            connection=postgres,
+            source="public.mydata",
+            columns=["business_dt", "data"],
+            hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="business_dt"),
+        )
 
-            writer = DBWriter(connection=hive, target="db.newtable")
+        writer = DBWriter(connection=hive, target="db.newtable")
 
-            with IncrementalStrategy(offset=timedelta(days=1)):
-                df = reader.run()
-                writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was '2021-01-10'
-            -- DBReader will generate query like:
+        with IncrementalStrategy(offset=timedelta(days=1)):
+            df = reader.run()
+            writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was '2021-01-10'
+        -- DBReader will generate query like:
 
-            SELECT business_dt, data
-            FROM public.mydata
-            WHERE business_dt > CAST('2021-01-09' AS DATE); -- from HWM-offset (EXCLUDING first row)
-            ```
+        SELECT business_dt, data
+        FROM public.mydata
+        WHERE business_dt > CAST('2021-01-09' AS DATE); -- from HWM-offset (EXCLUDING first row)
+        ```
     === "Incremental run with [db-reader][] and [kafka][]"
         ```python
         from onetl.db import DBReader, DBWriter
@@ -530,153 +530,153 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
 
     === "IncrementalBatch run"
 
-            ```python
-            from onetl.db import DBReader, DBWriter
-            from onetl.strategy import IncrementalBatchStrategy
+        ```python
+        from onetl.db import DBReader, DBWriter
+        from onetl.strategy import IncrementalBatchStrategy
 
-            reader = DBReader(
-                connection=postgres,
-                source="public.mydata",
-                columns=["id", "data"],
-                hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="id"),
-            )
+        reader = DBReader(
+            connection=postgres,
+            source="public.mydata",
+            columns=["id", "data"],
+            hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="id"),
+        )
 
-            writer = DBWriter(connection=hive, target="db.newtable")
+        writer = DBWriter(connection=hive, target="db.newtable")
 
-            with IncrementalBatchStrategy(step=100) as batches:
-                for _ in batches:
-                    df = reader.run()
-                    writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was 1000
-            -- each batch (1..N) will perform a query which return some part of input data
+        with IncrementalBatchStrategy(step=100) as batches:
+            for _ in batches:
+                df = reader.run()
+                writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was 1000
+        -- each batch (1..N) will perform a query which return some part of input data
 
-            1:  SELECT id, data
-                FROM public.mydata
-                WHERE id > 1100 AND id <= 1200; --- from HWM to HWM+step (EXCLUDING first row)
+        1:  SELECT id, data
+            FROM public.mydata
+            WHERE id > 1100 AND id <= 1200; --- from HWM to HWM+step (EXCLUDING first row)
 
-            2:  WHERE id > 1200 AND id <= 1300; -- + step
-            N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
-            ```
+        2:  WHERE id > 1200 AND id <= 1300; -- + step
+        N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
+        ```
     === "IncrementalBatch run with `stop` value"
 
-            ```python
-            ...
+        ```python
+        ...
 
-            with IncrementalBatchStrategy(step=100, stop=2000) as batches:
-                for _ in batches:
-                    df = reader.run()
-                    writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was 1000
-            -- each batch (1..N) will perform a query which return some part of input data
+        with IncrementalBatchStrategy(step=100, stop=2000) as batches:
+            for _ in batches:
+                df = reader.run()
+                writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was 1000
+        -- each batch (1..N) will perform a query which return some part of input data
 
-            1:  SELECT id, data
-                FROM public.mydata
-                WHERE id > 1000 AND id <= 1100; --- from HWM to HWM+step (EXCLUDING first row)
+        1:  SELECT id, data
+            FROM public.mydata
+            WHERE id > 1000 AND id <= 1100; --- from HWM to HWM+step (EXCLUDING first row)
 
-            2:  WHERE id > 1100 AND id <= 1200; -- + step
-            ...
-            N:  WHERE id > 1900 AND id <= 2000; -- until stop
-            ```
+        2:  WHERE id > 1100 AND id <= 1200; -- + step
+        ...
+        N:  WHERE id > 1900 AND id <= 2000; -- until stop
+        ```
     === "IncrementalBatch run with `offset` value"
 
-            ```python
-            ...
+        ```python
+        ...
 
-            with IncrementalBatchStrategy(step=100, offset=100) as batches:
-                for _ in batches:
-                    df = reader.run()
-                    writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was 1000
-            -- each batch (1..N) will perform a query which return some part of input data
+        with IncrementalBatchStrategy(step=100, offset=100) as batches:
+            for _ in batches:
+                df = reader.run()
+                writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was 1000
+        -- each batch (1..N) will perform a query which return some part of input data
 
-            1:  SELECT id, data
-                FROM public.mydata
-                WHERE id >  900 AND id <= 1000; --- from HWM-offset to HWM-offset+step (EXCLUDING first row)
+        1:  SELECT id, data
+            FROM public.mydata
+            WHERE id >  900 AND id <= 1000; --- from HWM-offset to HWM-offset+step (EXCLUDING first row)
 
-            2:  WHERE id > 1000 AND id <= 1100; -- + step
-            3:  WHERE id > 1100 AND id <= 1200; -- + step
-            ...
-            N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
-            ```
+        2:  WHERE id > 1000 AND id <= 1100; -- + step
+        3:  WHERE id > 1100 AND id <= 1200; -- + step
+        ...
+        N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
+        ```
     === "IncrementalBatch run with all possible options"
 
-            ```python
-            ...
+        ```python
+        ...
 
-            with IncrementalBatchStrategy(
-                step=100,
-                stop=2000,
-                offset=100,
-            ) as batches:
-                for _ in batches:
-                    df = reader.run()
-                    writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was 1000
-            -- each batch (1..N) will perform a query which return some part of input data
+        with IncrementalBatchStrategy(
+            step=100,
+            stop=2000,
+            offset=100,
+        ) as batches:
+            for _ in batches:
+                df = reader.run()
+                writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was 1000
+        -- each batch (1..N) will perform a query which return some part of input data
 
-            1:  SELECT id, data
-                FROM public.mydata
-                WHERE id > 900 AND id <= 1000; --- from HWM-offset to HWM-offset+step (EXCLUDING first row)
+        1:  SELECT id, data
+            FROM public.mydata
+            WHERE id > 900 AND id <= 1000; --- from HWM-offset to HWM-offset+step (EXCLUDING first row)
 
-            2:  WHERE id > 1000 AND id <= 1100; -- + step
-            3:  WHERE id > 1100 AND id <= 1200; -- + step
-            ...
-            N:  WHERE id > 1900 AND id <= 2000; -- until stop
-            ```
+        2:  WHERE id > 1000 AND id <= 1100; -- + step
+        3:  WHERE id > 1100 AND id <= 1200; -- + step
+        ...
+        N:  WHERE id > 1900 AND id <= 2000; -- until stop
+        ```
     === "IncrementalBatch run over non-integer column"
 
-            `hwm.expression`, `offset` and `stop` can be a date or datetime, not only integer:
+        `hwm.expression`, `offset` and `stop` can be a date or datetime, not only integer:
 
-            ```python
-            from onetl.db import DBReader, DBWriter
-            from datetime import date, timedelta
+        ```python
+        from onetl.db import DBReader, DBWriter
+        from datetime import date, timedelta
 
-            reader = DBReader(
-                connection=postgres,
-                source="public.mydata",
-                columns=["business_dt", "data"],
-                hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="business_dt"),
-            )
+        reader = DBReader(
+            connection=postgres,
+            source="public.mydata",
+            columns=["business_dt", "data"],
+            hwm=DBReader.AutoDetectHWM(name="some_hwm_name", expression="business_dt"),
+        )
 
-            writer = DBWriter(connection=hive, target="db.newtable")
+        writer = DBWriter(connection=hive, target="db.newtable")
 
-            with IncrementalBatchStrategy(
-                step=timedelta(days=5),
-                stop=date("2021-01-31"),
-                offset=timedelta(days=1),
-            ) as batches:
-                for _ in batches:
-                    df = reader.run()
-                    writer.run(df)
-            ```
-            ```sql
-            -- previous HWM value was '2021-01-10'
-            -- each batch (1..N) will perform a query which return some part of input data
+        with IncrementalBatchStrategy(
+            step=timedelta(days=5),
+            stop=date("2021-01-31"),
+            offset=timedelta(days=1),
+        ) as batches:
+            for _ in batches:
+                df = reader.run()
+                writer.run(df)
+        ```
+        ```sql
+        -- previous HWM value was '2021-01-10'
+        -- each batch (1..N) will perform a query which return some part of input data
 
-            1:  SELECT business_dt, data
-                FROM public.mydata
-                WHERE business_dt  > CAST('2021-01-09' AS DATE)  -- from HWM-offset (EXCLUDING first row)
-                AND   business_dt <= CAST('2021-01-14' AS DATE); -- to HWM-offset+step
+        1:  SELECT business_dt, data
+            FROM public.mydata
+            WHERE business_dt  > CAST('2021-01-09' AS DATE)  -- from HWM-offset (EXCLUDING first row)
+            AND   business_dt <= CAST('2021-01-14' AS DATE); -- to HWM-offset+step
 
-            2:  WHERE business_dt  > CAST('2021-01-14' AS DATE) -- + step
-                AND   business_dt <= CAST('2021-01-19' AS DATE);
+        2:  WHERE business_dt  > CAST('2021-01-14' AS DATE) -- + step
+            AND   business_dt <= CAST('2021-01-19' AS DATE);
 
-            3:  WHERE business_dt  > CAST('2021-01-19' AS DATE) -- + step
-                AND   business_dt <= CAST('2021-01-24' AS DATE);
+        3:  WHERE business_dt  > CAST('2021-01-19' AS DATE) -- + step
+            AND   business_dt <= CAST('2021-01-24' AS DATE);
 
-            ...
+        ...
 
-            N:  WHERE business_dt  > CAST('2021-01-29' AS DATE)
-                AND   business_dt <= CAST('2021-01-31' AS DATE); -- until stop
-            ```
+        N:  WHERE business_dt  > CAST('2021-01-29' AS DATE)
+            AND   business_dt <= CAST('2021-01-31' AS DATE); -- until stop
+        ```
     """
 
     hwm: Optional[HWM] = None
