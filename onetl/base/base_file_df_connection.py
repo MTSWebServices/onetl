@@ -31,10 +31,10 @@ class FileDFReadOptions(ABC):
 
         Returns
         -------
-        `pyspark.sql.DataFrameReader`
+        pyspark.sql.DataFrameReader
             DataFrameReader with options applied.
 
-        `ContextManager[DataFrameReader]`
+        ContextManager[DataFrameReader]
             If returned context manager, it will be entered before reading data and exited after creating a DataFrame.
             Context manager's `__enter__` method should return `pyspark.sql.DataFrameReader` instance.
         """
@@ -56,10 +56,10 @@ class FileDFWriteOptions(ABC):
 
         Returns
         -------
-        `pyspark.sql.DataFrameWriter`
+        pyspark.sql.DataFrameWriter
             DataFrameWriter with options applied.
 
-        `ContextManager[DataFrameWriter]`
+        ContextManager[DataFrameWriter]
             If returned context manager, it will be entered before writing and exited after writing a DataFrame.
             Context manager's `__enter__` method should return `pyspark.sql.DataFrameWriter` instance.
         """

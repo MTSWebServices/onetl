@@ -212,7 +212,8 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
 
         Returns
         -------
-        `pyspark.sql.DataFrameWriter` with options applied
+        pyspark.sql.DataFrameWriter
+            Writer with options applied.
         """
         for method, value in self.dict(by_alias=True, exclude_none=True, exclude={"if_exists"}).items():
             # <value> is the arguments that will be passed to the <method>

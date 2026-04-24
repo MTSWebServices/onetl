@@ -62,7 +62,8 @@ class FileDFReaderOptions(FileDFReadOptions, GenericOptions):
 
         Returns
         -------
-        `pyspark.sql.DataFrameReader` with options applied
+        pyspark.sql.DataFrameReader
+            Reader with options applied.
         """
         options = self.dict(by_alias=True, exclude_none=True)
         return reader.options(**options)

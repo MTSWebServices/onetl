@@ -378,7 +378,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        New file path with stats.
+        PathWithStatsProtocol
+            New file path with stats.
 
         Raises
         ------
@@ -434,7 +435,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        List of [onetl.base.PathWithStatsProtocol][]
+        list[PathWithStatsProtocol]
+            Directory contents.
 
         Raises
         ------
@@ -492,9 +494,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        `Iterator[tuple[root, dirs, files]]`, like `os.walk`.
-
-        But all the paths are not strings, instead path classes with embedded stats are returned.
+        Iterable[tuple]
+            Like `os.walk`, but all the paths are not strings, instead path classes with embedded stats are returned.
 
         Raises
         ------
@@ -552,7 +553,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        Local file with stats.
+        PathWithStatsProtocol
+            Local file with stats.
 
         Raises
         ------
@@ -618,7 +620,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        Remote file with stats.
+        PathWithStatsProtocol
+            Remote file with stats.
 
         Raises
         ------
@@ -670,7 +673,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        File content
+        str
+            File content.
 
         Raises
         ------
@@ -703,7 +707,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        File content
+        bytes
+            File content.
 
         Raises
         ------
@@ -751,7 +756,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        File path with stats after write
+        PathWithStatsProtocol
+            File path with stats after write.
 
         Raises
         ------
@@ -794,7 +800,8 @@ class BaseFileConnection(BaseConnection):
 
         Returns
         -------
-        File path with stats after write
+        PathWithStatsProtocol
+            File path with stats after write.
 
         Raises
         ------

@@ -107,7 +107,8 @@ class JDBCMixin:
 
         Returns
         -------
-        Connection itself
+        Self
+            Connection itself.
 
         Examples
         --------

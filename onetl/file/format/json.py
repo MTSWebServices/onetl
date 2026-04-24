@@ -340,8 +340,9 @@ class JSON(ReadOnlyFileFormat):
 
         Returns
         -------
-        Column with deserialized data, with the same structure as the provided schema.
-        Column name is the same as input column.
+        pyspark.sql.Column
+            Column with deserialized data, with the same structure as the provided schema.
+            Column name is the same as input column.
 
         Examples
         --------
@@ -417,7 +418,8 @@ class JSON(ReadOnlyFileFormat):
 
         Returns
         -------
-        Column with string JSON data. Column name is the same as input column.
+        pyspark.sql.Column
+            Column with string JSON data. Column name is the same as input column.
 
         Examples
         --------

@@ -347,8 +347,9 @@ class Avro(ReadWriteFileFormat):
 
         Returns
         -------
-        Column with deserialized data. Schema is matching the provided Avro schema.
-        Column name is the same as input column.
+        pyspark.sql.Column
+            Column with deserialized data. Schema is matching the provided Avro schema.
+            Column name is the same as input column.
 
         Raises
         ------
@@ -451,7 +452,8 @@ class Avro(ReadWriteFileFormat):
 
         Returns
         -------
-        Column with binary Avro data. Column name is the same as input column.
+        pyspark.sql.Column
+            Column with binary Avro data. Column name is the same as input column.
 
         Raises
         ------

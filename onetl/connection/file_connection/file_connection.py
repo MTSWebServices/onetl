@@ -82,7 +82,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
 
         Returns
         -------
-        Connection itself
+        Self
+            Connection itself.
 
         Examples
         --------

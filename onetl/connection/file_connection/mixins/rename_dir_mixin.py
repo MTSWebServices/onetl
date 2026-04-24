@@ -39,7 +39,8 @@ class RenameDirMixin(BaseFileConnection):
 
         Returns
         -------
-        New directory path with stats.
+        PathWithStatsProtocol
+            New directory path with stats.
 
         Raises
         ------

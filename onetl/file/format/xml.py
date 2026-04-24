@@ -486,8 +486,9 @@ class XML(ReadWriteFileFormat):
 
         Returns
         -------
-        Column with deserialized data, with the same structure as the provided schema.
-        Column name is the same as input column.
+        pyspark.sql.Column
+            Column with deserialized data, with the same structure as the provided schema.
+            Column name is the same as input column.
 
         Examples
         --------

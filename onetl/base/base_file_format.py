@@ -38,7 +38,7 @@ class BaseReadableFileFormat(ABC):
 
         Returns
         -------
-        `pyspark.sql.DataFrameReader`
+        pyspark.sql.DataFrameReader
             DataFrameReader with options applied.
         """
 
@@ -72,6 +72,6 @@ class BaseWritableFileFormat(ABC):
 
         Returns
         -------
-        `pyspark.sql.DataFrameWriter`
+        pyspark.sql.DataFrameWriter
             DataFrameWriter with options applied.
         """
