@@ -184,17 +184,17 @@ class HDFS(FileConnection, RenameDirMixin):
         ```
     === "Use cluster name to detect active namenode"
 
-            Can be used only if some third-party plugin provides [hdfs-slots][] implementation
+        Can be used only if some third-party plugin provides [hdfs-slots][] implementation
 
-            ```python
-            from onetl.connection import HDFS
+        ```python
+        from onetl.connection import HDFS
 
-            hdfs = HDFS(
-                cluster="rnd-dwh",
-                user="someuser",
-                password="*****",
-            ).check()
-            ```
+        hdfs = HDFS(
+            cluster="rnd-dwh",
+            user="someuser",
+            password="*****",
+        ).check()
+        ```
     """
 
     cluster: Optional[Cluster] = None

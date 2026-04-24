@@ -52,15 +52,15 @@ class JSONLine(ReadWriteFileFormat):
         ```
     === "Writing files"
 
-            !!! warning
+        !!! warning
 
-                Written files have extension `.json`, not `.jsonl` or `.jsonline`.
+            Written files have extension `.json`, not `.jsonl` or `.jsonline`.
 
-            ```python
-            from onetl.file.format import JSONLine
+        ```python
+        from onetl.file.format import JSONLine
 
-            jsonline = JSONLine(encoding="UTF-8", compression="gzip")
-            ```
+        jsonline = JSONLine(encoding="UTF-8", compression="gzip")
+        ```
     """
 
     name: ClassVar[str] = "json"

@@ -76,19 +76,19 @@ class XML(ReadWriteFileFormat):
         ```
     === "Writing files"
 
-            !!! warning
+        !!! warning
 
-                Due to [bug](https://github.com/databricks/spark-xml/issues/664) written files
-                currently do not have `.xml` extension.
+            Due to [bug](https://github.com/databricks/spark-xml/issues/664) written files
+            currently do not have `.xml` extension.
 
-            ```python
-            # Create Spark session with XML package loaded
-            spark = ...
+        ```python
+        # Create Spark session with XML package loaded
+        spark = ...
 
-            from onetl.file.format import XML
+        from onetl.file.format import XML
 
-            xml = XML(rowTag="item", rootTag="data", compression="gzip")
-            ```
+        xml = XML(rowTag="item", rootTag="data", compression="gzip")
+        ```
     """
 
     name: ClassVar[str] = "xml"

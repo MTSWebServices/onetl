@@ -276,27 +276,27 @@ class DBReader(FrozenModel):
         ```
     === "Incremental reading"
 
-            See [strategy][] for more examples
+        See [strategy][] for more examples
 
-            ```python
-            from onetl.strategy import IncrementalStrategy
+        ```python
+        from onetl.strategy import IncrementalStrategy
 
-            ...
+        ...
 
-            reader = DBReader(
-                connection=postgres,
-                source="fiddle.dummy",
-                hwm=DBReader.AutoDetectHWM(  # mandatory for IncrementalStrategy
-                    name="some_unique_hwm_name",
-                    expression="d_age",
-                ),
-            )
+        reader = DBReader(
+            connection=postgres,
+            source="fiddle.dummy",
+            hwm=DBReader.AutoDetectHWM(  # mandatory for IncrementalStrategy
+                name="some_unique_hwm_name",
+                expression="d_age",
+            ),
+        )
 
-            # read data from table "fiddle.dummy"
-            # but only with new rows (`WHERE d_age > previous_hwm_value`)
-            with IncrementalStrategy():
-                df = reader.run()
-            ```
+        # read data from table "fiddle.dummy"
+        # but only with new rows (`WHERE d_age > previous_hwm_value`)
+        with IncrementalStrategy():
+            df = reader.run()
+        ```
     """
 
     connection: BaseDBConnection

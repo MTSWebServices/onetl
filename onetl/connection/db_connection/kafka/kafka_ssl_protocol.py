@@ -38,68 +38,68 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
 
     === "TLS (verify only server public certificate)"
 
-            Pass PEM certificate as files located on Spark driver host:
+        Pass PEM certificate as files located on Spark driver host:
 
-            ```python
-            from pathlib import Path
+        ```python
+        from pathlib import Path
 
-            # Just read existing files located on host, and pass key and certificates as strings
-            protocol = Kafka.SSLProtocol(
-                truststore_type="PEM",
-                truststore_certificates=Path("/path/to/server.crt").read_text(),
-            )
-            ```
-            Pass PEM certificate as raw string:
+        # Just read existing files located on host, and pass key and certificates as strings
+        protocol = Kafka.SSLProtocol(
+            truststore_type="PEM",
+            truststore_certificates=Path("/path/to/server.crt").read_text(),
+        )
+        ```
+        Pass PEM certificate as raw string:
 
-            ```python
-            protocol = Kafka.SSLProtocol(
-                truststore_type="PEM",
-                truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
-            )
-            ```
+        ```python
+        protocol = Kafka.SSLProtocol(
+            truststore_type="PEM",
+            truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+        )
+        ```
     === "mTLS (mutual certificate check of client and server)"
 
-            Pass PEM key and certificates as files located on Spark driver host:
+        Pass PEM key and certificates as files located on Spark driver host:
 
-            ```python
-            from pathlib import Path
+        ```python
+        from pathlib import Path
 
-            # Just read existing files located on host, and pass key and certificates as strings
-            protocol = Kafka.SSLProtocol(
-                keystore_type="PEM",
-                keystore_certificate_chain=Path("path/to/user.crt").read_text(),
-                keystore_key=Path("path/to/user.key").read_text(),
-                truststore_type="PEM",
-                truststore_certificates=Path("/path/to/server.crt").read_text(),
-            )
-            ```
-            Pass PEM key and certificates as raw strings:
+        # Just read existing files located on host, and pass key and certificates as strings
+        protocol = Kafka.SSLProtocol(
+            keystore_type="PEM",
+            keystore_certificate_chain=Path("path/to/user.crt").read_text(),
+            keystore_key=Path("path/to/user.key").read_text(),
+            truststore_type="PEM",
+            truststore_certificates=Path("/path/to/server.crt").read_text(),
+        )
+        ```
+        Pass PEM key and certificates as raw strings:
 
-            ```python
-            protocol = Kafka.SSLProtocol(
-                keystore_type="PEM",
-                keystore_certificate_chain="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
-                keystore_key="-----BEGIN PRIVATE KEY...\\n...END PRIVATE KEY-----",
-                truststore_type="PEM",
-                truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
-            )
-            ```
+        ```python
+        protocol = Kafka.SSLProtocol(
+            keystore_type="PEM",
+            keystore_certificate_chain="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+            keystore_key="-----BEGIN PRIVATE KEY...\\n...END PRIVATE KEY-----",
+            truststore_type="PEM",
+            truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+        )
+        ```
     === "Custom Kafka client options"
 
-            ```python
-            protocol = Kafka.SSLProtocol.parse(
-                {
-                    # Just the same options as above, but using Kafka config naming with dots
-                    "ssl.keystore.type": "PEM",
-                    "ssl.keystore.certificate_chain": "-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
-                    "ssl.keystore.key": "-----BEGIN PRIVATE KEY...\\n...END PRIVATE KEY-----",
-                    "ssl.truststore.type": "PEM",
-                    "ssl.truststore.certificates": "-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
-                    # Any option starting from "ssl." is passed to Kafka client as-is
-                    "ssl.protocol": "TLSv1.3",
-                }
-            )
-            ```
+        ```python
+        protocol = Kafka.SSLProtocol.parse(
+            {
+                # Just the same options as above, but using Kafka config naming with dots
+                "ssl.keystore.type": "PEM",
+                "ssl.keystore.certificate_chain": "-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                "ssl.keystore.key": "-----BEGIN PRIVATE KEY...\\n...END PRIVATE KEY-----",
+                "ssl.truststore.type": "PEM",
+                "ssl.truststore.certificates": "-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
+                # Any option starting from "ssl." is passed to Kafka client as-is
+                "ssl.protocol": "TLSv1.3",
+            }
+        )
+        ```
     ??? note "Not recommended"
 
         These options are error-prone and have several drawbacks, so it is not recommended to use them.

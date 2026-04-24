@@ -50,125 +50,125 @@ class IncrementalStrategy(HWMStrategy):
 
     === "FileListHWM"
 
-                First incremental run is just the same as
-                [SnapshotStrategy][onetl.strategy.snapshot_strategy.SnapshotStrategy] - all files are downloaded:
+        First incremental run is just the same as
+        [SnapshotStrategy][onetl.strategy.snapshot_strategy.SnapshotStrategy] - all files are downloaded:
 
-                ```bash
-                $ hdfs dfs -ls /path
+        ```bash
+        $ hdfs dfs -ls /path
 
-                /path/my/file1
-                /path/my/file2
-                ```
-                ```python
-                DownloadResult(
-                    ...,
-                    successful={
-                        LocalFile("/downloaded/file1"),
-                        LocalFile("/downloaded/file2"),
-                    },
-                )
-                ```
-                Then the list of original file paths is saved as `FileListHWM` object into [HWM Store][hwm]:
+        /path/my/file1
+        /path/my/file2
+        ```
+        ```python
+        DownloadResult(
+            ...,
+            successful={
+                LocalFile("/downloaded/file1"),
+                LocalFile("/downloaded/file2"),
+            },
+        )
+        ```
+        Then the list of original file paths is saved as `FileListHWM` object into [HWM Store][hwm]:
 
-                ```python
-                FileListHWM(
-                    ...,
-                    entity="/path",
-                    value=[
-                        "/path/my/file1",
-                        "/path/my/file2",
-                    ],
-                )
-                ```
-                Next incremental run will download only new files which were added to the source since previous run:
+        ```python
+        FileListHWM(
+            ...,
+            entity="/path",
+            value=[
+                "/path/my/file1",
+                "/path/my/file2",
+            ],
+        )
+        ```
+        Next incremental run will download only new files which were added to the source since previous run:
 
-                ```bash
-                $ hdfs dfs -ls /path
+        ```bash
+        $ hdfs dfs -ls /path
 
-                /path/my/file1
-                /path/my/file2
-                /path/my/file3
-                ```
-                ```python
-                # only files which are not covered by FileListHWM
-                DownloadResult(
-                    ...,
-                    successful={
-                        LocalFile("/downloaded/file3"),
-                    },
-                )
-                ```
-                Value of `FileListHWM` will be updated and saved to [HWM Store][hwm]:
+        /path/my/file1
+        /path/my/file2
+        /path/my/file3
+        ```
+        ```python
+        # only files which are not covered by FileListHWM
+        DownloadResult(
+            ...,
+            successful={
+                LocalFile("/downloaded/file3"),
+            },
+        )
+        ```
+        Value of `FileListHWM` will be updated and saved to [HWM Store][hwm]:
 
-                ```python
-                FileListHWM(
-                    ...,
-                    directory="/path",
-                    value=[
-                        "/path/my/file1",
-                        "/path/my/file2",
-                        "/path/my/file3",
-                    ],
-                )
-                ```
+        ```python
+        FileListHWM(
+            ...,
+            directory="/path",
+            value=[
+                "/path/my/file1",
+                "/path/my/file2",
+                "/path/my/file3",
+            ],
+        )
+        ```
     === "FileModifiedTimeHWM"
 
-                First incremental run is just the same as
-                [SnapshotStrategy][onetl.strategy.snapshot_strategy.SnapshotStrategy] - all files are downloaded:
+        First incremental run is just the same as
+        [SnapshotStrategy][onetl.strategy.snapshot_strategy.SnapshotStrategy] - all files are downloaded:
 
-                ```bash
-                $ hdfs dfs -ls /path
+        ```bash
+        $ hdfs dfs -ls /path
 
-                /path/my/file1
-                /path/my/file2
-                ```
-                ```python
-                DownloadResult(
-                    ...,
-                    successful={
-                        LocalFile("/downloaded/file1"),
-                        LocalFile("/downloaded/file2"),
-                    },
-                )
-                ```
-                Then the maximum modified time of original files is saved as
-                `FileModifiedTimeHWM` object into [HWM Store][hwm]:
+        /path/my/file1
+        /path/my/file2
+        ```
+        ```python
+        DownloadResult(
+            ...,
+            successful={
+                LocalFile("/downloaded/file1"),
+                LocalFile("/downloaded/file2"),
+            },
+        )
+        ```
+        Then the maximum modified time of original files is saved as
+        `FileModifiedTimeHWM` object into [HWM Store][hwm]:
 
-                ```python
-                FileModifiedTimeHWM(
-                    ...,
-                    directory="/path",
-                    value=datetime.datetime(2025, 1, 1, 11, 22, 33, 456789, tzinfo=timezone.utc),
-                )
-                ```
-                Next incremental run will download only files from the source
-                which were modified or created since previous run:
+        ```python
+        FileModifiedTimeHWM(
+            ...,
+            directory="/path",
+            value=datetime.datetime(2025, 1, 1, 11, 22, 33, 456789, tzinfo=timezone.utc),
+        )
+        ```
+        Next incremental run will download only files from the source
+        which were modified or created since previous run:
 
-                ```bash
-                $ hdfs dfs -ls /path
+        ```bash
+        $ hdfs dfs -ls /path
 
-                /path/my/file1
-                /path/my/file2
-                /path/my/file3
-                ```
-                ```python
-                # only files which are not covered by FileModifiedTimeHWM
-                DownloadResult(
-                    ...,
-                    successful={
-                        LocalFile("/downloaded/file3"),
-                    },
-                )
-                ```
-                Value of `FileModifiedTimeHWM` will be updated and and saved to [HWM Store][hwm]:
+        /path/my/file1
+        /path/my/file2
+        /path/my/file3
+        ```
+        ```python
+        # only files which are not covered by FileModifiedTimeHWM
+        DownloadResult(
+            ...,
+            successful={
+                LocalFile("/downloaded/file3"),
+            },
+        )
+        ```
+        Value of `FileModifiedTimeHWM` will be updated and and saved to [HWM Store][hwm]:
 
-                ```python
-                FileModifiedTimeHWM(
-                    ...,
-                    directory="/path",
-                    value=datetime.datetime(2025, 1, 1, 22, 33, 44, 567890, tzinfo=timezone.utc),
-                )
-                ```
+        ```python
+        FileModifiedTimeHWM(
+            ...,
+            directory="/path",
+            value=datetime.datetime(2025, 1, 1, 22, 33, 44, 567890, tzinfo=timezone.utc),
+        )
+        ```
         !!! warning
 
             FileDownloader updates HWM in HWM Store at the end of `.run()` call,

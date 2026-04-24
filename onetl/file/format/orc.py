@@ -60,22 +60,22 @@ class ORC(ReadWriteFileFormat):
         ```
     === "Writing files"
 
-            ```python
-            from onetl.file.format import ORC
+        ```python
+        from onetl.file.format import ORC
 
-            orc = ORC.parse(
-                {
-                    "compression": "snappy",
-                    # Enable Bloom filter for columns 'id' and 'name'
-                    "orc.bloom.filter.columns": "id,name",
-                    # Set Bloom filter false positive probability
-                    "orc.bloom.filter.fpp": 0.01,
-                    # Do not use dictionary for 'highly_selective_column'
-                    "orc.column.encoding.direct": "highly_selective_column",
-                    # other options
-                }
-            )
-            ```
+        orc = ORC.parse(
+            {
+                "compression": "snappy",
+                # Enable Bloom filter for columns 'id' and 'name'
+                "orc.bloom.filter.columns": "id,name",
+                # Set Bloom filter false positive probability
+                "orc.bloom.filter.fpp": 0.01,
+                # Do not use dictionary for 'highly_selective_column'
+                "orc.column.encoding.direct": "highly_selective_column",
+                # other options
+            }
+        )
+        ```
     """
 
     name: ClassVar[str] = "orc"
