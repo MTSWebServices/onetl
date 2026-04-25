@@ -67,12 +67,12 @@ with IncrementalStrategy():
 
 ### Select only required columns { #DBR-onetl-connection-db-connection-mysql-read-select-only-required-columns }
 
-Instead of passing `"*"` in `DBReader(columns=[...])` prefer passing exact column names. This reduces the amount of data passed from Oracle to Spark.
+Instead of passing `"*"` in `DBReader(columns=[...])` prefer passing exact column names. This reduces the amount of data passed from MySQL to Spark.
 
 ### Pay attention to `where` value { #DBR-onetl-connection-db-connection-mysql-read-pay-attention-to-where-value }
 
 Instead of filtering data on Spark side using `df.filter(df.column == 'value')` pass proper `DBReader(where="column = 'value'")` clause.
-This both reduces the amount of data send from Oracle to Spark, and may also improve performance of the query.
+This both reduces the amount of data send from MySQL to Spark, and may also improve performance of the query.
 Especially if there are indexes for columns used in `where` clause.
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-read-options }

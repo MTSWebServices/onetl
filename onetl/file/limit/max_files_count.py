@@ -29,6 +29,7 @@ class MaxFilesCount(BaseFileLimit, FrozenModel):
     ----------
 
     limit : int
+        Maximum number of files to be handled.
 
     Examples
     --------

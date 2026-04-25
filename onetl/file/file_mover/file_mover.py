@@ -71,7 +71,7 @@ class FileMover(FrozenModel):
 
     Parameters
     ----------
-    connection : [onetl.connection.FileConnection][]
+    connection : FileConnection
         Class which contains File system connection properties. See [file-connections][] section.
 
     target_path : `os.PathLike` or `str`

@@ -55,7 +55,7 @@ class DBWriter(FrozenModel):
         !!! info "Changed in 0.7.0"
             Renamed `table` → `target`
 
-    options : dict, [onetl.connection.DBConnection.WriteOptions][], default: `None`
+    options : dict | WriteOptions, default: `None`
         Spark write options. Can be in form of special `WriteOptions` object or a dict.
 
         For example:

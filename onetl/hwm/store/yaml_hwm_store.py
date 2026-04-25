@@ -171,6 +171,7 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
 
     @slot
     def get_hwm(self, name: str) -> HWM | None:
+        """Get HWM value by name."""
         data = self._load(name)
 
         if not data:
@@ -181,6 +182,7 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
 
     @slot
     def set_hwm(self, hwm: HWM) -> LocalPath:
+        """Save HWM value. Returns path to the YAML file."""
         data = self._load(hwm.name)
         self._dump(hwm.name, [*hwm.serialize(), *data])
         return self.get_file_path(hwm.name)

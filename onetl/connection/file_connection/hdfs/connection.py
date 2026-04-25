@@ -98,7 +98,7 @@ class HDFS(FileConnection, RenameDirMixin):
                 if latter is passed and if some hooks are bound to
                 [Slots.get_cluster_namenodes][onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_cluster_namenodes]
 
-        .. warning:
+        !!! warning
 
             You should pass at least one of these arguments: `cluster`, `host`.
 
@@ -114,7 +114,7 @@ class HDFS(FileConnection, RenameDirMixin):
         and [Slots.is_namenode_active][onetl.connection.file_connection.hdfs.slots.HDFSSlots.is_namenode_active],
         onETL will iterate over cluster namenodes to detect which one is active.
 
-        .. warning:
+        !!! warning
 
             You should pass at least one of these arguments: `cluster`, `host`.
 
@@ -229,11 +229,16 @@ class HDFS(FileConnection, RenameDirMixin):
         Parameters
         ----------
         user : str
-        password : str | None
-        keytab : str | None
-        timeout : int
+            User which has access to HDFS. See [HDFS][] constructor documentation.
 
-            See [HDFS][] constructor documentation.
+        password : str | None
+            User password for Kerberos. See [HDFS][] constructor documentation.
+
+        keytab : str | None
+            Path to keytab file for Kerberos. See [HDFS][] constructor documentation.
+
+        timeout : int
+            Connection timeout. See [HDFS][] constructor documentation.
 
         Examples
         --------
