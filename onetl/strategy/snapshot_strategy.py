@@ -51,7 +51,7 @@ class SnapshotStrategy(BaseStrategy):
     Examples
     --------
 
-    === "Snapshot run with [db-reader][]"
+    ???+ example "Snapshot run with [db-reader][]"
         ```python
         from onetl.db import DBReader, DBWriter
         from onetl.strategy import SnapshotStrategy
@@ -74,7 +74,7 @@ class SnapshotStrategy(BaseStrategy):
         # SELECT id, data FROM public.mydata;
         ```
 
-    === "Snapshot run with [file-downloader][]"
+    ??? example "Snapshot run with [file-downloader][]"
         ```python
         from onetl.file import FileDownloader
         from onetl.strategy import SnapshotStrategy
@@ -197,7 +197,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
     Examples
     --------
 
-    === "SnapshotBatch run"
+    ???+ example "SnapshotBatch run"
 
         ```python
         from onetl.db import DBReader, DBWriter
@@ -237,7 +237,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         N:  WHERE id > 2300 AND id <= 2345; -- until stop
         ```
 
-    === "SnapshotBatch run with `stop` value"
+    ??? example "SnapshotBatch run with `stop` value"
 
         ```python
         ...
@@ -268,7 +268,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         N:  WHERE id >  1300 AND id <= 1234; -- until stop
         ```
 
-    === "SnapshotBatch run with `start` value"
+    ??? example "SnapshotBatch run with `start` value"
 
         ```python
         ...
@@ -300,7 +300,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         N:  WHERE id > 2300 AND id <= 2345; -- until stop
         ```
 
-    === "SnapshotBatch run with all options"
+    ??? example "SnapshotBatch run with all options"
 
         ```python
         ...
@@ -329,7 +329,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
         N:  WHERE id >  1900 AND id <= 2000; -- until stop
         ```
 
-    === "SnapshotBatch run over non-integer column"
+    ??? example "SnapshotBatch run over non-integer column"
 
         `hwm.expression`, `start` and `stop` can be a date or datetime, not only integer:
 

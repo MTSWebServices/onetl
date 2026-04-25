@@ -258,7 +258,7 @@ class IncrementalStrategy(HWMStrategy):
     Examples
     --------
 
-    === "Incremental run with [db-reader][]"
+    ???+ example "Incremental run with [db-reader][]"
 
         ```python
         from onetl.db import DBReader, DBWriter
@@ -287,7 +287,7 @@ class IncrementalStrategy(HWMStrategy):
         WHERE id > 1000; --- from HWM (EXCLUDING first row)
         ```
 
-    === "Incremental run with [db-reader][] and `IncrementalStrategy(offset=...)`"
+    ??? example "Incremental run with [db-reader][] and `IncrementalStrategy(offset=...)`"
 
         ```python
         from onetl.db import DBReader, DBWriter
@@ -345,7 +345,7 @@ class IncrementalStrategy(HWMStrategy):
         WHERE business_dt > CAST('2021-01-09' AS DATE); -- from HWM-offset (EXCLUDING first row)
         ```
 
-    === "Incremental run with [db-reader][] and [kafka][]"
+    ??? example "Incremental run with [db-reader][] and [kafka][]"
         ```python
         from onetl.db import DBReader, DBWriter
         from onetl.strategy import IncrementalStrategy
@@ -364,7 +364,7 @@ class IncrementalStrategy(HWMStrategy):
         # current run will fetch only messages which were added since previous run
         ```
 
-    === "Incremental run with [file-downloader][] and `hwm=FileListHWM(...)`"
+    ??? example "Incremental run with [file-downloader][] and `hwm=FileListHWM(...)`"
         ```python
         from onetl.file import FileDownloader
         from onetl.strategy import SnapshotStrategy
@@ -385,7 +385,7 @@ class IncrementalStrategy(HWMStrategy):
         # current run will download only files which were added since previous run
         ```
 
-    === "Incremental run with [file-downloader][] and `hwm=FileModifiedTimeHWM(...)`"
+    ??? example "Incremental run with [file-downloader][] and `hwm=FileModifiedTimeHWM(...)`"
         ```python
         from onetl.file import FileDownloader
         from onetl.strategy import SnapshotStrategy
@@ -564,7 +564,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
     Examples
     --------
 
-    === "IncrementalBatch run"
+    ???+ example "IncrementalBatch run"
 
         ```python
         from onetl.db import DBReader, DBWriter
@@ -597,7 +597,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
         ```
 
-    === "IncrementalBatch run with `stop` value"
+    ??? example "IncrementalBatch run with `stop` value"
 
         ```python
         ...
@@ -621,7 +621,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         N:  WHERE id > 1900 AND id <= 2000; -- until stop
         ```
 
-    === "IncrementalBatch run with `offset` value"
+    ??? example "IncrementalBatch run with `offset` value"
 
         ```python
         ...
@@ -646,7 +646,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         N:  WHERE id > 1300 AND id <= 1400; -- until max value of HWM column
         ```
 
-    === "IncrementalBatch run with all possible options"
+    ??? example "IncrementalBatch run with all possible options"
 
         ```python
         ...
@@ -675,7 +675,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
         N:  WHERE id > 1900 AND id <= 2000; -- until stop
         ```
 
-    === "IncrementalBatch run over non-integer column"
+    ??? example "IncrementalBatch run over non-integer column"
 
         `hwm.expression`, `offset` and `stop` can be a date or datetime, not only integer:
 
