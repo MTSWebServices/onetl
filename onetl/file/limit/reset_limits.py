@@ -47,6 +47,7 @@ def reset_limits(limits: Iterable[BaseFileLimit]) -> list[BaseFileLimit]:
     >>> new_limits = reset_limits(limits)
     >>> limits_reached(new_limits)
     False
+
     ```
     """
     return [limit.reset() for limit in limits]

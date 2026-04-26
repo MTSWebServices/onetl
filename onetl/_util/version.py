@@ -23,6 +23,7 @@ class Version:
     Version('12.3.4.5')
     >>> Version("12.3.4-patch5")
     Version('12.3.4-patch5')
+
     ```
 
     """
@@ -46,6 +47,7 @@ class Version:
         ```python
         >>> Version("5.6.7").major
         5
+
         ```
         """
         return self._numeric_parts[0] if self._numeric_parts else 0
@@ -63,6 +65,7 @@ class Version:
         6
         >>> Version("5").minor
         0
+
         ```
         """
         return self._numeric_parts[1] if len(self._numeric_parts) > 1 else 0
@@ -80,6 +83,7 @@ class Version:
         7
         >>> Version("5.6").patch
         0
+
         ```
         """
         return self._numeric_parts[2] if len(self._numeric_parts) > 2 else 0  # noqa: PLR2004
@@ -94,6 +98,7 @@ class Version:
         ```python
         >>> Version("1.2.3-alpha").raw_parts
         ['1', '2', '3', 'alpha']
+
         ```
 
         """
@@ -116,6 +121,7 @@ class Version:
         Traceback (most recent call last):
             ...
         IndexError: tuple index out of range
+
         ```
         """
         return self._numeric_parts[item]
@@ -134,6 +140,7 @@ class Version:
         2
         >>> len(Version("5"))
         1
+
         ```
 
         """
@@ -158,6 +165,7 @@ class Version:
         '5.6.7.8'
         >>> str(Version("5.6.7-patch8"))
         '5.6.7-patch8'
+
         ```
 
         """
@@ -175,6 +183,7 @@ class Version:
         True
         >>> Version("5.6.7") == Version("5.6.8")
         False
+
         ```
         """
         if not isinstance(other, Version):
@@ -193,6 +202,7 @@ class Version:
         True
         >>> Version("5.6.9") < Version("5.6.8")
         False
+
         ```
         """
         if not isinstance(other, Version):
@@ -219,6 +229,7 @@ class Version:
         Traceback (most recent call last):
             ...
         ValueError: Version '5.6' does not have enough numeric components for requested format (expected at least 3).
+
         ```
         """
         if len(self._numeric_parts) < num_parts:
@@ -246,6 +257,7 @@ class Version:
         >>> v = Version("12.3.4-patch5")
         >>> v.format("{major}.{minor}.{patch}")
         '12.3.4'
+
         ```
         """
         return format_string.format(

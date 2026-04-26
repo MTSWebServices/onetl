@@ -38,6 +38,7 @@ class Regexp(BaseFileFilter, FrozenModel):
     from onetl.file.filter import Regexp
 
     regexp = Regexp(r"\d+\.csv")
+
     ```
     Create regexp filter from [re.Pattern][]:
 
@@ -47,6 +48,7 @@ class Regexp(BaseFileFilter, FrozenModel):
     from onetl.file.filter import Regexp
 
     regexp = Regexp(re.compile(r"\d+\.csv", re.IGNORECASE | re.DOTALL))
+
     ```
     """
 

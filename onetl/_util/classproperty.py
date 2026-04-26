@@ -18,6 +18,7 @@ class classproperty(property):  # noqa: N801
     >>> # no call
     >>> My.attribute
     123
+
     ```
     """
 

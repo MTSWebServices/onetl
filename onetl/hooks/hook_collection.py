@@ -28,6 +28,7 @@ class HookCollection:
     from onetl.hooks.hook_collection import HookCollection
 
     hooks = HookCollection([Hook(callback=func1), Hook(callback=func2), ...])
+
     ```
     """
 
@@ -60,6 +61,7 @@ class HookCollection:
         ... )
         >>> len(hooks.active)
         1
+
         ```
         """
 
@@ -91,6 +93,7 @@ class HookCollection:
         >>> hooks.stop()
         >>> hooks.active
         HookCollection([])
+
         ```
         """
         self._enabled = False
@@ -128,6 +131,7 @@ class HookCollection:
                 Hook(callback=func2),
             ]
         )
+
         ```
         """
 
@@ -170,6 +174,7 @@ class HookCollection:
         >>> # hooks state is restored as it was before entering the context manager
         >>> len(hooks.active)
         2
+
         ```
         """
 
@@ -200,6 +205,7 @@ class HookCollection:
         ...         Hook(callback=func1),
         ...     ],
         ... )
+
         ```
 
         ```python
@@ -207,6 +213,7 @@ class HookCollection:
         >>> hooks.add(new_hook)
         >>> len(hooks.active)
         2
+
         ```
         """
         self._hooks.append(item)
@@ -229,6 +236,7 @@ class HookCollection:
         ...         Hook(callback=func1),
         ...     ],
         ... )
+
         ```
 
         ```python
@@ -236,6 +244,7 @@ class HookCollection:
         >>> hooks.extend(new_hooks)
         >>> len(hooks.active)
         2
+
         ```
         """
         self._hooks.extend(hooks)
@@ -263,6 +272,7 @@ class HookCollection:
         ...    print(hook.enabled)
         True
         False
+
         ```
         """
         return iter(self._hooks)
@@ -288,6 +298,7 @@ class HookCollection:
         ... )
         >>> len(hooks)
         2
+
         ```
         """
         return len(self._hooks)

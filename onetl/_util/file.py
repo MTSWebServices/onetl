@@ -70,6 +70,7 @@ def generate_temp_path(root: PurePath) -> PurePath:
     >>> with Process(dag="mydag", task="mytask"): # doctest: +SKIP
     ...    generate_temp_path(Path("/abc"))
     Path("/abc/onetl/currenthost/mydag.mytask.myprocess/20230524122150")
+
     ```
     """
 

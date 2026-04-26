@@ -55,6 +55,7 @@ def skip_hooks(cls: type):
 
         # running outside the context restores previous behavior
         obj.my_method(2)  # will execute callback(obj, 2)
+
         ```
     === "Decorator syntax"
         ```python
@@ -89,6 +90,7 @@ def skip_hooks(cls: type):
         # running outside a decorated function restores previous behavior
         obj = MyClass()
         obj.my_method(2)  # will execute callback(obj, 2)
+
         ```
     !!! success "Added in 0.7.0"
     """
@@ -125,6 +127,7 @@ def suspend_hooks(cls: type) -> None:
     MyClass.suspend_hooks()
 
     obj.my_method(2)  # will NOT execute callback
+
     ```
     !!! success "Added in 0.7.0"
     """
@@ -161,6 +164,7 @@ def resume_hooks(cls: type) -> None:
     MyClass.resume_hooks()
 
     obj.my_method(2)  # will execute callback(obj, 2)
+
     ```
     !!! success "Added in 0.7.0"
     """
@@ -199,6 +203,7 @@ def support_hooks(cls: Klass) -> Klass:
 
 
     MyClass().my_method()  # will execute callback function
+
     ```
     """
 

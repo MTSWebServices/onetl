@@ -35,6 +35,7 @@ class ExcludeDir(BaseFileFilter, FrozenModel):
     from onetl.file.filter import ExcludeDir
 
     exclude_dir = ExcludeDir("/export/news_parse/exclude_dir")
+
     ```
     """
 

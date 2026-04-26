@@ -40,6 +40,7 @@ class MaxFilesCount(BaseFileLimit, FrozenModel):
     from onetl.file.limit import MaxFilesCount
 
     limit = MaxFilesCount(100)
+
     ```
     """
 

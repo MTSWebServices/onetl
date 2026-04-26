@@ -45,6 +45,7 @@ def limits_stop_at(path: PathProtocol, limits: Iterable[BaseFileLimit]) -> bool:
     False
     >>> limits_stop_at(LocalPath("/path/to/file3.csv"), limits)
     True
+
     ```
     """
     reached = [limit for limit in limits if limit.stops_at(path)]

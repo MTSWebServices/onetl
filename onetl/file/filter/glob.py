@@ -35,6 +35,7 @@ class Glob(BaseFileFilter, FrozenModel):
     from onetl.file.filter import Glob
 
     glob = Glob("*.csv")
+
     ```
     """
 

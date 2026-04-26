@@ -52,6 +52,7 @@ class FileModifiedTime(BaseFileFilter, FrozenModel):
     hour_ago = datetime.now() - timedelta(hours=1)
     day_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     file_mtime = FileModifiedTime(since=day_start, until=hour_ago)
+
     ```
     Select only files modified since hour ago:
 
@@ -61,6 +62,7 @@ class FileModifiedTime(BaseFileFilter, FrozenModel):
 
     hour_ago = datetime.now() - timedelta(hours=1)
     file_mtime = FileModifiedTime(since=hour_ago)
+
     ```
     """
 

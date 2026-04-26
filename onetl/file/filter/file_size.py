@@ -49,6 +49,7 @@ class FileSizeRange(BaseFileFilter, FrozenModel):
     from onetl.file.filter import FileSizeRange
 
     file_size = FileSizeRange(min="1KiB", max="100MiB")
+
     ```
     Specify only min file size:
 
@@ -56,6 +57,7 @@ class FileSizeRange(BaseFileFilter, FrozenModel):
     from onetl.file.filter import FileSizeRange
 
     file_size = FileSizeRange(min="1KiB")
+
     ```
     Specify only max file size:
 
@@ -63,6 +65,7 @@ class FileSizeRange(BaseFileFilter, FrozenModel):
     from onetl.file.filter import FileSizeRange
 
     file_size = FileSizeRange(max="100MiB")
+
     ```
     """
 

@@ -55,6 +55,7 @@ def stringify(value: Any, *, quote: bool = False) -> Any:
     {'abc': '1'}
     >>> stringify([1, True, False, None, "string"])
     ['1', 'true', 'false', 'null', 'string']
+
     ```
     """
 

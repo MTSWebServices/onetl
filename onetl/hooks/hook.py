@@ -71,6 +71,7 @@ class Hook(Generic[T]):
 
 
     hook = Hook(callback=some_func, enabled=True, priority=HookPriority.FIRST)
+
     ```
     """
 
@@ -98,6 +99,7 @@ class Hook(Generic[T]):
         >>> hook.enable()
         >>> hook.enabled
         True
+
         ```
         """
         if self.enabled:
@@ -128,6 +130,7 @@ class Hook(Generic[T]):
         >>> hook.disable()
         >>> hook.enabled
         False
+
         ```
         """
         if self.enabled:
@@ -170,6 +173,7 @@ class Hook(Generic[T]):
             >>> # hook state is restored as it was before entering the context manager
             >>> hook.enabled
             True
+
             ```
 
         === "Decorator syntax"
@@ -186,6 +190,7 @@ class Hook(Generic[T]):
             >>> # hook state is restored as it was before entering the context manager
             >>> hook.enabled
             True
+
             ```
         """
         if not self.enabled:
@@ -234,6 +239,7 @@ class Hook(Generic[T]):
         {'some': 'arg'}
         >>> result
         'func result'
+
         ```
         """
         result = self.callback(*args, **kwargs)
@@ -277,11 +283,13 @@ class ContextDecorator:
         result = yield
         ...
         yield result
+
         ```
         looks like:
 
         ```python
         yield something
+
         ```
         Just remember this output and return it in [process_result][] as is.
         """
@@ -354,11 +362,13 @@ class ContextDecorator:
         result = yield
         # this is there `process_result` is called
         yield result
+
         ```
         looks like:
 
         ```python
         yield something
+
         ```
         Just return the yielded result.
         """
@@ -395,6 +405,7 @@ def hook(inp: Callable[..., T] | None = None, *, enabled: bool = True, priority:
         @hook(enabled=True, priority=HookPriority.FIRST)
         def another_func(*args, **kwargs):
             ...
+
         ```
     === "Decorate a context manager"
         ```python
@@ -433,6 +444,7 @@ def hook(inp: Callable[..., T] | None = None, *, enabled: bool = True, priority:
                 return modify(result)
 
             ...
+
         ```
     """
 

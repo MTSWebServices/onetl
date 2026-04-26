@@ -28,6 +28,7 @@ class SparkTypeToHWM:
     >>> SparkTypeToHWM.get(DateType())
     <class 'etl_entities.hwm.column.date_hwm.ColumnDateHWM'>
     >>> SparkTypeToHWM.get(StringType())
+
     ```
     """
 
@@ -97,6 +98,7 @@ def register_spark_type_to_hwm_type_mapping(*spark_types: DataType | type[DataTy
     <class 'onetl.hwm.store.hwm_class_registry.MyHWM'>
     >>> SparkTypeToHWM.get(DecimalType(38, 10))
     <class 'etl_entities.hwm.column.int_hwm.ColumnIntHWM'>
+
     ```
     """
 

@@ -18,6 +18,7 @@ def clear_statement(statement: str) -> str:
     'CREATE TABLE mytable (id NUMBER)'
     >>> clear_statement("BEGIN ... END")
     'BEGIN ... END;'
+
     ```
     """
 

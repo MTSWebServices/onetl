@@ -35,6 +35,7 @@ class MethodInheritanceStack:
     ...    def some_method(self, *args, **kwargs):
     ...        self.do_something()
     ...        super().some_method(*args, **kwargs)
+
     ```
 
     ```python
@@ -46,6 +47,7 @@ class MethodInheritanceStack:
     ...         print("BaseClass", method_call_stack.level)
     MyClass 0
     BaseClass 1
+
     ```
     """
 

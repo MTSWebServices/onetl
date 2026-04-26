@@ -46,6 +46,7 @@ def limits_reached(limits: Iterable[BaseFileLimit]) -> bool:
     True
     >>> limits_reached(limits)
     True
+
     ```
     """
     debug = log.isEnabledFor(logging.DEBUG)

@@ -99,6 +99,7 @@ def bind_hook(method: Callable, inp=None):
 
     obj = MyClass()
     obj.method(1)  # will call both callable(obj, 1) and another_callable(obj, 1)
+
     ```
     """
 
@@ -142,6 +143,7 @@ def _prepare_hook_args(
     class MyClass:
         @slot
         def method(self, some, named="abc"): ...
+
     ```
     then hook should have a compatible signature, like these ones:
 
@@ -149,16 +151,19 @@ def _prepare_hook_args(
     @MyClass.method.bind
     @hook
     def callback(self, some, named): ...
+
     ```
     ```python
     @MyClass.method.bind
     @hook
     def callback(self, some, **kwargs): ...
+
     ```
     ```python
     @MyClass.method.bind
     @hook
     def callback(my_class_instance, *args, **kwargs): ...
+
     ```
     !!! note
 
@@ -169,6 +174,7 @@ def _prepare_hook_args(
         @hook
         def callback(self, method_name, *args, **kwargs):
             assert method_name == "method"
+
         ```
         This can be useful for adding multiple hooks on the same callback function.
     """
@@ -273,6 +279,7 @@ def register_slot(cls: type, method_name: str):  # noqa: C901, PLR0915
     MyClass.method = register_slot(MyClass, "method")
     MyClass.class_method = register_slot(MyClass, "class_method")
     MyClass.static_method = register_slot(MyClass, "static_method")
+
     ```
     """
 
@@ -511,6 +518,7 @@ class Slot(Protocol):
                 obj.my_method(1)  # will NOT call callback1
 
             obj.my_method(2)  # will call callback1(obj, 2)
+
             ```
         === "Decorator syntax"
             ```python
@@ -540,6 +548,7 @@ class Slot(Protocol):
             method_without_hooks(obj, 1)  # will NOT call callback1
 
             obj.my_method(2)  # will call callback1(obj, 2)
+
             ```
         """
 
@@ -570,6 +579,7 @@ class Slot(Protocol):
 
         MyClass.my_method.suspend_hooks()
         obj.my_method(1)  # will NOT call callback1
+
         ```
         """
 
@@ -608,6 +618,7 @@ class Slot(Protocol):
 
         MyClass.my_method.resume_hooks()
         obj.my_method(2)  # will call callback1(obj, 2)
+
         ```
         """
 
@@ -679,6 +690,7 @@ def slot(method: Method) -> Method:
     obj.my_method(1)  # will execute callback1(obj, 1)
     MyClass.class_method(2)  # will execute callback2(MyClass, 2)
     MyClass.static_method(3)  # will execute callback3(3)
+
     ```
     """
 

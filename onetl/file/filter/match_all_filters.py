@@ -44,6 +44,7 @@ def match_all_filters(path: PathProtocol, filters: Iterable[BaseFileFilter]) -> 
     False
     >>> match_all_filters(RemoteFile("/excluded/path/file.csv", stats=RemotePathStat()), filters)
     False
+
     ```
     """
 

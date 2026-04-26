@@ -50,6 +50,7 @@ class TotalFilesSize(BaseFileLimit, FrozenModel):
     from onetl.file.limit import MaxFilesCount
 
     limit = TotalFilesSize("1GiB")
+
     ```
     """
 

@@ -35,6 +35,7 @@ class HooksState:
         stop_all_hooks()
 
         # all hooks are stopped now
+
         ```
         """
         if cls._enabled:
@@ -68,6 +69,7 @@ class HooksState:
         resume_all_hooks()
 
         # all hooks are executed now
+
         ```
         """
         if cls._enabled:
@@ -104,6 +106,7 @@ class HooksState:
                 ...
 
             # hook state is restored
+
             ```
         === "Decorator syntax"
             ```python
@@ -119,6 +122,7 @@ class HooksState:
 
 
             main()
+
             ```
         """
 
