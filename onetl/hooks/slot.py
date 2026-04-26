@@ -621,7 +621,7 @@ def slot(method: Method) -> Method:
 
     Decorated methods get additional nested methods:
 
-        * `Slot.bind`
+        * [onetl.hooks.slot.Slot.bind][]
         * [onetl.hooks.slot.Slot.suspend_hooks][]
         * [onetl.hooks.slot.Slot.resume_hooks][]
         * [onetl.hooks.slot.Slot.skip_hooks][]

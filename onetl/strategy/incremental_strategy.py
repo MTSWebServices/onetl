@@ -20,9 +20,9 @@ class IncrementalStrategy(HWMStrategy):
         First incremental run is just the same as
         [SnapshotStrategy][onetl.strategy.snapshot_strategy.SnapshotStrategy]:
 
-        ```sql
-        SELECT id, data FROM mydata;
-        ```
+    ```sql
+    SELECT id, data FROM mydata;
+    ```
 
         Then the max value of `id` column (e.g. `1000`) will be saved as `HWM` to [HWM Store][hwm].
 

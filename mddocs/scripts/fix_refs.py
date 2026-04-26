@@ -165,11 +165,10 @@ CODE_PATH_MAP: dict[str, str] = {
     # Exceptions — keep full dotted path (used in Raises sections)
     "onetl.exception.DirectoryNotFoundError": "onetl.exception.DirectoryNotFoundError",
     "onetl.exception.DirectoryNotEmptyError": "onetl.exception.DirectoryNotEmptyError",
+    "onetl.exception.DirectoryExistsError": "onetl.exception.DirectoryExistsError",
     "onetl.exception.NotAFileError": "onetl.exception.NotAFileError",
     "onetl.exception.FileSizeMismatchError": "onetl.exception.FileSizeMismatchError",
     "onetl.exception.NoDataError": "onetl.exception.NoDataError",
-    # Hooks — methods without their own anchor in generated docs
-    "onetl.hooks.slot.Slot.bind": "Slot.bind",
     # Interface/abstract types — keep full path (used as type annotations)
     "onetl.hooks.hook.HookPriority": "onetl.hooks.hook.HookPriority",
     "onetl.connection.BaseDBConnection": "onetl.connection.BaseDBConnection",
@@ -179,6 +178,7 @@ CODE_PATH_MAP: dict[str, str] = {
     # Protocol/option types — use short name
     "onetl.base.PathWithStatsProtocol": "PathWithStatsProtocol",
     "onetl.base.path_protocol.PathProtocol": "PathProtocol",
+    "onetl.base.path_stat_protocol.PathStatProtocol": "PathStatProtocol",
     "onetl.base.base_file_filter.BaseFileFilter": "BaseFileFilter",
     "onetl.base.base_file_limit.BaseFileLimit": "BaseFileLimit",
 }

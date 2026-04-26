@@ -191,6 +191,7 @@
 * [Troubleshooting](troubleshooting/index.md)
     * [Spark](troubleshooting/spark.md)
 * [Changelog](changelog/index.md)
+    * [0.15.1](changelog/0.15.1.md)
     * [0.15.0](changelog/0.15.0.md)
     * [0.14.1](changelog/0.14.1.md)
     * [0.14.0](changelog/0.14.0.md)

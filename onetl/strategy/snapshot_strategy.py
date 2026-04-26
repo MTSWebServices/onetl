@@ -22,29 +22,29 @@ class SnapshotStrategy(BaseStrategy):
     For [db-reader][]:
         Every snapshot run is executing the simple query which fetches all the table data:
 
-        ```sql
-        SELECT id, data FROM public.mydata;
-        ```
+    ```sql
+    SELECT id, data FROM public.mydata;
+    ```
 
     For [file-downloader][]:
         Every snapshot run is downloading all the files (from the source, or user-defined list):
 
-        ```bash
-        $ hdfs dfs -ls /path
+    ```bash
+    $ hdfs dfs -ls /path
 
-        /path/my/file1
-        /path/my/file2
-        ```
+    /path/my/file1
+    /path/my/file2
+    ```
 
-        ```python
-        DownloadResult(
-            ...,
-            successful={
-                LocalFile("/downloaded/file1"),
-                LocalFile("/downloaded/file2"),
-            },
-        )
-        ```
+    ```python
+    DownloadResult(
+        ...,
+        successful={
+            LocalFile("/downloaded/file1"),
+            LocalFile("/downloaded/file2"),
+        },
+    )
+    ```
 
     !!! success "Added in 0.1.0"
 

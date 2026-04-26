@@ -77,7 +77,7 @@ class SparkS3(SparkFileDFConnection):
     bucket : str
         Bucket name in the S3 file source
 
-    protocol : str, default : `https`
+    protocol : str, default: `https`
         Connection protocol. Allowed values: `https` or `http`
 
     access_key : str, optional

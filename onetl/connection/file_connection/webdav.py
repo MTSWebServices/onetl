@@ -83,7 +83,7 @@ class WebDAV(FileConnection, RenameDirMixin):
             - `False` (disable verification), or
             - a `ssl.SSLContext`
 
-    protocol : str, default : `https`
+    protocol : str, default: `https`
         Connection protocol. Allowed values: `https` or `http`
 
     port : int, optional

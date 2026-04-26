@@ -86,7 +86,7 @@ class S3(FileConnection):
     secret_key : str
         Secret key (aka password) of an account in the S3 service
 
-    protocol : str, default : `https`
+    protocol : str, default: `https`
         Connection protocol. Allowed values: `https` or `http`
 
         !!! info "Changed in 0.6.0"
