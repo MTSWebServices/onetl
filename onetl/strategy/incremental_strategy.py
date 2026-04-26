@@ -32,20 +32,20 @@ class IncrementalStrategy(HWMStrategy):
     SELECT id, data FROM mydata WHERE id > 1000; -- hwm value
     ```
 
-        Pay attention to resulting dataframe **does not include** row with `id=1000` because it has been read before.
+    Pay attention to resulting dataframe **does not include** row with `id=1000` because it has been read before.
 
-        !!! warning
+    !!! warning
 
-            If code inside the context manager raised an exception, like:
+        If code inside the context manager raised an exception, like:
 
-            ```python
-            with IncrementalStrategy():
-                df = reader.run()  # something went wrong here
-                writer.run(df)  # or here
-                # or here...
-            ```
-            When DBReader will **NOT** update HWM in HWM Store.
-            This allows to resume reading process from the *last successful run*.
+        ```python
+        with IncrementalStrategy():
+            df = reader.run()  # something went wrong here
+            writer.run(df)  # or here
+            # or here...
+        ```
+        When DBReader will **NOT** update HWM in HWM Store.
+        This allows to resume reading process from the *last successful run*.
 
     For [file-downloader][]:
         Behavior depends on `hwm` type.
