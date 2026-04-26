@@ -265,7 +265,7 @@ class BaseFileConnection(BaseConnection):
         !!! warning
 
             Supports only one file removal per call.
-            Directory removal is **NOT** supported, use [remove_dir][] instead.
+            Directory removal is **NOT** supported, use `remove_dir` instead.
 
         !!! success "Added in 0.8.0"
 
