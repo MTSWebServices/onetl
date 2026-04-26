@@ -28,9 +28,9 @@ class IncrementalStrategy(HWMStrategy):
 
         Next incremental run will read only new data from the source:
 
-        ```sql
-        SELECT id, data FROM mydata WHERE id > 1000; -- hwm value
-        ```
+    ```sql
+    SELECT id, data FROM mydata WHERE id > 1000; -- hwm value
+    ```
 
         Pay attention to resulting dataframe **does not include** row with `id=1000` because it has been read before.
 
