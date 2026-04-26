@@ -26,3 +26,5 @@ writer.run(df)
 ## Options { #DBR-onetl-connection-db-connection-iceberg-write-options }
 
 ::: onetl.connection.db_connection.iceberg.options.IcebergWriteOptions
+    options:
+        members: [if_exists, table_properties]

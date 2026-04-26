@@ -2,3 +2,5 @@
 
 
 ::: onetl.file.file_mover.options.FileMoverOptions
+    options:
+        members: [if_exists, workers]
