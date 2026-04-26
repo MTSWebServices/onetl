@@ -13,7 +13,6 @@
 ::: onetl.hooks.hook.Hook
     options:
         members:
-            - __init__
             - enable
             - disable
             - skip
