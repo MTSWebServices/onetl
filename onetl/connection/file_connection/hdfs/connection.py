@@ -9,6 +9,7 @@ from logging import getLogger
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from etl_entities.instance import Cluster, Host
+from request import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -209,7 +210,7 @@ class HDFS(FileConnection, RenameDirMixin):
     password: Optional[SecretStr] = None
     keytab: Optional[FilePath] = None
     timeout: int = 10
-    retries: int = 0
+    retry: Optional[Retry] = None
 
     Slots = HDFSSlots
     # TODO: remove in v1.0.0
@@ -438,19 +439,18 @@ class HDFS(FileConnection, RenameDirMixin):
             self._active_host = self._get_host()
         return f"http://{self._active_host}:{self.webhdfs_port}"
 
-    def _get_retries(self) -> HTTPAdapter:
-        retry_strategy = Retry(
-            total=self.retries,  # number of tries to every HTTP-request
-            backoff_factor=1.0,  # delay 1s
-            status_forcelist=[429, 500, 502, 503, 504],  # HTTP-codes list for retry
-            allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS"],
-            raise_on_status=False,  # don't raise exception immediately
+    def _get_session(self) -> Session:
+        adapter = HTTPAdapter(
+            max_retries=self.retry,
         )
-        return HTTPAdapter(
-            max_retries=retry_strategy,
-        )
+        s = Session()
+        s.mount("http://", adapter)
+        s.mount("https://", adapter)
+        return s
 
     def _get_client(self) -> Client:
+        # idk how to make more correctly, cause in source hdfs.Client use self._session = session or rq.Session()
+        session = self._get_session() if isinstance(self.retry, Retry) else None
         if self.user and (self.keytab or self.password):
             from hdfs.ext.kerberos import KerberosClient
 
@@ -461,15 +461,12 @@ class HDFS(FileConnection, RenameDirMixin):
             )
             # checking if namenode is active requires a Kerberos ticket
             conn_str = self._get_conn_str()
-            client = KerberosClient(conn_str, timeout=self.timeout)
+            client = KerberosClient(conn_str, timeout=self.timeout, session=session)
         else:
             from hdfs import InsecureClient
 
             conn_str = self._get_conn_str()
-            client = InsecureClient(conn_str, user=self.user)
-        if self.retries != 0:
-            client._session.mount("http://", self._get_retries)
-            client._session.mount("https://", self._get_retries)
+            client = InsecureClient(conn_str, user=self.user, session=session)
 
         return client
 
