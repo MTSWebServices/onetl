@@ -56,7 +56,7 @@ class Hook(Generic[T]):
 
             Will hook be executed or not. Useful for debugging.
 
-        priority : [onetl.hooks.hook.HookPriority][]
+        priority : HookPriority
 
             Changes hooks priority, see `HookPriority` documentation.
 
