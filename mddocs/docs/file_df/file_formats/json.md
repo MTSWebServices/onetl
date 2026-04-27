@@ -4,7 +4,6 @@
 ::: onetl.file.format.json.JSON
     options:
         members:
-            - __init__
             - parse_column
             - serialize_column
             - allowBackslashEscapingAnyCharacter
