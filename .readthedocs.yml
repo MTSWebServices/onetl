@@ -17,6 +17,6 @@ build:
       - python mddocs/scripts/fix_refs.py
       - python mddocs/scripts/links2anchors.py
     build:
-      - PYTHONPATH=$READTHEDOCS_REPOSITORY_PATH cd mddocs && mkdocs build
+      - cd mddocs && PYTHONPATH=$READTHEDOCS_REPOSITORY_PATH mkdocs build
       - mkdir -p $READTHEDOCS_OUTPUT/html
       - cp -r mddocs/generated/* $READTHEDOCS_OUTPUT/html/

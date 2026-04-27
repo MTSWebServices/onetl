@@ -259,8 +259,8 @@ def parse_args() -> argparse.Namespace:
         "docs_dir",
         nargs="?",
         type=Path,
-        default=Path(__file__).parent / "docs",
-        help="Path to docs directory (default: docs/ next to this script)",
+        default=Path("mddocs/docs"),
+        help="Path to docs directory (default: mddocs/docs relative to repo root)",
     )
     parser.add_argument(
         "--prefix",
