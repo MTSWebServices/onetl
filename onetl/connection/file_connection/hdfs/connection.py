@@ -440,17 +440,14 @@ class HDFS(FileConnection, RenameDirMixin):
         return f"http://{self._active_host}:{self.webhdfs_port}"
 
     def _get_session(self) -> Session:
-        adapter = HTTPAdapter(
-            max_retries=self.retry,
-        )
-        s = Session()
-        s.mount("http://", adapter)
-        s.mount("https://", adapter)
-        return s
+        result = Session()
+        if self.retry:
+          adapter = HTTPAdapter(max_retries=self.retry)
+          result.mount("http://", adapter)
+        return result
 
     def _get_client(self) -> Client:
-        # idk how to make more correctly, cause in source hdfs.Client use self._session = session or rq.Session()
-        session = self._get_session() if isinstance(self.retry, Retry) else None
+        session = self._get_session()
         if self.user and (self.keytab or self.password):
             from hdfs.ext.kerberos import KerberosClient
 
