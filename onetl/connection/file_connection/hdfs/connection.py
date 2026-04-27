@@ -7,10 +7,10 @@ import textwrap
 from contextlib import suppress
 from logging import getLogger
 from typing import TYPE_CHECKING, Optional, Tuple
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 from etl_entities.instance import Cluster, Host
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 try:
     from pydantic.v1 import (
@@ -440,11 +440,11 @@ class HDFS(FileConnection, RenameDirMixin):
 
     def _get_retries(self) -> HTTPAdapter:
         retry_strategy = Retry(
-            total=self.retries,                          # number of tries to every HTTP-request
-            backoff_factor=1.0,           # delay 1s
-            status_forcelist=[429, 500, 502, 503, 504],   # HTTP-codes list for retry
+            total=self.retries, # number of tries to every HTTP-request
+            backoff_factor=1.0, # delay 1s
+            status_forcelist=[429, 500, 502, 503, 504], # HTTP-codes list for retry
             allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS"],
-            raise_on_status=False                         # don't raise exception immediately
+            raise_on_status=False  # don't raise exception immediately
         )
         return HTTPAdapter(
             max_retries=retry_strategy,
@@ -467,10 +467,9 @@ class HDFS(FileConnection, RenameDirMixin):
 
             conn_str = self._get_conn_str()
             client = InsecureClient(conn_str, user=self.user)
-        if self.retries!=0:
+        if self.retries != 0:
             client._session.mount("http://", self._get_retries)
             client._session.mount("https://", self._get_retries)
-
 
         return client
 
