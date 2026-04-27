@@ -466,8 +466,8 @@ class HDFS(FileConnection, RenameDirMixin):
     def _get_session(self) -> Session:
         result = Session()
         if self.retry:
-          adapter = HTTPAdapter(max_retries=self.retry)
-          result.mount("http://", adapter)
+            adapter = HTTPAdapter(max_retries=self.retry)
+            result.mount("http://", adapter)
         return result
 
     def _get_client(self) -> Client:
