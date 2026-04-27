@@ -114,12 +114,14 @@ PYTHON_PATH_MAP: dict[str, str] = {
     "onetl.file.file_df_reader.file_df_reader.FileDFReader": "/file_df/file_df_reader/file_df_reader/#DBR-onetl-file-df-reader-filedf-reader-0",
     "onetl.file.file_df_writer.file_df_writer.FileDFWriter": "/file_df/file_df_writer/file_df_writer/#DBR-onetl-file-df-writer-filedf-writer-0",
     # Filters
+    "onetl.base.base_file_filter.BaseFileFilter": "/file/file_filters/base/#DBR-onetl-file-filters-base-interface",
     "onetl.file.filter.exclude_dir.ExcludeDir": "/file/file_filters/exclude_dir/#DBR-onetl-file-filters-exclude-dir-excludedir",
     "onetl.file.filter.glob.Glob": "/file/file_filters/glob/#DBR-onetl-file-filters-glob",
     "onetl.file.filter.regexp.Regexp": "/file/file_filters/regexp/#DBR-onetl-file-filters-regexp",
     # Formats
     "onetl.file.format.jsonline.JSONLine": "/file_df/file_formats/jsonline/#DBR-onetl-file-df-file-formats-jsonline",
     # Limits
+    "onetl.base.base_file_limit.BaseFileLimit": "/file/file_limits/base/#DBR-onetl-file-limits-base-interface",
     "onetl.file.limit.max_files_count.MaxFilesCount": "/file/file_limits/max_files_count/#DBR-onetl-file-limits-max-files-count-maxfilescount",
     # Postgres options (wrong python path used in docstrings → correct anchor)
     "onetl.connection.db_connection.postgres.Postgres.ReadOptions.fetchsize": "/connection/db_connection/postgres/read/#onetl.connection.db_connection.postgres.options.PostgresReadOptions.fetchsize",
@@ -178,8 +180,6 @@ CODE_PATH_MAP: dict[str, str] = {
     "onetl.base.PathWithStatsProtocol": "PathWithStatsProtocol",
     "onetl.base.path_protocol.PathProtocol": "PathProtocol",
     "onetl.base.path_stat_protocol.PathStatProtocol": "PathStatProtocol",
-    "onetl.base.base_file_filter.BaseFileFilter": "BaseFileFilter",
-    "onetl.base.base_file_limit.BaseFileLimit": "BaseFileLimit",
 }
 
 
