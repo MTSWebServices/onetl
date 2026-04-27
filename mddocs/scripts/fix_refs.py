@@ -170,7 +170,6 @@ CODE_PATH_MAP: dict[str, str] = {
     "onetl.exception.FileSizeMismatchError": "onetl.exception.FileSizeMismatchError",
     "onetl.exception.NoDataError": "onetl.exception.NoDataError",
     # Interface/abstract types — keep full path (used as type annotations)
-    "onetl.hooks.hook.HookPriority": "onetl.hooks.hook.HookPriority",
     "onetl.connection.BaseDBConnection": "onetl.connection.BaseDBConnection",
     "onetl.connection.DBConnection": "onetl.connection.DBConnection",
     "onetl.connection.BaseDBConnection.ReadOptions": "onetl.connection.BaseDBConnection.ReadOptions",
@@ -237,7 +236,7 @@ SHORTNAME_MAP: dict[str, str] = {
     "execute": "`execute`",
     "check": "`check`",
     "sql": "`sql`",
-    "HDFS": "`HDFS`",
+    "HDFS": "[`HDFS`](/connection/file_connection/hdfs/connection/#DBR-onetl-connection-file-connection-hdfs-connection-0)",
     "HWM": "[HWM](/hwm_store/)",
     # Connection class refs
     "SparkHDFS": "[SparkHDFS](/connection/file_df_connection/spark_hdfs/connection/#DBR-onetl-connection-file-df-connection-spark-hdfs-connection)",
