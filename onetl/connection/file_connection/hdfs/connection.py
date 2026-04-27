@@ -157,6 +157,9 @@ class HDFS(FileConnection, RenameDirMixin):
     timeout : int, default: ``10``
         Connection timeout.
 
+    retry : retry, default ``None``
+        Retry configuration for HDFS connection
+
     Examples
     --------
 
@@ -200,6 +203,27 @@ class HDFS(FileConnection, RenameDirMixin):
                     cluster="rnd-dwh",
                     user="someuser",
                     password="*****",
+                ).check()
+
+        .. tab:: Use Retry to define number of requests rerty
+
+            .. code:: python
+
+                from urllib3.util.retry import Retry
+
+                retry_strategy = Retry(
+                    total=5,                    # number of rerties
+                    backoff_factor=1,           # tries delay gap
+                    status_forcelist=[           # HTTP-codes for retry
+                        429, 500, 502, 503, 504
+                    ],
+                    allowed_methods=["HEAD", "GET", "PUT", "OPTIONS"]  # methods for retry
+                )
+                hdfs = HDFS(
+                    host="namenode1.domain.com",
+                    user="someuser",
+                    keytab="/path/to/keytab",
+                    retry = retry_strategy
                 ).check()
     """  # noqa: E501
 
