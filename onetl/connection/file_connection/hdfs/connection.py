@@ -9,7 +9,7 @@ from logging import getLogger
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from etl_entities.instance import Cluster, Host
-from request import Session
+from requests import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
