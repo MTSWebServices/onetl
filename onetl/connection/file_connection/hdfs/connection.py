@@ -440,11 +440,11 @@ class HDFS(FileConnection, RenameDirMixin):
 
     def _get_retries(self) -> HTTPAdapter:
         retry_strategy = Retry(
-            total=self.retries,                          # 3 попытки на каждый HTTP-запрос
-            backoff_factor=1.0,           # задержки: 1s, 2s, 4s
-            status_forcelist=[429, 500, 502, 503, 504],   # retry на эти HTTP-коды
+            total=self.retries,                          # number of tries to every HTTP-request
+            backoff_factor=1.0,           # delay 1s
+            status_forcelist=[429, 500, 502, 503, 504],   # HTTP-codes list for retry
             allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS"],
-            raise_on_status=False                         # не кидать исключение сразу
+            raise_on_status=False                         # don't raise exception immediately
         )
         return HTTPAdapter(
             max_retries=retry_strategy,
