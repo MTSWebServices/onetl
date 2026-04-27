@@ -7,6 +7,8 @@ import textwrap
 from contextlib import suppress
 from logging import getLogger
 from typing import TYPE_CHECKING, Optional, Tuple
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from etl_entities.instance import Cluster, Host
 
@@ -207,6 +209,7 @@ class HDFS(FileConnection, RenameDirMixin):
     password: Optional[SecretStr] = None
     keytab: Optional[FilePath] = None
     timeout: int = 10
+    retries: int = 0
 
     Slots = HDFSSlots
     # TODO: remove in v1.0.0
@@ -435,6 +438,18 @@ class HDFS(FileConnection, RenameDirMixin):
             self._active_host = self._get_host()
         return f"http://{self._active_host}:{self.webhdfs_port}"
 
+    def _get_retries(self) -> HTTPAdapter:
+        retry_strategy = Retry(
+            total=self.retries,                          # 3 попытки на каждый HTTP-запрос
+            backoff_factor=1.0,           # задержки: 1s, 2s, 4s
+            status_forcelist=[429, 500, 502, 503, 504],   # retry на эти HTTP-коды
+            allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS"],
+            raise_on_status=False                         # не кидать исключение сразу
+        )
+        return HTTPAdapter(
+            max_retries=retry_strategy,
+        )
+
     def _get_client(self) -> Client:
         if self.user and (self.keytab or self.password):
             from hdfs.ext.kerberos import KerberosClient
@@ -452,6 +467,10 @@ class HDFS(FileConnection, RenameDirMixin):
 
             conn_str = self._get_conn_str()
             client = InsecureClient(conn_str, user=self.user)
+        if self.retries!=0:
+            client._session.mount("http://", self._get_retries)
+            client._session.mount("https://", self._get_retries)
+
 
         return client
 
