@@ -34,7 +34,7 @@ extra_css:
 
 extra_javascript:
   - _static/javascripts/mermaid_zoom.js
-  - javascript/readthedocs.js
+  - _static/javascripts/readthedocs.js
 
 extra:                                              # Language Selection
   onetl_logo_wide: '[![onETL logo](_static/images/logo_wide.svg)](https://github.com/MTSWebServices/onetl)'
