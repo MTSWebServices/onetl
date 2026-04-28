@@ -114,30 +114,30 @@ class JDBCPartitioningMode(str, Enum):
 class JDBCReadOptions(JDBCFetchOptions):
     """Spark JDBC reading options.
 
-    .. versionadded:: 0.5.0
-        Replace ``SomeDB.Options`` → ``SomeDB.ReadOptions``
+    !!! success "Added in 0.5.0"
+        Replace `SomeDB.Options` → `SomeDB.ReadOptions`
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by Spark <https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by Spark](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import SomeDB
 
-        from onetl.connection import SomeDB
-
-        options = SomeDB.ReadOptions(
-            partitioning_mode="range",
-            partitionColumn="reg_id",
-            numPartitions=10,
-            customSparkOption="value",
-        )
+    options = SomeDB.ReadOptions(
+        partitioning_mode="range",
+        partitionColumn="reg_id",
+        numPartitions=10,
+        customSparkOption="value",
+    )
+    ```
     """
 
     class Config:
@@ -149,29 +149,29 @@ class JDBCReadOptions(JDBCFetchOptions):
     partition_column: Optional[str] = Field(default=None, alias="partitionColumn")
     """Column used to parallelize reading from a table.
 
-    .. warning::
+    !!! warning
         It is highly recommended to use primary key, or column with an index
         to avoid performance issues.
 
-    .. note::
-        Column type depends on :obj:`~partitioning_mode`.
+    !!! note
+        Column type depends on [partitioning_mode][].
 
-        * ``partitioning_mode="range"`` requires column to be an integer,
+        * `partitioning_mode="range"` requires column to be an integer,
           date or timestamp (can be NULL, but not recommended).
-        * ``partitioning_mode="hash"`` accepts any column type (NOT NULL).
-        * ``partitioning_mode="mod"`` requires column to be an integer (NOT NULL).
+        * `partitioning_mode="hash"` accepts any column type (NOT NULL).
+        * `partitioning_mode="mod"` requires column to be an integer (NOT NULL).
 
-    See documentation for :obj:`~partitioning_mode` for more details"""
+    See documentation for [partitioning_mode][] for more details"""
 
     num_partitions: PositiveInt = Field(default=1, alias="numPartitions")
     """Number of jobs created by Spark to read the table content in parallel.
-    See documentation for :obj:`~partitioning_mode` for more details"""
+    See documentation for [partitioning_mode][] for more details"""
 
     lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
-    """See documentation for :obj:`~partitioning_mode` for more details"""
+    """See documentation for [partitioning_mode][] for more details"""
 
     upper_bound: Optional[int] = Field(default=None, alias="upperBound")
-    """See documentation for :obj:`~partitioning_mode` for more details"""
+    """See documentation for [partitioning_mode][] for more details"""
 
     session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
@@ -181,14 +181,14 @@ class JDBCReadOptions(JDBCFetchOptions):
 
     Example:
 
-    .. code:: python
-
-        sessionInitStatement = """
-            BEGIN
-                execute immediate
-                'alter session set "_serial_direct_read"=true';
-            END;
-        """
+    ```python
+    sessionInitStatement = """
+        BEGIN
+            execute immediate
+            'alter session set "_serial_direct_read"=true';
+        END;
+    """
+    ```
     '''
 
     query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
@@ -204,18 +204,18 @@ class JDBCReadOptions(JDBCFetchOptions):
 
     Tuning this option can influence performance of reading.
 
-    .. warning::
+    !!! warning
 
         Default value is different from Spark.
 
         Spark uses driver's own value, and it may be different in different drivers,
         and even versions of the same driver. For example, Oracle has
-        default ``fetchsize=10``, which is absolutely not usable.
+        default `fetchsize=10`, which is absolutely not usable.
 
-        Thus we've overridden default value with ``100_000``, which should increase reading performance.
+        Thus we've overridden default value with `100_000`, which should increase reading performance.
 
-    .. versionchanged:: 0.2.0
-        Set explicit default value to ``100_000``
+    !!! info "Changed in 0.2.0"
+        Set explicit default value to `100_000`
     """
 
     partitioning_mode: JDBCPartitioningMode = JDBCPartitioningMode.RANGE
@@ -223,155 +223,144 @@ class JDBCReadOptions(JDBCFetchOptions):
 
     Possible values:
 
-    * ``range`` (default)
-        Allocate each executor a range of values from column passed into :obj:`~partition_column`.
+    * `range` (default)
+        Allocate each executor a range of values from column passed into [partition_column][].
 
-        .. dropdown:: Spark generates for each executor an SQL query
+        ??? note "Spark generates for each executor an SQL query"
 
             Executor 1:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (partition_column >= lowerBound
-                        OR partition_column IS NULL)
-                AND partition_column < (lowerBound + stride)
-
+            ```sql
+            SELECT ... FROM table
+            WHERE (partition_column >= lowerBound
+                    OR partition_column IS NULL)
+            AND partition_column < (lowerBound + stride)
+            ```
             Executor 2:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE partition_column >= (lowerBound + stride)
-                AND partition_column < (lowerBound + 2 * stride)
-
+            ```sql
+            SELECT ... FROM table
+            WHERE partition_column >= (lowerBound + stride)
+            AND partition_column < (lowerBound + 2 * stride)
+            ```
             ...
 
             Executor N:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE partition_column >= (lowerBound + (N-1) * stride)
-                AND partition_column <= upperBound
-
-            Where ``stride=(upperBound - lowerBound) / numPartitions``.
+            ```sql
+            SELECT ... FROM table
+            WHERE partition_column >= (lowerBound + (N-1) * stride)
+            AND partition_column <= upperBound
+            ```
+            Where `stride=(upperBound - lowerBound) / numPartitions`.
 
         Column type **must be** integer, date or timestamp.
 
-        .. note::
+        !!! note
 
-            :obj:`~lower_bound`, :obj:`~upper_bound` and :obj:`~num_partitions` are used just to
+            [lower_bound][], [upper_bound][] and [num_partitions][] are used just to
             calculate the partition stride, **NOT** for filtering the rows in table.
-            So all rows in the table will be returned (unlike *Incremental* :ref:`strategy`).
+            So all rows in the table will be returned (unlike *Incremental* [strategy][]).
 
-        .. note::
+        !!! note
 
-            All queries are executed in parallel. To execute them sequentially, use *Batch* :ref:`strategy`.
+            All queries are executed in parallel. To execute them sequentially, use *Batch* [strategy][].
 
-    * ``hash``
-        Allocate each executor a set of values based on hash of the :obj:`~partition_column` column.
+    * `hash`
+        Allocate each executor a set of values based on hash of the [partition_column][] column.
 
-        .. dropdown:: Spark generates for each executor an SQL query
+        ??? note "Spark generates for each executor an SQL query"
 
             Executor 1:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (some_hash(partition_column) mod num_partitions) = 0 -- lower_bound
-
+            ```sql
+            SELECT ... FROM table
+            WHERE (some_hash(partition_column) mod num_partitions) = 0 -- lower_bound
+            ```
             Executor 2:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (some_hash(partition_column) mod num_partitions) = 1 -- lower_bound + 1
-
+            ```sql
+            SELECT ... FROM table
+            WHERE (some_hash(partition_column) mod num_partitions) = 1 -- lower_bound + 1
+            ```
             ...
 
             Executor N:
 
-            .. code:: sql
+            ```sql
+            SELECT ... FROM table
+            WHERE (some_hash(partition_column) mod num_partitions) = num_partitions-1 -- upper_bound
+            ```
+        !!! note
 
-                SELECT ... FROM table
-                WHERE (some_hash(partition_column) mod num_partitions) = num_partitions-1 -- upper_bound
-
-        .. note::
-
-            The hash function implementation depends on RDBMS. It can be ``MD5`` or any other fast hash function,
+            The hash function implementation depends on RDBMS. It can be `MD5` or any other fast hash function,
             or expression based on this function call. Usually such functions accepts any column type as an input.
 
-    * ``mod``
-        Allocate each executor a set of values based on modulus of the :obj:`~partition_column` column.
+    * `mod`
+        Allocate each executor a set of values based on modulus of the [partition_column][] column.
 
-        .. dropdown:: Spark generates for each executor an SQL query
+        ??? note "Spark generates for each executor an SQL query"
 
             Executor 1:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (partition_column mod num_partitions) = 0 -- lower_bound
-
+            ```sql
+            SELECT ... FROM table
+            WHERE (partition_column mod num_partitions) = 0 -- lower_bound
+            ```
             Executor 2:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (partition_column mod num_partitions) = 1 -- lower_bound + 1
-
+            ```sql
+            SELECT ... FROM table
+            WHERE (partition_column mod num_partitions) = 1 -- lower_bound + 1
+            ```
             Executor N:
 
-            .. code:: sql
-
-                SELECT ... FROM table
-                WHERE (partition_column mod num_partitions) = num_partitions-1 -- upper_bound
-
-        .. note::
+            ```sql
+            SELECT ... FROM table
+            WHERE (partition_column mod num_partitions) = num_partitions-1 -- upper_bound
+            ```
+        !!! note
 
             Can be used only with columns of integer type.
 
-    .. versionadded:: 0.5.0
+    !!! success "Added in 0.5.0"
 
     Examples
     --------
 
-    Read data in 10 parallel jobs by range of values in ``id_column`` column:
+    Read data in 10 parallel jobs by range of values in `id_column` column:
 
-    .. code:: python
+    ```python
+    ReadOptions(
+        partitioning_mode="range",  # default mode, can be omitted
+        partitionColumn="id_column",
+        numPartitions=10,
+        # Options below can be discarded because they are
+        # calculated automatically as MIN and MAX values of `partitionColumn`
+        lowerBound=0,
+        upperBound=100_000,
+    )
+    ```
+    Read data in 10 parallel jobs by hash of values in `some_column` column:
 
-        ReadOptions(
-            partitioning_mode="range",  # default mode, can be omitted
-            partitionColumn="id_column",
-            numPartitions=10,
-            # Options below can be discarded because they are
-            # calculated automatically as MIN and MAX values of `partitionColumn`
-            lowerBound=0,
-            upperBound=100_000,
-        )
+    ```python
+    ReadOptions(
+        partitioning_mode="hash",
+        partitionColumn="some_column",
+        numPartitions=10,
+        # lowerBound and upperBound are automatically set to `0` and `9`
+    )
+    ```
+    Read data in 10 parallel jobs by modulus of values in `id_column` column:
 
-    Read data in 10 parallel jobs by hash of values in ``some_column`` column:
-
-    .. code:: python
-
-        ReadOptions(
-            partitioning_mode="hash",
-            partitionColumn="some_column",
-            numPartitions=10,
-            # lowerBound and upperBound are automatically set to `0` and `9`
-        )
-
-    Read data in 10 parallel jobs by modulus of values in ``id_column`` column:
-
-    .. code:: python
-
-        ReadOptions(
-            partitioning_mode="mod",
-            partitionColumn="id_column",
-            numPartitions=10,
-            # lowerBound and upperBound are automatically set to `0` and `9`
-        )
+    ```python
+    ReadOptions(
+        partitioning_mode="mod",
+        partitionColumn="id_column",
+        numPartitions=10,
+        # lowerBound and upperBound are automatically set to `0` and `9`
+    )
+    ```
     """
 
     @root_validator
@@ -404,29 +393,29 @@ class JDBCReadOptions(JDBCFetchOptions):
 class JDBCWriteOptions(GenericOptions):
     """Spark JDBC writing options.
 
-    .. versionadded:: 0.5.0
-        Replace ``SomeDB.Options`` → ``SomeDB.WriteOptions``
+    !!! success "Added in 0.5.0"
+        Replace `SomeDB.Options` → `SomeDB.WriteOptions`
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by Spark <https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by Spark](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import SomeDB
 
-        from onetl.connection import SomeDB
-
-        options = SomeDB.WriteOptions(
-            if_exists="append",
-            batchsize=20_000,
-            customSparkOption="value",
-        )
+    options = SomeDB.WriteOptions(
+        if_exists="append",
+        batchsize=20_000,
+        customSparkOption="value",
+    )
+    ```
     """
 
     class Config:
@@ -441,72 +430,72 @@ class JDBCWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * ``append`` (default)
+        * `append` (default)
             Adds new rows into existing table.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``createTableOptions``, ``createTableColumnTypes``, etc).
+                    (`createTableOptions`, `createTableColumnTypes`, etc).
 
                 * Table exists
                     Data is appended to a table. Table has the same DDL as before writing data
 
-                    .. warning::
+                    !!! warning
 
                         This mode does not check whether table already contains
                         rows from dataframe, so duplicated rows can be created.
 
                         Also Spark does not support passing custom options to
-                        insert statement, like ``ON CONFLICT``, so don't try to
+                        insert statement, like `ON CONFLICT`, so don't try to
                         implement deduplication using unique indexes or constraints.
 
                         Instead, write to staging table and perform deduplication
-                        using :obj:`~execute` method.
+                        using [execute][] method.
 
-        * ``replace_entire_table``
+        * `replace_entire_table`
             **Table is dropped and then created, or truncated**.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``createTableOptions``, ``createTableColumnTypes``, etc).
+                    (`createTableOptions`, `createTableColumnTypes`, etc).
 
                 * Table exists
                     Table content is replaced with dataframe content.
 
                     After writing completed, target table could either have the same DDL as
-                    before writing data (``truncate=True``), or can be recreated (``truncate=False``
+                    before writing data (`truncate=True`), or can be recreated (`truncate=False`
                     or source does not support truncation).
 
-        * ``ignore``
+        * `ignore`
             Ignores the write operation if the table already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``createTableOptions``, ``createTableColumnTypes``, etc).
+                    (`createTableOptions`, `createTableColumnTypes`, etc).
 
                 * Table exists
                     The write operation is ignored, and no data is written to the table.
 
-        * ``error``
+        * `error`
             Raises an error if the table already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
                     Table is created using options provided by user
-                    (``createTableOptions``, ``createTableColumnTypes``, etc).
+                    (`createTableOptions`, `createTableColumnTypes`, etc).
 
                 * Table exists
                     An error is raised, and no data is written to the table.
 
-    .. versionchanged:: 0.9.0
-        Renamed ``mode`` → ``if_exists``
+    !!! info "Changed in 0.9.0"
+        Renamed `mode` → `if_exists`
     """
 
     query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
@@ -522,21 +511,21 @@ class JDBCWriteOptions(GenericOptions):
 
     Tuning this option can influence performance of writing.
 
-    .. warning::
+    !!! warning
 
         Default value is different from Spark.
 
-        Spark uses quite small value ``1000``, which is absolutely not usable
+        Spark uses quite small value `1000`, which is absolutely not usable
         in BigData world.
 
-        Thus we've overridden default value with ``20_000``,
+        Thus we've overridden default value with `20_000`,
         which should increase writing performance.
 
-        You can increase it even more, up to ``50_000``,
+        You can increase it even more, up to `50_000`,
         but it depends on your database load and number of columns in the row.
         Higher values does not increase performance.
 
-    .. versionchanged:: 0.4.0
+    !!! info "Changed in 0.4.0"
         Changed default value from 1000 to 20_000
     """
 
@@ -544,15 +533,15 @@ class JDBCWriteOptions(GenericOptions):
     """The transaction isolation level, which applies to current connection.
 
     Possible values:
-        * ``NONE`` (as string, not Python's ``None``)
-        * ``READ_COMMITTED``
-        * ``READ_UNCOMMITTED``
-        * ``REPEATABLE_READ``
-        * ``SERIALIZABLE``
+        * `NONE` (as string, not Python's `None`)
+        * `READ_COMMITTED`
+        * `READ_UNCOMMITTED`
+        * `REPEATABLE_READ`
+        * `SERIALIZABLE`
 
     Values correspond to transaction isolation levels defined by JDBC standard.
     Please refer the documentation for
-    `java.sql.Connection <https://docs.oracle.com/javase/8/docs/api/java/sql/Connection.html>`_.
+    [java.sql.Connection](https://docs.oracle.com/javase/8/docs/api/java/sql/Connection.html).
     """
 
     @root_validator(pre=True)
@@ -573,68 +562,68 @@ class JDBCSQLOptions(GenericOptions):
     These options allow you to specify configurations for executing SQL queries
     without relying on Spark's partitioning mechanisms.
 
-    .. versionadded:: 0.11.0
-        Split up ``SomeDB.ReadOptions`` to ``SomeDB.SQLOptions``
+    !!! success "Added in 0.11.0"
+        Split up `SomeDB.ReadOptions` to `SomeDB.SQLOptions`
 
     Examples
     --------
 
-    .. note::
+    !!! note
 
         You can pass any JDBC configuration
-        `supported by Spark <https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html>`_,
-        tailored to optimize SQL query execution. **Option names should be in** ``camelCase``!
+        [supported by Spark](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html),
+        tailored to optimize SQL query execution. **Option names should be in** `camelCase`!
 
-    .. code:: python
+    ```python
+    from onetl.connection import SomeDB
 
-        from onetl.connection import SomeDB
-
-        options = SomeDB.SQLOptions(
-            partitionColumn="reg_id",
-            numPartitions=10,
-            lowerBound=0,
-            upperBound=1000,
-            customSparkOption="value",
-        )
+    options = SomeDB.SQLOptions(
+        partitionColumn="reg_id",
+        numPartitions=10,
+        lowerBound=0,
+        upperBound=1000,
+        customSparkOption="value",
+    )
+    ```
     """
 
     partition_column: Optional[str] = Field(default=None, alias="partitionColumn")
     """Column used to partition data across multiple executors for parallel query processing.
 
-    .. warning::
+    !!! warning
         It is highly recommended to use primary key, or column with an index
         to avoid performance issues.
 
-    .. dropdown:: Example of using ``partitionColumn="id"`` with ``partitioning_mode="range"``
+    ??? note "Example of using `partitionColumn="id"` with `partitioning_mode="range"`"
 
-        .. code-block:: sql
+        ```sql
+        -- If partition_column is 'id', with numPartitions=4, lowerBound=1, and upperBound=100:
+        -- Executor 1 processes IDs from 1 to 25
+        SELECT ... FROM table WHERE id >= 1 AND id < 26
+        -- Executor 2 processes IDs from 26 to 50
+        SELECT ... FROM table WHERE id >= 26 AND id < 51
+        -- Executor 3 processes IDs from 51 to 75
+        SELECT ... FROM table WHERE id >= 51 AND id < 76
+        -- Executor 4 processes IDs from 76 to 100
+        SELECT ... FROM table WHERE id >= 76 AND id <= 100
 
-            -- If partition_column is 'id', with numPartitions=4, lowerBound=1, and upperBound=100:
-            -- Executor 1 processes IDs from 1 to 25
-            SELECT ... FROM table WHERE id >= 1 AND id < 26
-            -- Executor 2 processes IDs from 26 to 50
-            SELECT ... FROM table WHERE id >= 26 AND id < 51
-            -- Executor 3 processes IDs from 51 to 75
-            SELECT ... FROM table WHERE id >= 51 AND id < 76
-            -- Executor 4 processes IDs from 76 to 100
-            SELECT ... FROM table WHERE id >= 76 AND id <= 100
 
-
-            -- General case for Executor N
-            SELECT ... FROM table
-            WHERE partition_column >= (lowerBound + (N-1) * stride)
-            AND partition_column <= upperBound
-            -- Where ``stride`` is calculated as ``(upperBound - lowerBound) / numPartitions``.
+        -- General case for Executor N
+        SELECT ... FROM table
+        WHERE partition_column >= (lowerBound + (N-1) * stride)
+        AND partition_column <= upperBound
+        -- Where `stride` is calculated as `(upperBound - lowerBound) / numPartitions`.
+        ```
     """
 
     num_partitions: Optional[int] = Field(default=None, alias="numPartitions")
     """Number of jobs created by Spark to read the table content in parallel."""
 
     lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
-    """Defines the lower boundary for partitioning the query's data. Mandatory if :obj:`~partition_column` is set"""
+    """Defines the lower boundary for partitioning the query's data. Mandatory if [partition_column][] is set"""
 
     upper_bound: Optional[int] = Field(default=None, alias="upperBound")
-    """Sets the lower boundary for data partitioning. Mandatory if :obj:`~partition_column` is set"""
+    """Sets the lower boundary for data partitioning. Mandatory if [partition_column][] is set"""
 
     session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
@@ -644,14 +633,14 @@ class JDBCSQLOptions(GenericOptions):
 
     Example:
 
-    .. code:: python
-
-        sessionInitStatement = """
-            BEGIN
-                execute immediate
-                'alter session set "_serial_direct_read"=true';
-            END;
-        """
+    ```python
+    sessionInitStatement = """
+        BEGIN
+            execute immediate
+            'alter session set "_serial_direct_read"=true';
+        END;
+    """
+    ```
     '''
 
     query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
@@ -667,18 +656,18 @@ class JDBCSQLOptions(GenericOptions):
 
     Tuning this option can influence performance of reading.
 
-    .. warning::
+    !!! warning
 
         Default value is different from Spark.
 
         Spark uses driver's own value, and it may be different in different drivers,
         and even versions of the same driver. For example, Oracle has
-        default ``fetchsize=10``, which is absolutely not usable.
+        default `fetchsize=10`, which is absolutely not usable.
 
-        Thus we've overridden default value with ``100_000``, which should increase reading performance.
+        Thus we've overridden default value with `100_000`, which should increase reading performance.
 
-    .. versionchanged:: 0.2.0
-        Set explicit default value to ``100_000``
+    !!! info "Changed in 0.2.0"
+        Set explicit default value to `100_000`
     """
 
     class Config:

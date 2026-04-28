@@ -44,7 +44,7 @@ class SparkMetricsListener(BaseSparkListener):
         """Record only executions performed by current Spark thread.
 
         It is important to use this method only in combination with
-        :obj:`pyspark.util.InheritableThread` to preserve thread-local variables
+        `pyspark.util.InheritableThread` to preserve thread-local variables
         between Python thread and Java thread.
         """
         self.reset()

@@ -33,65 +33,62 @@ PARSE_COLUMN_UNSUPPORTED_OPTIONS = {"inferSchema", "samplingRatio"}
 @support_hooks
 class XML(ReadWriteFileFormat):
     """
-    XML file format. |support_hooks|
+    XML file format. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Databricks Spark XML <https://github.com/databricks/spark-xml>`_ file format.
+    Based on [Databricks Spark XML](https://github.com/databricks/spark-xml) file format.
 
-    Supports reading/writing files with ``.xml`` extension.
+    Supports reading/writing files with `.xml` extension.
 
-    .. versionadded:: 0.9.5
+    !!! success "Added in 0.9.5"
 
-    .. dropdown:: Version compatibility
+    ??? note "Version compatibility"
 
         * Spark versions: 3.2.x - 3.5.x
         * Java versions: 8 - 20
 
-        See `official documentation <https://github.com/databricks/spark-xml>`_.
+        See [official documentation](https://github.com/databricks/spark-xml).
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any option mentioned in
-        `official documentation <https://github.com/databricks/spark-xml>`_.
-        **Option names should be in** ``camelCase``!
+        [official documentation](https://github.com/databricks/spark-xml).
+        **Option names should be in** `camelCase`!
 
-        The set of supported options depends on ``spark-xml`` version.
+        The set of supported options depends on `spark-xml` version.
 
-    .. tabs::
+    === "Reading files"
+        ```python
+        from onetl.file.format import XML
+        from pyspark.sql import SparkSession
 
-        .. code-tab:: py Reading files
+        # Create Spark session with XML package loaded
+        maven_packages = XML.get_packages(spark_version="3.5.8")
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .getOrCreate()
+        )
 
-            from onetl.file.format import XML
-            from pyspark.sql import SparkSession
+        xml = XML(rowTag="item", mode="PERMISSIVE")
+        ```
+    === "Writing files"
 
-            # Create Spark session with XML package loaded
-            maven_packages = XML.get_packages(spark_version="3.5.8")
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .getOrCreate()
-            )
+        !!! warning
 
-            xml = XML(rowTag="item", mode="PERMISSIVE")
+            Due to [bug](https://github.com/databricks/spark-xml/issues/664) written files
+            currently do not have `.xml` extension.
 
-        .. tab:: Writing files
+        ```python
+        # Create Spark session with XML package loaded
+        spark = ...
 
-            .. warning::
+        from onetl.file.format import XML
 
-                Due to `bug <https://github.com/databricks/spark-xml/issues/664>`_ written files
-                currently do not have ``.xml`` extension.
-
-            .. code:: python
-
-                # Create Spark session with XML package loaded
-                spark = ...
-
-                from onetl.file.format import XML
-
-                xml = XML(rowTag="item", rootTag="data", compression="gzip")
-
+        xml = XML(rowTag="item", rootTag="data", compression="gzip")
+        ```
     """
 
     name: ClassVar[str] = "xml"
@@ -103,9 +100,9 @@ class XML(ReadWriteFileFormat):
 
     rootTag: Optional[str] = None
     """
-    XML tag that encloses content of all DataFrame. Default is ``ROWS``.
+    XML tag that encloses content of all DataFrame. Default is `ROWS`.
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """
@@ -114,7 +111,7 @@ class XML(ReadWriteFileFormat):
     """
     Compression codec. By default no compression is used.
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """
@@ -122,210 +119,208 @@ class XML(ReadWriteFileFormat):
     timestampFormat: Optional[str] = None
     """
     Format string used for parsing or serializing timestamp values.
-    By default, ISO 8601 format is used (``yyyy-MM-ddTHH:mm:ss.SSSZ``).
+    By default, ISO 8601 format is used (`yyyy-MM-ddTHH:mm:ss.SSSZ`).
     """
 
     dateFormat: Optional[str] = None
     """
     Format string used for parsing or serializing date values.
-    By default, ISO 8601 format is used (``yyyy-MM-dd``).
+    By default, ISO 8601 format is used (`yyyy-MM-dd`).
     """
 
     timezone: Optional[str] = None
     """
     Allows to override timezone used for parsing or serializing date and timestamp values.
-    By default, ``spark.sql.session.timeZone`` is used.
+    By default, `spark.sql.session.timeZone` is used.
     """
 
     nullValue: Optional[str] = None
     """
-    String value used to represent null. Default is ``null`` string.
+    String value used to represent null. Default is `null` string.
     """
 
     ignoreSurroundingSpaces: Optional[bool] = None
     """
-    If ``True``, trim surrounding spaces while parsing values. Default ``false``.
+    If `True`, trim surrounding spaces while parsing values. Default `false`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     mode: Optional[Literal["PERMISSIVE", "DROPMALFORMED", "FAILFAST"]] = None
     """
     How to handle parsing errors:
-      * ``PERMISSIVE`` - set field value as ``null``, move raw data to :obj:`~columnNameOfCorruptRecord` column.
-      * ``DROPMALFORMED`` - skip the malformed row.
-      * ``FAILFAST`` - throw an error immediately.
+      * `PERMISSIVE` - set field value as `null`, move raw data to [columnNameOfCorruptRecord][] column.
+      * `DROPMALFORMED` - skip the malformed row.
+      * `FAILFAST` - throw an error immediately.
 
-    Default is ``PERMISSIVE``.
+    Default is `PERMISSIVE`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     columnNameOfCorruptRecord: Optional[str] = None
     """
-    Name of DataFrame column there corrupted row is stored with ``mode=PERMISSIVE``.
+    Name of DataFrame column there corrupted row is stored with `mode=PERMISSIVE`.
 
-    .. warning::
+    !!! warning
 
         If DataFrame schema is provided, this column should be added to schema explicitly:
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import XML
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import XML
+        from pyspark.sql.types import StructType, StructField, TImestampType, StringType
 
-            from pyspark.sql.types import StructType, StructField, TImestampType, StringType
+        spark = ...
+        schema = StructType(
+            [
+                StructField("my_field", TimestampType()),
+                StructField("_corrupt_record", StringType()),  # <-- important
+            ]
+        )
+        xml = XML(rowTag="item", columnNameOfCorruptRecord="_corrupt_record")
 
-            spark = ...
-            schema = StructType(
-                [
-                    StructField("my_field", TimestampType()),
-                    StructField("_corrupt_record", StringType()),  # <-- important
-                ]
-            )
-            xml = XML(rowTag="item", columnNameOfCorruptRecord="_corrupt_record")
+        reader = FileDFReader(
+            connection=connection,
+            format=xml,
+            df_schema=schema,  # < ---
+        )
+        df = reader.run(["/some/file.xml"])
+        ```
+    !!! note
 
-            reader = FileDFReader(
-                connection=connection,
-                format=xml,
-                df_schema=schema,  # < ---
-            )
-            df = reader.run(["/some/file.xml"])
-
-    .. note::
-
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     inferSchema: Optional[bool] = None
     """
-    If ``True``, try to infer the input schema by reading a sample of the file (see :obj:`~samplingRatio`).
-    Default ``False`` which means that all parsed columns will be ``StringType()``.
+    If `True`, try to infer the input schema by reading a sample of the file (see [samplingRatio][]).
+    Default `False` which means that all parsed columns will be `StringType()`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files. Ignored by :obj:`~parse_column` function.
+        Used only for reading files. Ignored by [parse_column][] function.
     """
 
     samplingRatio: Optional[float] = Field(default=None, ge=0, le=1)
     """
-    For ``inferSchema=True``, read the specified fraction of rows to infer the schema.
-    Default ``1``.
+    For `inferSchema=True`, read the specified fraction of rows to infer the schema.
+    Default `1`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files. Ignored by :obj:`~parse_column` function.
+        Used only for reading files. Ignored by [parse_column][] function.
     """
 
     charset: Optional[str] = None
     """
-    File encoding. Default is ``UTF-8``
+    File encoding. Default is `UTF-8`
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     valueTag: Optional[str] = None
     """
-    Value used to replace missing values while parsing attributes like ``<sometag someattr>``.
-    Default ``_VALUE``.
+    Value used to replace missing values while parsing attributes like `<sometag someattr>`.
+    Default `_VALUE`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     attributePrefix: Optional[str] = None
     """
-    While parsing tags containing attributes like ``<sometag attr="value">``, attributes are stored as
-    DataFrame schema columns with specified prefix, e.g. ``_attr``.
-    Default ``_``.
+    While parsing tags containing attributes like `<sometag attr="value">`, attributes are stored as
+    DataFrame schema columns with specified prefix, e.g. `_attr`.
+    Default `_`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     excludeAttribute: Optional[bool] = None
     """
-    If ``True``, exclude attributes while parsing tags like ``<sometag attr="value">``.
-    Default ``false``.
+    If `True`, exclude attributes while parsing tags like `<sometag attr="value">`.
+    Default `false`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     wildcardColName: Optional[str] = None
     """
     Name of column or columns which should be preserved as raw XML string, and not parsed.
 
-    .. warning::
+    !!! warning
 
         If DataFrame schema is provided, this column should be added to schema explicitly.
-        See :obj:`~columnNameOfCorruptRecord` example.
+        See [columnNameOfCorruptRecord][] example.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     ignoreNamespace: Optional[bool] = None
     """
-    If ``True``, all namespaces like ``<ns:tag>`` will be ignored and treated as just ``<tag>``.
-    Default ``False``.
+    If `True`, all namespaces like `<ns:tag>` will be ignored and treated as just `<tag>`.
+    Default `False`.
 
-    .. note::
+    !!! note
 
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     rowValidationXSDPath: Optional[str] = None
     """
     Path to XSD file which should be used to validate each row.
-    If row does not match XSD, it will be treated as error, behavior depends on :obj:`~mode` value.
+    If row does not match XSD, it will be treated as error, behavior depends on [mode][] value.
 
     Default is no validation.
 
-    .. note::
+    !!! note
 
-        If Spark session is created with ``master=yarn`` or ``master=k8s``, XSD
+        If Spark session is created with `master=yarn` or `master=k8s`, XSD
         file should be accessible from all Spark nodes. This can be achieved by calling:
 
-        .. code:: python
+        ```python
+        spark.addFile("/path/to/file.xsd")
+        ```
+        And then by passing `rowValidationXSDPath=file.xsd` (relative path).
 
-            spark.addFile("/path/to/file.xsd")
+    !!! note
 
-        And then by passing ``rowValidationXSDPath=file.xsd`` (relative path).
-
-    .. note::
-
-        Used only for reading files or by :obj:`~parse_column` function.
+        Used only for reading files or by [parse_column][] function.
     """
 
     declaration: Optional[str] = None
     """
     Content of `<?XML ... ?>` declaration.
-    Default is ``version="1.0" encoding="UTF-8" standalone="yes"``.
+    Default is `version="1.0" encoding="UTF-8" standalone="yes"`.
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """
 
     arrayElementName: Optional[str] = None
     """
-    If DataFrame column is ``ArrayType``, its content will be written to XML
-    inside ``<arrayElementName>...</arrayElementName>`` tag.
-    Default is ``item``.
+    If DataFrame column is `ArrayType`, its content will be written to XML
+    inside `<arrayElementName>...</arrayElementName>` tag.
+    Default is `item`.
 
-    .. note::
+    !!! note
 
         Used only for writing files.
     """
@@ -344,35 +339,35 @@ class XML(ReadWriteFileFormat):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
             For Spark 4.x this is not required anymore.
 
-        .. versionadded:: 0.9.5
+        !!! success "Added in 0.9.5"
 
         Parameters
         ----------
         spark_version : str
-            Spark version in format ``major.minor.patch``.
+            Spark version in format `major.minor.patch`.
 
         scala_version : str, optional
-            Scala version in format ``major.minor``.
+            Scala version in format `major.minor`.
 
-            If ``None``, ``spark_version`` is used to determine Scala version.
+            If `None`, `spark_version` is used to determine Scala version.
 
         package_version : str, optional
-            Package version in format ``major.minor.patch``. Default is ``0.18.0``.
+            Package version in format `major.minor.patch`. Default is `0.18.0`.
 
-            See `Maven index <https://mvnrepository.com/artifact/com.databricks/spark-xml>`_
+            See [Maven index](https://mvnrepository.com/artifact/com.databricks/spark-xml)
             for list of available versions.
 
-            .. warning::
+            !!! warning
 
-                Version ``0.13`` and below are not supported.
+                Version `0.13` and below are not supported.
 
-            .. note::
+            !!! note
 
                 It is not guaranteed that custom package versions are supported.
                 Tests are performed only for default version.
@@ -380,18 +375,17 @@ class XML(ReadWriteFileFormat):
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.file.format import XML
 
-            from onetl.file.format import XML
-
-            XML.get_packages(spark_version="3.5.8")
-            XML.get_packages(spark_version="3.5.8", scala_version="2.12")
-            XML.get_packages(
-                spark_version="3.5.8",
-                scala_version="2.12",
-                package_version="0.18.0",
-            )
-
+        XML.get_packages(spark_version="3.5.8")
+        XML.get_packages(spark_version="3.5.8", scala_version="2.12")
+        XML.get_packages(
+            spark_version="3.5.8",
+            scala_version="2.12",
+            package_version="0.18.0",
+        )
+        ```
         """
         spark_ver = Version(spark_version)
         if spark_ver.major >= 4:  # noqa: PLR2004
@@ -431,57 +425,55 @@ class XML(ReadWriteFileFormat):
 
     def parse_column(self, column: str | Column, schema: StructType) -> Column:
         """
-        Parses an XML string column into a structured Spark SQL column using the ``from_xml`` function
-        provided by the `Databricks Spark XML library <https://github.com/databricks/spark-xml#pyspark-notes>`_
+        Parses an XML string column into a structured Spark SQL column using the `from_xml` function
+        provided by the [Databricks Spark XML library](https://github.com/databricks/spark-xml#pyspark-notes)
         based on the provided schema.
 
-        .. note::
+        !!! note
 
-            This method assumes that the ``spark-xml`` package is installed: :obj:`~get_packages`.
+            This method assumes that the `spark-xml` package is installed: [get_packages][].
 
-        .. note::
+        !!! note
 
             This method parses each DataFrame row individually. Therefore, for a specific column,
-            each row must contain exactly one occurrence of the ``rowTag`` specified.
+            each row must contain exactly one occurrence of the `rowTag` specified.
 
             If your XML data includes a root tag that encapsulates multiple row tags, you can adjust the schema
-            to use an ``ArrayType`` to keep all child elements under the single root.
+            to use an `ArrayType` to keep all child elements under the single root.
 
-            .. code-block:: xml
+            ```xml
+            <books>
+                <book><title>Book One</title><author>Author A</author></book>
+                <book><title>Book Two</title><author>Author B</author></book>
+            </books>
+            ```
+            And the corresponding schema in Spark using an `ArrayType`:
 
-                <books>
-                    <book><title>Book One</title><author>Author A</author></book>
-                    <book><title>Book Two</title><author>Author B</author></book>
-                </books>
+            ```python
+            from pyspark.sql.types import StructType, StructField, ArrayType, StringType
+            from onetl.file.format import XML
 
-            And the corresponding schema in Spark using an ``ArrayType``:
-
-            .. code-block:: python
-
-                from pyspark.sql.types import StructType, StructField, ArrayType, StringType
-                from onetl.file.format import XML
-
-                # each DataFrame row has exactly one <books> tag
-                xml = XML(rowTag="books")
-                # each <books> tag have multiple <book> tags, so using ArrayType for such field
-                schema = StructType(
-                    [
-                        StructField(
-                            "book",
-                            ArrayType(
-                                StructType(
-                                    [
-                                        StructField("title", StringType(), nullable=True),
-                                        StructField("author", StringType(), nullable=True),
-                                    ],
-                                ),
+            # each DataFrame row has exactly one <books> tag
+            xml = XML(rowTag="books")
+            # each <books> tag have multiple <book> tags, so using ArrayType for such field
+            schema = StructType(
+                [
+                    StructField(
+                        "book",
+                        ArrayType(
+                            StructType(
+                                [
+                                    StructField("title", StringType(), nullable=True),
+                                    StructField("author", StringType(), nullable=True),
+                                ],
                             ),
-                            nullable=True,
                         ),
-                    ],
-                )
-
-        .. versionadded:: 0.11.0
+                        nullable=True,
+                    ),
+                ],
+            )
+            ```
+        !!! success "Added in 0.11.0"
 
         Parameters
         ----------
@@ -494,12 +486,14 @@ class XML(ReadWriteFileFormat):
 
         Returns
         -------
-        Column with deserialized data, with the same structure as the provided schema.
-        Column name is the same as input column.
+        pyspark.sql.Column
+            Column with deserialized data, with the same structure as the provided schema.
+            Column name is the same as input column.
 
         Examples
         --------
 
+        ```python
         >>> from pyspark.sql.types import StructType, StructField, IntegerType, StringType
         >>> from onetl.file.format import XML
         >>> df.show()
@@ -534,6 +528,7 @@ class XML(ReadWriteFileFormat):
         |-- value: struct (nullable = true)
         |    |-- name: string (nullable = true)
         |    |-- age: integer (nullable = true)
+        ```
         """
         from pyspark.sql import Column, SparkSession
 

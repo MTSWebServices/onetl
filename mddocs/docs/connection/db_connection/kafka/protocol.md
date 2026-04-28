@@ -2,3 +2,5 @@
 
 
 ::: onetl.connection.db_connection.kafka.kafka_protocol.KafkaProtocol
+    options:
+        members: [get_options, cleanup]

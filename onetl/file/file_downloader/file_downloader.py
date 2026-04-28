@@ -67,191 +67,190 @@ class FileDownloadStatus(Enum):
 @support_hooks
 class FileDownloader(FrozenModel):
     """Allows you to download files from a remote source with specified file connection
-    and parameters, and return an object with download result summary. |support_hooks|
+    and parameters, and return an object with download result summary. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. note::
+    !!! note
 
-        FileDownloader can return different results depending on :ref:`strategy`
+        FileDownloader can return different results depending on [strategy][]
 
-    .. note::
+    !!! note
 
         This class is used to download files **only** from remote directory to the local one.
 
-        It does NOT support direct file transfer between filesystems, like ``FTP -> SFTP``.
-        You should use FileDownloader + :ref:`file-uploader` to implement ``FTP -> local dir -> SFTP``.
+        It does NOT support direct file transfer between filesystems, like `FTP -> SFTP`.
+        You should use FileDownloader + [file-uploader][] to implement `FTP -> local dir -> SFTP`.
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
-    .. versionchanged:: 0.8.0
-        Moved ``onetl.core.FileDownloader`` → ``onetl.file.FileDownloader``
+    !!! info "Changed in 0.8.0"
+        Moved `onetl.core.FileDownloader` → `onetl.file.FileDownloader`
 
     Parameters
     ----------
-    connection : :obj:`onetl.connection.FileConnection`
-        Class which contains File system connection properties. See :ref:`file-connections` section.
+    connection : FileConnection
+        Class which contains File system connection properties. See [file-connections][] section.
 
-    local_path : :obj:`os.PathLike` or :obj:`str`
+    local_path : `os.PathLike` or `str`
         Local path where you download files
 
-    source_path : :obj:`os.PathLike` or :obj:`str`, optional, default: ``None``
+    source_path : `os.PathLike` or `str`, optional, default: `None`
         Remote path to download files from.
 
-        Could be ``None``, but only if you pass absolute file paths directly to
-        :obj:`~run` method
+        Could be `None`, but only if you pass absolute file paths directly to
+        [run][] method
 
-    temp_path : :obj:`os.PathLike` or :obj:`str`, optional, default: ``None``
+    temp_path : `os.PathLike` or `str`, optional, default: `None`
         If set, this path will be used for downloading a file, and then renaming it to the target file path.
-        If ``None`` is passed, files are downloaded directly to ``target_path``.
+        If `None` is passed, files are downloaded directly to `target_path`.
 
-        .. warning::
+        !!! warning
 
-            In case of production ETL pipelines, please set a value for ``temp_path`` (NOT ``None``).
+            In case of production ETL pipelines, please set a value for `temp_path` (NOT `None`).
             This allows to properly handle download interruption,
             without creating half-downloaded files in the target,
-            because unlike file download, ``rename`` call is atomic.
+            because unlike file download, `rename` call is atomic.
 
-        .. warning::
+        !!! warning
 
             In case of connections like SFTP or FTP, which can have multiple underlying filesystems,
-            please pass to ``temp_path`` path on the SAME filesystem as ``target_path``.
-            Otherwise instead of ``rename``, remote OS will move file between filesystems,
+            please pass to `temp_path` path on the SAME filesystem as `target_path`.
+            Otherwise instead of `rename`, remote OS will move file between filesystems,
             which is NOT atomic operation.
 
-        .. versionadded:: 0.5.0
+        !!! success "Added in 0.5.0"
 
-    filters : list of :obj:`BaseFileFilter <onetl.base.base_file_filter.BaseFileFilter>`
-        Return only files/directories matching these filters. See :ref:`file-filters`
+    filters : list of [BaseFileFilter][onetl.base.base_file_filter.BaseFileFilter]
+        Return only files/directories matching these filters. See [file-filters][]
 
-        .. versionchanged:: 0.3.0
-            Replaces old ``source_path_pattern: str`` and ``exclude_dirs: str`` options.
+        !!! info "Changed in 0.3.0"
+            Replaces old `source_path_pattern: str` and `exclude_dirs: str` options.
 
-        .. versionchanged:: 0.8.0
-            Renamed ``filter`` → ``filters``
+        !!! info "Changed in 0.8.0"
+            Renamed `filter` → `filters`
 
-    limits : list of :obj:`BaseFileLimit <onetl.base.base_file_limit.BaseFileLimit>`
+    limits : list of [BaseFileLimit][onetl.base.base_file_limit.BaseFileLimit]
         Apply limits to the list of files/directories, and stop if one of the limits is reached.
-        See :ref:`file-limits`
+        See [file-limits][]
 
-        .. versionadded:: 0.4.0
+        !!! success "Added in 0.4.0"
 
-        .. versionchanged:: 0.8.0
-            Renamed ``limit`` → ``limits``
+        !!! info "Changed in 0.8.0"
+            Renamed `limit` → `limits`
 
-    options : :obj:`~FileDownloader.Options`  | dict | None, default: ``None``
+    options : [Options][]  | dict | None, default: `None`
         File downloading options.
-        See :obj:`FileDownloader.Options <onetl.file.file_downloader.options.FileDownloaderOptions>`
+        See [FileDownloader.Options][onetl.file.file_downloader.options.FileDownloaderOptions]
 
-        .. versionadded:: 0.3.0
+        !!! success "Added in 0.3.0"
 
-    hwm : type[HWM] | None, default: ``None``
+    hwm : type[HWM] | None, default: `None`
 
         HWM class to detect changes in incremental run.
-        See :etl-entities:`File HWM <hwm/file/index.html>`
+        See [File HWM](https://etl-entities.readthedocs.io/en/stable/hwm/file/index.html)
 
-        .. warning ::
-            Used only in :obj:`IncrementalStrategy <onetl.strategy.incremental_strategy.IncrementalStrategy>`.
+        !!! warning
+            Used only in [IncrementalStrategy][onetl.strategy.incremental_strategy.IncrementalStrategy].
 
-        .. versionadded:: 0.5.0
+        !!! success "Added in 0.5.0"
 
-        .. versionchanged:: 0.10.0
-            Replaces deprecated ``hwm_type`` attribute
+        !!! info "Changed in 0.10.0"
+            Replaces deprecated `hwm_type` attribute
 
     Examples
     --------
 
-    .. tabs::
+    === "Minimal example"
+        ```python
+        from onetl.connection import SFTP
+        from onetl.file import FileDownloader
 
-        .. code-tab:: py Minimal example
+        sftp = SFTP(...)
 
-            from onetl.connection import SFTP
-            from onetl.file import FileDownloader
+        # create downloader
+        downloader = FileDownloader(
+            connection=sftp,
+            source_path="/path/to/remote/source",
+            local_path="/path/to/local",
+        )
 
-            sftp = SFTP(...)
+        # download files to "/path/to/local"
+        downloader.run()
+        ```
+    === "Full example"
+        ```python
+        from onetl.connection import SFTP
+        from onetl.file import FileDownloader
+        from onetl.file.filter import Glob, ExcludeDir
+        from onetl.file.limit import MaxFilesCount, TotalFileSize
 
-            # create downloader
-            downloader = FileDownloader(
-                connection=sftp,
-                source_path="/path/to/remote/source",
-                local_path="/path/to/local",
-            )
+        sftp = SFTP(...)
 
-            # download files to "/path/to/local"
+        # create downloader with a bunch of options
+        downloader = FileDownloader(
+            connection=sftp,
+            source_path="/path/to/remote/source",
+            local_path="/path/to/local",
+            temp_path="/tmp",
+            filters=[
+                Glob("*.txt"),
+                ExcludeDir("/path/to/remote/source/exclude_dir"),
+            ],
+            limits=[MaxFilesCount(100), TotalFileSize("10GiB")],
+            options=FileDownloader.Options(delete_source=True, if_exists="replace_file"),
+        )
+
+        # download files to "/path/to/local",
+        # but only *.txt,
+        # excluding files from "/path/to/remote/source/exclude_dir" directory
+        # and stop before downloading 101 file
+        downloader.run()
+        ```
+    === "Incremental download (by tracking list of file paths)"
+        ```python
+        from onetl.connection import SFTP
+        from onetl.file import FileDownloader
+        from onetl.strategy import IncrementalStrategy
+        from etl_entities.hwm import FileListHWM
+
+        sftp = SFTP(...)
+
+        # create downloader
+        downloader = FileDownloader(
+            connection=sftp,
+            source_path="/path/to/remote/source",
+            local_path="/path/to/local",
+            hwm=FileListHWM(  # mandatory for IncrementalStrategy
+                name="my_unique_hwm_name",
+            ),
+        )
+
+        # download files to "/path/to/local", but only added since previous run
+        with IncrementalStrategy():
             downloader.run()
+        ```
+    === "Incremental download (by tracking file modification time)"
+        ```python
+        from onetl.connection import SFTP
+        from onetl.file import FileDownloader
+        from onetl.strategy import IncrementalStrategy
+        from etl_entities.hwm import FileModifiedTimeHWM
 
-        .. code-tab:: py Full example
+        sftp = SFTP(...)
 
-            from onetl.connection import SFTP
-            from onetl.file import FileDownloader
-            from onetl.file.filter import Glob, ExcludeDir
-            from onetl.file.limit import MaxFilesCount, TotalFileSize
+        # create downloader
+        downloader = FileDownloader(
+            connection=sftp,
+            source_path="/path/to/remote/source",
+            local_path="/path/to/local",
+            hwm=FileModifiedTimeHWM(  # mandatory for IncrementalStrategy
+                name="my_unique_hwm_name",
+            ),
+        )
 
-            sftp = SFTP(...)
-
-            # create downloader with a bunch of options
-            downloader = FileDownloader(
-                connection=sftp,
-                source_path="/path/to/remote/source",
-                local_path="/path/to/local",
-                temp_path="/tmp",
-                filters=[
-                    Glob("*.txt"),
-                    ExcludeDir("/path/to/remote/source/exclude_dir"),
-                ],
-                limits=[MaxFilesCount(100), TotalFileSize("10GiB")],
-                options=FileDownloader.Options(delete_source=True, if_exists="replace_file"),
-            )
-
-            # download files to "/path/to/local",
-            # but only *.txt,
-            # excluding files from "/path/to/remote/source/exclude_dir" directory
-            # and stop before downloading 101 file
+        # download files to "/path/to/local", but only modified/created since previous run
+        with IncrementalStrategy():
             downloader.run()
-
-        .. code-tab:: py Incremental download (by tracking list of file paths)
-
-            from onetl.connection import SFTP
-            from onetl.file import FileDownloader
-            from onetl.strategy import IncrementalStrategy
-            from etl_entities.hwm import FileListHWM
-
-            sftp = SFTP(...)
-
-            # create downloader
-            downloader = FileDownloader(
-                connection=sftp,
-                source_path="/path/to/remote/source",
-                local_path="/path/to/local",
-                hwm=FileListHWM(  # mandatory for IncrementalStrategy
-                    name="my_unique_hwm_name",
-                ),
-            )
-
-            # download files to "/path/to/local", but only added since previous run
-            with IncrementalStrategy():
-                downloader.run()
-
-        .. code-tab:: py Incremental download (by tracking file modification time)
-
-            from onetl.connection import SFTP
-            from onetl.file import FileDownloader
-            from onetl.strategy import IncrementalStrategy
-            from etl_entities.hwm import FileModifiedTimeHWM
-
-            sftp = SFTP(...)
-
-            # create downloader
-            downloader = FileDownloader(
-                connection=sftp,
-                source_path="/path/to/remote/source",
-                local_path="/path/to/local",
-                hwm=FileModifiedTimeHWM(  # mandatory for IncrementalStrategy
-                    name="my_unique_hwm_name",
-                ),
-            )
-
-            # download files to "/path/to/local", but only modified/created since previous run
-            with IncrementalStrategy():
-                downloader.run()
+        ```
     """
 
     Options = FileDownloaderOptions
@@ -275,49 +274,50 @@ class FileDownloader(FrozenModel):
     @slot
     def run(self, files: Iterable[str | os.PathLike] | None = None) -> DownloadResult:  # noqa: C901
         """
-        Method for downloading files from source to local directory. |support_hooks|
+        Method for downloading files from source to local directory. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
-            This method can return different results depending on :ref:`strategy`
+            This method can return different results depending on [strategy][]
 
-        .. versionadded:: 0.1.0
+        !!! success "Added in 0.1.0"
 
         Parameters
         ----------
 
-        files : Iterable[str | os.PathLike] | None, default ``None``
+        files : Iterable[str | os.PathLike] | None, default `None`
             File list to download.
 
-            If empty, download files from ``source_path`` to ``local_path``,
-            applying ``filter``, ``limit`` and ``hwm`` to each one (if set).
+            If empty, download files from `source_path` to `local_path`,
+            applying `filter`, `limit` and `hwm` to each one (if set).
 
-            If not, download to ``local_path`` **all** input files, **ignoring**
+            If not, download to `local_path` **all** input files, **ignoring**
             filters, limits and HWM.
 
-            .. versionadded:: 0.3.0
+            !!! success "Added in 0.3.0"
 
         Returns
         -------
-        :obj:`DownloadResult <onetl.file.file_downloader.download_result.DownloadResult>`
+        [DownloadResult][onetl.file.file_downloader.download_result.DownloadResult]
 
             Download result object
 
         Raises
         ------
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
 
-            ``source_path`` does not found
+            `source_path` does not found
 
         NotADirectoryError
 
-            ``source_path`` or ``local_path`` is not a directory
+            `source_path` or `local_path` is not a directory
 
         Examples
         --------
 
-        Download files from ``source_path`` to ``local_path``:
+        Download files from `source_path` to `local_path`:
 
+        ```python
         >>> from onetl.file import FileDownloader
         >>> downloader = FileDownloader(source_path="/remote", local_path="/local", ...)
         >>> download_result = downloader.run()
@@ -339,9 +339,11 @@ class FileDownloader(FrozenModel):
                 RemotePath("/remote/missing.file"),
             ]),
         )
+        ```
 
-        Download only certain files from ``source_path``:
+        Download only certain files from `source_path`:
 
+        ```python
         >>> from onetl.file import FileDownloader
         >>> downloader = FileDownloader(source_path="/remote", local_path="/local", ...)
         >>> # paths could be relative or absolute, but all should be in "/remote"
@@ -363,9 +365,11 @@ class FileDownloader(FrozenModel):
             skipped=FileSet([]),
             missing=FileSet([]),
         )
+        ```
 
         Download certain files from any folder:
 
+        ```python
         >>> from onetl.file import FileDownloader
         >>> downloader = FileDownloader(local_path="/local", ...)  # no source_path set
         >>> # only absolute paths
@@ -386,6 +390,7 @@ class FileDownloader(FrozenModel):
             skipped=FileSet([]),
             missing=FileSet([]),
         )
+        ```
         """
 
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
@@ -443,35 +448,36 @@ class FileDownloader(FrozenModel):
     @slot
     def view_files(self) -> FileSet[RemoteFile]:
         """
-        Get file list in the ``source_path``,
-        after ``filter``, ``limit`` and ``hwm`` applied (if any). |support_hooks|
+        Get file list in the `source_path`,
+        after `filter`, `limit` and `hwm` applied (if any). [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
-            This method can return different results depending on :ref:`strategy`
+            This method can return different results depending on [strategy][]
 
-        .. versionadded:: 0.3.0
+        !!! success "Added in 0.3.0"
 
         Raises
         ------
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
 
-            ``source_path`` does not found
+            `source_path` does not found
 
         NotADirectoryError
 
-            ``source_path`` is not a directory
+            `source_path` is not a directory
 
         Returns
         -------
         FileSet[RemoteFile]
-            Set of files in ``source_path``, which will be downloaded by :obj:`~run` method
+            Set of files in `source_path`, which will be downloaded by [run][] method
 
         Examples
         --------
 
         View files:
 
+        ```python
         >>> from onetl.file import FileDownloader
         >>> downloader = FileDownloader(source_path="/remote", ...)
         >>> downloader.view_files()
@@ -480,6 +486,7 @@ class FileDownloader(FrozenModel):
             RemoteFile("/remote/file3.txt"),
             RemoteFile("/remote/nested/file3.txt"),
         ])
+        ```
         """
 
         if not self.source_path:

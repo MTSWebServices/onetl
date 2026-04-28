@@ -52,27 +52,27 @@ class MongoDBExtra(GenericOptions):
 
 @support_hooks
 class MongoDB(DBConnection):
-    """MongoDB connection. |support_hooks|
+    """MongoDB connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on package `org.mongodb.spark:mongo-spark-connector:10.5.0 <https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector_2.12/10.5.0>`_
-    (`MongoDB connector for Spark <https://www.mongodb.com/docs/spark-connector/current/>`_)
+    Based on package [org.mongodb.spark:mongo-spark-connector:10.5.0](https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector_2.12/10.5.0)
+    ([MongoDB connector for Spark](https://www.mongodb.com/docs/spark-connector/current/))
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`mongodb-prerequisites`
+        Before using this connector please take into account [mongodb-prerequisites][]
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Parameters
     ----------
     host : str
-        Host of MongoDB. For example: ``test.mongodb.com`` or ``193.168.1.17``.
+        Host of MongoDB. For example: `test.mongodb.com` or `193.168.1.17`.
 
-    port : int, default: ``27017``.
+    port : int, default: `27017`.
         Port of MongoDB
 
     user : str
-        User, which have proper access to the database. For example: ``some_user``.
+        User, which have proper access to the database. For example: `some_user`.
 
     password : str
         Password for database connection.
@@ -80,42 +80,41 @@ class MongoDB(DBConnection):
     database : str
         Database in MongoDB.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"tls": "false"}``
+        For example: `{"tls": "false"}`
 
-        See `Connection string options documentation
-        <https://www.mongodb.com/docs/manual/reference/connection-string/#std-label-connections-connection-options>`_
+        See [Connection string options documentation](https://www.mongodb.com/docs/manual/reference/connection-string/#std-label-connections-connection-options)
         for more details
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
     Examples
     --------
 
-    .. code:: python
+    ```python
+    from onetl.connection import MongoDB
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import MongoDB
-        from pyspark.sql import SparkSession
+    # Create Spark session with MongoDB connector loaded
+    maven_packages = MongoDB.get_packages(spark_version="3.4")
+    spark = (
+        SparkSession.builder.appName("spark-app-name")
+        .config("spark.jars.packages", ",".join(maven_packages))
+        .getOrCreate()
+    )
 
-        # Create Spark session with MongoDB connector loaded
-        maven_packages = MongoDB.get_packages(spark_version="3.4")
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .getOrCreate()
-        )
-
-        # Create connection
-        mongo = MongoDB(
-            host="master.host.or.ip",
-            user="user",
-            password="*****",
-            database="target_database",
-            spark=spark,
-        ).check()
+    # Create connection
+    mongo = MongoDB(
+        host="master.host.or.ip",
+        user="user",
+        password="*****",
+        database="target_database",
+        spark=spark,
+    ).check()
+    ```
     """
 
     database: str
@@ -146,37 +145,37 @@ class MongoDB(DBConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Allows specifying custom MongoDB Spark connector versions.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         scala_version : str, optional
-            Scala version in format ``major.minor``.
+            Scala version in format `major.minor`.
 
-            If ``None``, ``spark_version`` is used to determine Scala version.
+            If `None`, `spark_version` is used to determine Scala version.
 
         spark_version : str, optional
-            Spark version in format ``major.minor``. Used only if ``scala_version=None``.
+            Spark version in format `major.minor`. Used only if `scala_version=None`.
 
         package_version : str, optional
-            Specifies the version of the MongoDB Spark connector to use. Defaults to ``10.5.0``.
+            Specifies the version of the MongoDB Spark connector to use. Defaults to `10.5.0`.
 
-            .. versionadded:: 0.11.0
+            !!! success "Added in 0.11.0"
 
         Examples
         --------
-        .. code:: python
+        ```python
+        from onetl.connection import MongoDB
 
-            from onetl.connection import MongoDB
+        MongoDB.get_packages(scala_version="2.12")
 
-            MongoDB.get_packages(scala_version="2.12")
-
-            # specify custom connector version
-            MongoDB.get_packages(scala_version="2.12", package_version="10.5.0")
+        # specify custom connector version
+        MongoDB.get_packages(scala_version="2.12", package_version="10.5.0")
+        ```
         """
 
         default_package_version = "10.5.0"
@@ -232,23 +231,22 @@ class MongoDB(DBConnection):
         options: MongoDBPipelineOptions | dict | None = None,
     ):
         """
-        Execute a pipeline for a specific collection, and return DataFrame. |support_hooks|
+        Execute a pipeline for a specific collection, and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Almost like `Aggregation pipeline syntax <https://www.mongodb.com/docs/manual/core/aggregation-pipeline/>`_
+        Almost like [Aggregation pipeline syntax](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/)
         in MongoDB:
 
-        .. code:: js
-
-            db.collection_name.aggregate([{"$match": ...}, {"$group": ...}])
-
+        ```js
+        db.collection_name.aggregate([{"$match": ...}, {"$group": ...}])
+        ```
         but pipeline is executed on Spark executors, in a distributed way.
 
-        .. note::
+        !!! note
 
-            This method does not support :ref:`strategy`,
-            use :obj:`DBReader <onetl.db.db_reader.db_reader.DBReader>` instead
+            This method does not support [strategy][],
+            use [DBReader][onetl.db.db_reader.db_reader.DBReader] instead
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Parameters
         ----------
@@ -258,81 +256,77 @@ class MongoDB(DBConnection):
 
         pipeline : dict | list[dict], optional
             Pipeline containing a database query.
-            See `Aggregation pipeline syntax <https://www.mongodb.com/docs/manual/core/aggregation-pipeline/>`_.
+            See [Aggregation pipeline syntax](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/).
 
         df_schema : StructType, optional
             Schema describing the resulting DataFrame.
 
         options : PipelineOptions | dict, optional
             Additional pipeline options,
-            see :obj:`MongoDB.PipelineOptions <onetl.connection.db_connection.mongodb.options.MongoDBPipelineOptions>`.
+            see [MongoDB.PipelineOptions][onetl.connection.db_connection.mongodb.options.MongoDBPipelineOptions].
 
         Examples
         --------
 
-        Get document with a specific ``field`` value:
+        Get document with a specific `field` value:
 
-        .. code:: python
-
-            df = connection.pipeline(
-                collection="collection_name",
-                pipeline={"$match": {"field": {"$eq": 1}}},
-            )
-
+        ```python
+        df = connection.pipeline(
+            collection="collection_name",
+            pipeline={"$match": {"field": {"$eq": 1}}},
+        )
+        ```
         Calculate aggregation and get result:
 
-        .. code:: python
-
-            df = connection.pipeline(
-                collection="collection_name",
-                pipeline={
-                    "$group": {
-                        "_id": 1,
-                        "min": {"$min": "$column_int"},
-                        "max": {"$max": "$column_int"},
-                    }
-                },
-            )
-
+        ```python
+        df = connection.pipeline(
+            collection="collection_name",
+            pipeline={
+                "$group": {
+                    "_id": 1,
+                    "min": {"$min": "$column_int"},
+                    "max": {"$max": "$column_int"},
+                }
+            },
+        )
+        ```
         Explicitly pass DataFrame schema:
 
-        .. code:: python
+        ```python
+        from pyspark.sql.types import (
+            DoubleType,
+            IntegerType,
+            StringType,
+            StructField,
+            StructType,
+            TimestampType,
+        )
 
-            from pyspark.sql.types import (
-                DoubleType,
-                IntegerType,
-                StringType,
-                StructField,
-                StructType,
-                TimestampType,
-            )
+        df_schema = StructType(
+            [
+                StructField("_id", StringType()),
+                StructField("some_string", StringType()),
+                StructField("some_int", IntegerType()),
+                StructField("some_datetime", TimestampType()),
+                StructField("some_float", DoubleType()),
+            ],
+        )
 
-            df_schema = StructType(
-                [
-                    StructField("_id", StringType()),
-                    StructField("some_string", StringType()),
-                    StructField("some_int", IntegerType()),
-                    StructField("some_datetime", TimestampType()),
-                    StructField("some_float", DoubleType()),
-                ],
-            )
-
-            df = connection.pipeline(
-                collection="collection_name",
-                df_schema=df_schema,
-                pipeline={"$match": {"some_int": {"$gt": 999}}},
-            )
-
+        df = connection.pipeline(
+            collection="collection_name",
+            df_schema=df_schema,
+            pipeline={"$match": {"some_int": {"$gt": 999}}},
+        )
+        ```
         Pass additional options to pipeline execution:
 
-        .. code:: python
-
-            df = connection.pipeline(
-                collection="collection_name",
-                pipeline={"$match": {"field": {"$eq": 1}}},
-                options=MongoDB.PipelineOptions(hint={"field": 1}),
-            )
-
+        ```python
+        df = connection.pipeline(
+            collection="collection_name",
+            pipeline={"$match": {"field": {"$eq": 1}}},
+            options=MongoDB.PipelineOptions(hint={"field": 1}),
+        )
+        ```
         """
         log.info("|%s| Executing aggregation pipeline:", self.__class__.__name__)
 

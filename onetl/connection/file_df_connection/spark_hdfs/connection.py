@@ -34,22 +34,22 @@ log = logging.getLogger(__name__)
 @support_hooks
 class SparkHDFS(SparkFileDFConnection):
     """
-    Spark connection to HDFS. |support_hooks|
+    Spark connection to HDFS. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Spark Generic File Data Source <https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html>`_.
+    Based on [Spark Generic File Data Source](https://spark.apache.org/docs/latest/sql-data-sources-generic-options.html).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`spark-hdfs-prerequisites`
+        Before using this connector please take into account [spark-hdfs-prerequisites][]
 
-    .. note::
+    !!! note
 
         Supports only reading files as Spark DataFrame and writing DataFrame to files.
 
         Does NOT support file operations, like create, delete, rename, etc. For these operations,
-        use :obj:`HDFS <onetl.connection.file_connection.hdfs.connection.HDFS>` connection.
+        use [HDFS][onetl.connection.file_connection.hdfs.connection.HDFS] connection.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Parameters
     ----------
@@ -58,97 +58,93 @@ class SparkHDFS(SparkFileDFConnection):
 
         Used for:
             * HWM and lineage (as instance name for file paths)
-            * Validation of ``host`` value,
+            * Validation of `host` value,
                 if latter is passed and if some hooks are bound to
-                :obj:`Slots.get_cluster_namenodes <onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_cluster_namenodes>`.
+                [Slots.get_cluster_namenodes][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_cluster_namenodes].
 
     host : str, optional
-        Hadoop namenode host. For example: ``namenode1.domain.com``.
+        Hadoop namenode host. For example: `namenode1.domain.com`.
 
         Should be an active namenode (NOT standby).
 
         If value is not set, but there are some hooks bound to
-        :obj:`Slots.get_cluster_namenodes <onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_cluster_namenodes>`
+        [Slots.get_cluster_namenodes][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_cluster_namenodes]
         and
-        :obj:`Slots.is_namenode_active <onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.is_namenode_active>`,
+        [Slots.is_namenode_active][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.is_namenode_active],
         onETL will iterate over cluster namenodes to detect which one is active.
 
-    ipc_port : int, default: ``8020``
+    ipc_port : int, default: `8020`
         Port of Hadoop namenode (IPC protocol).
 
         If omitted, but there are some hooks bound to
-        :obj:`Slots.get_ipc_port <onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_ipc_port>`,
-        onETL will try to detect port number for a specific ``cluster``.
+        [Slots.get_ipc_port][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_ipc_port],
+        onETL will try to detect port number for a specific `cluster`.
 
-    spark : :class:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session
 
     Examples
     --------
 
-    .. tabs::
+    === "Create SparkHDFS connection with Kerberos auth"
 
-        .. tab:: Create SparkHDFS connection with Kerberos auth
+        Execute `kinit` consome command before creating Spark Session
 
-            Execute ``kinit`` consome command before creating Spark Session
+        ```bash
+        $ kinit -kt /path/to/keytab user
+        ```
+        ```python
+        from onetl.connection import SparkHDFS
+        from pyspark.sql import SparkSession
 
-            .. code:: bash
+        # Create Spark session
 
-                $ kinit -kt /path/to/keytab user
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .option(
+                "spark.kerberos.access.hadoopFileSystems",
+                "hdfs://namenode1.domain.com:8020",
+            )
+            .option("spark.kerberos.principal", "user")
+            .option("spark.kerberos.keytab", "/path/to/keytab")
+            .enableHiveSupport()
+            .getOrCreate()
+        )
 
-            .. code:: python
+        # Create connection
+        hdfs = SparkHDFS(
+            host="namenode1.domain.com",
+            cluster="rnd-dwh",
+            spark=spark,
+        ).check()
+        ```
+    === "Create SparkHDFS connection with anonymous auth"
+        ```python
+        from onetl.connection import SparkHDFS
+        from pyspark.sql import SparkSession
 
-                from onetl.connection import SparkHDFS
-                from pyspark.sql import SparkSession
+        # Create Spark session
+        spark = SparkSession.builder.master("local").appName("spark-app-name").getOrCreate()
 
-                # Create Spark session
+        # Create connection
+        hdfs = SparkHDFS(
+            host="namenode1.domain.com",
+            cluster="rnd-dwh",
+            spark=spark,
+        ).check()
+        ```
+    === "Use cluster name to detect active namenode"
 
-                spark = (
-                    SparkSession.builder.appName("spark-app-name")
-                    .option(
-                        "spark.kerberos.access.hadoopFileSystems",
-                        "hdfs://namenode1.domain.com:8020",
-                    )
-                    .option("spark.kerberos.principal", "user")
-                    .option("spark.kerberos.keytab", "/path/to/keytab")
-                    .enableHiveSupport()
-                    .getOrCreate()
-                )
+        Can be used only if some third-party plugin provides [spark-hdfs-slots][] implementation
 
-                # Create connection
-                hdfs = SparkHDFS(
-                    host="namenode1.domain.com",
-                    cluster="rnd-dwh",
-                    spark=spark,
-                ).check()
+        ```python
+        # Create Spark session
+        ...
 
-        .. code-tab:: py Create SparkHDFS connection with anonymous auth
-
-            from onetl.connection import SparkHDFS
-            from pyspark.sql import SparkSession
-
-            # Create Spark session
-            spark = SparkSession.builder.master("local").appName("spark-app-name").getOrCreate()
-
-            # Create connection
-            hdfs = SparkHDFS(
-                host="namenode1.domain.com",
-                cluster="rnd-dwh",
-                spark=spark,
-            ).check()
-
-        .. tab:: Use cluster name to detect active namenode
-
-            Can be used only if some third-party plugin provides :ref:`spark-hdfs-slots` implementation
-
-            .. code:: python
-
-                # Create Spark session
-                ...
-
-                # Create connection
-                hdfs = SparkHDFS(cluster="rnd-dwh", spark=spark).check()
-    """  # noqa: E501
+        # Create connection
+        hdfs = SparkHDFS(cluster="rnd-dwh", spark=spark).check()
+        ```
+    """
 
     Slots = SparkHDFSSlots
 
@@ -178,32 +174,31 @@ class SparkHDFS(SparkFileDFConnection):
     @slot
     def close(self):
         """
-        Close all connections created to HDFS. |support_hooks|
+        Close all connections created to HDFS. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
             Connection can be used again after it was closed.
 
         Returns
         -------
-        Connection itself
+        Self
+            Connection itself.
 
         Examples
         --------
 
         Close connection automatically:
 
-        .. code:: python
-
-            with connection:
-                ...
-
+        ```python
+        with connection:
+            ...
+        ```
         Close connection manually:
 
-        .. code:: python
-
-            connection.close()
-
+        ```python
+        connection.close()
+        ```
         """
         log.debug("Reset FileSystem cache")
         with suppress(Exception):
@@ -220,33 +215,33 @@ class SparkHDFS(SparkFileDFConnection):
     @classmethod
     def get_current(cls, spark: SparkSession):
         """
-        Create connection for current cluster. |support_hooks|
+        Create connection for current cluster. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Automatically sets up current cluster name as ``cluster``.
+        Automatically sets up current cluster name as `cluster`.
 
-        .. note::
+        !!! note
 
             Can be used only if there are a some hooks bound to
-            :obj:`Slots.get_current_cluster <onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_current_cluster>`.
+            [Slots.get_current_cluster][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_current_cluster].
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         spark : SparkSession
 
-            See :obj:`~SparkHDFS` constructor documentation.
+            See [SparkHDFS][] constructor documentation.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
 
-            from onetl.connection import SparkHDFS
-
-            # injecting current cluster name via hooks mechanism
-            hdfs = SparkHDFS.get_current(spark=spark)
-        """  # noqa: E501
+        # injecting current cluster name via hooks mechanism
+        hdfs = SparkHDFS.get_current(spark=spark)
+        ```
+        """
 
         log.info("|%s| Detecting current cluster...", cls.__name__)
         current_cluster = cls.Slots.get_current_cluster()

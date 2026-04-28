@@ -53,7 +53,7 @@ More details [can be found here](https://docs.vmware.com/en/VMware-Greenplum-Con
 But Greenplum connector support only limited number of types and almost no custom clauses (like `PARTITION BY`).
 So instead of relying on Spark to create tables:
 
-??? note "See example"
+??? example
 
     ```python
     writer = DBWriter(
@@ -71,7 +71,7 @@ So instead of relying on Spark to create tables:
 
 Always prefer creating table with desired DDL **BEFORE WRITING DATA**:
 
-??? note "See example"
+??? example
 
     ```python
     greenplum.execute(

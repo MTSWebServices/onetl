@@ -37,69 +37,68 @@ log = logging.getLogger(__name__)
 @support_hooks
 class FileDFReader(FrozenModel):
     """Allows you to read files from a source path with specified file connection
-    and parameters, and return a Spark DataFrame. |support_hooks|
+    and parameters, and return a Spark DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. warning::
+    !!! warning
 
         This class does **not** support read strategies.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Parameters
     ----------
-    connection : :obj:`BaseFileDFConnection <onetl.base.base_file_df_connection.BaseFileDFConnection>`
-        File DataFrame connection. See :ref:`file-df-connections` section.
+    connection : [BaseFileDFConnection][onetl.base.base_file_df_connection.BaseFileDFConnection]
+        File DataFrame connection. See [file-df-connections][] section.
 
-    format : :obj:`BaseReadableFileFormat <onetl.base.base_file_format.BaseReadableFileFormat>`
+    format : [BaseReadableFileFormat][onetl.base.base_file_format.BaseReadableFileFormat]
         File format to read.
 
-    source_path : os.PathLike or str, optional, default: ``None``
+    source_path : os.PathLike or str, optional, default: `None`
         Directory path to read data from.
 
-        Could be ``None``, but only if you pass file paths directly to
-        :obj:`~run` method
+        Could be `None`, but only if you pass file paths directly to
+        [run][] method
 
-    df_schema : :obj:`pyspark.sql.types.StructType`, optional, default: ``None``
+    df_schema : `pyspark.sql.types.StructType`, optional, default: `None`
         Spark DataFrame schema.
 
-    options : :obj:`FileDFReaderOptions <onetl.file.file_df_reader.options.FileDFReaderOptions>`, optional
+    options : [FileDFReaderOptions][onetl.file.file_df_reader.options.FileDFReaderOptions], optional
         Common reading options.
 
     Examples
     --------
 
-    .. tabs::
+    === "Read CSV files from local filesystem"
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import CSV
 
-        .. code-tab:: py Read CSV files from local filesystem
+        csv = CSV(delimiter=",")
+        local_fs = SparkLocalFS(spark=spark)
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import CSV
+        reader = FileDFReader(
+            connection=local_fs,
+            format=csv,
+            source_path="/path/to/directory",
+        )
+        ```
+    === "All supported options"
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import CSV
 
-            csv = CSV(delimiter=",")
-            local_fs = SparkLocalFS(spark=spark)
+        csv = CSV(delimiter=",")
+        local_fs = SparkLocalFS(spark=spark)
 
-            reader = FileDFReader(
-                connection=local_fs,
-                format=csv,
-                source_path="/path/to/directory",
-            )
-
-        .. code-tab:: py All supported options
-
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import CSV
-
-            csv = CSV(delimiter=",")
-            local_fs = SparkLocalFS(spark=spark)
-
-            reader = FileDFReader(
-                connection=local_fs,
-                format=csv,
-                source_path="/path/to/directory",
-                options=FileDFReader.Options(recursive=False),
-            )
+        reader = FileDFReader(
+            connection=local_fs,
+            format=csv,
+            source_path="/path/to/directory",
+            options=FileDFReader.Options(recursive=False),
+        )
+        ```
     """
 
     Options = FileDFReaderOptions
@@ -115,92 +114,90 @@ class FileDFReader(FrozenModel):
     @slot
     def run(self, files: Iterable[str | os.PathLike] | None = None) -> DataFrame:
         """
-        Method for reading files as DataFrame. |support_hooks|
+        Method for reading files as DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
 
-        files : Iterator[str | os.PathLike] | None, default ``None``
+        files : Iterator[str | os.PathLike] | None, default `None`
             File list to read.
 
-            If empty, read files from ``source_path``.
+            If empty, read files from `source_path`.
 
         Returns
         -------
-        df : :obj:`pyspark.sql.DataFrame`
+        df : `pyspark.sql.DataFrame`
 
             Spark DataFrame
 
         Examples
         --------
 
-        Read CSV files from directory ``/path``:
+        Read CSV files from directory `/path`:
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import CSV
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import CSV
+        csv = CSV(delimiter=",")
+        local_fs = SparkLocalFS(spark=spark)
 
-            csv = CSV(delimiter=",")
-            local_fs = SparkLocalFS(spark=spark)
-
-            reader = FileDFReader(
-                connection=local_fs,
-                format=csv,
-                source_path="/path",
-            )
-            df = reader.run()
-
+        reader = FileDFReader(
+            connection=local_fs,
+            format=csv,
+            source_path="/path",
+        )
+        df = reader.run()
+        ```
         Read some CSV files using file paths:
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import CSV
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import CSV
+        csv = CSV(delimiter=",")
+        local_fs = SparkLocalFS(spark=spark)
 
-            csv = CSV(delimiter=",")
-            local_fs = SparkLocalFS(spark=spark)
+        reader = FileDFReader(
+            connection=local_fs,
+            format=csv,
+        )
 
-            reader = FileDFReader(
-                connection=local_fs,
-                format=csv,
-            )
-
-            df = reader.run(
-                [
-                    "/path/file1.csv",
-                    "/path/nested/file2.csv",
-                ]
-            )
-
+        df = reader.run(
+            [
+                "/path/file1.csv",
+                "/path/nested/file2.csv",
+            ]
+        )
+        ```
         Read only specific CSV files in directory:
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFReader
+        from onetl.file.format import CSV
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFReader
-            from onetl.file.format import CSV
+        csv = CSV(delimiter=",")
+        local_fs = SparkLocalFS(spark=spark)
 
-            csv = CSV(delimiter=",")
-            local_fs = SparkLocalFS(spark=spark)
+        reader = FileDFReader(
+            connection=local_fs,
+            format=csv,
+            source_path="/path",
+        )
 
-            reader = FileDFReader(
-                connection=local_fs,
-                format=csv,
-                source_path="/path",
-            )
-
-            df = reader.run(
-                [
-                    # file paths could be relative
-                    "/path/file1.csv",
-                    "/path/nested/file2.csv",
-                ]
-            )
+        df = reader.run(
+            [
+                # file paths could be relative
+                "/path/file1.csv",
+                "/path/nested/file2.csv",
+            ]
+        )
+        ```
         """
 
         entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")

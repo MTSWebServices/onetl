@@ -15,7 +15,7 @@ Klass = TypeVar("Klass", bound=type)
 
 
 def get_slots(cls: type) -> list[Slot]:
-    """Returns list of methods in class decorated with :obj:`~slot`"""
+    """Returns list of methods in class decorated with [slot][]"""
     result = []
     for method_name in dir(cls):
         method = getattr(cls, method_name)
@@ -33,66 +33,66 @@ def skip_hooks(cls: type):
     Examples
     --------
 
-    .. tabs::
-
-        .. code-tab:: py Context manager syntax
-
-            @support_hooks
-            class MyClass:
-                @slot
-                def my_method(self, arg):
-                    ...
-
-
-            @MyClass.my_method.hook
-            def callback(self, arg):
+    === "Context manager syntax"
+        ```python
+        @support_hooks
+        class MyClass:
+            @slot
+            def my_method(self, arg):
                 ...
 
 
-            obj = MyClass()
-            obj.my_method(1)  # will execute callback(obj, 1)
-
-            with MyClass.skip_hooks():
-                obj.my_method()  # will NOT execute callback
-
-            # running outside the context restores previous behavior
-            obj.my_method(2)  # will execute callback(obj, 2)
-
-        .. code-tab:: py Decorator syntax
-
-            @support_hooks
-            class MyClass:
-                @slot
-                def my_method(self, arg):
-                    ...
+        @MyClass.my_method.hook
+        def callback(self, arg):
+            ...
 
 
-            @MyClass.my_method.hook
-            def callback(self, arg):
+        obj = MyClass()
+        obj.my_method(1)  # will execute callback(obj, 1)
+
+        with MyClass.skip_hooks():
+            obj.my_method()  # will NOT execute callback
+
+        # running outside the context restores previous behavior
+        obj.my_method(2)  # will execute callback(obj, 2)
+
+        ```
+    === "Decorator syntax"
+        ```python
+        @support_hooks
+        class MyClass:
+            @slot
+            def my_method(self, arg):
                 ...
 
 
-            def with_hook_enabled():
-                obj = MyClass()
-                obj.my_method(1)
+        @MyClass.my_method.hook
+        def callback(self, arg):
+            ...
 
 
-            with_hook_enabled()  # will execute callback(obj, 1)
-
-
-            @MyClass.skip_hooks()
-            def with_all_hooks_disabled():
-                obj = MyClass()
-                obj.my_method(1)
-
-
-            with_all_hooks_disabled()  # will NOT execute callback function
-
-            # running outside a decorated function restores previous behavior
+        def with_hook_enabled():
             obj = MyClass()
-            obj.my_method(2)  # will execute callback(obj, 2)
+            obj.my_method(1)
 
-    .. versionadded:: 0.7.0
+
+        with_hook_enabled()  # will execute callback(obj, 1)
+
+
+        @MyClass.skip_hooks()
+        def with_all_hooks_disabled():
+            obj = MyClass()
+            obj.my_method(1)
+
+
+        with_all_hooks_disabled()  # will NOT execute callback function
+
+        # running outside a decorated function restores previous behavior
+        obj = MyClass()
+        obj.my_method(2)  # will execute callback(obj, 2)
+
+        ```
+    !!! success "Added in 0.7.0"
     """
 
     slots = get_slots(cls)
@@ -110,26 +110,26 @@ def suspend_hooks(cls: type) -> None:
     Examples
     --------
 
-    .. code:: python
-
-        @support_hooks
-        class MyClass:
-            @slot
-            def my_method(self, arg): ...
-
-
-        @MyClass.my_method.hook
-        def callback(self, arg): ...
+    ```python
+    @support_hooks
+    class MyClass:
+        @slot
+        def my_method(self, arg): ...
 
 
-        obj = MyClass()
-        obj.my_method(1)  # will execute callback(obj, 1)
+    @MyClass.my_method.hook
+    def callback(self, arg): ...
 
-        MyClass.suspend_hooks()
 
-        obj.my_method(2)  # will NOT execute callback
+    obj = MyClass()
+    obj.my_method(1)  # will execute callback(obj, 1)
 
-    .. versionadded:: 0.7.0
+    MyClass.suspend_hooks()
+
+    obj.my_method(2)  # will NOT execute callback
+
+    ```
+    !!! success "Added in 0.7.0"
     """
 
     slots = get_slots(cls)
@@ -145,28 +145,28 @@ def resume_hooks(cls: type) -> None:
     Examples
     --------
 
-    .. code:: python
-
-        @support_hooks
-        class MyClass:
-            @slot
-            def my_method(self, arg): ...
-
-
-        @MyClass.my_method.hook
-        def callback(self, arg): ...
+    ```python
+    @support_hooks
+    class MyClass:
+        @slot
+        def my_method(self, arg): ...
 
 
-        obj = MyClass()
+    @MyClass.my_method.hook
+    def callback(self, arg): ...
 
-        MyClass.suspend_hooks()
-        obj.my_method(1)  # will NOT execute callback
 
-        MyClass.resume_hooks()
+    obj = MyClass()
 
-        obj.my_method(2)  # will execute callback(obj, 2)
+    MyClass.suspend_hooks()
+    obj.my_method(1)  # will NOT execute callback
 
-    .. versionadded:: 0.7.0
+    MyClass.resume_hooks()
+
+    obj.my_method(2)  # will execute callback(obj, 2)
+
+    ```
+    !!! success "Added in 0.7.0"
     """
 
     slots = get_slots(cls)
@@ -179,31 +179,32 @@ def support_hooks(cls: Klass) -> Klass:
     """
     Decorator which adds hooks functionality to a specific class.
 
-    Only methods decorated with :obj:`~slot` can be used for connecting hooks.
+    Only methods decorated with [slot][] can be used for connecting hooks.
 
-    Adds :obj:`~skip_hooks`, :obj:`~suspend_hooks` and :obj:`~resume_hooks` to the class.
+    Adds [skip_hooks][], [suspend_hooks][] and [resume_hooks][] to the class.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. code:: python
-
-        from onetl.hooks.hook import support_hooks, slot
-
-
-        @support_hooks
-        class MyClass:
-            @slot
-            def my_method(self, arg): ...
+    ```python
+    from onetl.hooks.hook import support_hooks, slot
 
 
-        @MyClass.my_method.hook
-        def callback(self, arg): ...
+    @support_hooks
+    class MyClass:
+        @slot
+        def my_method(self, arg): ...
 
 
-        MyClass().my_method()  # will execute callback function
+    @MyClass.my_method.hook
+    def callback(self, arg): ...
+
+
+    MyClass().my_method()  # will execute callback function
+
+    ```
     """
 
     has_slots = False

@@ -356,3 +356,4 @@ You should use [UNLOGGED](https://docs.vmware.com/en/VMware-Greenplum/7/greenplu
 ::: onetl.connection.db_connection.greenplum.options.GreenplumReadOptions
     options:
         show_root_heading: true
+        inherited_members: false

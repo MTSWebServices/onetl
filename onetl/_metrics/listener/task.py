@@ -47,7 +47,7 @@ class SparkListenerTaskOutputMetrics:
 class SparkListenerTaskMetrics:
     """Python representation of Spark TaskMetrics object.
 
-    See `documentation <https://spark.apache.org/docs/latest/monitoring.html#executor-task-metrics>`_.
+    See [documentation](https://spark.apache.org/docs/latest/monitoring.html#executor-task-metrics).
     """
 
     executor_run_time_milliseconds: int = 0

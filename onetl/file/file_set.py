@@ -19,10 +19,10 @@ class FileSet(OrderedSet[T], Generic[T]):
     """
     Ordered set of pathlib-like objects.
 
-    It has all the methods of generic set (e.g. ``add``, ``difference``, ``intersection``),
-    as well as list (e.g. ``append``, ``index``, ``[]``).
+    It has all the methods of generic set (e.g. `add`, `difference`, `intersection`),
+    as well as list (e.g. `append`, `index`, `[]`).
 
-    It also has a ``total_size`` helper method.
+    It also has a `total_size` helper method.
     """
 
     @property
@@ -33,11 +33,13 @@ class FileSet(OrderedSet[T], Generic[T]):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onet.file.file_set import FileSet
         >>> file_set = FileSet({LocalPath("/some/file"), LocalPath("/some/another.file")})
         >>> path_set.total_size  # in bytes
         1024
+        ```
         """
 
         return sum(
@@ -57,12 +59,14 @@ class FileSet(OrderedSet[T], Generic[T]):
         Examples
         --------
 
+        ```python
         >>> from onet.file.file_set import FileSet
         >>> file_set = FileSet()
         >>> file_set.raise_if_empty()
         Traceback (most recent call last):
             ...
         onetl.exception.EmptyFilesError: There are no files in the set
+        ```
         """
 
         if not self:
@@ -82,6 +86,7 @@ class FileSet(OrderedSet[T], Generic[T]):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import RemoteFile, LocalPath
         >>> from onet.file.file_set import FileSet
         >>> file_set = FileSet(
@@ -95,6 +100,7 @@ class FileSet(OrderedSet[T], Generic[T]):
         onetl.exception.ZeroFileSizeError: 2 files out of 3 have zero size:
             '/local/empty1.file'
             '/local/empty2.file'
+        ```
         """
 
         lines = []
@@ -124,6 +130,7 @@ class FileSet(OrderedSet[T], Generic[T]):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onet.file.file_set import FileSet
         >>> path_set1 = FileSet(
@@ -137,6 +144,7 @@ class FileSet(OrderedSet[T], Generic[T]):
         >>> path_set2 = FileSet()
         >>> print(path_set2.summary)
         No files
+        ```
         """
 
         if not self:
@@ -153,6 +161,7 @@ class FileSet(OrderedSet[T], Generic[T]):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onet.file.file_set import FileSet
         >>> path_set1 = FileSet(
@@ -165,10 +174,13 @@ class FileSet(OrderedSet[T], Generic[T]):
         2 files (30.7 kB):
             '/local/file' (10.2 kB)
             '/local/another.file' (20.5 kB)
+        ```
 
+        ```python
         >>> path_set2 = FileSet()
         >>> print(path_set2.details)
         No files
+        ```
         """
 
         if not self:
@@ -182,5 +194,5 @@ class FileSet(OrderedSet[T], Generic[T]):
         return summary + lines_str
 
     def __str__(self) -> str:
-        """Same as :obj:`onetl.file.file_set.file_set.FileSet.details`"""
+        """Same as [onetl.file.file_set.file_set.FileSet.details][]"""
         return self.details

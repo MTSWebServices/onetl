@@ -13,12 +13,12 @@ class BaseFileLimit(ABC):
     """
     Base file limit interface.
 
-    Limits used by several onETL components, including :ref:`file-downloader` and :ref:`file-mover`,
+    Limits used by several onETL components, including [file-downloader][] and [file-mover][],
     to determine if internal loop should be stopped.
 
     Unlike file filters, limits have internal state which can be updated or reset.
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
     """
 
     @abstractmethod
@@ -26,22 +26,25 @@ class BaseFileLimit(ABC):
         """
         Resets the internal limit state.
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Returns
         -------
-        Returns a filter of the same type, but with non-reached state.
+        Self
+            Returns a filter of the same type, but with non-reached state.
 
-        It could be the same filter or a new one, this is an implementation detail.
+            It could be the same filter or a new one, this is an implementation detail.
 
         Examples
         --------
 
+        ```python
         >>> limit.is_reached
         True
         >>> new_limit = limit.reset()
         >>> new_limit.is_reached
         False
+        ```
         """
 
     @abstractmethod
@@ -49,20 +52,22 @@ class BaseFileLimit(ABC):
         """
         Update internal state and return current state.
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Parameters
         ----------
-        path : :obj:`onetl.base.path_protocol.PathProtocol`
+        path : [onetl.base.path_protocol.PathProtocol][]
             Path to check
 
         Returns
         -------
-        ``True`` if limit is reached, ``False`` otherwise.
+        bool
+            `True` if limit is reached, `False` otherwise.
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> # limit is not reached yet
         >>> limit.stops_at(LocalPath("/path/to/file.csv"))
@@ -75,6 +80,7 @@ class BaseFileLimit(ABC):
         >>> # it will be in the same state until .reset() is called
         >>> limit.stops_at(LocalPath("/path/to/file.csv"))
         True
+        ```
         """
 
     @property
@@ -83,15 +89,17 @@ class BaseFileLimit(ABC):
         """
         Check if limit is reached.
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Returns
         -------
-        ``True`` if limit is reached, ``False`` otherwise.
+        bool
+            `True` if limit is reached, `False` otherwise.
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> limit.is_reached
         False
@@ -104,4 +112,5 @@ class BaseFileLimit(ABC):
         True
         >>> limit.is_reached
         True
+        ```
         """

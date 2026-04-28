@@ -12,7 +12,7 @@ MongoDB is, by design, \_\_schemaless\_\_. So there are 2 ways how this can be h
 
 - User provides DataFrame schema explicitly:
 
-??? note "See example"
+??? example
 
     ```python
     from onetl.connection import MongoDB

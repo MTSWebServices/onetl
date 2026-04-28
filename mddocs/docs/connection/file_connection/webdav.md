@@ -4,7 +4,6 @@
 ::: onetl.connection.file_connection.webdav.WebDAV
     options:
         members:
-            - __init__
             - check
             - path_exists
             - is_file

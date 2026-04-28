@@ -40,66 +40,63 @@ log = logging.getLogger(__name__)
 
 @support_hooks
 class Hive(DBConnection):
-    """Spark connection with Hive MetaStore support. |support_hooks|
+    """Spark connection with Hive MetaStore support. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`hive-prerequisites`
+        Before using this connector please take into account [hive-prerequisites][]
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     cluster : str
         Cluster name. Used for HWM and lineage.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session with Hive metastore support enabled
 
     Examples
     --------
 
-    .. tabs::
+    === "Create Hive connection with Kerberos auth"
 
-        .. tab:: Create Hive connection with Kerberos auth
+        Execute `kinit` consome command before creating Spark Session
 
-            Execute ``kinit`` consome command before creating Spark Session
+        ```bash
+        $ kinit -kt /path/to/keytab user
+        ```
+        ```python
+        from onetl.connection import Hive
+        from pyspark.sql import SparkSession
 
-            .. code:: bash
+        # Create Spark session
 
-                $ kinit -kt /path/to/keytab user
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .option("spark.kerberos.access.hadoopFileSystems", "hdfs://cluster.name.node:8020")
+            .option("spark.kerberos.principal", "user")
+            .option("spark.kerberos.keytab", "/path/to/keytab")
+            .enableHiveSupport()
+            .getOrCreate()
+        )
 
-            .. code:: python
+        # Create connection
+        hive = Hive(cluster="rnd-dwh", spark=spark).check()
+        ```
+    === "Create Hive connection with anonymous auth"
+        ```python
+        from onetl.connection import Hive
+        from pyspark.sql import SparkSession
 
-                from onetl.connection import Hive
-                from pyspark.sql import SparkSession
+        # Create Spark session
+        spark = SparkSession.builder.appName("spark-app-name").enableHiveSupport().getOrCreate()
 
-                # Create Spark session
-
-                spark = (
-                    SparkSession.builder.appName("spark-app-name")
-                    .option("spark.kerberos.access.hadoopFileSystems", "hdfs://cluster.name.node:8020")
-                    .option("spark.kerberos.principal", "user")
-                    .option("spark.kerberos.keytab", "/path/to/keytab")
-                    .enableHiveSupport()
-                    .getOrCreate()
-                )
-
-                # Create connection
-                hive = Hive(cluster="rnd-dwh", spark=spark).check()
-
-        .. code-tab:: py Create Hive connection with anonymous auth
-
-            from onetl.connection import Hive
-            from pyspark.sql import SparkSession
-
-            # Create Spark session
-            spark = SparkSession.builder.appName("spark-app-name").enableHiveSupport().getOrCreate()
-
-            # Create connection
-            hive = Hive(cluster="rnd-dwh", spark=spark).check()
+        # Create connection
+        hive = Hive(cluster="rnd-dwh", spark=spark).check()
+        ```
     """
 
     cluster: Cluster
@@ -117,33 +114,33 @@ class Hive(DBConnection):
     @classmethod
     def get_current(cls, spark: SparkSession):
         """
-        Create connection for current cluster. |support_hooks|
+        Create connection for current cluster. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note::
+        !!! note
 
             Can be used only if there are some hooks bound to
-            :obj:`Slots.get_current_cluster <onetl.connection.db_connection.hive.slots.HiveSlots.get_current_cluster>` slot.
+            [Slots.get_current_cluster][onetl.connection.db_connection.hive.slots.HiveSlots.get_current_cluster] slot.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Parameters
         ----------
-        spark : :obj:`pyspark.sql.SparkSession`
+        spark : `pyspark.sql.SparkSession`
             Spark session
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Hive
+        from pyspark.sql import SparkSession
 
-            from onetl.connection import Hive
-            from pyspark.sql import SparkSession
+        spark = SparkSession.builder.appName("spark-app-name").enableHiveSupport().getOrCreate()
 
-            spark = SparkSession.builder.appName("spark-app-name").enableHiveSupport().getOrCreate()
-
-            # injecting current cluster name via hooks mechanism
-            hive = Hive.get_current(spark=spark)
-        """  # noqa: E501
+        # injecting current cluster name via hooks mechanism
+        hive = Hive.get_current(spark=spark)
+        ```
+        """
 
         log.info("|%s| Detecting current cluster...", cls.__name__)
         current_cluster = cls.Slots.get_current_cluster()
@@ -195,11 +192,11 @@ class Hive(DBConnection):
         query: str,
     ) -> DataFrame:
         """
-        Lazily execute SELECT statement and return DataFrame. |support_hooks|
+        Lazily execute SELECT statement and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Same as ``spark.sql(query)``.
+        Same as `spark.sql(query)`.
 
-        .. versionadded:: 0.2.0
+        !!! success "Added in 0.2.0"
 
         Parameters
         ----------
@@ -251,9 +248,9 @@ class Hive(DBConnection):
         statement: str,
     ) -> None:
         """
-        Execute DDL or DML statement. |support_hooks|
+        Execute DDL or DML statement. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.2.0
+        !!! success "Added in 0.2.0"
 
         Parameters
         ----------

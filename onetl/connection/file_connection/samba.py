@@ -45,45 +45,44 @@ log = getLogger(__name__)
 
 @support_hooks
 class Samba(FileConnection):
-    """Samba file connection. |support_hooks|
+    """Samba file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `pysmb library <https://pypi.org/project/pysmb/>`_.
+    Based on [pysmb library](https://pypi.org/project/pysmb/).
 
-    .. versionadded:: 0.9.4
+    !!! success "Added in 0.9.4"
 
-    .. warning::
+    !!! warning
 
         To use Samba connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[samba]"
 
-            pip install "onetl[samba]"
-
-            # or
-            pip install "onetl[files]"
-
-        See :ref:`install-files` installation instruction for more details.
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
     Parameters
     ----------
     host : str
-        Host of Samba source. For example: ``mydomain.com``.
+        Host of Samba source. For example: `mydomain.com`.
 
     share : str
         The name of the share on the Samba server.
 
-    protocol : str, default: ``SMB``
-        The protocol to use for the connection. Either ``SMB`` or ``NetBIOS``.
+    protocol : str, default: `SMB`
+        The protocol to use for the connection. Either `SMB` or `NetBIOS`.
         Affects the default port and the `is_direct_tcp` flag in `SMBConnection`.
 
     port : int, default: 445
         Port of Samba source.
 
-    domain : str, default: ``
-        Domain name for the Samba connection. Empty strings means use ``host`` as domain name.
+    domain : str, default: ` `
+        Domain name for the Samba connection. Empty strings means use `host` as domain name.
 
-    auth_type : str, default: ``NTLMv2``
-        The authentication type to use. Either ``NTLMv2`` or ``NTLMv1``.
+    auth_type : str, default: `NTLMv2`
+        The authentication type to use. Either `NTLMv2` or `NTLMv1`.
         Affects the `use_ntlm_v2` flag in `SMBConnection`.
 
     user : str, default: None
@@ -97,18 +96,18 @@ class Samba(FileConnection):
 
     Create and check Samba connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Samba
 
-        from onetl.connection import Samba
-
-        samba = Samba(
-            host="mydomain.com",
-            share="share_name",
-            protocol="SMB",
-            port=445,
-            user="user",
-            password="password",
-        ).check()
+    samba = Samba(
+        host="mydomain.com",
+        share="share_name",
+        protocol="SMB",
+        port=445,
+        user="user",
+        password="password",
+    ).check()
+    ```
     """
 
     host: Host

@@ -4,4 +4,3 @@
 ::: onetl.strategy.incremental_strategy.IncrementalStrategy
     options:
         members:
-            - __init__

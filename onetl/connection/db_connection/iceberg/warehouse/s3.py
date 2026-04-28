@@ -24,11 +24,11 @@ from onetl.impl.frozen_model import FrozenModel
 
 @support_hooks
 class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
-    """Iceberg S3 Warehouse. |support_hooks|
+    """Iceberg S3 Warehouse. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
 
-    .. note::
+    !!! note
 
         This warehouse uses a **dedicated Iceberg S3 client** to access the warehouse data.
         It does **not rely on SparkS3 implementation**.
@@ -71,20 +71,20 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
     Examples
     --------
 
-    .. code:: python
+    ```python
+    from onetl.connection import Iceberg
 
-        from onetl.connection import Iceberg
-
-        warehouse = Iceberg.S3Warehouse(
-            path="/warehouse",
-            host="s3.domain.com",
-            protocol="http",
-            bucket="my-bucket",
-            region="us-east-1",
-            path_style_access=True,
-            access_key="my_access_key",
-            secret_key="my_secret_key",
-        )
+    warehouse = Iceberg.S3Warehouse(
+        path="/warehouse",
+        host="s3.domain.com",
+        protocol="http",
+        bucket="my-bucket",
+        region="us-east-1",
+        path_style_access=True,
+        access_key="my_access_key",
+        secret_key="my_secret_key",
+    )
+    ```
     """
 
     path: PurePathProtocol
@@ -118,15 +118,15 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
     @classmethod
     def get_packages(cls, package_version: str) -> List[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        See `Maven package index <https://mvnrepository.com/artifact/org.apache.iceberg/iceberg-aws-bundle>`_
+        See [Maven package index](https://mvnrepository.com/artifact/org.apache.iceberg/iceberg-aws-bundle)
         for all available packages.
 
         Parameters
         ----------
         package_version : str
-            Iceberg package version in format ``major.minor.patch``.
+            Iceberg package version in format `major.minor.patch`.
 
         Returns
         -------
@@ -135,12 +135,12 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
 
         Examples
         --------
-        .. code:: python
+        ```python
+        from onetl.connection import Iceberg
 
-            from onetl.connection import Iceberg
-
-            # Note: Iceberg 1.10.0 requires Java 11+
-            Iceberg.S3Warehouse.get_packages(package_version="1.10.0")
+        # Note: Iceberg 1.10.0 requires Java 11+
+        Iceberg.S3Warehouse.get_packages(package_version="1.10.0")
+        ```
         """
         version = Version(package_version).min_digits(3)
         return [f"org.apache.iceberg:iceberg-aws-bundle:{version}"]

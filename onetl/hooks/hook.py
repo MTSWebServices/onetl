@@ -25,14 +25,14 @@ class HookPriority(int, Enum):
 
     All hooks within the same priority are executed in the same order they were registered.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
     """
 
     FIRST = -1
     "Hooks with this priority will run first."
 
     NORMAL = 0
-    "Hooks with this priority will run after :obj:`~FIRST` but before :obj:`~LAST`."
+    "Hooks with this priority will run after [FIRST][] but before [LAST][]."
 
     LAST = 1
     "Hooks with this priority will run last."
@@ -43,12 +43,12 @@ class Hook(Generic[T]):
     """
     Hook representation.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Parameters
     ----------
 
-        callback : :obj:`typing.Callable`
+        callback : `typing.Callable`
 
             Some callable object which will be wrapped into a Hook, like function or ContextManager class.
 
@@ -56,22 +56,23 @@ class Hook(Generic[T]):
 
             Will hook be executed or not. Useful for debugging.
 
-        priority : :obj:`onetl.hooks.hook.HookPriority`
+        priority : HookPriority
 
-            Changes hooks priority, see ``HookPriority`` documentation.
+            Changes hooks priority, see `HookPriority` documentation.
 
     Examples
     --------
 
-    .. code:: python
-
-        from onetl.hooks.hook import Hook, HookPriority
-
-
-        def some_func(*args, **kwargs): ...
+    ```python
+    from onetl.hooks.hook import Hook, HookPriority
 
 
-        hook = Hook(callback=some_func, enabled=True, priority=HookPriority.FIRST)
+    def some_func(*args, **kwargs): ...
+
+
+    hook = Hook(callback=some_func, enabled=True, priority=HookPriority.FIRST)
+
+    ```
     """
 
     callback: Callable[..., T]
@@ -85,11 +86,12 @@ class Hook(Generic[T]):
         """
         Enable the hook.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> def func1(): ...
         >>> hook = Hook(callback=func1, enabled=False)
         >>> hook.enabled
@@ -97,6 +99,8 @@ class Hook(Generic[T]):
         >>> hook.enable()
         >>> hook.enabled
         True
+
+        ```
         """
         if self.enabled:
             logger.log(
@@ -113,11 +117,12 @@ class Hook(Generic[T]):
         """
         Disable the hook.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> def func1(): ...
         >>> hook = Hook(callback=func1, enabled=True)
         >>> hook.enabled
@@ -125,6 +130,8 @@ class Hook(Generic[T]):
         >>> hook.disable()
         >>> hook.enabled
         False
+
+        ```
         """
         if self.enabled:
             logger.log(NOTICE, "|Hooks| Disable hook '%s.%s'", self.callback.__module__, self.callback.__qualname__)
@@ -142,47 +149,49 @@ class Hook(Generic[T]):
         """
         Temporary disable the hook.
 
-        .. note::
+        !!! note
 
-            If hook was created with ``enabled=False``, or was disabled by :obj:`~disable`,
+            If hook was created with `enabled=False`, or was disabled by [disable][],
             its state will left intact after exiting the context.
 
-            You should call :obj:`~enable` explicitly to change its state.
+            You should call [enable][] explicitly to change its state.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
-        .. tabs::
+        === "Context manager syntax"
+            ```python
+            >>> def func1(): ...
+            >>> hook = Hook(callback=func1, enabled=True)
+            >>> hook.enabled
+            True
+            >>> with hook.skip():
+            ...     print(hook.enabled)
+            False
+            >>> # hook state is restored as it was before entering the context manager
+            >>> hook.enabled
+            True
 
-            .. tab:: Context manager syntax
+            ```
 
-                >>> def func1(): ...
-                >>> hook = Hook(callback=func1, enabled=True)
-                >>> hook.enabled
-                True
-                >>> with hook.skip():
-                ...     print(hook.enabled)
-                False
-                >>> # hook state is restored as it was before entering the context manager
-                >>> hook.enabled
-                True
+        === "Decorator syntax"
+            ```python
+            >>> def func1(): ...
+            >>> hook = Hook(callback=func1, enabled=True)
+            >>> hook.enabled
+            True
+            >>> @hook.skip()
+            ... def hook_disabled():
+            ...     print(hook.enabled)
+            >>> hook_disabled()
+            False
+            >>> # hook state is restored as it was before entering the context manager
+            >>> hook.enabled
+            True
 
-            .. tab:: Decorator syntax
-
-                >>> def func1(): ...
-                >>> hook = Hook(callback=func1, enabled=True)
-                >>> hook.enabled
-                True
-                >>> @hook.skip()
-                ... def hook_disabled():
-                ...     print(hook.enabled)
-                >>> hook_disabled()
-                False
-                >>> # hook state is restored as it was before entering the context manager
-                >>> hook.enabled
-                True
+            ```
         """
         if not self.enabled:
             logger.log(
@@ -218,6 +227,7 @@ class Hook(Generic[T]):
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook, HookPriority
         >>> def some_func(*args, **kwargs):
         ...     print(args)
@@ -229,6 +239,8 @@ class Hook(Generic[T]):
         {'some': 'arg'}
         >>> result
         'func result'
+
+        ```
         """
         result = self.callback(*args, **kwargs)
         if isinstance(result, Generator):
@@ -248,12 +260,12 @@ class CanProcessResult(Protocol):
 
 class ContextDecorator:
     """
-    Helper for :obj:`~hook` decorator.
+    Helper for [hook][] decorator.
 
-    Analog of :obj:`contextlib._GeneratorContextManager`, but instead of generator function
+    Analog of `contextlib._GeneratorContextManager`, but instead of generator function
     plus arguments it accepts generator object.
 
-    Also it does not implement ``__call__``, so it does not allow for context manager to be
+    Also it does not implement `__call__`, so it does not allow for context manager to be
     used as a decorator.
     """
 
@@ -263,23 +275,23 @@ class ContextDecorator:
 
     def __enter__(self):
         """
-        Start generator and stop at first ``yield``.
+        Start generator and stop at first `yield`.
 
         If generator instead of:
 
-        .. code:: python
+        ```python
+        result = yield
+        ...
+        yield result
 
-            result = yield
-            ...
-            yield result
-
+        ```
         looks like:
 
-        .. code:: python
+        ```python
+        yield something
 
-            yield something
-
-        Just remember this output and return it in :obj:`~process_result` as is.
+        ```
+        Just remember this output and return it in [process_result][] as is.
         """
 
         with suppress(StopIteration):
@@ -289,7 +301,7 @@ class ContextDecorator:
 
     def __exit__(self, exc_type, value, traceback):
         """
-        Copy of :obj:`contextlib._GeneratorContextManager.__exit__`
+        Copy of `contextlib._GeneratorContextManager.__exit__`
         """
 
         if exc_type is None:
@@ -346,18 +358,18 @@ class ContextDecorator:
 
         If generator instead of:
 
-        .. code:: python
+        ```python
+        result = yield
+        # this is there `process_result` is called
+        yield result
 
-            result = yield
-            # this is there ``process_result`` is called
-            yield result
-
+        ```
         looks like:
 
-        .. code:: python
+        ```python
+        yield something
 
-            yield something
-
+        ```
         Just return the yielded result.
         """
 
@@ -375,64 +387,65 @@ def hook(inp: Callable[..., T] | None = None, *, enabled: bool = True, priority:
     """
     Initialize hook from callable/context manager.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. tabs::
-
-        .. code-tab:: py Decorate a function or generator
-
-            from onetl.hooks import hook, HookPriority
+    === "Decorate a function or generator"
+        ```python
+        from onetl.hooks import hook, HookPriority
 
 
-            @hook
-            def some_func(*args, **kwargs):
+        @hook
+        def some_func(*args, **kwargs):
+            ...
+
+
+        @hook(enabled=True, priority=HookPriority.FIRST)
+        def another_func(*args, **kwargs):
+            ...
+
+        ```
+    === "Decorate a context manager"
+        ```python
+        from onetl.hooks import hook, HookPriority
+
+
+        @hook
+        class SimpleContextManager:
+            def __init__(self, *args, **kwargs):
                 ...
 
+            def __enter__(self):
+                ...
+                return self
 
-            @hook(enabled=True, priority=HookPriority.FIRST)
-            def another_func(*args, **kwargs):
+            def __exit__(self, exc_type, exc_value, traceback):
+                ...
+                return False
+
+
+        @hook(enabled=True, priority=HookPriority.FIRST)
+        class ContextManagerWithProcessResult:
+            def __init__(self, *args, **kwargs):
                 ...
 
-        .. code-tab:: py Decorate a context manager
-
-            from onetl.hooks import hook, HookPriority
-
-
-            @hook
-            class SimpleContextManager:
-                def __init__(self, *args, **kwargs):
-                    ...
-
-                def __enter__(self):
-                    ...
-                    return self
-
-                def __exit__(self, exc_type, exc_value, traceback):
-                    ...
-                    return False
-
-
-            @hook(enabled=True, priority=HookPriority.FIRST)
-            class ContextManagerWithProcessResult:
-                def __init__(self, *args, **kwargs):
-                    ...
-
-                def __enter__(self):
-                    ...
-                    return self
-
-                def __exit__(self, exc_type, exc_value, traceback):
-                    ...
-                    return False
-
-                def process_result(self, result):
-                    # special method to handle method result call
-                    return modify(result)
-
+            def __enter__(self):
                 ...
+                return self
+
+            def __exit__(self, exc_type, exc_value, traceback):
+                ...
+                return False
+
+            def process_result(self, result):
+                # special method to handle method result call
+                return modify(result)
+
+            ...
+
+        ```
     """
 
     def inner_wrapper(callback: Callable[..., T]):

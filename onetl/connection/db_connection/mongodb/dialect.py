@@ -162,9 +162,9 @@ class MongoDBDialect(
 
     def _validate_top_level_keys_in_where_parameter(self, key: str):
         """
-        Checks the 'where' parameter for illegal operators, such as ``$match``, ``$merge`` or ``$changeStream``.
+        Checks the 'where' parameter for illegal operators, such as `$match`, `$merge` or `$changeStream`.
 
-        'where' clause can contain only filtering operators, like ``{"col1" {"$eq": 1}}`` or ``{"$and": [...]}``.
+        'where' clause can contain only filtering operators, like `{"col1" {"$eq": 1}}` or `{"$and": [...]}`.
         """
         if key.startswith("$"):
             if key == "$match":

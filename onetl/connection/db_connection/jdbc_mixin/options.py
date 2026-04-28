@@ -28,26 +28,26 @@ PROHIBITED_OPTIONS = frozenset(
 class JDBCOptions(GenericOptions):
     """Generic options, related to specific JDBC driver.
 
-    .. deprecated:: 0.11.0
-        Use ``SomeDB.FetchOptions`` or ``SomeDB.ExecuteOptions`` instead
+    !!! warning "Deprecated since 0.11.0"
+        Use `SomeDB.FetchOptions` or `SomeDB.ExecuteOptions` instead
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value supported by underlying JDBC driver class,
         even if it is not mentioned in this documentation.
 
-    .. code:: python
+    ```python
+    from onetl.connection import SomeDB
 
-        from onetl.connection import SomeDB
-
-        options = SomeDB.Options(
-            queryTimeout=60_000,
-            fetchsize=100_000,
-            customSparkOption="value",
-        )
+    options = SomeDB.Options(
+        queryTimeout=60_000,
+        fetchsize=100_000,
+        customSparkOption="value",
+    )
+    ```
     """
 
     class Config:
@@ -67,36 +67,36 @@ class JDBCOptions(GenericOptions):
 
     Tuning this option can influence performance of reading.
 
-    .. warning::
+    !!! warning
 
         Default value depends on driver. For example, Oracle has
-        default ``fetchsize=10``.
+        default `fetchsize=10`.
     """
 
 
 class JDBCFetchOptions(GenericOptions):
     """Options related to fetching data from databases via JDBC.
 
-    .. versionadded:: 0.11.0
-        Replace ``SomeDB.JDBCOptions`` → ``SomeDB.FetchOptions``
+    !!! success "Added in 0.11.0"
+        Replace `SomeDB.JDBCOptions` → `SomeDB.FetchOptions`
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value supported by underlying JDBC driver class,
         even if it is not mentioned in this documentation.
 
-    .. code:: python
+    ```python
+    from onetl.connection import SomeDB
 
-        from onetl.connection import SomeDB
-
-        options = SomeDB.FetchOptions(
-            queryTimeout=60_000,
-            fetchsize=100_000,
-            customSparkOption="value",
-        )
+    options = SomeDB.FetchOptions(
+        queryTimeout=60_000,
+        fetchsize=100_000,
+        customSparkOption="value",
+    )
+    ```
     """
 
     class Config:
@@ -116,34 +116,34 @@ class JDBCFetchOptions(GenericOptions):
 
     Tuning this option can influence performance of reading.
 
-    .. warning::
+    !!! warning
         Default value depends on driver. For example, Oracle has
-        default ``fetchsize=10``.
+        default `fetchsize=10`.
     """
 
 
 class JDBCExecuteOptions(GenericOptions):
     """Options related to executing statements in databases via JDBC.
 
-    .. versionadded:: 0.11.0
-        Replace ``SomeDB.JDBCOptions`` → ``SomeDB.ExecuteOptions``
+    !!! success "Added in 0.11.0"
+        Replace `SomeDB.JDBCOptions` → `SomeDB.ExecuteOptions`
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value supported by underlying JDBC driver class,
         even if it is not mentioned in this documentation.
 
-    .. code:: python
+    ```python
+    from onetl.connection import SomeDB
 
-        from onetl.connection import SomeDB
-
-        options = SomeDB.ExecuteOptions(
-            queryTimeout=60_000,
-            customSparkOption="value",
-        )
+    options = SomeDB.ExecuteOptions(
+        queryTimeout=60_000,
+        customSparkOption="value",
+    )
+    ```
     """
 
     class Config:
@@ -163,7 +163,7 @@ class JDBCExecuteOptions(GenericOptions):
 
     Tuning this option can influence performance of reading.
 
-    .. warning::
+    !!! warning
         Default value depends on driver. For example, Oracle has
-        default ``fetchsize=10``.
+        default `fetchsize=10`.
     """

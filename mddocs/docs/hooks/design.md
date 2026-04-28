@@ -17,15 +17,15 @@ Hooks can be placed into [`plugins`][DBR-onetl-plugins], allowing to modify onET
 ### Limitations { #DBR-onetl-hooks-design-limitations }
 
 - Hooks can be bound to methods of a class only (not functions).
-- Only methods decorated with [`slot-decorator`][DBR-onetl-hooks-slot-decorator] implement hooks mechanism. These class and methods are marked as `support_hooks`.
+- Only methods decorated with [`@slot` decorator][DBR-onetl-hooks-slot-decorator] implement hooks mechanism. These class and methods are marked as `support_hooks`.
 - Hooks can be bound to public methods only.
 
 ## Terms { #DBR-onetl-hooks-design-terms }
 
-- [`slot-decorator`][DBR-onetl-hooks-slot-decorator] - method of a class with a special decorator
+- [`@slot` decorator][DBR-onetl-hooks-slot-decorator] - method of a class with a special decorator
 - `Callback` - function which implements some additional logic which modifies slot behavior
-- [`hook-decorator`][DBR-onetl-hooks-hook-decorator] - wrapper around callback which stores hook state, priority and some useful methods
-- `Hooks mechanism` - calling `Slot()` will call all enabled hooks which are bound to the slot. Implemented by [`support-hooks-decorator`][DBR-onetl-hooks-support-hooks-decorator].
+- [`@hook` decorator][DBR-onetl-hooks-hook-decorator] - wrapper around callback which stores hook state, priority and some useful methods
+- `Hooks mechanism` - calling `Slot()` will call all enabled hooks which are bound to the slot. Implemented by [`@support_hooks` decorator][DBR-onetl-hooks-support-hooks-decorator].
 
 ## How to implement hooks? { #DBR-onetl-hooks-design-how-to-implement-hooks }
 
@@ -71,7 +71,7 @@ obj.method(2)  # will call callback(obj, 1)
             return self.data, arg
     ```
 
-- Add [`slot-decorator`][DBR-onetl-hooks-slot-decorator] to the method:
+- Add [`@slot` decorator][DBR-onetl-hooks-slot-decorator] to the method:
 
     ```python
     from onetl.hooks import support_hooks, slot, hook
@@ -101,7 +101,7 @@ class MyClass:
         return arg
 ```
 
-- Add [`support-hooks-decorator`][DBR-onetl-hooks-support-hooks-decorator] to the class:
+- Add [`@support_hooks` decorator][DBR-onetl-hooks-support-hooks-decorator] to the class:
 
     ```python
     from onetl.hooks import support_hooks, slot, hook
@@ -156,7 +156,7 @@ def callback(obj, *args, method_name: str, **kwargs):
 
 #### Define a hook { #DBR-onetl-hooks-design-define-a-hook }
 
-Add [`hook-decorator`][DBR-onetl-hooks-hook-decorator] to create a hook from your callback:
+Add [`@hook` decorator][DBR-onetl-hooks-hook-decorator] to create a hook from your callback:
 
 ```python
 @hook

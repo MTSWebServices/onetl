@@ -16,13 +16,13 @@ from onetl.impl import FrozenModel, RemotePath
 class ExcludeDir(BaseFileFilter, FrozenModel):
     """Filter files or directories which are included in a specific directory.
 
-    .. versionadded:: 0.8.0
-        Replaces deprecated ``onetl.core.FileFilter``
+    !!! success "Added in 0.8.0"
+        Replaces deprecated `onetl.core.FileFilter`
 
     Parameters
     ----------
 
-    path : str or :obj:`os.PathLike`
+    path : str or `os.PathLike`
 
         Path to directory which should be excluded.
 
@@ -31,11 +31,12 @@ class ExcludeDir(BaseFileFilter, FrozenModel):
 
     Create exclude dir filter:
 
-    .. code:: python
+    ```python
+    from onetl.file.filter import ExcludeDir
 
-        from onetl.file.filter import ExcludeDir
+    exclude_dir = ExcludeDir("/export/news_parse/exclude_dir")
 
-        exclude_dir = ExcludeDir("/export/news_parse/exclude_dir")
+    ```
     """
 
     class Config:

@@ -1,6 +1,6 @@
 # Plugins { #DBR-onetl-plugins }
 
-:octicons-versions-16: **version added 0.6.0**
+!!! success "Added in 0.6.0"
 
 ## What are plugins? { #DBR-onetl-plugins-what-are-plugins }
 
@@ -75,7 +75,7 @@ like [`@hook` decorator][DBR-onetl-hooks-hook-decorator], it will be executed du
 
 ## How to enable/disable plugins? { #DBR-onetl-plugins-how-to-enabledisable-plugins }
 
-:octicons-versions-16: **version added 0.7.0**
+!!! success "Added in 0.7.0"
 
 ### Disable/enable all plugins { #DBR-onetl-plugins-disableenable-all-plugins }
 

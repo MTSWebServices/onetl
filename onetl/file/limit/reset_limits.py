@@ -17,19 +17,21 @@ def reset_limits(limits: Iterable[BaseFileLimit]) -> list[BaseFileLimit]:
 
     Parameters
     ----------
-    limits : Iterable of :obj:`onetl.base.base_file_limit.BaseFileLimit`
+    limits : Iterable of [onetl.base.base_file_limit.BaseFileLimit][]
         Limits to reset.
 
     Returns
     -------
-    List with limits, but with reset state.
+    list of BaseFileLimit
+        List with limits, but with reset state.
 
-    List may contain original filters with reset state, or new copies.
-    This is an implementation detail of :obj:`reset <onetl.base.base_file_limit.BaseFileLimit.reset>` method.
+        List may contain original filters with reset state, or new copies.
+        This is an implementation detail of [reset][onetl.base.base_file_limit.BaseFileLimit.reset] method.
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file.limit import MaxFilesCount, limits_reached, limits_stop_at, reset_limits
     >>> from onetl.impl import LocalPath
     >>> limits = [MaxFilesCount(1)]
@@ -45,5 +47,7 @@ def reset_limits(limits: Iterable[BaseFileLimit]) -> list[BaseFileLimit]:
     >>> new_limits = reset_limits(limits)
     >>> limits_reached(new_limits)
     False
+
+    ```
     """
     return [limit.reset() for limit in limits]

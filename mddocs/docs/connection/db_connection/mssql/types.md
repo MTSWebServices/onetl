@@ -53,7 +53,7 @@ This may lead to incidental precision loss, or sometimes data cannot be written 
 
 So instead of relying on Spark to create tables:
 
-??? note "See example"
+??? example
 
     ```python
     writer = DBWriter(
@@ -68,7 +68,7 @@ So instead of relying on Spark to create tables:
 
 Always prefer creating tables with specific types **BEFORE WRITING DATA**:
 
-??? note "See example"
+??? example
 
     ```python
     mssql.execute(

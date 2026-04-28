@@ -4,4 +4,3 @@
 ::: onetl.strategy.snapshot_strategy.SnapshotStrategy
     options:
         members:
-            - __init__

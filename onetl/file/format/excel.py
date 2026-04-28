@@ -27,129 +27,128 @@ log = logging.getLogger(__name__)
 @support_hooks
 class Excel(ReadWriteFileFormat):
     """
-    Excel file format. |support_hooks|
+    Excel file format. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `Spark Excel <https://github.com/crealytics/spark-excel>`_ file format.
+    Based on [Spark Excel](https://github.com/crealytics/spark-excel) file format.
 
-    Supports reading/writing files with ``.xlsx`` (read/write) and ``.xls`` (read only) extensions.
+    Supports reading/writing files with `.xlsx` (read/write) and `.xls` (read only) extensions.
 
-    .. dropdown:: Version compatibility
+    ??? note "Version compatibility"
 
         * Spark versions: 3.2.x - 4.0.x
 
-            .. warning::
+            !!! warning
 
                 Not all combinations of Spark version and package version are supported.
-                See `Maven index <https://mvnrepository.com/artifact/dev.mauch/spark-excel>`_
-                and `official documentation <https://github.com/crealytics/spark-excel>`_.
+                See [Maven index](https://mvnrepository.com/artifact/dev.mauch/spark-excel)
+                and [official documentation](https://github.com/crealytics/spark-excel).
 
         * Java versions: 8 - 22
 
         See documentation from link above.
 
-    .. versionadded:: 0.9.4
+    !!! success "Added in 0.9.4"
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any option mentioned in
-        `official documentation <https://github.com/crealytics/spark-excel>`_.
-        **Option names should be in** ``camelCase``!
+        [official documentation](https://github.com/crealytics/spark-excel).
+        **Option names should be in** `camelCase`!
 
-        The set of supported options depends on ``spark-excel`` package version.
+        The set of supported options depends on `spark-excel` package version.
 
-    .. tabs::
+    === "Reading files"
+        ```python
+        from pyspark.sql import SparkSession
+        from onetl.file.format import Excel
 
-        .. code-tab:: py Reading files
+        # Create Spark session with Excel package loaded
+        maven_packages = Excel.get_packages(
+            package_version="0.31.2",
+            spark_version="3.5.8",
+        )
+        spark = (
+            SparkSession.builder.appName("spark-app-name")
+            .config("spark.jars.packages", ",".join(maven_packages))
+            .getOrCreate()
+        )
 
-            from pyspark.sql import SparkSession
-            from onetl.file.format import Excel
+        excel = Excel(header=True, inferSchema=True)
+        ```
+    === "Writing files"
+        ```python
+        # Create Spark session with Excel package loaded
+        spark = ...
 
-            # Create Spark session with Excel package loaded
-            maven_packages = Excel.get_packages(
-                package_version="0.31.2",
-                spark_version="3.5.8",
-            )
-            spark = (
-                SparkSession.builder.appName("spark-app-name")
-                .config("spark.jars.packages", ",".join(maven_packages))
-                .getOrCreate()
-            )
+        from onetl.file.format import XML
 
-            excel = Excel(header=True, inferSchema=True)
-
-        .. code-tab:: py Writing files
-
-            # Create Spark session with Excel package loaded
-            spark = ...
-
-            from onetl.file.format import XML
-
-            excel = Excel(header=True, dataAddress="'Sheet1'!A1")
+        excel = Excel(header=True, dataAddress="'Sheet1'!A1")
+        ```
     """
 
     name: ClassVar[str] = "excel"
 
     header: bool = False
     """
-    If ``True``, the first row in file is conditioned as a header.
-    Default ``False``.
+    If `True`, the first row in file is conditioned as a header.
+    Default `False`.
     """
 
     dataAddress: Optional[str] = None
     """
     Cell address used as starting point.
-    For example: ``'A1'`` or ``'Sheet1'!A1``
+    For example: `'A1'` or `'Sheet1'!A1`
     """
 
     timestampFormat: Optional[str] = None
     """
     Format string used for parsing or serializing timestamp values.
-    Default ``yyyy-mm-dd hh:mm:ss[.fffffffff]``.
+    Default `yyyy-mm-dd hh:mm:ss[.fffffffff]`.
     """
 
     dateFormat: Optional[str] = None
     """
     Format string used for parsing or serializing date values.
-    Default ``yyyy-MM-dd``.
+    Default `yyyy-MM-dd`.
     """
 
     treatEmptyValuesAsNulls: Optional[bool] = None
     """
-    If ``True``, empty cells are parsed as ``null`` values.
-    If ``False``, empty cells are parsed as empty strings.
-    Default ``True``.
+    If `True`, empty cells are parsed as `null` values.
+    If `False`, empty cells are parsed as empty strings.
+    Default `True`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     setErrorCellsToFallbackValues: Optional[bool] = None
     """
-    If ``True``, cells containing ``#N/A`` value are replaced with default value for column type,
-    e.g. 0 for ``IntegerType()``. If ``False``, ``#N/A`` values are replaced with ``null``.
-    Default ``False``.
+    If `True`, cells containing `#N/A` value are replaced with default value for column type,
+    e.g. 0 for `IntegerType()`. If `False`, `#N/A` values are replaced with `null`.
+    Default `False`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     usePlainNumberFormat: Optional[bool] = None
     """
-    If ``True``, read or write numeric values with plain format, without using scientific notation or rounding.
-    Default ``False``.
+    If `True`, read or write numeric values with plain format, without using scientific notation or rounding.
+    Default `False`.
     """
 
     inferSchema: Optional[bool] = None
     """
-    If ``True``, infer DataFrame schema based on cell content.
-    If ``False`` and no explicit DataFrame schema is passed, all columns are ``StringType()``.
+    If `True`, infer DataFrame schema based on cell content.
+    If `False` and no explicit DataFrame schema is passed, all columns are `StringType()`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -158,7 +157,7 @@ class Excel(ReadWriteFileFormat):
     """
     If Excel file is encrypted, provide password to open it.
 
-    .. note::
+    !!! note
 
         Used only for reading files. Cannot be used to write files.
     """
@@ -167,13 +166,13 @@ class Excel(ReadWriteFileFormat):
     """
     If set, use streaming reader and fetch only specified number of rows per iteration.
     This reduces memory usage for large files.
-    Default ``None``, which means reading the entire file content to memory.
+    Default `None`, which means reading the entire file content to memory.
 
-    .. warning::
+    !!! warning
 
-        Can be used only with ``.xlsx`` files, but fails on ``.xls``.
+        Can be used only with `.xlsx` files, but fails on `.xls`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -181,12 +180,12 @@ class Excel(ReadWriteFileFormat):
     maxByteArraySize: Optional[ByteSize] = None
     """
     If set, overrides memory limit (in bytes) of byte array size used for reading rows from input file.
-    Default ``0``, which means using default limit.
+    Default `0`, which means using default limit.
 
-    See `IOUtils.setByteArrayMaxOverride <https://poi.apache.org/apidocs/5.0/org/apache/poi/util/IOUtils.html#setByteArrayMaxOverride-int->`_
+    See [IOUtils.setByteArrayMaxOverride](https://poi.apache.org/apidocs/5.0/org/apache/poi/util/IOUtils.html#setByteArrayMaxOverride-int-)
     documentation.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -197,17 +196,17 @@ class Excel(ReadWriteFileFormat):
     If value is 0, all zip entries will be written to temporary files.
     If value is -1, no temp files will be created, which may cause errors if zip entry is larger than 2GiB.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
 
     excerptSize: Optional[int] = None
     """
-    If ``inferSchema=True``, set number of rows to infer schema from.
-    Default ``10``.
+    If `inferSchema=True`, set number of rows to infer schema from.
+    Default `10`.
 
-    .. note::
+    !!! note
 
         Used only for reading files.
     """
@@ -225,51 +224,50 @@ class Excel(ReadWriteFileFormat):
         scala_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. warning::
+        !!! warning
 
             Not all combinations of Spark version and package version are supported.
-            See `Maven index <https://mvnrepository.com/artifact/dev.mauch/spark-excel>`_
-            and `official documentation <https://github.com/crealytics/spark-excel>`_.
+            See [Maven index](https://mvnrepository.com/artifact/dev.mauch/spark-excel)
+            and [official documentation](https://github.com/crealytics/spark-excel).
 
-        .. versionadded:: 0.9.4
-        .. versionchanged:: 0.14.0
-            Maven package ``com.crealytics:spark-excel`` was renamed to ``dev.mauch:spark-excel``.
+        !!! success "Added in 0.9.4"
+        !!! info "Changed in 0.14.0"
+            Maven package `com.crealytics:spark-excel` was renamed to `dev.mauch:spark-excel`.
 
         Parameters
         ----------
         package_version : str
-            Package version in format ``major.minor.patch``.
+            Package version in format `major.minor.patch`.
 
-            .. versionchanged:: 0.14.0
+            !!! info "Changed in 0.14.0"
                 This parameter is now mandatory.
 
         spark_version : str
-            Spark version in format ``major.minor.patch``.
+            Spark version in format `major.minor.patch`.
 
         scala_version : str, optional
-            Scala version in format ``major.minor``.
+            Scala version in format `major.minor`.
 
-            If ``None``, ``spark_version`` is used to determine Scala version.
+            If `None`, `spark_version` is used to determine Scala version.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.file.format import Excel
 
-            from onetl.file.format import Excel
-
-            Excel.get_packages(
-                package_version="0.31.2",
-                spark_version="3.5.8",
-            )
-            Excel.get_packages(
-                package_version="0.31.2",
-                spark_version="3.5.8",
-                scala_version="2.12",
-            )
-
+        Excel.get_packages(
+            package_version="0.31.2",
+            spark_version="3.5.8",
+        )
+        Excel.get_packages(
+            package_version="0.31.2",
+            spark_version="3.5.8",
+            scala_version="2.12",
+        )
+        ```
         """
 
         version = Version(package_version)

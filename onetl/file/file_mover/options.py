@@ -16,19 +16,19 @@ from onetl.impl import FileExistBehavior, GenericOptions
 class FileMoverOptions(GenericOptions):
     """File moving options.
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
 
     Examples
     --------
 
-    .. code:: python
+    ```python
+    from onetl.file import FileMover
 
-        from onetl.file import FileMover
-
-        options = FileMover.Options(
-            if_exists="replace_entire_directory",
-            workers=4,
-        )
+    options = FileMover.Options(
+        if_exists="replace_entire_directory",
+        workers=4,
+    )
+    ```
     """
 
     if_exists: FileExistBehavior = Field(  # type: ignore[literal-required]
@@ -39,15 +39,15 @@ class FileMoverOptions(GenericOptions):
     How to handle existing files in the local directory.
 
     Possible values:
-        * ``error`` (default) - mark file as failed
-        * ``ignore`` - mark file as skipped
-        * ``replace_file`` - replace existing file with a new one
-        * ``replace_entire_directory`` - delete directory content before moving files
+        * `error` (default) - mark file as failed
+        * `ignore` - mark file as skipped
+        * `replace_file` - replace existing file with a new one
+        * `replace_entire_directory` - delete directory content before moving files
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
 
-    .. versionchanged:: 0.9.0
-        Renamed ``mode`` → ``if_exists``
+    !!! info "Changed in 0.9.0"
+        Renamed `mode` → `if_exists`
     """
 
     workers: int = Field(default=1, ge=1)
@@ -57,9 +57,9 @@ class FileMoverOptions(GenericOptions):
     1 (default) means files will me moved sequentially.
     2 or more means files will be moved in parallel workers.
 
-    Recommended value is ``min(32, os.cpu_count() + 4)``, e.g. ``5``.
+    Recommended value is `min(32, os.cpu_count() + 4)`, e.g. `5`.
 
-    .. versionadded:: 0.8.1
+    !!! success "Added in 0.8.1"
     """
 
     @root_validator(pre=True)

@@ -14,7 +14,7 @@ def plugins_auto_import():
 
     Executed while onETL is being imported.
 
-    See :ref:`plugins` documentation.
+    See [plugins][] documentation.
     """
     plugins_enabled = os.getenv("ONETL_PLUGINS_ENABLED", "true").lower() != "false"
     if not plugins_enabled:

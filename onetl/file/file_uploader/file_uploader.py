@@ -50,95 +50,94 @@ class FileUploadStatus(Enum):
 @support_hooks
 class FileUploader(FrozenModel):
     """Allows you to upload files to a remote source with specified file connection
-    and parameters, and return an object with upload result summary. |support_hooks|
+    and parameters, and return an object with upload result summary. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. note::
+    !!! note
 
         This class is used to upload files **only** from local directory to the remote one.
 
-        It does NOT support direct file transfer between filesystems, like ``FTP -> SFTP``.
-        You should use :ref:`file-downloader` + FileUploader to implement ``FTP -> local dir -> SFTP``.
+        It does NOT support direct file transfer between filesystems, like `FTP -> SFTP`.
+        You should use [file-downloader][] + FileUploader to implement `FTP -> local dir -> SFTP`.
 
-    .. warning::
+    !!! warning
 
         This class does **not** support read strategies.
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
-    .. versionchanged:: 0.8.0
-        Moved ``onetl.core.FileDownloader`` → ``onetl.file.FileDownloader``
+    !!! info "Changed in 0.8.0"
+        Moved `onetl.core.FileDownloader` → `onetl.file.FileDownloader`
 
     Parameters
     ----------
-    connection : :obj:`onetl.connection.FileConnection`
-        Class which contains File system connection properties. See :ref:`file-connections` section.
+    connection : FileConnection
+        Class which contains File system connection properties. See [file-connections][] section.
 
     target_path : os.PathLike or str
         Remote path where want you upload files to
 
-    local_path : os.PathLike or str, optional, default: ``None``
+    local_path : os.PathLike or str, optional, default: `None`
         The local directory from which the data is loaded.
 
-        Could be ``None``, but only if you pass absolute file paths directly to
-        :obj:`~run` method
+        Could be `None`, but only if you pass absolute file paths directly to
+        [run][] method
 
-        .. versionadded:: 0.3.0
+        !!! success "Added in 0.3.0"
 
-    temp_path : os.PathLike or str, optional, default: ``None``
+    temp_path : os.PathLike or str, optional, default: `None`
         If set, this path will be used for uploading a file, and then renaming it to the target file path.
-        If ``None`` (default since v0.5.0) is passed, files are uploaded directly to ``target_path``.
+        If `None` (default since v0.5.0) is passed, files are uploaded directly to `target_path`.
 
-        .. warning::
+        !!! warning
 
-            In case of production ETL pipelines, please set a value for ``temp_path`` (NOT ``None``).
+            In case of production ETL pipelines, please set a value for `temp_path` (NOT `None`).
             This allows to properly handle upload interruption,
             without creating half-uploaded files in the target,
-            because unlike file upload, ``rename`` call is atomic.
+            because unlike file upload, `rename` call is atomic.
 
-        .. warning::
+        !!! warning
 
             In case of connections like SFTP or FTP, which can have multiple underlying filesystems,
-            please pass ``temp_path`` path on the SAME filesystem as ``target_path``.
-            Otherwise instead of ``rename``, remote OS will move file between filesystems,
+            please pass `temp_path` path on the SAME filesystem as `target_path`.
+            Otherwise instead of `rename`, remote OS will move file between filesystems,
             which is NOT atomic operation.
 
-        .. versionchanged:: 0.5.0
-            Default changed from ``/tmp`` to ``None``
+        !!! info "Changed in 0.5.0"
+            Default changed from `/tmp` to `None`
 
-    options : :obj:`~FileUploader.Options` | dict | None, default: ``None``
-        File upload options. See :obj:`FileUploader.Options <onetl.file.file_uploader.options.FileUploaderOptions>`
+    options : [Options][] | dict | None, default: `None`
+        File upload options. See [FileUploader.Options][onetl.file.file_uploader.options.FileUploaderOptions]
 
     Examples
     --------
 
-    .. tabs::
+    === "Minimal example"
+        ```python
+        from onetl.connection import HDFS
+        from onetl.file import FileUploader
 
-        .. code-tab:: py Minimal example
+        hdfs = HDFS(...)
 
-            from onetl.connection import HDFS
-            from onetl.file import FileUploader
+        uploader = FileUploader(
+            connection=hdfs,
+            target_path="/path/to/remote/source",
+        )
+        ```
+    === "Full example"
+        ```python
+        from onetl.connection import HDFS
+        from onetl.file import FileUploader
 
-            hdfs = HDFS(...)
+        hdfs = HDFS(...)
 
-            uploader = FileUploader(
-                connection=hdfs,
-                target_path="/path/to/remote/source",
-            )
-
-        .. code-tab:: py Full example
-
-            from onetl.connection import HDFS
-            from onetl.file import FileUploader
-
-            hdfs = HDFS(...)
-
-            uploader = FileUploader(
-                connection=hdfs,
-                target_path="/path/to/remote/source",
-                temp_path="/user/onetl",
-                local_path="/some/local/directory",
-                options=FileUploader.Options(delete_local=True, if_exists="overwrite"),
-            )
+        uploader = FileUploader(
+            connection=hdfs,
+            target_path="/path/to/remote/source",
+            temp_path="/user/onetl",
+            local_path="/some/local/directory",
+            options=FileUploader.Options(delete_local=True, if_exists="overwrite"),
+        )
+        ```
     """
 
     Options = FileUploaderOptions
@@ -157,43 +156,44 @@ class FileUploader(FrozenModel):
     @slot
     def run(self, files: Iterable[str | os.PathLike] | None = None) -> UploadResult:
         """
-        Method for uploading files to remote host. |support_hooks|
+        Method for uploading files to remote host. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.1.0
+        !!! success "Added in 0.1.0"
 
         Parameters
         ----------
 
-        files : Iterator[str | os.PathLike] | None, default ``None``
+        files : Iterator[str | os.PathLike] | None, default `None`
             File list to upload.
 
-            If empty, upload files from ``local_path``.
+            If empty, upload files from `local_path`.
 
         Returns
         -------
-        :obj:`UploadResult <onetl.file.file_uploader.upload_result.UploadResult>`
+        [UploadResult][onetl.file.file_uploader.upload_result.UploadResult]
 
             Upload result object
 
         Raises
         ------
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
 
-            ``local_path`` does not found
+            `local_path` does not found
 
         NotADirectoryError
 
-            ``local_path`` is not a directory
+            `local_path` is not a directory
 
         ValueError
 
-            File in ``files`` argument does not match ``local_path``
+            File in `files` argument does not match `local_path`
 
         Examples
         --------
 
-        Upload files from ``local_path`` to ``target_path``:
+        Upload files from `local_path` to `target_path`:
 
+        ```python
         >>> from onetl.file import FileUploader
         >>> uploader = FileUploader(local_path="/local", target_path="/remote", ...)
         >>> upload_result = uploader.run()
@@ -215,9 +215,11 @@ class FileUploader(FrozenModel):
                 LocalPath("/local/missing.file"),
             ]),
         )
+        ```
 
-        Upload only certain files from ``local_path``:
+        Upload only certain files from `local_path`:
 
+        ```python
         >>> from onetl.file import FileUploader
         >>> uploader = FileUploader(local_path="/local", target_path="/remote", ...)
         >>> # paths could be relative or absolute, but all should be in "/local"
@@ -239,9 +241,11 @@ class FileUploader(FrozenModel):
             skipped=FileSet([]),
             missing=FileSet([]),
         )
+        ```
 
         Upload only certain files from any folder:
 
+        ```python
         >>> from onetl.file import FileUploader
         >>> uploader = FileUploader(target_path="/remote", ...)  # no local_path set
         >>> # only absolute paths
@@ -262,6 +266,7 @@ class FileUploader(FrozenModel):
             skipped=FileSet([]),
             missing=FileSet([]),
         )
+        ```
         """
 
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
@@ -314,30 +319,31 @@ class FileUploader(FrozenModel):
     @slot
     def view_files(self) -> FileSet[LocalPath]:
         """
-        Get file list in the ``local_path``. |support_hooks|
+        Get file list in the `local_path`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.3.0
+        !!! success "Added in 0.3.0"
 
         Raises
         ------
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
 
-            ``local_path`` does not found
+            `local_path` does not found
 
         NotADirectoryError
 
-            ``local_path`` is not a directory
+            `local_path` is not a directory
 
         Returns
         -------
         FileSet[LocalPath]
-            Set of files in ``local_path``
+            Set of files in `local_path`
 
         Examples
         --------
 
         View files:
 
+        ```python
         >>> from onetl.file import FileUploader
         >>> uploader = FileUploader(local_path="/local", ...)
         >>> uploader.view_files()
@@ -346,6 +352,7 @@ class FileUploader(FrozenModel):
             LocalPath("/local/file3.txt"),
             LocalPath("/local/nested/path/file3.txt"),
         ])
+        ```
         """
 
         if not self.local_path:

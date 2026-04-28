@@ -2,3 +2,5 @@
 
 
 ::: onetl.file.file_df_reader.options.FileDFReaderOptions
+    options:
+        members: [recursive]
