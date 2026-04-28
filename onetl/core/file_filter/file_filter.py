@@ -24,33 +24,33 @@ from onetl.impl import FrozenModel, RemotePath
 class FileFilter(BaseFileFilter, FrozenModel):
     r"""Filter files or directories by their path.
 
-    .. deprecated:: 0.8.0
+    !!! warning "Deprecated since 0.8.0"
 
-        Use :obj:`Glob <onetl.file.filter.glob.Glob>`, :obj:`Regexp <onetl.file.filter.regexp.Regexp>`
-        or :obj:`ExcludeDir <onetl.file.filter.exclude_dir.ExcludeDir>` instead.
+        Use [Glob][onetl.file.filter.glob.Glob], [Regexp][onetl.file.filter.regexp.Regexp]
+        or [ExcludeDir][onetl.file.filter.exclude_dir.ExcludeDir] instead.
 
     Parameters
     ----------
 
-    glob : str | None, default ``None``
+    glob : str | None, default `None`
 
-        Pattern (e.g. ``*.csv``) for which any **file** (only file) path should match
+        Pattern (e.g. `*.csv`) for which any **file** (only file) path should match
 
-        .. warning::
+        !!! warning
 
-            Mutually exclusive with ``regexp``
+            Mutually exclusive with `regexp`
 
-    regexp : str | re.Pattern | None, default ``None``
+    regexp : str | re.Pattern | None, default `None`
 
-        Regular expression (e.g. ``\d+\.csv``) for which any **file** (only file) path should match.
+        Regular expression (e.g. `\d+\.csv`) for which any **file** (only file) path should match.
 
-        If input is a string, regular expression will be compiles using ``re.IGNORECASE`` and ``re.DOTALL`` flags
+        If input is a string, regular expression will be compiles using `re.IGNORECASE` and `re.DOTALL` flags
 
-        .. warning::
+        !!! warning
 
-            Mutually exclusive with ``glob``
+            Mutually exclusive with `glob`
 
-    exclude_dirs : list[os.PathLike | str], default ``[]``
+    exclude_dirs : list[os.PathLike | str], default `[]`
 
         List of directories which should not be a part of a file or directory path
 
@@ -60,41 +60,38 @@ class FileFilter(BaseFileFilter, FrozenModel):
 
     Create exclude_dir filter:
 
-    .. code:: python
+    ```python
+    from onetl.core import FileFilter
 
-        from onetl.core import FileFilter
-
-        file_filter = FileFilter(exclude_dirs=["/export/news_parse/exclude_dir"])
-
+    file_filter = FileFilter(exclude_dirs=["/export/news_parse/exclude_dir"])
+    ```
     Create glob filter:
 
-    .. code:: python
+    ```python
+    from onetl.core import FileFilter
 
-        from onetl.core import FileFilter
-
-        file_filter = FileFilter(glob="*.csv")
-
+    file_filter = FileFilter(glob="*.csv")
+    ```
     Create regexp filter:
 
-    .. code:: python
+    ```python
+    from onetl.core import FileFilter
 
-        from onetl.core import FileFilter
+    file_filter = FileFilter(regexp=r"\d+\.csv")
 
-        file_filter = FileFilter(regexp=r"\d+\.csv")
+    # or
 
-        # or
+    import re
 
-        import re
-
-        file_filter = FileFilter(regexp=re.compile("\d+\.csv"))
-
+    file_filter = FileFilter(regexp=re.compile("\d+\.csv"))
+    ```
     Not allowed:
 
-    .. code:: python
+    ```python
+    from onetl.core import FileFilter
 
-        from onetl.core import FileFilter
-
-        FileFilter()  # will raise ValueError, at least one argument should be passed
+    FileFilter()  # will raise ValueError, at least one argument should be passed
+    ```
     """
 
     class Config:

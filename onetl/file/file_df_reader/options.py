@@ -19,50 +19,51 @@ if TYPE_CHECKING:
 
 @support_hooks
 class FileDFReaderOptions(FileDFReadOptions, GenericOptions):
-    """Options for :obj:`FileDFReader <onetl.file.file_df_reader.file_df_reader.FileDFReader>`.
+    """Options for [FileDFReader][onetl.file.file_df_reader.file_df_reader.FileDFReader].
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
-    .. note::
+    !!! note
 
-        You can pass any value `supported by Spark <https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        You can pass any value [supported by Spark](https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version.
 
-    .. code:: python
+    ```python
+    from onetl.file import FileDFReader
 
-        from onetl.file import FileDFReader
-
-        options = FileDFReader.Options(recursive=True)
+    options = FileDFReader.Options(recursive=True)
+    ```
     """
 
     class Config:
         extra = "allow"
 
     recursive: Optional[bool] = Field(default=None, alias="recursiveFileLookup")
-    """If ``True``, perform recursive file lookup.
+    """If `True`, perform recursive file lookup.
 
-    .. warning::
+    !!! warning
 
         This disables partition inferring using file paths.
 
-    .. warning::
+    !!! warning
 
-        Can be used only in Spark 3+. See `SPARK-27990 <https://issues.apache.org/jira/browse/SPARK-27990>`_.
+        Can be used only in Spark 3+. See [SPARK-27990](https://issues.apache.org/jira/browse/SPARK-27990).
     """
 
     @slot
     def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader:
         """
-        Apply provided format to :obj:`pyspark.sql.DataFrameReader`. |support_hooks|
+        Apply provided format to `pyspark.sql.DataFrameReader`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Returns
         -------
-        :obj:`pyspark.sql.DataFrameReader` with options applied
+        pyspark.sql.DataFrameReader
+            Reader with options applied.
         """
         options = self.dict(by_alias=True, exclude_none=True)
         return reader.options(**options)

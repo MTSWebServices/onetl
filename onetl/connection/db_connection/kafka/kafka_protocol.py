@@ -13,7 +13,7 @@ class KafkaProtocol(ABC):
     """
     Interface for Kafka connection Protocol classes.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     @abstractmethod
@@ -23,7 +23,7 @@ class KafkaProtocol(ABC):
 
         Parameters
         ----------
-        kafka : :obj:`Kafka <onetl.connection.db_connection.kafka.connection.Kafka>`
+        kafka : [Kafka][onetl.connection.db_connection.kafka.connection.Kafka]
             Connection instance
 
         Returns
@@ -42,7 +42,7 @@ class KafkaProtocol(ABC):
 
         Parameters
         ----------
-        kafka : :obj:`Kafka <onetl.connection.db_connection.kafka.connection.Kafka>`
+        kafka : [Kafka][onetl.connection.db_connection.kafka.connection.Kafka]
             Connection instance
         """
         ...

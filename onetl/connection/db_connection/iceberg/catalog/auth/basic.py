@@ -14,9 +14,9 @@ from onetl.impl.frozen_model import FrozenModel
 class IcebergRESTCatalogBasicAuth(IcebergRESTCatalogAuth, FrozenModel):
     """Basic Authentication for Iceberg REST Catalog.
 
-    All requests to REST catalog are made with HTTP header ``Authorization: Basic {user}:{password}``.
+    All requests to REST catalog are made with HTTP header `Authorization: Basic {user}:{password}`.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
 
     Parameters
     ----------
@@ -29,14 +29,14 @@ class IcebergRESTCatalogBasicAuth(IcebergRESTCatalogAuth, FrozenModel):
     Examples
     --------
 
-    .. code:: python
+    ```python
+    from onetl.connection import Iceberg
 
-        from onetl.connection import Iceberg
-
-        auth = Iceberg.RESTCatalog.BasicAuth(
-            user="my_user",
-            password="my_password",
-        )
+    auth = Iceberg.RESTCatalog.BasicAuth(
+        user="my_user",
+        password="my_password",
+    )
+    ```
     """
 
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/BasicAuthManager.java

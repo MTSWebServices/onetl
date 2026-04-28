@@ -64,31 +64,31 @@ class HiveWriteOptions(GenericOptions):
     """Hive source writing options.
 
     You can pass here key-value items which then will be converted to calls
-    of :obj:`pyspark.sql.readwriter.DataFrameWriter` methods.
+    of `pyspark.sql.readwriter.DataFrameWriter` methods.
 
-    For example, ``Hive.WriteOptions(if_exists="append", partitionBy="reg_id")`` will
-    be converted to ``df.write.mode("append").partitionBy("reg_id")`` call, and so on.
+    For example, `Hive.WriteOptions(if_exists="append", partitionBy="reg_id")` will
+    be converted to `df.write.mode("append").partitionBy("reg_id")` call, and so on.
 
     Examples
     --------
 
-    .. note::
+    !!! note
 
         You can pass any method name and its value
-        `supported by Spark <https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by Spark](https://spark.apache.org/docs/latest/sql-data-sources-load-save-functions.html),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on Spark version used.
 
-    .. code:: python
+    ```python
+    from onetl.connection import Hive
 
-        from onetl.connection import Hive
-
-        options = Hive.WriteOptions(
-            if_exists="append",
-            partitionBy="reg_id",
-            customSparkOption="value",
-        )
+    options = Hive.WriteOptions(
+        if_exists="append",
+        partitionBy="reg_id",
+        customSparkOption="value",
+    )
+    ```
     """
 
     class Config:
@@ -102,120 +102,120 @@ class HiveWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * ``append`` (default)
+        * `append` (default)
             Appends data into existing partition/table, or create partition/table if it does not exist.
 
-            Same as Spark's ``df.write.insertInto(table, overwrite=False)``.
+            Same as Spark's `df.write.insertInto(table, overwrite=False)`.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
-                    Table is created using options provided by user (``format``, ``compression``, etc).
+                    Table is created using options provided by user (`format`, `compression`, etc).
 
-                * Table exists, but not partitioned, :obj:`~partition_by` is set
+                * Table exists, but not partitioned, [partition_by][] is set
                     Data is appended to a table. Table is still not partitioned (DDL is unchanged).
 
                 * Table exists and partitioned,
-                  but has different partitioning schema than :obj:`~partition_by`
-                    Partition is created based on table's ``PARTITIONED BY (...)`` options.
-                    Explicit :obj:`~partition_by` value is ignored.
+                  but has different partitioning schema than [partition_by][]
+                    Partition is created based on table's `PARTITIONED BY (...)` options.
+                    Explicit [partition_by][] value is ignored.
 
-                * Table exists and partitioned according :obj:`~partition_by`,
+                * Table exists and partitioned according [partition_by][],
                   but partition is present only in dataframe
                     Partition is created.
 
-                * Table exists and partitioned according :obj:`~partition_by`,
+                * Table exists and partitioned according [partition_by][],
                   partition is present in both dataframe and table
                     Data is appended to existing partition.
 
-                    .. warning::
+                    !!! warning
 
                         This mode does not check whether table already contains
                         rows from dataframe, so duplicated rows can be created.
 
                         To implement deduplication, write data to staging table first,
-                        and then perform some deduplication logic using :obj:`~sql`.
+                        and then perform some deduplication logic using [sql][].
 
-                * Table exists and partitioned according :obj:`~partition_by`,
+                * Table exists and partitioned according [partition_by][],
                   but partition is present only in table, not dataframe
                     Existing partition is left intact.
 
-        * ``replace_overlapping_partitions``
+        * `replace_overlapping_partitions`
             Overwrites data in the existing partition, or create partition/table if it does not exist.
 
-            Same as Spark's ``df.write.insertInto(table, overwrite=True)`` +
-            ``spark.sql.sources.partitionOverwriteMode=dynamic``.
+            Same as Spark's `df.write.insertInto(table, overwrite=True)` +
+            `spark.sql.sources.partitionOverwriteMode=dynamic`.
 
-            .. DANGER::
+            !!! danger
 
                 This mode does make sense **ONLY** if the table is partitioned.
                 **IF NOT, YOU'LL LOSE YOUR DATA!**
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
-                    Table is created using options provided by user (``format``, ``compression``, etc).
+                    Table is created using options provided by user (`format`, `compression`, etc).
 
-                * Table exists, but not partitioned, :obj:`~partition_by` is set
+                * Table exists, but not partitioned, [partition_by][] is set
                     Data is **overwritten in all the table**.
                     Table is still not partitioned (DDL is unchanged).
 
                 * Table exists and partitioned,
-                  but has different partitioning schema than :obj:`~partition_by`
-                    Partition is created based on table's ``PARTITIONED BY (...)`` options.
-                    Explicit :obj:`~partition_by` value is ignored.
+                  but has different partitioning schema than [partition_by][]
+                    Partition is created based on table's `PARTITIONED BY (...)` options.
+                    Explicit [partition_by][] value is ignored.
 
-                * Table exists and partitioned according :obj:`~partition_by`,
+                * Table exists and partitioned according [partition_by][],
                   but partition is present only in dataframe
                     Partition is created.
 
-                * Table exists and partitioned according :obj:`~partition_by`,
+                * Table exists and partitioned according [partition_by][],
                   partition is present in both dataframe and table
                     Existing partition **replaced** with data from dataframe.
 
-                * Table exists and partitioned according :obj:`~partition_by`,
+                * Table exists and partitioned according [partition_by][],
                   but partition is present only in table, not dataframe
                     Existing partition is left intact.
 
-        * ``replace_entire_table``
-            **Recreates table** (via ``DROP + CREATE``), **deleting all existing data**.
+        * `replace_entire_table`
+            **Recreates table** (via `DROP + CREATE`), **deleting all existing data**.
             **All existing partitions are dropped.**
 
-            Same as Spark's ``df.write.saveAsTable(table, mode="overwrite")`` (NOT ``insertInto``)!
+            Same as Spark's `df.write.saveAsTable(table, mode="overwrite")` (NOT `insertInto`)!
 
-            .. warning::
+            !!! warning
 
-                Table is recreated using options provided by user (``format``, ``compression``, etc)
+                Table is recreated using options provided by user (`format`, `compression`, etc)
                 **instead of using original table options**. Be careful
 
-        * ``ignore``
+        * `ignore`
             Ignores the write operation if the table/partition already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
-                    Table is created using options provided by user (``format``, ``compression``, etc).
+                    Table is created using options provided by user (`format`, `compression`, etc).
 
                 * Table exists
                     If the table exists, **no further action is taken**. This is true whether or not new partition
                     values are present and whether the partitioning scheme differs or not
 
-        * ``error``
+        * `error`
             Raises an error if the table/partition already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Table does not exist
-                    Table is created using options provided by user (``format``, ``compression``, etc).
+                    Table is created using options provided by user (`format`, `compression`, etc).
 
                 * Table exists
                     If the table exists, **raises an error**. This is true whether or not new partition
                     values are present and whether the partitioning scheme differs or not
 
 
-    .. note::
+    !!! note
 
-        Unlike using pure Spark, config option ``spark.sql.sources.partitionOverwriteMode``
+        Unlike using pure Spark, config option `spark.sql.sources.partitionOverwriteMode`
         does not affect behavior.
     """
 
@@ -225,120 +225,119 @@ class HiveWriteOptions(GenericOptions):
     Examples
     --------
 
-    - string format: ``"orc"`` (default), ``"parquet"``, ``"csv"`` (NOT recommended).
-    - format class instance: ``ORC(compression="snappy")``, ``Parquet()``, ``CSV(header=True, delimiter=",")``.
+    - string format: `"orc"` (default), `"parquet"`, `"csv"` (NOT recommended).
+    - format class instance: `ORC(compression="snappy")`, `Parquet()`, `CSV(header=True, delimiter=",")`.
 
-    .. code::
+    ```
+    options = Hive.WriteOptions(
+        if_exists="append",
+        partitionBy="reg_id",
+        format="orc",
+    )
 
-        options = Hive.WriteOptions(
-            if_exists="append",
-            partitionBy="reg_id",
-            format="orc",
-        )
+    # or using an ORC format class instance:
 
-        # or using an ORC format class instance:
+    from onetl.file.format import ORC
 
-        from onetl.file.format import ORC
+    options = Hive.WriteOptions(
+        if_exists="append",
+        partitionBy="reg_id",
+        format=ORC(compression="snappy"),
+    )
+    ```
+    !!! note
 
-        options = Hive.WriteOptions(
-            if_exists="append",
-            partitionBy="reg_id",
-            format=ORC(compression="snappy"),
-        )
+        It's better to use column-based formats like `orc` or `parquet`,
+        not row-based (`csv`, `json`)
 
-    .. note::
+    !!! warning
 
-        It's better to use column-based formats like ``orc`` or ``parquet``,
-        not row-based (``csv``, ``json``)
-
-    .. warning::
-
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
     partition_by: Optional[Union[List[str], str]] = Field(default=None, alias="partitionBy")
     """
-    List of columns should be used for data partitioning. ``None`` means partitioning is disabled.
+    List of columns should be used for data partitioning. `None` means partitioning is disabled.
 
-    Examples: ``reg_id`` or ``["reg_id", "business_dt"]``
+    Examples: `reg_id` or `["reg_id", "business_dt"]`
 
-    .. warning::
+    !!! warning
 
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
     bucket_by: Optional[Tuple[int, Union[List[str], str]]] = Field(default=None, alias="bucketBy")
-    """Number of buckets plus bucketing columns. ``None`` means bucketing is disabled.
+    """Number of buckets plus bucketing columns. `None` means bucketing is disabled.
 
     Each bucket is created as a set of files with name containing result of
-    calculation ``hash(columns) mod num_buckets``.
+    calculation `hash(columns) mod num_buckets`.
 
-    This allows to remove shuffle from queries containing ``GROUP BY`` or ``JOIN`` or using ``=`` / ``IN`` predicates
+    This allows to remove shuffle from queries containing `GROUP BY` or `JOIN` or using `=` / `IN` predicates
     on specific columns.
 
-    Examples: ``(10, "user_id")``, ``(10, ["user_id", "user_phone"])``
+    Examples: `(10, "user_id")`, `(10, ["user_id", "user_phone"])`
 
-    .. note::
+    !!! note
 
         Bucketing should be used on columns containing a lot of unique values,
-        like ``userId``.
+        like `userId`.
 
-        Columns like ``date`` should **NOT** be used for bucketing
+        Columns like `date` should **NOT** be used for bucketing
         because of too low number of unique values.
 
-    .. warning::
+    !!! warning
 
         It is recommended to use this option **ONLY** if you have a large table
         (hundreds of Gb or more), which is used mostly for JOINs with other tables,
-        and you're inserting data using ``if_exists=overwrite_partitions`` or ``if_exists=replace_entire_table``.
+        and you're inserting data using `if_exists=overwrite_partitions` or `if_exists=replace_entire_table`.
 
         Otherwise Spark will create a lot of small files
         (one file for each bucket and each executor), drastically **decreasing** HDFS performance.
 
-    .. warning::
+    !!! warning
 
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
     sort_by: Optional[Union[List[str], str]] = Field(default=None, alias="sortBy")
-    """Each file in a bucket will be sorted by these columns value. ``None`` means sorting is disabled.
+    """Each file in a bucket will be sorted by these columns value. `None` means sorting is disabled.
 
-    Examples: ``user_id`` or ``["user_id", "user_phone"]``
+    Examples: `user_id` or `["user_id", "user_phone"]`
 
-    .. note::
+    !!! note
 
-        Sorting columns should contain values which are used in ``ORDER BY`` clauses.
+        Sorting columns should contain values which are used in `ORDER BY` clauses.
 
-    .. warning::
+    !!! warning
 
-        Could be used only with :obj:`~bucket_by` option
+        Could be used only with [bucket_by][] option
 
-    .. warning::
+    !!! warning
 
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
     compression: Optional[str] = None
     """Compressing algorithm which should be used for compressing created files in HDFS.
-    ``None`` means compression is disabled.
+    `None` means compression is disabled.
 
-    Examples: ``snappy``, ``zlib``
+    Examples: `snappy`, `zlib`
 
-    .. warning::
+    !!! warning
 
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
     table_properties: Dict[str, Any] = Field(default_factory=dict)
     """TBLPROPERTIES to add to freshly created table.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
 
-    Examples: ``{"auto.purge": True}``
+    Examples: `{"auto.purge": True}`
 
-    .. warning::
+    !!! warning
 
-        Used **only** while **creating new table**, or in case of ``if_exists=replace_entire_table``
+        Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
     @validator("sort_by")

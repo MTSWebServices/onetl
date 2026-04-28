@@ -1,6 +1,6 @@
 # Writing to Iceberg using `DBWriter` { #DBR-onetl-connection-db-connection-iceberg-write-writing-to-iceberg-using-dbwriter }
 
-For writing data to Iceberg, use [`DBWriter <onetl.db.db_writer.db_writer.DBWriter>`][DBR-onetl-db-writer].
+For writing data to Iceberg, use [DBWriter][DBR-onetl-db-writer].
 
 ## Examples { #DBR-onetl-connection-db-connection-iceberg-write-examples }
 
@@ -26,3 +26,5 @@ writer.run(df)
 ## Options { #DBR-onetl-connection-db-connection-iceberg-write-options }
 
 ::: onetl.connection.db_connection.iceberg.options.IcebergWriteOptions
+    options:
+        members: [if_exists, table_properties]

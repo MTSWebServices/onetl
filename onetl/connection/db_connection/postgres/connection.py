@@ -43,27 +43,27 @@ class PostgresExtra(GenericOptions):
 
 @support_hooks
 class Postgres(JDBCConnection):
-    """PostgreSQL JDBC connection. |support_hooks|
+    """PostgreSQL JDBC connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on Maven package `org.postgresql:postgresql:42.7.8 <https://mvnrepository.com/artifact/org.postgresql/postgresql/42.7.8>`_
-    (`official Postgres JDBC driver <https://jdbc.postgresql.org/>`_).
+    Based on Maven package [org.postgresql:postgresql:42.7.8](https://mvnrepository.com/artifact/org.postgresql/postgresql/42.7.8)
+    ([official Postgres JDBC driver](https://jdbc.postgresql.org/)).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`postgres-prerequisites`
+        Before using this connector please take into account [postgres-prerequisites][]
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     host : str
-        Host of Postgres database. For example: ``test.postgres.domain.com`` or ``193.168.1.11``
+        Host of Postgres database. For example: `test.postgres.domain.com` or `193.168.1.11`
 
-    port : int, default: ``5432``
+    port : int, default: `5432`
         Port of Postgres database
 
     user : str
-        User, which have proper access to the database. For example: ``some_user``
+        User, which have proper access to the database. For example: `some_user`
 
     password : str
         Password for database connection
@@ -71,17 +71,17 @@ class Postgres(JDBCConnection):
     database : str
         Database in RDBMS, NOT schema.
 
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+        See [this page](https://www.educba.com/postgresql-database-vs-schema/) for more details
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"ssl": "false"}``
+        For example: `{"ssl": "false"}`
 
-        See `Postgres JDBC driver properties documentation <https://jdbc.postgresql.org/documentation/use/>`_
+        See [Postgres JDBC driver properties documentation](https://jdbc.postgresql.org/documentation/use/)
         for more details
 
     Examples
@@ -89,44 +89,42 @@ class Postgres(JDBCConnection):
 
     Create and check Postgres connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Postgres
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import Postgres
-        from pyspark.sql import SparkSession
+    # Create Spark session with Postgres driver loaded
+    maven_packages = Postgres.get_packages()
+    spark = (
+        SparkSession.builder.appName("spark-app-name")
+        .config("spark.jars.packages", ",".join(maven_packages))
+        .getOrCreate()
+    )
 
-        # Create Spark session with Postgres driver loaded
-        maven_packages = Postgres.get_packages()
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .getOrCreate()
-        )
-
-        # Create connection
-        postgres = Postgres(
-            host="database.host.or.ip",
-            user="user",
-            password="*****",
-            database="target_database",
-            spark=spark,
-        )
-
+    # Create connection
+    postgres = Postgres(
+        host="database.host.or.ip",
+        user="user",
+        password="*****",
+        database="target_database",
+        spark=spark,
+    )
+    ```
     Create read-only connection:
 
-    .. code:: python
+    ```python
+    ...
 
-        ...
-
-        # Create connection
-        postgres = Postgres(
-            host="database.host.or.ip",
-            user="user",
-            password="*****",
-            database="target_database",
-            extra={"readOnly": True, "readOnlyMode": "always"},  # <--
-            spark=spark,
-        ).check()
-
+    # Create connection
+    postgres = Postgres(
+        host="database.host.or.ip",
+        user="user",
+        password="*****",
+        database="target_database",
+        extra={"readOnly": True, "readOnlyMode": "always"},  # <--
+        spark=spark,
+    ).check()
+    ```
     """
 
     host: Host
@@ -149,27 +147,26 @@ class Postgres(JDBCConnection):
     @classmethod
     def get_packages(cls, package_version: str | None = None) -> list[str]:
         """
-        Get package names to be downloaded by Spark.  Allows specifying a custom JDBC driver version. |support_hooks|
+        Get package names to be downloaded by Spark.  Allows specifying a custom JDBC driver version. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         package_version : str, optional
-            Specifies the version of the PostgreSQL JDBC driver to use.  Defaults to ``42.7.8``.
+            Specifies the version of the PostgreSQL JDBC driver to use.  Defaults to `42.7.8`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Postgres
 
-            from onetl.connection import Postgres
+        Postgres.get_packages()
 
-            Postgres.get_packages()
-
-            # custom package version
-            Postgres.get_packages(package_version="42.6.0")
-
+        # custom package version
+        Postgres.get_packages(package_version="42.6.0")
+        ```
         """
         default_version = "42.7.8"
         version = Version(package_version or default_version).min_digits(3)

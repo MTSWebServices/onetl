@@ -114,12 +114,14 @@ PYTHON_PATH_MAP: dict[str, str] = {
     "onetl.file.file_df_reader.file_df_reader.FileDFReader": "/file_df/file_df_reader/file_df_reader/#DBR-onetl-file-df-reader-filedf-reader-0",
     "onetl.file.file_df_writer.file_df_writer.FileDFWriter": "/file_df/file_df_writer/file_df_writer/#DBR-onetl-file-df-writer-filedf-writer-0",
     # Filters
+    "onetl.base.base_file_filter.BaseFileFilter": "/file/file_filters/base/#DBR-onetl-file-filters-base-interface",
     "onetl.file.filter.exclude_dir.ExcludeDir": "/file/file_filters/exclude_dir/#DBR-onetl-file-filters-exclude-dir-excludedir",
     "onetl.file.filter.glob.Glob": "/file/file_filters/glob/#DBR-onetl-file-filters-glob",
     "onetl.file.filter.regexp.Regexp": "/file/file_filters/regexp/#DBR-onetl-file-filters-regexp",
     # Formats
     "onetl.file.format.jsonline.JSONLine": "/file_df/file_formats/jsonline/#DBR-onetl-file-df-file-formats-jsonline",
     # Limits
+    "onetl.base.base_file_limit.BaseFileLimit": "/file/file_limits/base/#DBR-onetl-file-limits-base-interface",
     "onetl.file.limit.max_files_count.MaxFilesCount": "/file/file_limits/max_files_count/#DBR-onetl-file-limits-max-files-count-maxfilescount",
     # Postgres options (wrong python path used in docstrings → correct anchor)
     "onetl.connection.db_connection.postgres.Postgres.ReadOptions.fetchsize": "/connection/db_connection/postgres/read/#onetl.connection.db_connection.postgres.options.PostgresReadOptions.fetchsize",
@@ -165,13 +167,11 @@ CODE_PATH_MAP: dict[str, str] = {
     # Exceptions — keep full dotted path (used in Raises sections)
     "onetl.exception.DirectoryNotFoundError": "onetl.exception.DirectoryNotFoundError",
     "onetl.exception.DirectoryNotEmptyError": "onetl.exception.DirectoryNotEmptyError",
+    "onetl.exception.DirectoryExistsError": "onetl.exception.DirectoryExistsError",
     "onetl.exception.NotAFileError": "onetl.exception.NotAFileError",
     "onetl.exception.FileSizeMismatchError": "onetl.exception.FileSizeMismatchError",
     "onetl.exception.NoDataError": "onetl.exception.NoDataError",
-    # Hooks — methods without their own anchor in generated docs
-    "onetl.hooks.slot.Slot.bind": "Slot.bind",
     # Interface/abstract types — keep full path (used as type annotations)
-    "onetl.hooks.hook.HookPriority": "onetl.hooks.hook.HookPriority",
     "onetl.connection.BaseDBConnection": "onetl.connection.BaseDBConnection",
     "onetl.connection.DBConnection": "onetl.connection.DBConnection",
     "onetl.connection.BaseDBConnection.ReadOptions": "onetl.connection.BaseDBConnection.ReadOptions",
@@ -179,8 +179,7 @@ CODE_PATH_MAP: dict[str, str] = {
     # Protocol/option types — use short name
     "onetl.base.PathWithStatsProtocol": "PathWithStatsProtocol",
     "onetl.base.path_protocol.PathProtocol": "PathProtocol",
-    "onetl.base.base_file_filter.BaseFileFilter": "BaseFileFilter",
-    "onetl.base.base_file_limit.BaseFileLimit": "BaseFileLimit",
+    "onetl.base.path_stat_protocol.PathStatProtocol": "PathStatProtocol",
 }
 
 
@@ -237,7 +236,7 @@ SHORTNAME_MAP: dict[str, str] = {
     "execute": "`execute`",
     "check": "`check`",
     "sql": "`sql`",
-    "HDFS": "`HDFS`",
+    "HDFS": "[`HDFS`](/connection/file_connection/hdfs/connection/#DBR-onetl-connection-file-connection-hdfs-connection-0)",
     "HWM": "[HWM](/hwm_store/)",
     # Connection class refs
     "SparkHDFS": "[SparkHDFS](/connection/file_df_connection/spark_hdfs/connection/#DBR-onetl-connection-file-df-connection-spark-hdfs-connection)",

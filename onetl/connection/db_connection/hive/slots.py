@@ -7,24 +7,24 @@ from onetl.hooks import slot, support_hooks
 
 @support_hooks
 class HiveSlots:
-    """:ref:`Slots <slot-decorator>` that could be implemented by third-party plugins.
+    """[Slots][slot-decorator] that could be implemented by third-party plugins.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
     """
 
     @slot
     @staticmethod
     def normalize_cluster_name(cluster: str) -> str | None:
         """
-        Normalize cluster name passed into Hive constructor. |support_hooks|
+        Normalize cluster name passed into Hive constructor. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         If hooks didn't return anything, cluster name is left intact.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Parameters
         ----------
-        cluster : :obj:`str`
+        cluster : `str`
             Cluster name (raw)
 
         Returns
@@ -32,86 +32,86 @@ class HiveSlots:
         str | None
             Normalized cluster name.
 
-            If hook cannot be applied to a specific cluster, it should return ``None``.
+            If hook cannot be applied to a specific cluster, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Hive
+        from onetl.hooks import hook
 
-            from onetl.connection import Hive
-            from onetl.hooks import hook
 
-
-            @Hive.Slots.normalize_cluster_name.bind
-            @hook
-            def normalize_cluster_name(cluster: str) -> str:
-                return cluster.lower()
+        @Hive.Slots.normalize_cluster_name.bind
+        @hook
+        def normalize_cluster_name(cluster: str) -> str:
+            return cluster.lower()
+        ```
         """
 
     @slot
     @staticmethod
     def get_known_clusters() -> set[str] | None:
         """
-        Return collection of known clusters. |support_hooks|
+        Return collection of known clusters. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Cluster passed into Hive constructor should be present in this list.
         If hooks didn't return anything, no validation will be performed.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Returns
         -------
         set[str] | None
             Collection of cluster names (normalized).
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Hive
+        from onetl.hooks import hook
 
-            from onetl.connection import Hive
-            from onetl.hooks import hook
 
-
-            @Hive.Slots.get_known_clusters.bind
-            @hook
-            def get_known_clusters() -> str[str]:
-                return {"rnd-dwh", "rnd-prod"}
+        @Hive.Slots.get_known_clusters.bind
+        @hook
+        def get_known_clusters() -> str[str]:
+            return {"rnd-dwh", "rnd-prod"}
+        ```
         """
 
     @slot
     @staticmethod
     def get_current_cluster() -> str | None:
         """
-        Get current cluster name. |support_hooks|
+        Get current cluster name. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Used in :obj:`~check` method to verify that connection is created only from the same cluster.
+        Used in [check][] method to verify that connection is created only from the same cluster.
         If hooks didn't return anything, no validation will be performed.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Returns
         -------
         str | None
             Current cluster name (normalized).
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Hive
+        from onetl.hooks import hook
 
-            from onetl.connection import Hive
-            from onetl.hooks import hook
 
-
-            @Hive.Slots.get_current_cluster.bind
-            @hook
-            def get_current_cluster() -> str:
-                # some magic here
-                return "rnd-dwh"
+        @Hive.Slots.get_current_cluster.bind
+        @hook
+        def get_current_cluster() -> str:
+            # some magic here
+            return "rnd-dwh"
+        ```
         """

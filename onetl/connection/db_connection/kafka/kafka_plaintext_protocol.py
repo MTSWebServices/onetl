@@ -14,22 +14,22 @@ from onetl.connection.db_connection.kafka.kafka_protocol import KafkaProtocol
 
 class KafkaPlaintextProtocol(KafkaProtocol, FrozenModel):
     """
-    Connect to Kafka using ``PLAINTEXT`` or ``SASL_PLAINTEXT`` security protocols.
+    Connect to Kafka using `PLAINTEXT` or `SASL_PLAINTEXT` security protocols.
 
-    .. warning::
+    !!! warning
 
         Not recommended to use on production environments.
-        Prefer :obj:`SSLProtocol <onetl.connection.db_connection.kafka.kafka_ssl_protocol.KafkaSSLProtocol>`.
+        Prefer [SSLProtocol][onetl.connection.db_connection.kafka.kafka_ssl_protocol.KafkaSSLProtocol].
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
-    .. code:: python
-
-        # No options
-        protocol = Kafka.PlaintextProtocol()
+    ```python
+    # No options
+    protocol = Kafka.PlaintextProtocol()
+    ```
     """
 
     def get_options(self, kafka: Kafka) -> dict:

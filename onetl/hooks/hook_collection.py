@@ -18,17 +18,18 @@ class HookCollection:
     """
     Representation of hooks collection.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. code:: python
+    ```python
+    from onetl.hooks.hook import Hook
+    from onetl.hooks.hook_collection import HookCollection
 
-        from onetl.hooks.hook import Hook
-        from onetl.hooks.hook_collection import HookCollection
+    hooks = HookCollection([Hook(callback=func1), Hook(callback=func2), ...])
 
-        hooks = HookCollection([Hook(callback=func1), Hook(callback=func2), ...])
+    ```
     """
 
     def __init__(self, hooks: list[Hook] | HookCollection | None = None):
@@ -38,15 +39,16 @@ class HookCollection:
     @property
     def active(self):
         """
-        Return new HookCollection but containing only hooks with ``enabled=True`` state.
+        Return new HookCollection but containing only hooks with `enabled=True` state.
 
-        If called after :obj:`~stop` or inside :obj:`~skip`, empty collection will be returned.
+        If called after [stop][] or inside [skip][], empty collection will be returned.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -59,6 +61,8 @@ class HookCollection:
         ... )
         >>> len(hooks.active)
         1
+
+        ```
         """
 
         if self._enabled:
@@ -70,11 +74,12 @@ class HookCollection:
         """
         Stop all hooks in the collection.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -88,6 +93,8 @@ class HookCollection:
         >>> hooks.stop()
         >>> hooks.active
         HookCollection([])
+
+        ```
         """
         self._enabled = False
 
@@ -95,16 +102,17 @@ class HookCollection:
         """
         Resume all hooks in the collection.
 
-        .. note::
+        !!! note
 
-            If hook is disabled by :obj:`onetl.hooks.hook.Hook.disable`, it will stay disabled.
-            You should call :obj:`onetl.hooks.hook.Hook.enable` explicitly.
+            If hook is disabled by [onetl.hooks.hook.Hook.disable][], it will stay disabled.
+            You should call [onetl.hooks.hook.Hook.enable][] explicitly.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -123,6 +131,8 @@ class HookCollection:
                 Hook(callback=func2),
             ]
         )
+
+        ```
         """
 
         self._enabled = True
@@ -132,17 +142,18 @@ class HookCollection:
         """
         Context manager which temporary stops all the hooks in the collection.
 
-        .. note::
+        !!! note
 
-            If hooks were stopped by :obj:`~stop`, they will not be resumed
+            If hooks were stopped by [stop][], they will not be resumed
             after exiting the context/decorated function.
-            You should call :obj:`~resume` explicitly.
+            You should call [resume][] explicitly.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -163,6 +174,8 @@ class HookCollection:
         >>> # hooks state is restored as it was before entering the context manager
         >>> len(hooks.active)
         2
+
+        ```
         """
 
         if not self._enabled:
@@ -177,11 +190,12 @@ class HookCollection:
     def add(self, item: Hook):
         """Appends hook to the collection.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -192,21 +206,27 @@ class HookCollection:
         ...     ],
         ... )
 
+        ```
+
+        ```python
         >>> new_hook = Hook(callback=func2)
         >>> hooks.add(new_hook)
         >>> len(hooks.active)
         2
+
+        ```
         """
         self._hooks.append(item)
 
     def extend(self, hooks: Iterable[Hook]):
         """Extends collection using a iterator.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -217,21 +237,27 @@ class HookCollection:
         ...     ],
         ... )
 
+        ```
+
+        ```python
         >>> new_hooks = [Hook(callback=func2)]
         >>> hooks.extend(new_hooks)
         >>> len(hooks.active)
         2
+
+        ```
         """
         self._hooks.extend(hooks)
 
     def __iter__(self):
         """Iterate over hooks in the collection.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -246,17 +272,20 @@ class HookCollection:
         ...    print(hook.enabled)
         True
         False
+
+        ```
         """
         return iter(self._hooks)
 
     def __len__(self):
         """Return collection length.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.hooks.hook import Hook
         >>> from onetl.hooks.hook_collection import HookCollection
         >>> def func1(): ...
@@ -269,6 +298,8 @@ class HookCollection:
         ... )
         >>> len(hooks)
         2
+
+        ```
         """
         return len(self._hooks)
 

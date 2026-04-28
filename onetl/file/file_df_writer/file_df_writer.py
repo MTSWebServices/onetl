@@ -34,56 +34,55 @@ log = logging.getLogger(__name__)
 @support_hooks
 class FileDFWriter(FrozenModel):
     """Allows you to write Spark DataFrame as files in a target path of specified file connection
-    with parameters. |support_hooks|
+    with parameters. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
     Parameters
     ----------
-    connection : :obj:`BaseFileDFConnection <onetl.base.base_file_df_connection.BaseFileDFConnection>`
-        File DataFrame connection. See :ref:`file-df-connections` section.
+    connection : [BaseFileDFConnection][onetl.base.base_file_df_connection.BaseFileDFConnection]
+        File DataFrame connection. See [file-df-connections][] section.
 
-    format : :obj:`BaseWritableFileFormat <onetl.base.base_file_format.BaseWritableFileFormat>`
+    format : [BaseWritableFileFormat][onetl.base.base_file_format.BaseWritableFileFormat]
         File format to write.
 
     target_path : os.PathLike or str
         Directory path to write data to.
 
-    options : :obj:`FileDFWriterOptions <onetl.file.file_df_writer.options.FileDFWriterOptions>`, optional
+    options : [FileDFWriterOptions][onetl.file.file_df_writer.options.FileDFWriterOptions], optional
         Common writing options.
 
     Examples
     --------
 
-    .. tabs::
+    === "Write CSV files to local filesystem"
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFWriter
+        from onetl.file.format import CSV
 
-        .. code-tab:: py Write CSV files to local filesystem
+        local_fs = SparkLocalFS(spark=spark)
 
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFWriter
-            from onetl.file.format import CSV
+        writer = FileDFWriter(
+            connection=local_fs,
+            format=CSV(delimiter=","),
+            target_path="/path/to/directory",
+        )
+        ```
+    === "All supported options"
+        ```python
+        from onetl.connection import SparkLocalFS
+        from onetl.file import FileDFWriter
+        from onetl.file.format import CSV
 
-            local_fs = SparkLocalFS(spark=spark)
+        csv = CSV(delimiter=",")
+        local_fs = SparkLocalFS(spark=spark)
 
-            writer = FileDFWriter(
-                connection=local_fs,
-                format=CSV(delimiter=","),
-                target_path="/path/to/directory",
-            )
-
-        .. code-tab:: py All supported options
-
-            from onetl.connection import SparkLocalFS
-            from onetl.file import FileDFWriter
-            from onetl.file.format import CSV
-
-            csv = CSV(delimiter=",")
-            local_fs = SparkLocalFS(spark=spark)
-
-            writer = FileDFWriter(
-                connection=local_fs,
-                format=csv,
-                target_path="/path/to/directory",
-                options=FileDFWriter.Options(if_exists="replace_entire_directory"),
-            )
+        writer = FileDFWriter(
+            connection=local_fs,
+            format=csv,
+            target_path="/path/to/directory",
+            options=FileDFWriter.Options(if_exists="replace_entire_directory"),
+        )
+        ```
     """
 
     Options = FileDFWriterOptions
@@ -98,9 +97,10 @@ class FileDFWriter(FrozenModel):
     @slot
     def run(self, df: DataFrame) -> None:
         """
-        Method for writing DataFrame as files. |support_hooks|
+        Method for writing DataFrame as files. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. note :: Method does support only **batching** DataFrames.
+        !!! note
+            Method does support only **batching** DataFrames.
 
         Parameters
         ----------
@@ -113,9 +113,9 @@ class FileDFWriter(FrozenModel):
 
         Write df to target:
 
-        .. code:: python
-
-            writer.run(df)
+        ```python
+        writer.run(df)
+        ```
         """
 
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")

@@ -40,27 +40,27 @@ class MySQLExtra(GenericOptions):
 
 @support_hooks
 class MySQL(JDBCConnection):
-    """MySQL JDBC connection. |support_hooks|
+    """MySQL JDBC connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on Maven package `com.mysql:mysql-connector-j:9.5.0 <https://mvnrepository.com/artifact/com.mysql/mysql-connector-j/9.5.0>`_
-    (`official MySQL JDBC driver <https://dev.mysql.com/doc/connector-j/en/>`_).
+    Based on Maven package [com.mysql:mysql-connector-j:9.5.0](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j/9.5.0)
+    ([official MySQL JDBC driver](https://dev.mysql.com/doc/connector-j/en/)).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`mysql-prerequisites`
+        Before using this connector please take into account [mysql-prerequisites][]
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     host : str
-        Host of MySQL database. For example: ``mysql0012.domain.com`` or ``192.168.1.11``
+        Host of MySQL database. For example: `mysql0012.domain.com` or `192.168.1.11`
 
-    port : int, default: ``3306``
+    port : int, default: `3306`
         Port of MySQL database
 
     user : str
-        User, which have proper access to the database. For example: ``some_user``
+        User, which have proper access to the database. For example: `some_user`
 
     password : str
         Password for database connection
@@ -68,16 +68,15 @@ class MySQL(JDBCConnection):
     database : str, optional
         Database (==schema) in MySQL
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"useSSL": "false", "allowPublicKeyRetrieval": "true"}``
+        For example: `{"useSSL": "false", "allowPublicKeyRetrieval": "true"}`
 
-        See `MySQL JDBC driver properties documentation
-        <https://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html>`_
+        See [MySQL JDBC driver properties documentation](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html)
         for more details
 
     Examples
@@ -85,28 +84,27 @@ class MySQL(JDBCConnection):
 
     Create and check MySQL connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import MySQL
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import MySQL
-        from pyspark.sql import SparkSession
+    # Create Spark session with MySQL driver loaded
+    maven_packages = MySQL.get_packages()
+    spark = (
+        SparkSession.builder.appName("spark-app-name")
+        .config("spark.jars.packages", ",".join(maven_packages))
+        .getOrCreate()
+    )
 
-        # Create Spark session with MySQL driver loaded
-        maven_packages = MySQL.get_packages()
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .getOrCreate()
-        )
-
-        # Create connection
-        mysql = MySQL(
-            host="database.host.or.ip",
-            user="user",
-            password="*****",
-            extra={"useSSL": "false", "allowPublicKeyRetrieval": "true"},
-            spark=spark,
-        ).check()
-
+    # Create connection
+    mysql = MySQL(
+        host="database.host.or.ip",
+        user="user",
+        password="*****",
+        extra={"useSSL": "false", "allowPublicKeyRetrieval": "true"},
+        spark=spark,
+    ).check()
+    ```
     """
 
     host: Host
@@ -130,27 +128,27 @@ class MySQL(JDBCConnection):
     def get_packages(cls, package_version: str | None = None) -> list[str]:
         """
         Get package names to be downloaded by Spark.
-        Allows specifying a custom JDBC driver version for MySQL. |support_hooks|
+        Allows specifying a custom JDBC driver version for MySQL. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         package_version : str, optional
-            Specifies the version of the MySQL JDBC driver to use. Defaults to ``9.5.0``.
+            Specifies the version of the MySQL JDBC driver to use. Defaults to `9.5.0`.
 
-            .. versionadded:: 0.11.0
+            !!! success "Added in 0.11.0"
 
         Examples
         --------
-        .. code:: python
+        ```python
+        from onetl.connection import MySQL
 
-            from onetl.connection import MySQL
+        MySQL.get_packages()
 
-            MySQL.get_packages()
-
-            # specify a custom package version
-            MySQL.get_packages(package_version="8.2.0")
+        # specify a custom package version
+        MySQL.get_packages(package_version="8.2.0")
+        ```
         """
         default_version = "9.5.0"
         version = Version(package_version or default_version).min_digits(3)

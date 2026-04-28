@@ -47,45 +47,44 @@ DATA_MODIFIED_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"
 
 @support_hooks
 class WebDAV(FileConnection, RenameDirMixin):
-    """WebDAV file connection. |support_hooks|
+    """WebDAV file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `WebdavClient3 library <https://pypi.org/project/webdavclient3/>`_.
+    Based on [WebdavClient3 library](https://pypi.org/project/webdavclient3/).
 
-    .. warning::
+    !!! warning
 
         Since onETL v0.7.0 to use WebDAV connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[webdav]"
 
-            pip install "onetl[webdav]"
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
-            # or
-            pip install "onetl[files]"
-
-        See :ref:`install-files` installation instruction for more details.
-
-    .. versionadded:: 0.6.0
+    !!! success "Added in 0.6.0"
 
     Parameters
     ----------
     host : str
-        Host of WebDAV source. For example: ``webdav.domain.com``
+        Host of WebDAV source. For example: `webdav.domain.com`
 
     user : str
-        User, which have access to the file source. For example: ``someuser``
+        User, which have access to the file source. For example: `someuser`
 
     password : str
         Password for file source connection
 
     ssl_verify : Union[Path, bool], optional
         SSL certificates used to verify the identity of requested hosts. Can be any of
-            - ``True`` (uses default CA bundle),
+            - `True` (uses default CA bundle),
             - a path to an SSL certificate file,
-            - ``False`` (disable verification), or
-            - a :obj:`ssl.SSLContext`
+            - `False` (disable verification), or
+            - a `ssl.SSLContext`
 
-    protocol : str, default : ``https``
-        Connection protocol. Allowed values: ``https`` or ``http``
+    protocol : str, default: `https`
+        Connection protocol. Allowed values: `https` or `http`
 
     port : int, optional
         Connection port
@@ -95,16 +94,16 @@ class WebDAV(FileConnection, RenameDirMixin):
 
     Create and check WebDAV connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import WebDAV
 
-        from onetl.connection import WebDAV
-
-        wd = WebDAV(
-            host="webdav.domain.com",
-            user="someuser",
-            password="*****",
-            protocol="https",
-        ).check()
+    wd = WebDAV(
+        host="webdav.domain.com",
+        user="someuser",
+        password="*****",
+        protocol="https",
+    ).check()
+    ```
     """
 
     host: Host

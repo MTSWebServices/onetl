@@ -8,7 +8,7 @@ from typing_extensions import Protocol, runtime_checkable
 @runtime_checkable
 class PathStatProtocol(Protocol):
     """
-    Protocol for ``os.stat_result``-like objects.
+    Protocol for `os.stat_result`-like objects.
 
     Includes only minimal set of fields supported by any file system
     """

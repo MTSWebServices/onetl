@@ -11,7 +11,7 @@ from onetl.base.pure_path_protocol import PurePathProtocol
 @runtime_checkable
 class PathProtocol(PurePathProtocol, Protocol):
     """
-    Generic protocol for :obj:`pathlib.Path` like objects.
+    Generic protocol for `pathlib.Path` like objects.
 
     Includes only minimal set of methods which allow to determine path type (file, directory) and existence
     """
@@ -35,7 +35,7 @@ class PathProtocol(PurePathProtocol, Protocol):
 @runtime_checkable
 class PathWithStatsProtocol(PathProtocol, Protocol):
     """
-    Protocol for ``pathlib.Path``-like file objects.
+    Protocol for `pathlib.Path`-like file objects.
 
     Includes only minimal set of methods which allow to determine if file exists, or get stats, e.g. size
     """

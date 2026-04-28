@@ -15,22 +15,24 @@ def limits_reached(limits: Iterable[BaseFileLimit]) -> bool:
     """
     Check if any of limits reached.
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
 
     Parameters
     ----------
-    limits : Iterable of :obj:`onetl.base.base_file_limit.BaseFileLimit`
+    limits : Iterable of [onetl.base.base_file_limit.BaseFileLimit][]
         Limits to test.
 
     Returns
     -------
-    ``True`` if any of limits is reached, ``False`` otherwise.
+    bool
+        `True` if any of limits is reached, `False` otherwise.
 
-    If no limits are passed, returns ``False``.
+        If no limits are passed, returns `False`.
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file.limit import MaxFilesCount, limits_reached, limits_stop_at
     >>> from onetl.impl import LocalPath
     >>> limits = [MaxFilesCount(2)]
@@ -44,6 +46,8 @@ def limits_reached(limits: Iterable[BaseFileLimit]) -> bool:
     True
     >>> limits_reached(limits)
     True
+
+    ```
     """
     debug = log.isEnabledFor(logging.DEBUG)
 

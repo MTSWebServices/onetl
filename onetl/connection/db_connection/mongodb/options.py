@@ -96,34 +96,34 @@ class MongoDBCollectionExistBehavior(str, Enum):
 class MongoDBPipelineOptions(GenericOptions):
     """Aggregation pipeline options for MongoDB connector.
 
-    The only difference from :obj:`MongoDB.ReadOptions <MongoDBReadOptions>`
-    that latter does not allow to pass the ``hint`` parameter.
+    The only difference from [MongoDB.ReadOptions][MongoDBReadOptions]
+    that latter does not allow to pass the `hint` parameter.
 
-    .. warning::
+    !!! warning
 
-        Options ``uri``, ``database``, ``collection``, ``pipeline`` are populated from connection attributes,
-        and cannot be overridden by the user in ``PipelineOptions`` to avoid issues.
+        Options `uri`, `database`, `collection`, `pipeline` are populated from connection attributes,
+        and cannot be overridden by the user in `PipelineOptions` to avoid issues.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by connector <https://www.mongodb.com/docs/spark-connector/current/batch-mode/batch-read-config/>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by connector](https://www.mongodb.com/docs/spark-connector/current/batch-mode/batch-read-config/),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on connector version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import MongoDB
 
-        from onetl.connection import MongoDB
-
-        options = MongoDB.PipelineOptions(
-            hint={"some_field": 1},
-        )
+    options = MongoDB.PipelineOptions(
+        hint={"some_field": 1},
+    )
+    ```
     """
 
     class Config:
@@ -135,31 +135,31 @@ class MongoDBPipelineOptions(GenericOptions):
 class MongoDBReadOptions(GenericOptions):
     """Reading options for MongoDB connector.
 
-    .. warning::
+    !!! warning
 
-        Options ``uri``, ``database``, ``collection``, ``pipeline``, ``hint`` are populated from connection
-        attributes, and cannot be overridden by the user in ``ReadOptions`` to avoid issues.
+        Options `uri`, `database`, `collection`, `pipeline`, `hint` are populated from connection
+        attributes, and cannot be overridden by the user in `ReadOptions` to avoid issues.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by connector <https://www.mongodb.com/docs/spark-connector/current/batch-mode/batch-read-config/>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by connector](https://www.mongodb.com/docs/spark-connector/current/batch-mode/batch-read-config/),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on connector version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import MongoDB
 
-        from onetl.connection import MongoDB
-
-        options = MongoDB.ReadOptions(
-            sampleSize=100,
-        )
+    options = MongoDB.ReadOptions(
+        sampleSize=100,
+    )
+    ```
     """
 
     class Config:
@@ -171,33 +171,33 @@ class MongoDBReadOptions(GenericOptions):
 class MongoDBWriteOptions(GenericOptions):
     """Writing options for MongoDB connector.
 
-    .. warning::
+    !!! warning
 
-        Options ``uri``, ``database``, ``collection`` are populated from connection attributes,
-        and cannot be overridden by the user in ``WriteOptions`` to avoid issues.
+        Options `uri`, `database`, `collection` are populated from connection attributes,
+        and cannot be overridden by the user in `WriteOptions` to avoid issues.
 
-    .. versionadded:: 0.7.0
+    !!! success "Added in 0.7.0"
 
     Examples
     --------
 
-    .. note ::
+    !!! note
 
         You can pass any value
-        `supported by connector <https://www.mongodb.com/docs/spark-connector/current/batch-mode/batch-write-config/>`_,
-        even if it is not mentioned in this documentation. **Option names should be in** ``camelCase``!
+        [supported by connector](https://www.mongodb.com/docs/spark-connector/current/batch-mode/batch-write-config/),
+        even if it is not mentioned in this documentation. **Option names should be in** `camelCase`!
 
         The set of supported options depends on connector version.
 
-    .. code:: python
+    ```python
+    from onetl.connection import MongoDB
 
-        from onetl.connection import MongoDB
-
-        options = MongoDB.WriteOptions(
-            if_exists="append",
-            sampleSize=500,
-            localThreshold=20,
-        )
+    options = MongoDB.WriteOptions(
+        if_exists="append",
+        sampleSize=500,
+        localThreshold=20,
+    )
+    ```
     """
 
     if_exists: MongoDBCollectionExistBehavior = Field(  # type: ignore[literal-required]
@@ -207,39 +207,39 @@ class MongoDBWriteOptions(GenericOptions):
     """Behavior of writing data into existing collection.
 
     Possible values:
-        * ``append`` (default)
+        * `append` (default)
             Adds new objects into existing collection.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Collection does not exist
                     Collection is created using options provided by user
-                    (``shardkey`` and others).
+                    (`shardkey` and others).
 
                 * Collection exists
                     Data is appended to a collection.
 
-                    .. warning::
+                    !!! warning
 
                         This mode does not check whether collection already contains
                         objects from dataframe, so duplicated objects can be created.
 
-        * ``replace_entire_collection``
+        * `replace_entire_collection`
             **Collection is deleted and then created**.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Collection does not exist
                     Collection is created using options provided by user
-                    (``shardkey`` and others).
+                    (`shardkey` and others).
 
                 * Collection exists
                     Collection content is replaced with dataframe content.
 
-        * ``ignore``
+        * `ignore`
             Ignores the write operation if the collection already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Collection does not exist
                     Collection is created using options provided by user
@@ -247,10 +247,10 @@ class MongoDBWriteOptions(GenericOptions):
                 * Collection exists
                     The write operation is ignored, and no data is written to the collection.
 
-        * ``error``
+        * `error`
             Raises an error if the collection already exists.
 
-            .. dropdown:: Behavior in details
+            ??? note "Behavior in details"
 
                 * Collection does not exist
                     Collection is created using options provided by user
@@ -258,8 +258,8 @@ class MongoDBWriteOptions(GenericOptions):
                 * Collection exists
                     An error is raised, and no data is written to the collection.
 
-    .. versionchanged:: 0.9.0
-        Renamed ``mode`` → ``if_exists``
+    !!! info "Changed in 0.9.0"
+        Renamed `mode` → `if_exists`
     """
 
     class Config:

@@ -1,6 +1,6 @@
 # Hooks { #DBR-onetl-hooks }
 
-:octicons-versions-16: **version added 0.6.0**
+!!! success "Added in 0.6.0"
 
 * [High level design][DBR-onetl-hooks-design-high-level-design]
 * [@hook decorator][DBR-onetl-hooks-hook-decorator]

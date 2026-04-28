@@ -9,7 +9,7 @@ class IcebergWarehouse(ABC):
     """
     Base Iceberg warehouse interface.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
     """
 
     @abstractmethod

@@ -23,7 +23,7 @@ from onetl.impl.frozen_model import FrozenModel
 class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
     """Iceberg REST Catalog.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
 
     Parameters
     ----------
@@ -42,67 +42,66 @@ class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
     Examples
     --------
 
-    .. tabs::
+    === "REST catalog with basic authentication"
+        ```python
+        from onetl.connection import Iceberg
 
-        .. code-tab:: python REST catalog with basic authentication
+        catalog = Iceberg.RESTCatalog(
+            url="https://rest.domain.com:8080",
+            auth=Iceberg.RESTCatalog.BasicAuth(
+                user="my_user",
+                password="my_password",
+            ),
+        )
+        ```
+    === "REST catalog with bearer token"
+        ```python
+        from onetl.connection import Iceberg
 
-            from onetl.connection import Iceberg
+        catalog = Iceberg.RESTCatalog(
+            url="https://rest.domain.com:8080",
+            auth=Iceberg.RESTCatalog.BearerAuth(
+                access_token="my_bearer_token",
+            ),
+        )
+        ```
+    === "REST catalog with OAuth2 Client Credentials Flow"
+        ```python
+        from onetl.connection import Iceberg
 
-            catalog = Iceberg.RESTCatalog(
-                url="https://rest.domain.com:8080",
-                auth=Iceberg.RESTCatalog.BasicAuth(
-                    user="my_user",
-                    password="my_password",
-                ),
-            )
+        catalog = Iceberg.RESTCatalog(
+            url="https://rest.domain.com:8080",
+            auth=Iceberg.RESTCatalog.OAuth2ClientCredentials(
+                client_id="my_client_id",
+                client_secret="my_client_secret",
+            ),
+        )
+        ```
+    === "REST catalog with custom auth"
+        ```python
+        from onetl.connection import Iceberg
 
-        .. code-tab:: python REST catalog with bearer token
+        catalog = Iceberg.RESTCatalog(
+            url="https://rest.domain.com:8080",
+            headers={
+                "X-Custom-Auth": "my_custom_token",
+                "X-Request-ID": "request-123",
+            },
+            extra={
+                "timeout": "30s",
+                "retry": "3",
+            },
+        )
 
-            from onetl.connection import Iceberg
-
-            catalog = Iceberg.RESTCatalog(
-                url="https://rest.domain.com:8080",
-                auth=Iceberg.RESTCatalog.BearerAuth(
-                    access_token="my_bearer_token",
-                ),
-            )
-
-        .. code-tab:: python REST catalog with OAuth2 Client Credentials Flow
-
-            from onetl.connection import Iceberg
-
-            catalog = Iceberg.RESTCatalog(
-                url="https://rest.domain.com:8080",
-                auth=Iceberg.RESTCatalog.OAuth2ClientCredentials(
-                    client_id="my_client_id",
-                    client_secret="my_client_secret",
-                ),
-            )
-
-        .. code-tab:: python REST catalog with custom auth
-
-            from onetl.connection import Iceberg
-
-            catalog = Iceberg.RESTCatalog(
-                url="https://rest.domain.com:8080",
-                headers={
-                    "X-Custom-Auth": "my_custom_token",
-                    "X-Request-ID": "request-123",
-                },
-                extra={
-                    "timeout": "30s",
-                    "retry": "3",
-                },
-            )
-
-            \"\"\"
-            These options will be passed to Spark config:
-            spark.sql.my_catalog.uri = "https://rest.domain.com:8080"
-            spark.sql.my_catalog.header.X-Custom-Auth = "my_custom_token"
-            spark.sql.my_catalog.header.X-Request-ID = "request-123"
-            spark.sql.my_catalog.timeout = "30s"
-            spark.sql.my_catalog.retry = "3"
-            \"\"\"
+        \"\"\"
+        These options will be passed to Spark config:
+        spark.sql.my_catalog.uri = "https://rest.domain.com:8080"
+        spark.sql.my_catalog.header.X-Custom-Auth = "my_custom_token"
+        spark.sql.my_catalog.header.X-Request-ID = "request-123"
+        spark.sql.my_catalog.timeout = "30s"
+        spark.sql.my_catalog.retry = "3"
+        \"\"\"
+        ```
     """
 
     BasicAuth = IcebergRESTCatalogBasicAuth

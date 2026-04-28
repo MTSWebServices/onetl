@@ -9,7 +9,7 @@ from onetl.hooks import slot, support_hooks
 class SparkHDFSSlots:
     """Spark HDFS slots that could be implemented by third-party plugins.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     @slot
@@ -20,11 +20,11 @@ class SparkHDFSSlots:
 
         If hooks didn't return anything, cluster name is left intact.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
-        cluster : :obj:`str`
+        cluster : `str`
             Cluster name
 
         Returns
@@ -32,21 +32,21 @@ class SparkHDFSSlots:
         str | None
             Normalized cluster name.
 
-            If hook cannot be applied to a specific cluster, it should return ``None``.
+            If hook cannot be applied to a specific cluster, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
-
-            @SparkHDFS.Slots.normalize_cluster_name.bind
-            @hook
-            def normalize_cluster_name(cluster: str) -> str:
-                return cluster.lower()
+        @SparkHDFS.Slots.normalize_cluster_name.bind
+        @hook
+        def normalize_cluster_name(cluster: str) -> str:
+            return cluster.lower()
+        ```
         """
 
     @slot
@@ -57,14 +57,14 @@ class SparkHDFSSlots:
 
         If hooks didn't return anything, host is left intact.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
-        host : :obj:`str`
+        host : `str`
             Namenode host (raw)
 
-        cluster : :obj:`str`
+        cluster : `str`
             Cluster name (normalized)
 
         Returns
@@ -72,27 +72,27 @@ class SparkHDFSSlots:
         str | None
             Normalized namenode host name.
 
-            If hook cannot be applied to a specific host name, it should return ``None``.
+            If hook cannot be applied to a specific host name, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
+        @SparkHDFS.Slots.normalize_namenode_host.bind
+        @hook
+        def normalize_namenode_host(host: str, cluster: str) -> str | None:
+            if cluster == "rnd-dwh":
+                if not host.endswith(".domain.com"):
+                    # fix missing domain name
+                    host += ".domain.com"
+                return host
 
-            @SparkHDFS.Slots.normalize_namenode_host.bind
-            @hook
-            def normalize_namenode_host(host: str, cluster: str) -> str | None:
-                if cluster == "rnd-dwh":
-                    if not host.endswith(".domain.com"):
-                        # fix missing domain name
-                        host += ".domain.com"
-                    return host
-
-                return None
+            return None
+        ```
         """
 
     @slot
@@ -104,28 +104,28 @@ class SparkHDFSSlots:
         Cluster passed into SparkHDFS constructor should be present in this list.
         If hooks didn't return anything, no validation will be performed.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Returns
         -------
         set[str] | None
             Collection of cluster names (in normalized form).
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
-
-            @SparkHDFS.Slots.get_known_clusters.bind
-            @hook
-            def get_known_clusters() -> str[str]:
-                return {"rnd-dwh", "rnd-prod"}
+        @SparkHDFS.Slots.get_known_clusters.bind
+        @hook
+        def get_known_clusters() -> str[str]:
+            return {"rnd-dwh", "rnd-prod"}
+        ```
         """
 
     @slot
@@ -137,11 +137,11 @@ class SparkHDFSSlots:
         Namenode host passed into SparkHDFS constructor should be present in this list.
         If hooks didn't return anything, no validation will be performed.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
-        cluster : :obj:`str`
+        cluster : `str`
             Cluster name (normalized)
 
         Returns
@@ -149,23 +149,23 @@ class SparkHDFSSlots:
         set[str] | None
             Collection of host names (in normalized form).
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
-
-            @SparkHDFS.Slots.get_cluster_namenodes.bind
-            @hook
-            def get_cluster_namenodes(cluster: str) -> str[str] | None:
-                if cluster == "rnd-dwh":
-                    return {"namenode1.domain.com", "namenode2.domain.com"}
-                return None
+        @SparkHDFS.Slots.get_cluster_namenodes.bind
+        @hook
+        def get_cluster_namenodes(cluster: str) -> str[str] | None:
+            if cluster == "rnd-dwh":
+                return {"namenode1.domain.com", "namenode2.domain.com"}
+            return None
+        ```
         """
 
     @slot
@@ -174,32 +174,32 @@ class SparkHDFSSlots:
         """
         Get current cluster name.
 
-        Used in :obj:`~get_current_cluster` to  automatically fill up ``cluster`` attribute of a connection.
+        Used in [get_current_cluster][] to  automatically fill up `cluster` attribute of a connection.
         If hooks didn't return anything, calling the method above will raise an exception.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Returns
         -------
         str | None
             Current cluster name (in normalized form).
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
-
-            @SparkHDFS.Slots.get_current_cluster.bind
-            @hook
-            def get_current_cluster() -> str:
-                # some magic here
-                return "rnd-dwh"
+        @SparkHDFS.Slots.get_current_cluster.bind
+        @hook
+        def get_current_cluster() -> str:
+            # some magic here
+            return "rnd-dwh"
+        ```
         """
 
     @slot
@@ -210,11 +210,11 @@ class SparkHDFSSlots:
 
         Used by constructor to automatically set port number if omitted.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
-        cluster : :obj:`str`
+        cluster : `str`
             Cluster name (normalized)
 
         Returns
@@ -222,23 +222,23 @@ class SparkHDFSSlots:
         int | None
             IPC port number.
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
-
-            @SparkHDFS.Slots.get_ipc_port.bind
-            @hook
-            def get_ipc_port(cluster: str) -> int | None:
-                if cluster == "rnd-dwh":
-                    return 8020  # Cloudera
-                return None
+        @SparkHDFS.Slots.get_ipc_port.bind
+        @hook
+        def get_ipc_port(cluster: str) -> int | None:
+            if cluster == "rnd-dwh":
+                return 8020  # Cloudera
+            return None
+        ```
         """
 
     @slot
@@ -248,44 +248,44 @@ class SparkHDFSSlots:
         Check whether a namenode of a specified cluster is active (=not standby) or not.
 
         Used for:
-            * If SparkHDFS connection is created without ``host``
+            * If SparkHDFS connection is created without `host`
 
-                Connector will iterate over :obj:`~get_cluster_namenodes` of a cluster to get active namenode,
-                and then use it instead of ``host`` attribute.
+                Connector will iterate over [get_cluster_namenodes][] of a cluster to get active namenode,
+                and then use it instead of `host` attribute.
 
-            * If SparkHDFS connection is created with ``host``
+            * If SparkHDFS connection is created with `host`
 
-                :obj:`~check` will determine whether this host is active.
+                [check][] will determine whether this host is active.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
-        host : :obj:`str`
+        host : `str`
             Namenode host (normalized)
 
-        cluster : :obj:`str`
+        cluster : `str`
             Cluster name (normalized)
 
         Returns
         -------
         bool | None
-            ``True`` if namenode is active, ``False`` if not.
+            `True` if namenode is active, `False` if not.
 
-            If hook cannot be applied, it should return ``None``.
+            If hook cannot be applied, it should return `None`.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import SparkHDFS
+        from onetl.hooks import hook
 
-            from onetl.connection import SparkHDFS
-            from onetl.hooks import hook
 
-
-            @SparkHDFS.Slots.is_namenode_active.bind
-            @hook
-            def is_namenode_active(host: str, cluster: str) -> bool:
-                # some magic here
-                return True
+        @SparkHDFS.Slots.is_namenode_active.bind
+        @hook
+        def is_namenode_active(host: str, cluster: str) -> bool:
+            # some magic here
+            return True
+        ```
         """

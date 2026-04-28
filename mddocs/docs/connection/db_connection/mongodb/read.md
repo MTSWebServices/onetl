@@ -128,3 +128,4 @@ Especially if there are indexes for columns used in `where` clause.
 ::: onetl.connection.db_connection.mongodb.options.MongoDBReadOptions
     options:
         show_root_heading: true
+        inherited_members: false

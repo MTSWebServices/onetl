@@ -114,11 +114,11 @@ class JDBCConnection(JDBCMixin, DBConnection):
         options: JDBCSQLOptions | dict | None = None,
     ) -> DataFrame:
         """
-        **Lazily** execute SELECT statement **on Spark executor** and return DataFrame. |support_hooks|
+        **Lazily** execute SELECT statement **on Spark executor** and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Same as ``spark.read.jdbc(query)``.
+        Same as `spark.read.jdbc(query)`.
 
-        .. versionadded:: 0.2.0
+        !!! success "Added in 0.2.0"
 
         Parameters
         ----------
@@ -126,7 +126,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
 
             SQL query to be executed.
 
-        options : dict, :obj:`~SQLOptions`, default: ``None``
+        options : dict, [SQLOptions][], default: `None`
 
             Spark options to be used while fetching data.
 

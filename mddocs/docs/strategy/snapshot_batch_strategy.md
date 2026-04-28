@@ -4,4 +4,3 @@
 ::: onetl.strategy.snapshot_strategy.SnapshotBatchStrategy
     options:
         members:
-            - __init__

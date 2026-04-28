@@ -27,8 +27,8 @@ class KafkaExtra(GenericOptions):
     to the Kafka connection. These extra options are configurations that can be provided to the
     Kafka, which aren't part of the core connection options.
 
-    See Connection `producer options documentation <https://kafka.apache.org/documentation/#producerconfigs>`_,
-    `consumer options documentation <https://kafka.apache.org/documentation/#consumerconfigs>`_
+    See Connection [producer options documentation](https://kafka.apache.org/documentation/#producerconfigs),
+    [consumer options documentation](https://kafka.apache.org/documentation/#consumerconfigs)
     for more details
     """
 
