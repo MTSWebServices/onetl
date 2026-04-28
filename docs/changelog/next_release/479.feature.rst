@@ -1,0 +1,4 @@
+- Documentation converted from RST to markdown:
+    * RST docs converted to markdown
+    * RST docstrings converted to markdown
+    * deploy of documentation changed to new version of documentation

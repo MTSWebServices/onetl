@@ -1,19 +1,19 @@
 version: 2
 
-sphinx:
-  configuration: docs/conf.py
+mkdocs:
+  configuration: mddocs/mkdocs.yml
 
 build:
-  os: ubuntu-22.04
+  os: ubuntu-24.04
   tools:
-    python: '3.13'
+    python: '3.11'
   jobs:
-    post_checkout:
-      - git fetch --unshallow || true
     post_create_environment:
       - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH python -m pip install uv
     post_install:
-      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --no-install-project --extra files --group docs
-      # remove after https://github.com/zqmillet/sphinx-plantuml/pull/4
-      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv pip install --no-deps sphinx-plantuml
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --no-install-project --extra files --group mddocs
       - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH python -m pip list -v
+    pre_build:
+      - python mddocs/scripts/generate_anchors.py
+      - python mddocs/scripts/fix_refs.py
+      - python mddocs/scripts/links2anchors.py
