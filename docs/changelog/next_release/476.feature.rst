@@ -1,1 +1,0 @@
-Added a urllib3.util.retry.Retry support for hdfs file connection
