@@ -1,10 +1,11 @@
 site_name: onETL Docs
+site_url: !ENV READTHEDOCS_CANONICAL_URL
 docs_dir: docs                             # Where to find the English markdown files
 site_dir: generated                        # Where to put the English HTML files
 
 theme:
   name: material
-  # custom_dir: '../../overrides/'                    # This is where the customization of the theme lives
+  custom_dir: overrides
   logo: _static/images/logo.svg                      # The logo is shared by all languages
   favicon: _static/images/icon.svg                   # The favicon is shared by all languages
   language: en
@@ -33,6 +34,7 @@ extra_css:
 
 extra_javascript:
   - _static/javascripts/mermaid_zoom.js
+  - javascript/readthedocs.js
 
 extra:                                              # Language Selection
   onetl_logo_wide: '[![onETL logo](_static/images/logo_wide.svg)](https://github.com/MTSWebServices/onetl)'
@@ -94,7 +96,8 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.critic
   - pymdownx.snippets:
-      base_path: .
+      # When building locally from mddocs/ directory, change base_path to: .
+      base_path: mddocs
       check_paths: true
   - toc:
       permalink: true

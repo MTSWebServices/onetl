@@ -1,12 +1,13 @@
 version: 2
 
+mkdocs:
+  configuration: mddocs/mkdocs.yml
+
 build:
-  os: ubuntu-22.04
+  os: ubuntu-24.04
   tools:
     python: '3.11'
   jobs:
-    post_checkout:
-      - git fetch --unshallow || true
     post_create_environment:
       - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH python -m pip install uv
     post_install:
@@ -16,7 +17,3 @@ build:
       - python mddocs/scripts/generate_anchors.py
       - python mddocs/scripts/fix_refs.py
       - python mddocs/scripts/links2anchors.py
-    build:
-      - cd mddocs && PYTHONPATH=$READTHEDOCS_REPOSITORY_PATH mkdocs build
-      - mkdir -p $READTHEDOCS_OUTPUT/html
-      - cp -r mddocs/generated/* $READTHEDOCS_OUTPUT/html/
