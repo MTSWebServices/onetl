@@ -9,6 +9,9 @@ from logging import getLogger
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from etl_entities.instance import Cluster, Host
+from requests import Session
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 try:
     from pydantic.v1 import (
@@ -153,6 +156,9 @@ class HDFS(FileConnection, RenameDirMixin):
     timeout : int, default: `10`
         Connection timeout.
 
+    retry : retry, default ``None``
+        Retry configuration for HDFS connection
+
     Examples
     --------
 
@@ -195,6 +201,24 @@ class HDFS(FileConnection, RenameDirMixin):
             password="*****",
         ).check()
         ```
+    === "Configure number of retries for unstable HDFS connections"
+
+        ```python
+        from urllib3.util.retry import Retry
+
+        retry_strategy = Retry(
+            total=5,  # number of rerties
+            backoff_factor=1,  # tries delay gap
+            status_forcelist=[429, 500, 502, 503, 504],  # HTTP-codes for retry
+            allowed_methods=["HEAD", "GET", "PUT", "OPTIONS"],  # methods for retry
+        )
+        hdfs = HDFS(
+            host="namenode1.domain.com",
+            user="someuser",
+            keytab="/path/to/keytab",
+            retry=retry_strategy,
+        ).check()
+        ```
     """
 
     cluster: Optional[Cluster] = None
@@ -204,6 +228,7 @@ class HDFS(FileConnection, RenameDirMixin):
     password: Optional[SecretStr] = None
     keytab: Optional[FilePath] = None
     timeout: int = 10
+    retry: Optional[Retry] = None
 
     Slots = HDFSSlots
     # TODO: remove in v1.0.0
@@ -437,7 +462,15 @@ class HDFS(FileConnection, RenameDirMixin):
             self._active_host = self._get_host()
         return f"http://{self._active_host}:{self.webhdfs_port}"
 
+    def _get_session(self) -> Session:
+        result = Session()
+        if self.retry:
+            adapter = HTTPAdapter(max_retries=self.retry)
+            result.mount("http://", adapter)
+        return result
+
     def _get_client(self) -> Client:
+        session = self._get_session()
         if self.user and (self.keytab or self.password):
             from hdfs.ext.kerberos import KerberosClient
 
@@ -448,12 +481,12 @@ class HDFS(FileConnection, RenameDirMixin):
             )
             # checking if namenode is active requires a Kerberos ticket
             conn_str = self._get_conn_str()
-            client = KerberosClient(conn_str, timeout=self.timeout)
+            client = KerberosClient(conn_str, timeout=self.timeout, session=session)
         else:
             from hdfs import InsecureClient
 
             conn_str = self._get_conn_str()
-            client = InsecureClient(conn_str, user=self.user)
+            client = InsecureClient(conn_str, user=self.user, session=session)
 
         return client
 
