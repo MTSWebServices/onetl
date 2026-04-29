@@ -46,7 +46,7 @@ extra:                                              # Language Selection
   docs_status_badge: '[![Documentation - ReadTheDocs](https://readthedocs.org/projects/onetl/badge/?version=stable)](https://onetl.readthedocs.io/)'
   ci_status_badge: '[![Github Actions - latest CI build status](https://github.com/MTSWebServices/onetl/workflows/Tests/badge.svg)](https://github.com/MTSWebServices/onetl/actions)'
   precommit_badge: '[![pre-commit.ci Status](https://results.pre-commit.ci/badge/github/MTSWebServices/onetl/develop.svg)](https://results.pre-commit.ci/latest/github/MTSWebServices/onetl/develop)'
-  test_cov_badge: '[![Test coverage - percent](https://codecov.io/gh/MTSWebServices/onetl/branch/develop/graph/badge.svg?token=RIO8URKNZJ)](https://codecov.io/gh/MTSWebServices/onetl)'
+  test_cov_badge: '[![Test coverage - percent](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/MTSOnGithub/03e73a82ecc4709934540ce8201cc3b4/raw/onetl_badge.json)](https://github.com/MTSWebServices/onetl/actions)'
   etl_entities_link: '[`etl-entities`](https://github.com/MTSWebServices/etl-entities)'
   support_hooks: '[![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](hooks/index.md)'
 
