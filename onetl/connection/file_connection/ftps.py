@@ -7,6 +7,11 @@ from ftputil import FTPHost
 from ftputil import session as ftp_session
 
 try:
+    from pydantic.v1 import Field
+except (ImportError, AttributeError):
+    from pydantic import Field  # type: ignore[no-redef, assignment]
+
+try:
     from onetl.connection.file_connection.ftp import FTP
 except (ImportError, NameError) as e:
     raise ImportError(
@@ -41,69 +46,30 @@ class TLSfix(ftplib.FTP_TLS):
         return conn, size
 
 
+class FTPSExtra(FTP.Extra):
+    __doc__ = FTP.Extra.__doc__.replace("FTP", "FTPS")
+
+
 class FTPS(FTP):
-    """FTPS file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
+    __doc__ = FTP.__doc__.replace("FTP", "FTPS")
 
-    Based on [FTPUtil library](https://pypi.org/project/ftputil/).
+    extra: FTPSExtra = Field(default_factory=FTPSExtra)
 
-    !!! warning
-
-        Since onETL v0.7.0 to use FTPS connector you should install package as follows:
-
-        ```bash
-        pip install "onetl[ftps]"
-
-        # or
-        pip install "onetl[files]"
-        ```
-        See [install-files][] installation instruction for more details.
-
-    !!! success "Added in 0.1.0"
-
-    Parameters
-    ----------
-    host : str
-        Host of FTPS source. For example: `ftps.domain.com`
-
-    port : int, default: `21`
-        Port of FTPS source
-
-    user : str, default: `None`
-        User, which have access to the file source. For example: `someuser`.
-
-        `None` means that the user is anonymous.
-
-    password : str, default: `None`
-        Password for file source connection.
-
-        `None` means that the user is anonymous.
-
-    Examples
-    --------
-
-    Create and check FTPS connection:
-
-    ```python
-    from onetl.connection import FTPS
-
-    ftps = FTPS(
-        host="ftps.domain.com",
-        user="someuser",
-        password="*****",
-    ).check()
-    ```
-    """
+    Extra = FTPSExtra
 
     def _get_client(self) -> FTPHost:
         """
         Returns a FTPS connection object
         """
 
+        extra = self.extra.dict(by_alias=True)
+        extra.setdefault("debug_level", 0)
+
         session_factory = ftp_session.session_factory(
             base_class=TLSfix,
             port=self.port,
             encrypt_data_channel=True,
-            debug_level=0,
+            **extra,
         )
 
         return FTPHost(
