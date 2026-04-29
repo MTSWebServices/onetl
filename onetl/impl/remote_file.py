@@ -6,61 +6,75 @@ import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from onetl.base import PathProtocol, PathStatProtocol
 from onetl.impl.path_container import PathContainer
 from onetl.impl.remote_directory import RemoteDirectory
 from onetl.impl.remote_path import RemotePath
 
 if TYPE_CHECKING:
-    from onetl.base import PathStatProtocol
 
+    class RemoteFile(PathProtocol, RemotePath):
+        def __init__(self, path: RemotePath, stats: PathStatProtocol): ...
 
-@dataclass(eq=False, frozen=True)
-class RemoteFile(PathContainer[RemotePath]):
-    """
-    Representation of existing remote file with stat
-    """
+        @property
+        def path(self) -> RemotePath: ...
 
-    stats: PathStatProtocol
+        @property
+        def stats(self) -> PathStatProtocol: ...
 
-    def __post_init__(self):
-        # frozen=True does not allow to change any field in __post_init__, small hack here
-        object.__setattr__(self, "path", RemotePath(self.path))
+    class FailedRemoteFile(RemoteFile):
+        def __init__(self, path: RemotePath, stats: PathStatProtocol, exception: Exception): ...
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({os.fspath(self.path)!r})"
+        @property
+        def exception(self) -> Exception: ...
+else:
 
-    def is_dir(self) -> bool:
-        return False
+    @dataclass(eq=False, frozen=True)
+    class RemoteFile(PathContainer[RemotePath]):
+        """
+        Representation of existing remote file with stat
+        """
 
-    def is_file(self) -> bool:
-        return True
+        stats: PathStatProtocol
 
-    def exists(self) -> bool:
-        return True
+        def __post_init__(self):
+            # frozen=True does not allow to change any field in __post_init__, small hack here
+            object.__setattr__(self, "path", RemotePath(self.path))
 
-    def stat(self) -> PathStatProtocol:
-        return self.stats
+        def __repr__(self) -> str:
+            return f"{self.__class__.__name__}({os.fspath(self.path)!r})"
 
-    @property
-    def parent(self) -> RemoteDirectory:
-        return RemoteDirectory(self.path.parent)
+        def is_dir(self) -> bool:
+            return False
 
-    @property
-    def parents(self) -> list[RemoteDirectory]:
-        return [RemoteDirectory(parent) for parent in self.path.parents]
+        def is_file(self) -> bool:
+            return True
 
+        def exists(self) -> bool:
+            return True
 
-@dataclass(eq=False, frozen=True)
-class FailedRemoteFile(RemoteFile):
-    """
-    Representation of existing remote file with stat and attached exception object
-    """
+        def stat(self) -> PathStatProtocol:
+            return self.stats
 
-    exception: Exception
+        @property
+        def parent(self) -> RemoteDirectory:
+            return RemoteDirectory(self.path.parent)
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({os.fspath(self.path)!r}, {self.exception!r})"
+        @property
+        def parents(self) -> list[RemoteDirectory]:
+            return [RemoteDirectory(parent) for parent in self.path.parents]
 
-    # exceptions are not allowed to compare, small hack here
-    def _compare_tuple(self, args) -> tuple:
-        return tuple(str(arg) if isinstance(arg, Exception) else arg for arg in args)
+    @dataclass(eq=False, frozen=True)
+    class FailedRemoteFile(RemoteFile):
+        """
+        Representation of existing remote file with stat and attached exception object
+        """
+
+        exception: Exception
+
+        def __repr__(self) -> str:
+            return f"{self.__class__.__name__}({os.fspath(self.path)!r}, {self.exception!r})"
+
+        # exceptions are not allowed to compare, small hack here
+        def _compare_tuple(self, args) -> tuple:
+            return tuple(str(arg) if isinstance(arg, Exception) else arg for arg in args)

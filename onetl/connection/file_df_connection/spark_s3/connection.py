@@ -396,7 +396,7 @@ class SparkS3(SparkFileDFConnection):
             spark_version = get_spark_version(spark).format("{0}.{1}.{2}")
             msg = MISSING_JVM_CLASS_MSG.format(
                 java_class=java_class,
-                package_source=cls.__name__,
+                package_source=cls.__name__,  # type: ignore[attr-defined]
                 args=f"spark_version='{spark_version}'",
             )
             raise ValueError(msg) from e

@@ -12,7 +12,7 @@ except (ImportError, AttributeError):
     from pydantic import Field  # type: ignore[no-redef, assignment]
 
 try:
-    from onetl.connection.file_connection.ftp import FTP
+    from onetl.connection.file_connection.ftp import FTP, FTPExtra
 except (ImportError, NameError) as e:
     raise ImportError(
         textwrap.dedent(
@@ -46,12 +46,12 @@ class TLSfix(ftplib.FTP_TLS):
         return conn, size
 
 
-class FTPSExtra(FTP.Extra):
-    __doc__ = FTP.Extra.__doc__.replace("FTP", "FTPS")
+class FTPSExtra(FTPExtra):
+    __doc__ = FTPExtra.__doc__.replace("FTP", "FTPS")  # type: ignore[union-attr]
 
 
 class FTPS(FTP):
-    __doc__ = FTP.__doc__.replace("FTP", "FTPS")
+    __doc__ = FTP.__doc__.replace("FTP", "FTPS")  # type: ignore[union-attr]
 
     extra: FTPSExtra = Field(default_factory=FTPSExtra)
 

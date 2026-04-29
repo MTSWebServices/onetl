@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional, Union
+from typing import TYPE_CHECKING, ClassVar, Optional, Union, cast
 
 from typing_extensions import Literal
 
@@ -452,7 +452,7 @@ class CSV(ReadWriteFileFormat):
     """
 
     class Config:
-        known_options = frozenset()
+        known_options: frozenset[str] = frozenset()
         extra = "allow"
 
     @slot
@@ -531,7 +531,8 @@ class CSV(ReadWriteFileFormat):
 
         from pyspark.sql import Column, SparkSession
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
+        self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.functions import col, from_csv
@@ -604,7 +605,8 @@ class CSV(ReadWriteFileFormat):
 
         from pyspark.sql import Column, SparkSession
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
+        self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.functions import col, to_csv

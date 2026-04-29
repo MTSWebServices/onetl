@@ -14,7 +14,7 @@ class IncrementalStrategy(HWMStrategy):
     """Incremental strategy for [db-reader][]/[file-downloader][].
 
     Used for fetching only new rows/files from a source
-    by filtering items not covered by the previous [HWM][] value.
+    by filtering items not covered by the previous [hwm][] value.
 
     For [db-reader][]:
         First incremental run is just the same as

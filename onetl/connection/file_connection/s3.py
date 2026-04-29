@@ -7,8 +7,9 @@ import logging
 import os
 import textwrap
 import warnings
+from pathlib import Path
 from pprint import pformat
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, cast
 
 from onetl.exception import DirectoryNotEmptyError
 from onetl.hooks import slot, support_hooks
@@ -329,7 +330,7 @@ class S3(FileConnection):
 
         log.debug("|%s| Directory to remove: %s", self.__class__.__name__, directory_info)
         objects_to_delete = (
-            DeleteObject(obj.object_name)
+            DeleteObject(obj.object_name)  # type: ignore[arg-type]
             for obj in _scan_entries_recursive(remote_dir)  # type: ignore[arg-type]
         )
         errors = list(
@@ -389,19 +390,13 @@ class S3(FileConnection):
                 cert_reqs="CERT_NONE",
             )
 
-        if self.extra.ssl_verify.is_dir():
-            return PoolManager(
-                timeout=self.extra.timeout,
-                retries=self.extra.retry,
-                cert_reqs="CERT_REQUIRED",
-                ca_cert_dir=os.fspath(self.extra.ssl_verify),
-            )
-
+        ca_cert_path = cast("Path", self.extra.ssl_verify)
         return PoolManager(
             timeout=self.extra.timeout,
             retries=self.extra.retry,
             cert_reqs="CERT_REQUIRED",
-            ca_certs=os.fspath(self.extra.ssl_verify),
+            ca_cert_dir=os.fspath(ca_cert_path) if ca_cert_path.is_dir() else None,
+            ca_certs=os.fspath(ca_cert_path) if not ca_cert_path.is_dir() else None,
         )
 
     def _get_client(self) -> Minio:
@@ -506,7 +501,7 @@ class S3(FileConnection):
         return (obj for obj in objects if obj.object_name != directory_path_str)
 
     def _extract_name_from_entry(self, entry: Object) -> str:
-        return RemotePath(entry.object_name).name
+        return RemotePath(entry.object_name).name  # type: ignore[arg-type]
 
     def _is_dir_entry(self, top: RemotePath, entry: Object) -> bool:
         return entry.is_dir

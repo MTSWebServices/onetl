@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from abc import abstractmethod
 from logging import getLogger
+from typing import cast
 
 from onetl.base import BaseFileConnection
 from onetl.exception import DirectoryExistsError
@@ -85,7 +86,7 @@ class RenameDirMixin(BaseFileConnection):
         self._rename_dir(source_dir, target_dir)
         log.info("|%s| Successfully renamed directory '%s' to '%s'", self.__class__.__name__, source_dir, target_dir)
 
-        return self.resolve_dir(target_dir)
+        return cast("RemoteDirectory", self.resolve_dir(target_dir))
 
     @abstractmethod
     def _rename_dir(self, source: RemotePath, target: RemotePath) -> None: ...

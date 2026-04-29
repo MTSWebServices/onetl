@@ -29,6 +29,11 @@ def test_reader_deprecated_import():
         assert OldDBReader is DBReader
 
 
+def test_reader_no_connection():
+    with pytest.raises(ValueError, match="field required"):
+        DBReader(target="schema.table")
+
+
 def test_reader_source_alias(spark_mock):
     reader1 = DBReader(
         connection=Hive(cluster="rnd-dwh", spark=spark_mock),

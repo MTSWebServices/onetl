@@ -106,12 +106,12 @@ class DBWriter(FrozenModel):
 
     _connection_checked: bool = PrivateAttr(default=False)
 
-    @validator("target", pre=True, always=True)
-    def validate_target(cls, target, values):
+    @validator("target", always=True)
+    def validate_target(cls, value: str, values):
         if "connection" not in values:
-            return target
+            return value
         connection: BaseDBConnection = values["connection"]
-        return connection.dialect.validate_name(target)
+        return connection.dialect.validate_name(value)
 
     @validator("options", pre=True, always=True)
     def validate_options(cls, options, values):
