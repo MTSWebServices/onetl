@@ -10,10 +10,12 @@ from typing import Optional
 
 from etl_entities.instance import Host
 
+from onetl.impl.generic_options import GenericOptions
+
 try:
-    from pydantic.v1 import SecretStr
+    from pydantic.v1 import Field, SecretStr
 except (ImportError, AttributeError):
-    from pydantic import SecretStr  # type: ignore[no-redef, assignment]
+    from pydantic import Field, SecretStr  # type: ignore[no-redef, assignment]
 
 from onetl.base import PathStatProtocol
 from onetl.connection.file_connection.file_connection import FileConnection
@@ -41,6 +43,27 @@ except (ImportError, NameError) as e:
     ) from e
 
 log = getLogger(__name__)
+
+
+class FTPExtra(GenericOptions):
+    """
+    Extra options for FTP connection.
+
+    You can pass here any parameters supported by [ftputil.session.session_factory](https://ftputil.sschwarzer.net/documentation#session-factories).
+
+    Parameters
+    ---------
+    use_passive_mode : bool, optional
+        Set to `True` to use passive mode, ``False`` to use active mode, ``None`` for autodetect
+    encoding : str, default: `utf-8`
+        File path encoding
+    """
+
+    use_passive_mode: Optional[bool] = None
+    encoding: str = "utf-8"
+
+    class Config:
+        extra = "allow"
 
 
 @support_hooks
@@ -81,26 +104,46 @@ class FTP(FileConnection, RenameDirMixin):
 
         `None` means that the user is anonymous.
 
+    extra : FTPExtra, default: `FTPExtra()`
+        Extra options
+
     Examples
     --------
 
-    Create and check FTP connection:
+    === "Create and check FTP connection"
 
-    ```python
-    from onetl.connection import FTP
+        ```python
+        from onetl.connection import FTP
 
-    ftp = FTP(
-        host="ftp.domain.com",
-        user="someuser",
-        password="*****",
-    ).check()
-    ```
+        ftp = FTP(
+            host="ftp.domain.com",
+            user="someuser",
+            password="*****",
+        ).check()
+        ```
+
+    === "Create and check FTP connection with extra options"
+
+        ```python
+        from onetl.connection import FTP
+
+        ftp = FTP(
+            host="ftp.domain.com",
+            user="someuser",
+            password="*****",
+            extra=FTP.Extra(use_passive_mode=True),
+        ).check()
+        ```
     """
 
     host: Host
     port: int = 21
     user: Optional[str] = None
     password: Optional[SecretStr] = None
+
+    extra: FTPExtra = Field(default_factory=FTPExtra)
+
+    Extra = FTPExtra
 
     @property
     def instance_url(self) -> str:
@@ -118,11 +161,13 @@ class FTP(FileConnection, RenameDirMixin):
         Returns a FTP connection object
         """
 
+        extra = self.extra.dict(by_alias=True)
+        extra.setdefault("debug_level", 0)
+
         session_factory = ftp_session.session_factory(
             base_class=ftplib.FTP,
             port=self.port,
-            encrypt_data_channel=True,
-            debug_level=0,
+            **extra,
         )
 
         return FTPHost(
