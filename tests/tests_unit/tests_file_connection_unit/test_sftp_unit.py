@@ -1,3 +1,4 @@
+import re
 import shutil
 from pathlib import Path
 
@@ -90,3 +91,105 @@ def test_sftp_connection_without_mandatory_args():
 
     with pytest.raises(ValueError):
         SFTP()
+
+
+def test_sftp_connection_with_deprecated_params():
+    from onetl.connection import SFTP
+
+    msg = "Option `host_key_check` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+    with pytest.warns(UserWarning, match=re.escape(msg)):
+        conn = SFTP(
+            host="some_host",
+            user="some_user",
+            password="pwd",
+            host_key_check=True,
+            extra={"something": "abc"},
+        )
+    assert conn.extra.host_key_check is True
+    assert conn.extra.something == "abc"
+
+    msg = "Option `timeout` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+    with pytest.warns(UserWarning, match=re.escape(msg)):
+        conn = SFTP(
+            host="some_host",
+            user="some_user",
+            password="pwd",
+            timeout=10,
+            extra={"something": "abc"},
+        )
+    assert conn.extra.timeout == 10
+    assert conn.extra.something == "abc"
+
+    msg = "Option `compress` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+    with pytest.warns(UserWarning, match=re.escape(msg)):
+        conn = SFTP(
+            host="some_host",
+            user="some_user",
+            password="pwd",
+            compress=True,
+            extra={"something": "abc"},
+        )
+    assert conn.extra.compress is True
+    assert conn.extra.something == "abc"
+
+
+def test_sftp_connection_with_extra():
+    from onetl.connection import SFTP
+
+    conn = SFTP(
+        host="some_host",
+        user="some_user",
+        password="pwd",
+    )
+    assert conn.extra.host_key_check is False
+    assert conn.extra.timeout is None
+    assert conn.extra.banner_timeout is None
+    assert conn.extra.auth_timeout is None
+    assert conn.extra.channel_timeout is None
+    assert conn.extra.compress is False
+
+    conn = SFTP(
+        host="some_host",
+        user="some_user",
+        password="pwd",
+        extra=SFTP.Extra(
+            host_key_check=True,
+            timeout=1,
+            banner_timeout=1,
+            auth_timeout=1,
+            channel_timeout=1,
+            compress=True,
+            something="abc",
+        ),
+    )
+
+    assert conn.extra.host_key_check is True
+    assert conn.extra.timeout == 1
+    assert conn.extra.banner_timeout == 1
+    assert conn.extra.auth_timeout == 1
+    assert conn.extra.channel_timeout == 1
+    assert conn.extra.compress is True
+    assert conn.extra.something == "abc"
+
+    conn = SFTP(
+        host="some_host",
+        user="some_user",
+        password="pwd",
+        extra={
+            "host_key_check": True,
+            "timeout": 1,
+            "banner_timeout": 1,
+            "auth_timeout": 1,
+            "channel_timeout": 1,
+            "compress": True,
+            "something": "abc",
+        },
+    )
+
+    assert conn.extra.host_key_check is True
+    assert conn.extra.timeout == 1
+    assert conn.extra.banner_timeout == 1
+    assert conn.extra.auth_timeout == 1
+    assert conn.extra.channel_timeout == 1
+    assert conn.extra.compress is True
+    assert conn.extra.something == "abc"
