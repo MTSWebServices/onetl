@@ -3,6 +3,7 @@
 
 ::: onetl.connection.file_connection.webdav.WebDAV
     options:
+        show_root_heading: true
         members:
             - check
             - path_exists
@@ -19,3 +20,11 @@
             - walk
             - download_file
             - upload_file
+
+::: onetl.connection.file_connection.webdav.WebDAVExtra
+    options:
+        show_root_heading: true
+        members:
+          - timeout
+          - retry
+          - ssl_verify
