@@ -3,6 +3,7 @@
 
 ::: onetl.connection.file_connection.samba.Samba
     options:
+        show_root_heading: true
         members:
             - check
             - path_exists
@@ -18,3 +19,12 @@
             - list_dir
             - download_file
             - upload_file
+
+::: onetl.connection.file_connection.samba.SambaExtra
+    options:
+        show_root_heading: true
+        members:
+          - connect_timeout
+          - operation_timeout
+          - my_name
+          - sign_options
