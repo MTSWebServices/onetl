@@ -5,16 +5,19 @@ from __future__ import annotations
 import contextlib
 import os
 import textwrap
+import warnings
 from logging import getLogger
 from stat import S_ISDIR, S_ISREG
 from typing import Optional
 
 from etl_entities.instance import Host
 
+from onetl.impl.generic_options import GenericOptions
+
 try:
-    from pydantic.v1 import FilePath, SecretStr
+    from pydantic.v1 import Field, FilePath, SecretStr, root_validator
 except (ImportError, AttributeError):
-    from pydantic import FilePath, SecretStr  # type: ignore[no-redef, assignment]
+    from pydantic import Field, FilePath, SecretStr, root_validator  # type: ignore[no-redef, assignment]
 
 from onetl.connection.file_connection.file_connection import FileConnection
 from onetl.connection.file_connection.mixins.rename_dir_mixin import RenameDirMixin
@@ -46,6 +49,43 @@ SSH_CONFIG_PATH = LocalPath("~/.ssh/config").expanduser().resolve()
 log = getLogger(__name__)
 
 
+class SFTPExtra(GenericOptions):
+    """
+    Extra options for SFTP connection.
+
+    You can pass here any parameters supported by [paramiko.SSHClient](https://docs.paramiko.org/en/stable/api/client.html#paramiko.client.SSHClient).
+
+    Parameters
+    ---------
+    host_key_check : bool, default: `False`
+        Set to `True` to validate the SSH server's host key.
+    timeout : float, default: `None`
+        Optional timeout (in seconds) for the TCP connect.
+    banner_timeout : float, default: `None`
+        Optional timeout (in seconds) for the SSH banner.
+    auth_timeout : float, default: `None`
+        Optional timeout (in seconds) for the SSH authentication.
+    channel_timeout : float, default: `None`
+        Optional timeout (in seconds) for the SSH channel.
+    compress : bool, default: `False`
+        Set to `True` to enable compression.
+
+        !!! warning
+
+            Not compatible with downloading/uploading compressed files.
+    """
+
+    host_key_check: bool = False
+    timeout: Optional[float] = None
+    banner_timeout: Optional[float] = None
+    auth_timeout: Optional[float] = None
+    channel_timeout: Optional[float] = None
+    compress: bool = False
+
+    class Config:
+        extra = "allow"
+
+
 @support_hooks
 class SFTP(FileConnection, RenameDirMixin):
     """SFTP file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
@@ -57,7 +97,7 @@ class SFTP(FileConnection, RenameDirMixin):
         Since onETL v0.7.0 to use SFTP connector you should install package as follows:
 
         ```bash
-        pip install "onetl[s3]"
+        pip install "onetl[sftp]"
 
         # or
         pip install "onetl[files]"
@@ -77,35 +117,54 @@ class SFTP(FileConnection, RenameDirMixin):
     user : str
         User, which have access to the file source. For example: `someuser`
 
-    password : str, default: `None`
-        Password for file source connection
+    password : str, optional.
+        Password for SFTP connection, optional.
 
-    key_file : str, default: `None`
-        the filename of optional private key(s) and/or certs to try for authentication
+    key_file : str, optional.
+        Path to private key file, optional.
 
-    timeout : int, default: `10`
-        How long to wait for the server to send data before giving up
-
-    host_key_check : bool, default: `False`
-        set to True to enable searching for discoverable private key files in `~/.ssh/`
-
-    compress : bool, default: `True`
-        Set to True to turn on compression
+    extra : SFTPExtra, default: `SFTPExtra()`
+        Extra options for SFTP connection
 
     Examples
     --------
 
-    Create and check SFTP connection:
+    === "Create SFTP connection with password"
 
-    ```python
-    from onetl.connection import SFTP
+        ```python
+        from onetl.connection import SFTP
 
-    sftp = SFTP(
-        host="192.168.1.19",
-        user="someuser",
-        password="*****",
-    ).check()
-    ```
+        sftp = SFTP(
+            host="192.168.1.19",
+            user="someuser",
+            password="*****",
+        ).check()
+        ```
+
+    === "Create SFTP connection with private key file"
+
+        ```python
+        from onetl.connection import SFTP
+
+        sftp = SFTP(
+            host="192.168.1.19",
+            user="someuser",
+            key_file="~/.ssh/id_rsa",
+        ).check()
+        ```
+
+    === "Create SFTP connection with extra options"
+
+        ```python
+        from onetl.connection import SFTP
+
+        sftp = SFTP(
+            host="192.168.1.19",
+            user="someuser",
+            password="*****",
+            extra=SFTP.Extra(host_key_check=True, timeout=60),
+        ).check()
+        ```
     """
 
     host: Host
@@ -113,9 +172,27 @@ class SFTP(FileConnection, RenameDirMixin):
     user: Optional[str] = None
     password: Optional[SecretStr] = None
     key_file: Optional[FilePath] = None
-    timeout: int = 10
-    host_key_check: bool = False
-    compress: bool = True
+    extra: SFTPExtra = Field(default_factory=SFTPExtra)
+
+    Extra = SFTPExtra
+
+    @root_validator(pre=True)
+    def _extra_fallback(cls, values):
+        extra_dict = cls.Extra.parse(values.get("extra")).dict(exclude_unset=True, by_alias=True)
+        for key in ["timeout", "host_key_check", "compress"]:
+            if key not in values:
+                continue
+
+            value = values.pop(key)
+            warnings.warn(
+                f"Option `{key}` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+                f"Use extra={cls.__name__}.Extra({key}={value!r}) instead",
+                category=UserWarning,
+                stacklevel=5,
+            )
+            extra_dict[key] = value
+        values["extra"] = cls.Extra.parse(extra_dict)
+        return values
 
     @property
     def instance_url(self) -> str:
@@ -138,19 +215,19 @@ class SFTP(FileConnection, RenameDirMixin):
 
         client = SSHClient()
         client.load_system_host_keys()
-        if not self.host_key_check:
+        if not self.extra.host_key_check:
             # Default is RejectPolicy
             client.set_missing_host_key_policy(WarningPolicy())  # noqa: S507
 
+        extra = self.extra.dict(by_alias=True, exclude={"host_key_check"})
         client.connect(
             hostname=self.host,
             port=self.port,
             username=self.user,
             password=self.password.get_secret_value() if self.password else None,
             key_filename=key_file,
-            timeout=self.timeout,
-            compress=self.compress,
             sock=host_proxy,
+            **extra,
         )
 
         return client.open_sftp()
