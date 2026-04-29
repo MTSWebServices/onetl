@@ -113,7 +113,7 @@ repos:
     hooks:
       - id: ruff-format
         priority: 8
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
         priority: 9
 
@@ -130,7 +130,7 @@ repos:
         name: towncrier
         entry: towncrier build --draft
         language: system
-        types: [rst]
+        types: [markdown]
         pass_filenames: false
         priority: 8
 

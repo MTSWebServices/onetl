@@ -36,7 +36,7 @@ jobs:
 
       - name: Fix logo in Readme
         run: |
-          sed -i "s#image:: docs/#image:: https://raw.githubusercontent.com/MTSWebServices/onetl/$GITHUB_SHA/docs/#g" README.rst
+          sed -i "s#image:: mddocs/docs/#image:: https://raw.githubusercontent.com/MTSWebServices/onetl/$GITHUB_SHA/mddocs/docs/#g" README.rst
 
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
         id: python
