@@ -36,7 +36,7 @@ onETL
 
 |Logo|
 
-.. |Logo| image:: docs/_static/logo_wide.svg
+.. |Logo| image:: mddocs/docs/_static/images/logo_wide.svg
     :alt: onETL logo
     :target: https://github.com/MTSWebServices/onetl
 
