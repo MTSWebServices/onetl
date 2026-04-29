@@ -315,9 +315,11 @@ class DBReader(FrozenModel):
     _connection_checked: bool = PrivateAttr(default=False)
 
     @validator("source", always=True)
-    def validate_source(cls, source, values):
+    def validate_source(cls, value: str, values):
+        if "connection" not in values:
+            return value
         connection: BaseDBConnection = values["connection"]
-        return connection.dialect.validate_name(source)
+        return connection.dialect.validate_name(value)
 
     @validator("columns", always=True, pre=True)
     def validate_columns(cls, value: str | list[str] | None, values: dict) -> list[str] | None:
@@ -327,25 +329,31 @@ class DBReader(FrozenModel):
         return connection.dialect.validate_columns(value)
 
     @validator("where", always=True)
-    def validate_where(cls, where: Any, values: dict) -> Any:
+    def validate_where(cls, value: Any, values: dict) -> Any:
+        if "connection" not in values:
+            return value  # type: ignore[return-value]
         connection: BaseDBConnection = values["connection"]
-        result = connection.dialect.validate_where(where)
+        result = connection.dialect.validate_where(value)
         if isinstance(result, dict):
             return frozendict.frozendict(result)  # type: ignore[attr-defined, operator]
         return result
 
     @validator("hint", always=True)
-    def validate_hint(cls, hint: Any, values: dict) -> Any:
+    def validate_hint(cls, value: Any, values: dict) -> Any:
+        if "connection" not in values:
+            return value  # type: ignore[return-value]
         connection: BaseDBConnection = values["connection"]
-        result = connection.dialect.validate_hint(hint)
+        result = connection.dialect.validate_hint(value)
         if isinstance(result, dict):
             return frozendict.frozendict(result)  # type: ignore[attr-defined, operator]
         return result
 
     @validator("df_schema", always=True)
-    def validate_df_schema(cls, df_schema: StructType | None, values: dict) -> StructType | None:
+    def validate_df_schema(cls, value: StructType | None, values: dict) -> StructType | None:
+        if "connection" not in values:
+            return value  # type: ignore[return-value]
         connection: BaseDBConnection = values["connection"]
-        return connection.dialect.validate_df_schema(df_schema)
+        return connection.dialect.validate_df_schema(value)
 
     @root_validator(skip_on_failure=True)
     def validate_hwm(cls, values: dict) -> dict:

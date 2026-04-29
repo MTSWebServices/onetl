@@ -58,14 +58,14 @@ class UploadResult(FileResult):
     ```
     """
 
-    successful: FileSet[RemoteFile] = Field(default_factory=FileSet)
+    successful: FileSet[RemoteFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which were uploaded successfully"
 
-    failed: FileSet[FailedLocalFile] = Field(default_factory=FileSet)
+    failed: FileSet[FailedLocalFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which were not uploaded because of some failure"
 
-    skipped: FileSet[LocalPath] = Field(default_factory=FileSet)
+    skipped: FileSet[LocalPath] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which were skipped because of some reason"
 
-    missing: FileSet[LocalPath] = Field(default_factory=FileSet)
+    missing: FileSet[LocalPath] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which are not present in the local file system"

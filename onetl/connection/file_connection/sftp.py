@@ -238,7 +238,7 @@ class SFTP(FileConnection, RenameDirMixin):
     def _close_client(self, client: SFTPClient) -> None:
         client.close()
 
-    def _parse_user_ssh_config(self) -> tuple[str | None, str | None]:
+    def _parse_user_ssh_config(self) -> tuple[ProxyCommand | None, str | None]:
         host_proxy = None
         key_file = os.fspath(self.key_file) if self.key_file else None
 
@@ -249,11 +249,15 @@ class SFTP(FileConnection, RenameDirMixin):
             ssh_conf = SSHConfig()
             ssh_conf.parse(SSH_CONFIG_PATH.read_text())
             host_info = ssh_conf.lookup(self.host) or {}
-            if host_info.get("proxycommand"):
-                host_proxy = ProxyCommand(host_info.get("proxycommand"))
 
-            if not (self.password or key_file) and host_info.get("identityfile"):
-                key_file = host_info.get("identityfile")[0]
+            proxycommand = host_info.get("proxycommand")
+            if proxycommand:
+                host_proxy = ProxyCommand(proxycommand)
+
+            if not (self.password or key_file):
+                identityfile = host_info.get("identityfile")
+                if identityfile:
+                    key_file = identityfile[0]
         except ConfigParseError:
             log.exception("Failed to parse SSH config")
 
@@ -310,7 +314,7 @@ class SFTP(FileConnection, RenameDirMixin):
         return self.client.stat(os.fspath(path))
 
     def _extract_name_from_entry(self, entry: SFTPAttributes) -> str:
-        return entry.filename
+        return entry.filename  # type: ignore[attr-defined]
 
     def _is_dir_entry(self, top: RemotePath, entry: SFTPAttributes) -> bool:
         return S_ISDIR(entry.st_mode)

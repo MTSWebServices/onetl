@@ -11,8 +11,9 @@ from onetl.base import PathProtocol, PathWithStatsProtocol, PurePathProtocol
 from onetl.exception import EmptyFilesError, ZeroFileSizeError
 from onetl.impl import path_repr
 
-T = TypeVar("T", bound=PurePathProtocol)
 INDENT = " " * 4
+
+T = TypeVar("T", bound=PurePathProtocol)
 
 
 class FileSet(OrderedSet[T], Generic[T]):

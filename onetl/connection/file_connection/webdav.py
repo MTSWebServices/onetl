@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from etl_entities.instance import Host
-from pydantic import root_validator
 
 from onetl.impl.generic_options import GenericOptions
 

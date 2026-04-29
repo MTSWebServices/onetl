@@ -212,7 +212,7 @@ class Excel(ReadWriteFileFormat):
     """
 
     class Config:
-        known_options = frozenset()
+        known_options: frozenset[str] = frozenset()
         extra = "allow"
 
     @slot

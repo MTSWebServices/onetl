@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional, Union
+from typing import TYPE_CHECKING, ClassVar, Optional, Union, cast
 
 from typing_extensions import Literal
 
@@ -326,7 +326,7 @@ class XML(ReadWriteFileFormat):
     """
 
     class Config:
-        known_options = frozenset()
+        known_options: frozenset[str] = frozenset()
         prohibited_options = frozenset(("path",))  # filled by FileDFReader/FileDFWriter
         extra = "allow"
 
@@ -532,7 +532,7 @@ class XML(ReadWriteFileFormat):
         """
         from pyspark.sql import Column, SparkSession
 
-        spark = SparkSession._instantiatedSession  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
         self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
@@ -546,7 +546,7 @@ class XML(ReadWriteFileFormat):
         options = self.dict(by_alias=True, exclude_none=True)
         version = get_spark_version(spark)
         if version.major >= 4:  # noqa: PLR2004
-            from pyspark.sql.functions import from_xml
+            from pyspark.sql.functions import from_xml  # type: ignore[attr-defined]
 
             return from_xml(column, schema, stringify(options)).alias(column_name)
 
@@ -554,10 +554,10 @@ class XML(ReadWriteFileFormat):
 
         java_column = _to_java_column(column)
         java_schema = spark._jsparkSession.parseDataType(schema.json())  # noqa: SLF001
-        scala_options = spark._jvm.org.apache.spark.api.python.PythonUtils.toScalaMap(  # noqa: SLF001
+        scala_options = spark._jvm.org.apache.spark.api.python.PythonUtils.toScalaMap(  # type: ignore[union-attr] # noqa: SLF001
             stringify(options),
         )
-        jc = spark._jvm.com.databricks.spark.xml.functions.from_xml(  # noqa: SLF001
+        jc = spark._jvm.com.databricks.spark.xml.functions.from_xml(  # type: ignore[union-attr] # noqa: SLF001
             java_column,
             java_schema,
             scala_options,

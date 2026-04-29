@@ -6,7 +6,7 @@ import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple, cast
 
 from ordered_set import OrderedSet
 
@@ -17,8 +17,6 @@ except (ImportError, AttributeError):
 
 from onetl._util.file import generate_temp_path
 from onetl.base import BaseFileConnection
-from onetl.base.path_protocol import PathWithStatsProtocol
-from onetl.base.pure_path_protocol import PurePathProtocol
 from onetl.exception import DirectoryNotFoundError, NotAFileError
 from onetl.file.file_set import FileSet
 from onetl.file.file_uploader.options import FileUploaderOptions
@@ -29,6 +27,7 @@ from onetl.impl import (
     FileExistBehavior,
     FrozenModel,
     LocalPath,
+    RemoteFile,
     RemotePath,
     path_repr,
 )
@@ -364,12 +363,12 @@ class FileUploader(FrozenModel):
         if not self._connection_checked:
             self._check_local_path()
 
-        result = FileSet()
+        result: FileSet[LocalPath] = FileSet()
 
         try:
             for root, dirs, files in os.walk(self.local_path):
                 log.debug("|Local FS| Listing dir '%s': %d dirs, %d files", root, len(dirs), len(files))
-                result.update(LocalPath(root) / file for file in files)
+                result.update({LocalPath(root) / file for file in files})
         except Exception as e:
             msg = f"Couldn't read directory tree from local dir '{self.local_path}'"
             raise RuntimeError(msg) from e
@@ -412,7 +411,7 @@ class FileUploader(FrozenModel):
         local_files: Iterable[os.PathLike | str],
         current_temp_dir: RemotePath | None,
     ) -> UPLOAD_ITEMS_TYPE:
-        result = OrderedSet()
+        result: UPLOAD_ITEMS_TYPE = OrderedSet()
 
         for file in local_files:
             local_file_path = LocalPath(file)
@@ -475,9 +474,9 @@ class FileUploader(FrozenModel):
         result = UploadResult()
         for status, file in self._bulk_upload(to_upload):
             if status == FileUploadStatus.SUCCESSFUL:
-                result.successful.add(file)
+                result.successful.add(file)  # type: ignore[arg-type]
             elif status == FileUploadStatus.FAILED:
-                result.failed.add(file)
+                result.failed.add(file)  # type: ignore[arg-type]
             elif status == FileUploadStatus.SKIPPED:
                 result.skipped.add(file)
             elif status == FileUploadStatus.MISSING:
@@ -493,7 +492,7 @@ class FileUploader(FrozenModel):
         Create all parent paths before uploading files
         This is required to avoid errors then multiple threads create the same dir
         """
-        parent_paths = OrderedSet()
+        parent_paths: OrderedSet[RemotePath] = OrderedSet()
         for _, target_file, tmp_file in to_upload:
             parent_paths.add(target_file.parent)
             if tmp_file:
@@ -505,7 +504,7 @@ class FileUploader(FrozenModel):
     def _bulk_upload(
         self,
         to_upload: UPLOAD_ITEMS_TYPE,
-    ) -> list[tuple[FileUploadStatus, PurePathProtocol | PathWithStatsProtocol]]:
+    ) -> list[tuple[FileUploadStatus, LocalPath | RemoteFile | FailedLocalFile]]:
         workers = self.options.workers
         files_count = len(to_upload)
         result = []
@@ -549,7 +548,7 @@ class FileUploader(FrozenModel):
         local_file: LocalPath,
         target_file: RemotePath,
         tmp_file: RemotePath | None,
-    ) -> tuple[FileUploadStatus, PurePathProtocol | PathWithStatsProtocol]:
+    ) -> tuple[FileUploadStatus, LocalPath | RemoteFile | FailedLocalFile]:
         if tmp_file:
             log.info(
                 "|%s| Uploading file '%s' to '%s' (via tmp '%s')",
@@ -588,6 +587,8 @@ class FileUploader(FrozenModel):
             else:
                 # Direct upload
                 uploaded_file = self.connection.upload_file(local_file, target_file, replace=replace)
+
+            uploaded_file = cast("RemoteFile", uploaded_file)
 
             if self.options.delete_local:
                 local_file.unlink()

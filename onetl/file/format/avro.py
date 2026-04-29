@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional, Union
+from typing import TYPE_CHECKING, ClassVar, Optional, Union, cast
 
 from typing_extensions import Literal
 
@@ -246,7 +246,7 @@ class Avro(ReadWriteFileFormat):
     """
 
     class Config:
-        known_options = frozenset()
+        known_options: frozenset[str] = frozenset()
         prohibited_options = PROHIBITED_OPTIONS
         extra = "allow"
 
@@ -409,7 +409,8 @@ class Avro(ReadWriteFileFormat):
         from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
+        self.check_if_supported(spark)
         self._check_unsupported_parse_options()
 
         from pyspark.sql.avro.functions import from_avro
@@ -509,7 +510,8 @@ class Avro(ReadWriteFileFormat):
         from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
+        self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
         from pyspark.sql.avro.functions import to_avro

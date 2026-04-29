@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional, cast
 
 from typing_extensions import Literal
 
@@ -313,7 +313,7 @@ class JSON(ReadOnlyFileFormat):
     """
 
     class Config:
-        known_options = frozenset()
+        known_options: frozenset[str] = frozenset()
         extra = "allow"
 
     @slot
@@ -393,7 +393,8 @@ class JSON(ReadOnlyFileFormat):
         from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col, from_json
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
+        self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
         if isinstance(column, Column):
@@ -402,7 +403,7 @@ class JSON(ReadOnlyFileFormat):
             column_name, column = column, col(column).cast("string")
 
         options = stringify(self.dict(by_alias=True, exclude_none=True))
-        return from_json(column, schema, options).alias(column_name)
+        return from_json(column, schema, options).alias(column_name)  # type: ignore[arg-type]
 
     def serialize_column(self, column: str | Column) -> Column:
         """
@@ -459,7 +460,8 @@ class JSON(ReadOnlyFileFormat):
         from pyspark.sql import Column, SparkSession
         from pyspark.sql.functions import col, to_json
 
-        self.check_if_supported(SparkSession._instantiatedSession)  # noqa: SLF001
+        spark = cast("SparkSession", SparkSession._instantiatedSession)  # noqa: SLF001
+        self.check_if_supported(spark)
         self._check_unsupported_serialization_options()
 
         if isinstance(column, Column):

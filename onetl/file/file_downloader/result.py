@@ -58,14 +58,14 @@ class DownloadResult(FileResult):
     ```
     """
 
-    successful: FileSet[LocalPath] = Field(default_factory=FileSet)
+    successful: FileSet[LocalPath] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which were downloaded successfully"
 
-    failed: FileSet[FailedRemoteFile] = Field(default_factory=FileSet)
+    failed: FileSet[FailedRemoteFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which were not downloaded because of some failure"
 
-    skipped: FileSet[RemoteFile] = Field(default_factory=FileSet)
+    skipped: FileSet[RemoteFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which were skipped because of some reason"
 
-    missing: FileSet[RemotePath] = Field(default_factory=FileSet)
+    missing: FileSet[RemotePath] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which are not present in the remote file system"

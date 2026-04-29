@@ -9,7 +9,7 @@ import textwrap
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Generator, Iterable, List, Optional, Tuple, Type, Union
+from typing import Generator, Iterable, List, Optional, Tuple, Type, Union, cast
 
 from etl_entities.hwm import FileHWM, FileListHWM
 from etl_entities.instance import AbsolutePath
@@ -502,11 +502,11 @@ class FileDownloader(FrozenModel):
         if self.hwm:
             filters.append(FileHWMFilter(hwm=self._init_hwm(self.hwm)))
 
-        result = FileSet()
+        result: FileSet[RemoteFile] = FileSet()
         try:
             for _root, _dirs, files in self.connection.walk(self.source_path, filters=filters, limits=self.limits):
                 for file in files:
-                    result.append(file)
+                    result.append(cast("RemoteFile", file))
 
         except Exception as e:
             msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
@@ -641,12 +641,12 @@ class FileDownloader(FrozenModel):
                 raise ValueError(msg)
 
     def _init_hwm(self, hwm: FileHWM) -> FileHWM:
-        strategy: HWMStrategy = StrategyManager.get_current()
+        strategy = cast("HWMStrategy", StrategyManager.get_current())
 
         if not strategy.hwm:
             strategy.hwm = self.hwm
             strategy.fetch_hwm()
-            return strategy.hwm
+            return cast("FileHWM", strategy.hwm)
 
         if not isinstance(strategy.hwm, FileHWM) or strategy.hwm.name != hwm.name:
             # exception raised when inside one strategy >1 processes on the same table but with different hwm columns
@@ -776,17 +776,18 @@ class FileDownloader(FrozenModel):
         try:
             for status, source_file, target_file in self._bulk_download(to_download):
                 if status == FileDownloadStatus.SUCCESSFUL:
-                    result.successful.add(target_file)
+                    result.successful.add(target_file)  # type: ignore[arg-type]
                     source_files.append(source_file)
                 elif status == FileDownloadStatus.FAILED:
-                    result.failed.add(source_file)
+                    result.failed.add(source_file)  # type: ignore[arg-type]
                 elif status == FileDownloadStatus.SKIPPED:
-                    result.skipped.add(source_file)
+                    result.skipped.add(source_file)  # type: ignore[arg-type]
                 elif status == FileDownloadStatus.MISSING:
                     result.missing.add(source_file)
         finally:
             if self.hwm:
                 # always update HWM in HWM store, even if downloader is interrupted
+                strategy = cast("HWMStrategy", strategy)
                 strategy.update_hwm(source_files)
                 strategy.save_hwm()
         return result
@@ -799,7 +800,7 @@ class FileDownloader(FrozenModel):
         Create all parent paths before downloading files
         This is required to avoid errors then multiple threads create the same dir
         """
-        parent_paths = OrderedSet()
+        parent_paths: OrderedSet[LocalPath] = OrderedSet()
         for _, target_file, tmp_file in to_download:
             parent_paths.add(target_file.parent)
             if tmp_file:
@@ -865,7 +866,7 @@ class FileDownloader(FrozenModel):
             return FileDownloadStatus.MISSING, source_file, None
 
         try:
-            remote_file = self.connection.resolve_file(source_file)
+            remote_file = cast("RemoteFile", self.connection.resolve_file(source_file))
 
             replace = False
             if local_file.exists():

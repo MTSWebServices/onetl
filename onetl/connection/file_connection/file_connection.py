@@ -198,7 +198,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         return RemoteFile(path=remote_path, stats=stat)
 
     @slot
-    def read_text(self, path: os.PathLike | str, encoding: str = "utf-8", **kwargs) -> str:
+    def read_text(self, path: os.PathLike | str, encoding: str = "utf-8", **kwargs) -> str:  # type: ignore[override]
         log.debug(
             "|%s| Reading string with encoding %r and options %r from '%s'",
             self.__class__.__name__,
@@ -211,14 +211,14 @@ class FileConnection(BaseFileConnection, FrozenModel):
         return self._read_text(remote_path, encoding=encoding, **kwargs)
 
     @slot
-    def read_bytes(self, path: os.PathLike | str, **kwargs) -> bytes:
+    def read_bytes(self, path: os.PathLike | str, **kwargs) -> bytes:  # type: ignore[override]
         log.debug("|%s| Reading bytes with options %r from '%s'", self.__class__.__name__, kwargs, path)
 
         remote_path = self.resolve_file(path)
         return self._read_bytes(remote_path, **kwargs)
 
     @slot
-    def write_text(self, path: os.PathLike | str, content: str, encoding: str = "utf-8", **kwargs) -> RemoteFile:
+    def write_text(self, path: os.PathLike | str, content: str, encoding: str = "utf-8", **kwargs) -> RemoteFile:  # type: ignore[override]
         if not isinstance(content, str):
             msg = f"content must be str, not '{content.__class__.__name__}'"
             raise TypeError(msg)
@@ -248,7 +248,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         return self.resolve_file(remote_path)
 
     @slot
-    def write_bytes(self, path: os.PathLike | str, content: bytes, **kwargs) -> RemoteFile:
+    def write_bytes(self, path: os.PathLike | str, content: bytes, **kwargs) -> RemoteFile:  # type: ignore[override]
         if not isinstance(content, bytes):
             msg = f"content must be bytes, not '{content.__class__.__name__}'"
             raise TypeError(msg)
@@ -420,7 +420,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         return self.resolve_file(target_file)
 
     @slot
-    def list_dir(
+    def list_dir(  # type: ignore[override]
         self,
         path: os.PathLike | str,
         filters: Iterable[BaseFileFilter] | None = None,
@@ -453,7 +453,7 @@ class FileConnection(BaseFileConnection, FrozenModel):
         return result
 
     @slot
-    def walk(
+    def walk(  # type: ignore[override]
         self,
         root: os.PathLike | str,
         *,
@@ -515,7 +515,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
             return
 
         log.debug("|%s| Walking through directory '%s'", self.__class__.__name__, root)
-        dirs, files = [], []
+        dirs: list[RemoteDirectory] = []
+        files: list[RemoteFile] = []
 
         for entry in self._scan_entries(root):
             if limits_reached(limits):
@@ -539,8 +540,8 @@ class FileConnection(BaseFileConnection, FrozenModel):
                     files.append(file)
 
         if topdown and not limits_reached(limits):
-            for name in dirs:
-                yield from self._walk(root=root / name, topdown=topdown, filters=filters, limits=limits)
+            for directory in dirs:
+                yield from self._walk(root=directory, topdown=topdown, filters=filters, limits=limits)
 
         log.debug(
             "|%s| Directory '%s' contains %d nested directories and %d files",

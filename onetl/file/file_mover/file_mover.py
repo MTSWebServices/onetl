@@ -6,7 +6,7 @@ import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Iterable, List, Optional, Tuple
+from typing import Generator, Iterable, List, Optional, Tuple, Union, cast
 
 from ordered_set import OrderedSet
 
@@ -16,8 +16,7 @@ except (ImportError, AttributeError):
     from pydantic import Field, PrivateAttr, validator  # type: ignore[no-redef, assignment]
 
 from onetl.base import BaseFileConnection, BaseFileFilter, BaseFileLimit
-from onetl.base.path_protocol import PathProtocol, PathWithStatsProtocol
-from onetl.base.pure_path_protocol import PurePathProtocol
+from onetl.base.path_protocol import PathProtocol
 from onetl.file.file_mover.options import FileMoverOptions
 from onetl.file.file_mover.result import MoveResult
 from onetl.file.file_set import FileSet
@@ -41,7 +40,7 @@ from onetl.log import (
 log = logging.getLogger(__name__)
 
 # source, target
-MOVE_ITEMS_TYPE = OrderedSet[Tuple[RemotePath, RemotePath]]
+MOVE_ITEMS_TYPE = OrderedSet[Tuple[Union[RemotePath, RemoteFile], RemotePath]]
 
 
 class FileMoveStatus(Enum):
@@ -360,12 +359,12 @@ class FileMover(FrozenModel):
         if not self._connection_checked:
             self._check_source_path()
 
-        result = FileSet()
+        result: FileSet[RemoteFile] = FileSet()
 
         try:
             for _root, _dirs, files in self.connection.walk(self.source_path, filters=self.filters, limits=self.limits):
                 for file in files:
-                    result.append(file)
+                    result.append(cast("RemoteFile", file))
 
         except Exception as e:
             msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
@@ -395,7 +394,7 @@ class FileMover(FrozenModel):
         self,
         remote_files: Iterable[os.PathLike | str],
     ) -> MOVE_ITEMS_TYPE:
-        result = OrderedSet()
+        result: MOVE_ITEMS_TYPE = OrderedSet()
 
         for file in remote_files:
             remote_file_path = file if isinstance(file, PathProtocol) else RemotePath(file)
@@ -424,7 +423,7 @@ class FileMover(FrozenModel):
                 raise ValueError(msg)
 
             if not isinstance(old_file, PathProtocol) and self.connection.path_exists(old_file):
-                old_file = self.connection.resolve_file(old_file)
+                old_file = cast("RemoteFile", self.connection.resolve_file(old_file))
 
             result.add((old_file, new_file))
 
@@ -459,11 +458,11 @@ class FileMover(FrozenModel):
         result = MoveResult()
         for status, file in self._bulk_move(to_move):
             if status == FileMoveStatus.SUCCESSFUL:
-                result.successful.add(file)
+                result.successful.add(file)  # type: ignore[arg-type]
             elif status == FileMoveStatus.FAILED:
-                result.failed.add(file)
+                result.failed.add(file)  # type: ignore[arg-type]
             elif status == FileMoveStatus.SKIPPED:
-                result.skipped.add(file)
+                result.skipped.add(file)  # type: ignore[arg-type]
             elif status == FileMoveStatus.MISSING:
                 result.missing.add(file)
 
@@ -484,10 +483,9 @@ class FileMover(FrozenModel):
     def _bulk_move(
         self,
         to_move: MOVE_ITEMS_TYPE,
-    ) -> list[tuple[FileMoveStatus, PurePathProtocol | PathWithStatsProtocol]]:
+    ) -> Generator[tuple[FileMoveStatus, RemoteFile | FailedRemoteFile | RemotePath], None, None]:
         workers = self.options.workers
         files_count = len(to_move)
-        result = []
 
         real_workers = workers
         if files_count < workers:
@@ -508,29 +506,23 @@ class FileMover(FrozenModel):
                 futures = [
                     executor.submit(self._move_file, source_file, target_file) for source_file, target_file in to_move
                 ]
-                result = [future.result() for future in as_completed(futures)]
+                yield from (future.result() for future in as_completed(futures))
         else:
             log.debug("|%s| Using plain old for-loop", self.__class__.__name__)
-            for source_file, target_file in to_move:
-                result.append(
-                    self._move_file(
-                        source_file,
-                        target_file,
-                    ),
-                )
-
-        return result
+            yield from (self._move_file(source_file, target_file) for source_file, target_file in to_move)
 
     def _move_file(
         self,
-        source_file: RemotePath,
+        source_file: RemotePath | RemoteFile,
         target_file: RemotePath,
-    ) -> tuple[FileMoveStatus, PurePathProtocol | PathWithStatsProtocol]:
+    ) -> tuple[FileMoveStatus, RemoteFile | FailedRemoteFile | RemotePath]:
         log.info("|%s| Moving file '%s' to '%s'", self.__class__.__name__, source_file, target_file)
 
         if not self.connection.path_exists(source_file):
             log.warning("|%s| Missing file '%s', skipping", self.__class__.__name__, source_file)
             return FileMoveStatus.MISSING, source_file
+
+        source_file = cast("RemoteFile", source_file)
 
         try:
             replace = False

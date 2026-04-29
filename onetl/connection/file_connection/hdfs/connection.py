@@ -7,7 +7,7 @@ import textwrap
 import warnings
 from contextlib import suppress
 from logging import getLogger
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, cast
 
 from etl_entities.instance import Cluster, Host
 
@@ -263,7 +263,7 @@ class HDFS(FileConnection, RenameDirMixin):
 
     Extra = HDFSExtra
 
-    _active_host: Optional[Host] = PrivateAttr(default=None)
+    _active_host: Optional[str] = PrivateAttr(default=None)
 
     @slot
     @classmethod
@@ -459,49 +459,52 @@ class HDFS(FileConnection, RenameDirMixin):
 
     def _get_active_namenode(self) -> str:
         class_name = self.__class__.__name__
-        log.info("|%s| Detecting active namenode of cluster %r ...", class_name, self.cluster)
+        cluster = cast("str", self.cluster)
+        log.info("|%s| Detecting active namenode of cluster %r ...", class_name, cluster)
 
-        namenodes = self.Slots.get_cluster_namenodes(self.cluster)
+        namenodes = self.Slots.get_cluster_namenodes(cast("str", cluster))
         if not namenodes:
-            msg = f"Cannot get list of namenodes for a cluster {self.cluster!r}"
+            msg = f"Cannot get list of namenodes for a cluster {cluster!r}"
             raise RuntimeError(msg)
 
         nodes_len = len(namenodes)
         for i, namenode in enumerate(namenodes, start=1):
             log.debug("|%s|   Trying namenode %r (%d of %d) ...", class_name, namenode, i, nodes_len)
-            if self.Slots.is_namenode_active(namenode, self.cluster):
+            if self.Slots.is_namenode_active(namenode, cluster):
                 log.info("|%s|     Node %r is active!", class_name, namenode)
                 return namenode
             log.debug("|%s|     Node %r is not active, skipping", class_name, namenode)
 
-        msg = f"Cannot detect active namenode for cluster {self.cluster!r}"
+        msg = f"Cannot detect active namenode for cluster {cluster!r}"
         raise RuntimeError(msg)
 
     def _get_host(self) -> str:
-        if not self.host and self.cluster:
+        host = cast("str", self.host)
+
+        if not host and self.cluster:
             return self._get_active_namenode()
 
         # host is passed explicitly or cluster not set
         class_name = self.__class__.__name__
         if self.cluster:
-            log.info("|%s| Detecting if namenode %r of cluster %r is active...", class_name, self.host, self.cluster)
+            log.info("|%s| Detecting if namenode %r of cluster %r is active...", class_name, host, self.cluster)
         else:
-            log.info("|%s| Detecting if namenode %r is active...", class_name, self.host)
+            log.info("|%s| Detecting if namenode %r is active...", class_name, host)
 
-        is_active = self.Slots.is_namenode_active(self.host, self.cluster)
+        is_active = self.Slots.is_namenode_active(cast("str", host), self.cluster)
         if is_active:
-            log.info("|%s|   Namenode %r is active!", class_name, self.host)
-            return self.host
+            log.info("|%s|   Namenode %r is active!", class_name, host)
+            return host
 
         if is_active is None:
             log.debug("|%s|   No hooks, skip validation", class_name)
-            return self.host
+            return host
 
         if self.cluster:
-            msg = f"Host {self.host!r} is not an active namenode of cluster {self.cluster!r}"
+            msg = f"Host {host!r} is not an active namenode of cluster {self.cluster!r}"
             raise RuntimeError(msg)
 
-        msg = f"Host {self.host!r} is not an active namenode"
+        msg = f"Host {host!r} is not an active namenode"
         raise RuntimeError(msg)
 
     def _get_conn_str(self) -> str:

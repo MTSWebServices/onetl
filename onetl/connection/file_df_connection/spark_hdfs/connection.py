@@ -6,7 +6,6 @@ import getpass
 import logging
 import os
 from contextlib import suppress
-from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
 from etl_entities.instance import Cluster, Host
@@ -152,10 +151,10 @@ class SparkHDFS(SparkFileDFConnection):
     host: Optional[Host] = None
     ipc_port: int = Field(default=8020, alias=avoid_alias("port"))  # type: ignore[literal-required]
 
-    _active_host: Optional[Host] = PrivateAttr(default=None)
+    _active_host: Optional[str] = PrivateAttr(default=None)
 
     @slot
-    def path_from_string(self, path: os.PathLike | str) -> Path:
+    def path_from_string(self, path: os.PathLike | str) -> RemotePath:
         return RemotePath(os.fspath(path))
 
     @property
@@ -253,7 +252,7 @@ class SparkHDFS(SparkFileDFConnection):
             raise RuntimeError(msg)
 
         log.info("|%s|   Got %r", cls.__name__, current_cluster)
-        return cls(cluster=current_cluster, spark=spark)
+        return cls(cluster=current_cluster, spark=spark)  # type: ignore[arg-type]
 
     @validator("cluster")
     def _validate_cluster_name(cls, cluster):

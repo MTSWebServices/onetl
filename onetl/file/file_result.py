@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Generic, Iterable, TypeVar
 
 from humanize import naturalsize
+
+from onetl.base.path_protocol import PathProtocol
 
 try:
     from pydantic.v1 import Field, validator
@@ -24,8 +26,12 @@ from onetl.impl import BaseModel
 
 INDENT = " " * 4
 
+SuccessfulPath_co = TypeVar("SuccessfulPath_co", PurePathProtocol, PathProtocol, covariant=True)
+FailedPath_co = TypeVar("FailedPath_co", PurePathProtocol, PathProtocol, covariant=True)
+MissingPath_co = TypeVar("MissingPath_co", PurePathProtocol, PathProtocol, covariant=True)
 
-class FileResult(BaseModel):
+
+class FileResult(BaseModel, Generic[SuccessfulPath_co, FailedPath_co, MissingPath_co]):
     """
     Result of some file manipulation process, e.g. download, upload, etc.
 
@@ -37,16 +43,16 @@ class FileResult(BaseModel):
     * :obj`missing`
     """
 
-    successful: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    successful: FileSet[SuccessfulPath_co] = Field(default_factory=lambda: FileSet({}))
     "Successfully handled files"
 
-    failed: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    failed: FileSet[FailedPath_co] = Field(default_factory=lambda: FileSet({}))
     "File paths which were handled with some failures"
 
-    skipped: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    skipped: FileSet[SuccessfulPath_co] = Field(default_factory=lambda: FileSet({}))
     "File paths which were skipped because of some reason"
 
-    missing: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    missing: FileSet[MissingPath_co] = Field(default_factory=lambda: FileSet({}))
     "Unknown paths which cannot be handled"
 
     @validator("successful", "failed", "skipped", "missing")
