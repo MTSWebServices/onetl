@@ -14,8 +14,8 @@ def test_webdav_file_connection_check_success(webdav_file_connection, caplog):
     assert f"host = '{webdav.host}'" in caplog.text
     assert f"port = {webdav.port}" in caplog.text
     assert f"protocol = '{webdav.protocol}'" in caplog.text
-    assert f"ssl_verify = {webdav.ssl_verify}" in caplog.text
     assert f"user = '{webdav.user}'" in caplog.text
+    assert f"extra = {webdav.extra.dict(exclude_none=True)!r}" in caplog.text
     assert "password = SecretStr('**********')" in caplog.text
     assert webdav.password.get_secret_value() not in caplog.text
 
