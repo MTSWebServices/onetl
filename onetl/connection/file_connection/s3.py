@@ -8,10 +8,11 @@ import os
 import textwrap
 import warnings
 from pprint import pformat
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 
 from onetl.exception import DirectoryNotEmptyError
 from onetl.hooks import slot, support_hooks
+from onetl.impl.generic_options import GenericOptions
 from onetl.impl.remote_file import RemoteFile
 
 try:
@@ -19,6 +20,10 @@ try:
     from minio.datatypes import Object
     from minio.deleteobjects import DeleteObject
     from minio.error import S3Error
+    from urllib3.poolmanager import PoolManager
+    from urllib3.util.retry import Retry
+    from urllib3.util.timeout import Timeout
+
 except (ImportError, NameError) as e:
     raise ImportError(
         textwrap.dedent(
@@ -37,9 +42,16 @@ except (ImportError, NameError) as e:
 from etl_entities.instance import Host
 
 try:
-    from pydantic.v1 import SecretStr, root_validator, validator
+    from pydantic.v1 import DirectoryPath, Field, FilePath, SecretStr, root_validator, validator
 except (ImportError, AttributeError):
-    from pydantic import SecretStr, root_validator, validator  # type: ignore[no-redef, assignment]
+    from pydantic import (  # type: ignore[no-redef, assignment]
+        DirectoryPath,
+        Field,
+        FilePath,
+        SecretStr,
+        root_validator,
+        validator,
+    )
 
 from typing_extensions import Literal
 
@@ -47,6 +59,59 @@ from onetl.connection.file_connection.file_connection import FileConnection
 from onetl.impl import LocalPath, RemoteDirectory, RemotePath, RemotePathStat, path_repr
 
 log = logging.getLogger(__name__)
+
+
+class S3Extra(GenericOptions):
+    """
+    Extra options for S3 connection.
+
+    You can pass here any parameters supported by [minio.Minio client](https://docs.min.io/aistor/developers/sdk/python/api/),
+    **without** `webdav_` prefix.
+
+    Parameters
+    ---------
+    timeout : urllib3.util.timeout.Timeout, optional
+        Timeout for requests,  see [urllib3 documentation](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Timeout).
+    retry : urllib3.util.retry.Retry, optional
+        Retry for requests, see [urllib3 documentation](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry).
+    ssl_verify : Union[FilePath, DirectoryPath, bool], optional
+        One of:
+
+        - a path to a file with SSL certificate.
+        - a path to a directory with SSL certificates.
+        - `True` to use default SSL certificates.
+        - `False` to disable SSL certificate verification.
+    """
+
+    timeout: Timeout = Timeout(connect=10, read=60)
+    retry: Retry = Retry(  # copied from Minio-py
+        total=5,
+        backoff_factor=0.2,
+        status_forcelist=frozenset({500, 502, 503, 504}),
+    )
+
+    ssl_verify: Union[FilePath, DirectoryPath, bool] = True
+
+    @validator("ssl_verify", pre=True, always=True)
+    def _ssl_verify_default_value(cls, value):
+        if not isinstance(value, bool):
+            return value
+
+        if value is False:
+            return value
+
+        # Try to use default SSL certificates
+        for env_var in ("REQUESTS_CA_BUNDLE", "SSL_CERT_FILE", "SSL_CERT_DIR"):
+            value = os.environ.get(env_var)
+            if value:
+                return value
+
+        import certifi
+
+        return certifi.where()
+
+    class Config:
+        extra = "allow"
 
 
 @support_hooks
@@ -102,20 +167,42 @@ class S3(FileConnection):
     Examples
     --------
 
-    Create and check S3 connection:
+    === "Create and check S3 connection"
 
-    ```python
-    from onetl.connection import S3
+        ```python
+        from onetl.connection import S3
 
-    s3 = S3(
-        host="s3.domain.com",
-        protocol="http",
-        bucket="my-bucket",
-        access_key="ACCESS_KEY",
-        secret_key="SECRET_KEY",
-        region="us-east-1",
-    ).check()
-    ```
+        s3 = S3(
+            host="s3.domain.com",
+            protocol="http",
+            bucket="my-bucket",
+            access_key="ACCESS_KEY",
+            secret_key="SECRET_KEY",
+            region="us-east-1",
+        ).check()
+        ```
+
+    === "Create and check S3 connection with extra options"
+
+        ```python
+        from onetl.connection import S3
+        from urllib3.util.timeout import Timeout
+        from urllib3.util.retry import Retry
+
+        s3 = S3(
+            host="s3.domain.com",
+            protocol="http",
+            bucket="my-bucket",
+            access_key="ACCESS_KEY",
+            secret_key="SECRET_KEY",
+            region="us-east-1",
+            extra=S3.Extra(
+                timeout=Timeout(connect=10, read=60),
+                retry=Retry(5, backoff_factor=0.2),
+                ssl_verify=True,
+            ),
+        ).check()
+        ```
     """
 
     host: Host
@@ -126,6 +213,9 @@ class S3(FileConnection):
     protocol: Literal["http", "https"] = "https"
     region: Optional[str] = None
     session_token: Optional[SecretStr] = None
+    extra: S3Extra = Field(default_factory=S3Extra)
+
+    Extra = S3Extra
 
     @root_validator
     def _validate_port(cls, values):
@@ -144,6 +234,24 @@ class S3(FileConnection):
                 stacklevel=5,
             )
         return value
+
+    @root_validator(pre=True)
+    def _ssl_verify_fallback(cls, values):
+        if "ssl_verify" not in values:
+            return values
+
+        ssl_verify = values.pop("ssl_verify")
+        warnings.warn(
+            "Option `ssl_verify` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+            f"Use extra={cls.__name__}.Extra(ssl_verify={ssl_verify!r}) instead",
+            category=UserWarning,
+            stacklevel=5,
+        )
+        extra = cls.Extra.parse(values.get("extra"))
+        extra_dict = extra.dict(exclude_unset=True, by_alias=True)
+        extra_dict["ssl_verify"] = ssl_verify
+        values["extra"] = cls.Extra.parse(extra_dict)
+        return values
 
     @property
     def instance_url(self) -> str:
@@ -273,7 +381,31 @@ class S3(FileConnection):
         remote_path = RemotePath("/" + os.fspath(path).lstrip("/"))
         return super().resolve_file(remote_path)
 
+    def _get_connection_pool(self) -> PoolManager:
+        if self.extra.ssl_verify is False:
+            return PoolManager(
+                timeout=self.extra.timeout,
+                retries=self.extra.retry,
+                cert_reqs="CERT_NONE",
+            )
+
+        if self.extra.ssl_verify.is_dir():
+            return PoolManager(
+                timeout=self.extra.timeout,
+                retries=self.extra.retry,
+                cert_reqs="CERT_REQUIRED",
+                ca_cert_dir=os.fspath(self.extra.ssl_verify),
+            )
+
+        return PoolManager(
+            timeout=self.extra.timeout,
+            retries=self.extra.retry,
+            cert_reqs="CERT_REQUIRED",
+            ca_certs=os.fspath(self.extra.ssl_verify),
+        )
+
     def _get_client(self) -> Minio:
+        extra = self.extra.dict(by_alias=True, exclude={"timeout", "retry", "ssl_verify"})
         return Minio(
             endpoint=f"{self.host}:{self.port}",
             access_key=self.access_key,
@@ -281,6 +413,8 @@ class S3(FileConnection):
             secure=self.protocol == "https",
             session_token=self.session_token.get_secret_value() if self.session_token else None,
             region=self.region,
+            http_client=self._get_connection_pool(),
+            **extra,
         )
 
     def _is_client_closed(self, client: Minio):
