@@ -47,8 +47,8 @@ jobs:
 
       - name: Check changelog entry exists
         run: |
-          if [ ! -s docs/changelog/next_release/${{ github.event.pull_request.number }}.*.rst ]; then
-              echo "Please add corresponding file 'docs/changelog/next_release/<issue number>.<change type>.rst' with changes description"
+          if [ ! -s mddocs/docs/changelog/next_release/${{ github.event.pull_request.number }}.*.md ]; then
+              echo "Please add corresponding file 'mddocs/docs/changelog/next_release/<issue number>.<change type>.md' with changes description"
               exit 1
           fi
 

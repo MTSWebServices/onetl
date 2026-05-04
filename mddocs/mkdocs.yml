@@ -71,12 +71,8 @@ plugins:
             extensions:
               - scripts/griffe_expand_refs.py:ExpandShortRefs
               - griffe_inherited_docstrings
-            # - griffe_sphinx
             # - griffe_pydantic: {schema: false}
   - macros
-  # - plantuml:
-  #     puml_url: https://www.plantuml.com/plantuml/
-  #     puml_keyword: plantuml
   # - i18n:
   #     docs_structure: folder
   #     languages:
@@ -87,6 +83,7 @@ plugins:
   #       - locale: ru
   #         name: Русский
   #         build: false
+  - towncrier
 
 markdown_extensions:
   - footnotes

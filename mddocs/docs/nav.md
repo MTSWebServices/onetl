@@ -189,6 +189,7 @@
     * [@support_hooks decorator](hooks/support_hooks.md)
     * [Hooks global state](hooks/global_state.md)
 * [Changelog](changelog/index.md)
+    * [Next release](changelog/NEXT_RELEASE.md)
     * [0.15.1](changelog/0.15.1.md)
     * [0.15.0](changelog/0.15.0.md)
     * [0.14.1](changelog/0.14.1.md)
