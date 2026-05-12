@@ -4,7 +4,6 @@ include .env.local
 
 SPARK_EXTERNAL_IP := $(shell docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
 VERSION := $(shell cat onetl/VERSION)
-VERSION_ANCHOR := $(shell echo ${VERSION} | tr '.' '-')
 DATE := $(shell date --rfc-3339=date)
 SPARK_VERSION ?= 3.5
 VIRTUAL_ENV ?= .venv
@@ -129,3 +128,8 @@ docs-generate-changelog: ##@Docs Generate changelog
 	# Update Changelog Index and Navigation
 	sed "s#\(.*NEXT_RELEASE.*\)#\1\n- [${VERSION} (${DATE})][DBR-onetl-changelog-${VERSION_ANCHOR}]#" "mddocs/docs/changelog/index.md" > temp && mv temp "mddocs/docs/changelog/index.md"
 	sed "s#\(.*NEXT_RELEASE.*\)#\1\n    * [${VERSION}](changelog/${VERSION}.md)#" "mddocs/docs/nav.md" > temp && mv temp "mddocs/docs/nav.md"
+
+	${PYTHON} mddocs/scripts/generate_anchors.py
+
+docs-generate-anchors: ##@Docs Generate anchors
+	${PYTHON} mddocs/scripts/generate_anchors.py
