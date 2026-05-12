@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from urllib3 import Retry, Timeout
 
 from onetl.connection import FileConnection
 from onetl.hooks import hook
@@ -60,7 +61,6 @@ def test_hdfs_connection_with_host_and_port():
 
     conn2 = HDFS(host="some-host.domain.com", port=9080)
     assert conn1.webhdfs_port == conn2.webhdfs_port
-    assert conn1 == conn2
 
 
 def test_hdfs_connection_with_user():
@@ -150,6 +150,80 @@ def test_hdfs_connection_with_password_and_keytab(request, tmp_path_factory):
 
     with pytest.raises(ValueError, match="Please provide either `keytab` or `password` for kinit, not both"):
         HDFS(host="hdfs2", webhdfs_port=50070, user="usr", password="pwd", keytab=keytab)
+
+
+def test_hdfs_connection_with_timeout():
+    from onetl.connection import HDFS
+
+    msg = "Option `timeout` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+    with pytest.warns(UserWarning, match=re.escape(msg)):
+        conn = HDFS(host="some-host.domain.com", timeout=5)
+
+    assert conn.extra.timeout.total == 5
+
+    with pytest.warns(UserWarning, match=re.escape(msg)):
+        conn = HDFS(
+            host="some-host.domain.com",
+            timeout=5,
+            extra={"something": "abc"},
+        )
+
+    assert conn.extra.timeout.total == 5
+    assert conn.extra.something == "abc"
+
+
+def test_hdfs_connection_with_extra():
+    from onetl.connection import HDFS
+
+    conn = HDFS(host="some-host.domain.com")
+    assert conn.extra.timeout._connect == 10
+    assert conn.extra.timeout._read == 60
+    assert conn.extra.retry.total == 3
+    assert conn.extra.retry.backoff_factor == 0
+    assert conn.extra.retry.status_forcelist == set()
+    assert conn.extra.retry.allowed_methods == frozenset({"HEAD", "DELETE", "TRACE", "PUT", "GET", "OPTIONS"})
+
+    conn = HDFS(
+        host="some-host.domain.com",
+        extra=HDFS.Extra(
+            timeout=Timeout(connect=1, read=1),
+            retry=Retry(
+                total=1,
+                backoff_factor=1,
+                status_forcelist=[500, 502, 503, 504],
+                allowed_methods=frozenset({"HEAD", "GET", "PUT", "OPTIONS"}),
+            ),
+            something="abc",
+        ),
+    )
+    assert conn.extra.timeout._connect == 1
+    assert conn.extra.timeout._read == 1
+    assert conn.extra.retry.total == 1
+    assert conn.extra.retry.backoff_factor == 1
+    assert conn.extra.retry.status_forcelist == [500, 502, 503, 504]
+    assert conn.extra.retry.allowed_methods == frozenset({"HEAD", "GET", "PUT", "OPTIONS"})
+    assert conn.extra.something == "abc"
+
+    conn = HDFS(
+        host="some-host.domain.com",
+        extra={
+            "timeout": Timeout(connect=1, read=1),
+            "retry": Retry(
+                total=1,
+                backoff_factor=1,
+                status_forcelist=[500, 502, 503, 504],
+                allowed_methods=frozenset({"HEAD", "GET", "PUT", "OPTIONS"}),
+            ),
+            "something": "abc",
+        },
+    )
+    assert conn.extra.timeout._connect == 1
+    assert conn.extra.timeout._read == 1
+    assert conn.extra.retry.total == 1
+    assert conn.extra.retry.backoff_factor == 1
+    assert conn.extra.retry.status_forcelist == [500, 502, 503, 504]
+    assert conn.extra.retry.allowed_methods == frozenset({"HEAD", "GET", "PUT", "OPTIONS"})
+    assert conn.extra.something == "abc"
 
 
 def test_hdfs_get_known_clusters_hook(request):

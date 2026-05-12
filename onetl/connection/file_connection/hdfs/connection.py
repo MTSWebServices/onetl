@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import os
 import textwrap
+import warnings
 from contextlib import suppress
 from logging import getLogger
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from etl_entities.instance import Cluster, Host
-from requests import Session
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+
+from onetl.impl.generic_options import GenericOptions
 
 try:
     from pydantic.v1 import (
@@ -43,6 +43,10 @@ from onetl.impl import LocalPath, RemotePath, RemotePathStat
 
 try:
     from hdfs import Client, InsecureClient  # noqa: F401
+    from requests import Session
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+    from urllib3.util.timeout import Timeout
 
     if TYPE_CHECKING:
         from hdfs.ext.kerberos import KerberosClient  # noqa: F401
@@ -63,6 +67,28 @@ except (ImportError, NameError) as err:
 
 log = getLogger(__name__)
 ENTRY_TYPE = Tuple[str, dict]
+
+
+class HDFSExtra(GenericOptions):
+    """
+    Extra options for HDFS connection.
+
+    You can pass here any parameters supported by [hdfs.client.Client](https://hdfscli.readthedocs.io/en/latest/api.html#hdfs.client.Client),
+    **without** `webdav_` prefix.
+
+    Parameters
+    ---------
+    timeout : urllib3.util.timeout.Timeout, optional
+        Timeout for requests,  see [urllib3 documentation](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Timeout).
+    retry : urllib3.util.retry.Retry, optional
+        Retry for requests, see [urllib3 documentation](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry).
+    """
+
+    timeout: Timeout = Timeout(connect=10, read=60)
+    retry: Retry = Retry.DEFAULT
+
+    class Config:
+        extra = "allow"
 
 
 @support_hooks
@@ -153,11 +179,8 @@ class HDFS(FileConnection, RenameDirMixin):
             You can provide only one of the parameters: `password` or `kinit`.
             If you provide both, an exception will be raised.
 
-    timeout : int, default: `10`
-        Connection timeout.
-
-    retry : retry, default ``None``
-        Retry configuration for HDFS connection
+    extra: HDFSExtra, optional
+        Extra options passed to underlying HDFS client.
 
     Examples
     --------
@@ -201,22 +224,27 @@ class HDFS(FileConnection, RenameDirMixin):
             password="*****",
         ).check()
         ```
-    === "Configure number of retries for unstable HDFS connections"
+    === "Configure timeout & number of retries"
 
         ```python
-        from urllib3.util.retry import Retry
+        from onetl.connection import HDFS
 
-        retry_strategy = Retry(
-            total=5,  # number of rerties
-            backoff_factor=1,  # tries delay gap
-            status_forcelist=[429, 500, 502, 503, 504],  # HTTP-codes for retry
-            allowed_methods=["HEAD", "GET", "PUT", "OPTIONS"],  # methods for retry
-        )
+        from urllib3.util.retry import Retry
+        from urllib3.util.timeout import Timeout
+
         hdfs = HDFS(
             host="namenode1.domain.com",
             user="someuser",
             keytab="/path/to/keytab",
-            retry=retry_strategy,
+            extra=HDFS.Extra(
+                timeout=Timeout(connect=10, read=60),
+                retry=Retry(
+                    total=3,
+                    backoff_factor=0.2,
+                    status_forcelist=[429, 500, 502, 503, 504],
+                    allowed_methods=["HEAD", "GET", "PUT", "OPTIONS"],
+                ),
+            ),
         ).check()
         ```
     """
@@ -227,12 +255,13 @@ class HDFS(FileConnection, RenameDirMixin):
     user: Optional[str] = None
     password: Optional[SecretStr] = None
     keytab: Optional[FilePath] = None
-    timeout: int = 10
-    retry: Optional[Retry] = None
+    extra: HDFSExtra = Field(default_factory=HDFSExtra)
 
     Slots = HDFSSlots
     # TODO: remove in v1.0.0
     slots = Slots
+
+    Extra = HDFSExtra
 
     _active_host: Optional[Host] = PrivateAttr(default=None)
 
@@ -262,8 +291,8 @@ class HDFS(FileConnection, RenameDirMixin):
         keytab : str | None
             Path to keytab file for Kerberos. See [HDFS][] constructor documentation.
 
-        timeout : int
-            Connection timeout. See [HDFS][] constructor documentation.
+        extra : HDFSExtra, optional
+            Extra options passed to underlying HDFS client. See [HDFS][] constructor documentation.
 
         Examples
         --------
@@ -409,6 +438,25 @@ class HDFS(FileConnection, RenameDirMixin):
 
         return values
 
+    @root_validator(pre=True)
+    def _timeout_fallback(cls, values):
+        if "timeout" not in values:
+            return values
+
+        timeout_int = values.pop("timeout")
+        timeout = Timeout(total=timeout_int)
+        warnings.warn(
+            "Option `timeout` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+            f"Use extra={cls.__name__}.Extra(timeout={timeout!r}) instead",
+            category=UserWarning,
+            stacklevel=5,
+        )
+        extra = cls.Extra.parse(values.get("extra"))
+        extra_dict = extra.dict(exclude_unset=True, by_alias=True)
+        extra_dict["timeout"] = timeout
+        values["extra"] = cls.Extra.parse(extra_dict)
+        return values
+
     def _get_active_namenode(self) -> str:
         class_name = self.__class__.__name__
         log.info("|%s| Detecting active namenode of cluster %r ...", class_name, self.cluster)
@@ -464,13 +512,14 @@ class HDFS(FileConnection, RenameDirMixin):
 
     def _get_session(self) -> Session:
         result = Session()
-        if self.retry:
-            adapter = HTTPAdapter(max_retries=self.retry)
-            result.mount("http://", adapter)
+        adapter = HTTPAdapter(max_retries=self.extra.retry)
+        result.mount("http://", adapter)
         return result
 
     def _get_client(self) -> Client:
         session = self._get_session()
+        timeout = (self.extra.timeout.connect_timeout, self.extra.timeout.read_timeout)
+        extra = self.extra.dict(by_alias=True, exclude={"timeout", "retry"})
         if self.user and (self.keytab or self.password):
             from hdfs.ext.kerberos import KerberosClient
 
@@ -481,12 +530,12 @@ class HDFS(FileConnection, RenameDirMixin):
             )
             # checking if namenode is active requires a Kerberos ticket
             conn_str = self._get_conn_str()
-            client = KerberosClient(conn_str, timeout=self.timeout, session=session)
+            client = KerberosClient(conn_str, timeout=timeout, session=session, **extra)
         else:
             from hdfs import InsecureClient
 
             conn_str = self._get_conn_str()
-            client = InsecureClient(conn_str, user=self.user, session=session)
+            client = InsecureClient(conn_str, user=self.user, timeout=timeout, session=session, **extra)
 
         return client
 
