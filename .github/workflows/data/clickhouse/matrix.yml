@@ -10,7 +10,7 @@
 
 3_5_x: &3_5_x
   clickhouse-image: clickhouse/clickhouse-server
-  clickhouse-version: 26.1-alpine
+  clickhouse-version: 25.9-alpine
   spark-version: '3.5'
   pydantic-version: 2
   python-version: '3.13'
@@ -19,7 +19,7 @@
 
 4_0_x: &4_0_x
   clickhouse-image: clickhouse/clickhouse-server
-  clickhouse-version: 26.1-alpine
+  clickhouse-version: 25.9-alpine
   spark-version: '4.0'
   pydantic-version: 2
   python-version: '3.14'
@@ -29,7 +29,7 @@
 
 4_1_x: &4_1_x
   clickhouse-image: clickhouse/clickhouse-server
-  clickhouse-version: 26.1-alpine
+  clickhouse-version: 25.9-alpine
   spark-version: '4.1'
   pydantic-version: 2
   python-version: '3.14'
