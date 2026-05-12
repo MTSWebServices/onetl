@@ -93,11 +93,9 @@ oracle.execute(
 ::: onetl.connection.db_connection.oracle.options.OracleFetchOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true
 
 ::: onetl.connection.db_connection.oracle.options.OracleExecuteOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true

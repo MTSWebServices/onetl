@@ -3,13 +3,13 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-mssql-prerequisites-version-compatibility }
 
 - SQL Server versions:
-  - Officially declared: 2016 - 2025
-  - Actually tested: 2017, 2025
+    - Officially declared: 2016 - 2025
+    - Actually tested: 2017, 2025
 - Spark versions: 3.2.x - 4.1.x
 - Java versions: 8 - 22
 
 See [official documentation](https://learn.microsoft.com/en-us/sql/connect/jdbc/system-requirements-for-the-jdbc-driver)
-and [official compatibility matrix](https://learn.microsoft.com/en-us/sql/connect/jdbc/microsoft-jdbc-driver-for-sql-server-support-matrix).
+and [official compatibility matrix](https://learn.microsoft.com/en-us/sql/connect/driver-feature-matrix).
 
 ## Installing PySpark { #DBR-onetl-connection-db-connection-mssql-prerequisites-installing-pyspark }
 

@@ -10,15 +10,12 @@
 
 ::: onetl.hooks.hooks_state.HooksState.skip
           options:
-            show_source: false
             show_root_heading: true
 
 ::: onetl.hooks.hooks_state.HooksState.stop
           options:
-            show_source: false
             show_root_heading: true
 
 ::: onetl.hooks.hooks_state.HooksState.resume
           options:
-            show_source: false
             show_root_heading: true

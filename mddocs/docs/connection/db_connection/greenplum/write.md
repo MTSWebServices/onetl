@@ -45,7 +45,7 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
 
     ```mermaid
     ---
-    title: Greenplum master <-> Spark driver
+    title: Greenplum master ↔ Spark driver
     ---
 
     sequenceDiagram
@@ -128,7 +128,6 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
         D -->> A: DONE
         deactivate D
 
-
         A -->> E: CLOSE CONNECTION
         deactivate E
         deactivate A
@@ -140,4 +139,4 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
 ::: onetl.connection.db_connection.greenplum.options.GreenplumWriteOptions
     options:
         show_root_heading: true
-        heading_level: 3
+        inherited_members: false

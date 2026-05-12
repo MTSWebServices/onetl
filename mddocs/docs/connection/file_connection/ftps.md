@@ -3,8 +3,8 @@
 
 ::: onetl.connection.file_connection.ftps.FTPS
     options:
+        show_root_heading: true
         members:
-            - __init__
             - check
             - path_exists
             - is_file
@@ -21,3 +21,10 @@
             - walk
             - download_file
             - upload_file
+
+::: onetl.connection.file_connection.ftps.FTPSExtra
+    options:
+        show_root_heading: true
+        members:
+          - use_passive_mode
+          - encoding

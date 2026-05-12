@@ -21,42 +21,41 @@ if TYPE_CHECKING:
 
 class KafkaScramAuth(KafkaAuth, GenericOptions):
     """
-    Connect to Kafka using ``sasl.mechanism="SCRAM-SHA-256"`` or ``sasl.mechanism="SCRAM-SHA-512"``.
+    Connect to Kafka using `sasl.mechanism="SCRAM-SHA-256"` or `sasl.mechanism="SCRAM-SHA-512"`.
 
-    For more details see `Kafka Documentation <https://kafka.apache.org/documentation/#security_sasl_scram_clientconfig>`_.
+    For more details see [Kafka Documentation](https://kafka.apache.org/documentation/#security_sasl_scram_clientconfig).
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
 
     Examples
     --------
 
-    Auth in Kafka with ``SCRAM-SHA-256`` mechanism:
+    Auth in Kafka with `SCRAM-SHA-256` mechanism:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Kafka
 
-        from onetl.connection import Kafka
+    auth = Kafka.ScramAuth(
+        user="me",
+        password="abc",
+        digest="SHA-256",
+    )
+    ```
+    Auth in Kafka with `SCRAM-SHA-512` mechanism and some custom SASL options passed to Kafka client config:
 
-        auth = Kafka.ScramAuth(
-            user="me",
-            password="abc",
-            digest="SHA-256",
-        )
+    ```python
+    from onetl.connection import Kafka
 
-    Auth in Kafka with ``SCRAM-SHA-512`` mechanism and some custom SASL options passed to Kafka client config:
-
-    .. code:: python
-
-        from onetl.connection import Kafka
-
-        auth = Kafka.ScramAuth.parse(
-            {
-                "user": "me",
-                "password": "abc",
-                "digest": "SHA-512",
-                # options with `sasl.login.` prefix are passed to Kafka client config as-is
-                "sasl.login.class": "com.example.CustomScramLogin",
-            }
-        )
+    auth = Kafka.ScramAuth.parse(
+        {
+            "user": "me",
+            "password": "abc",
+            "digest": "SHA-512",
+            # options with `sasl.login.` prefix are passed to Kafka client config as-is
+            "sasl.login.class": "com.example.CustomScramLogin",
+        }
+    )
+    ```
     """
 
     user: str = Field(alias="username")

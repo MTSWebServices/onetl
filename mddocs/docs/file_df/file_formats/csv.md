@@ -4,7 +4,6 @@
 ::: onetl.file.format.csv.CSV
     options:
         members:
-            - __init__
             - parse_column
             - serialize_column
             - charToEscapeQuoteEscaping

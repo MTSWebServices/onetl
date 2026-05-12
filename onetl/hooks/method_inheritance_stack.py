@@ -10,17 +10,18 @@ class MethodInheritanceStack:
     """
     Context manager which can track the method calls within class inheritance diagram.
 
-    For inherited class, overridden method contains a ``super().method(...)`` call.
+    For inherited class, overridden method contains a `super().method(...)` call.
     If base class method is registered as a slot, and there are some hooks bound to it,
     calling the inherited class method can cause calling the same hook twice -
-    both on inherited class and base (due to calling ``super()``).
+    both on inherited class and base (due to calling `super()`).
 
-    This context manager allows to track such ``super()`` calls, allowing to
+    This context manager allows to track such `super()` calls, allowing to
     prevent the same hook from being executed twice.
 
     Examples
     --------
 
+    ```python
     >>> from onetl.hooks import support_hooks, slot
     >>> from onetl.hooks.method_inheritance_stack import MethodInheritanceStack
     >>> @support_hooks
@@ -35,6 +36,9 @@ class MethodInheritanceStack:
     ...        self.do_something()
     ...        super().some_method(*args, **kwargs)
 
+    ```
+
+    ```python
     >>> # caused by MyClass.some_method() call
     >>> with MethodInheritanceStack(MyClass, "some_method") as method_call_stack:
     ...     print("MyClass", method_call_stack.level)
@@ -43,6 +47,8 @@ class MethodInheritanceStack:
     ...         print("BaseClass", method_call_stack.level)
     MyClass 0
     BaseClass 1
+
+    ```
     """
 
     _stack: ClassVar[dict[type, dict[str, int]]] = defaultdict(lambda: defaultdict(int))

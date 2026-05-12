@@ -12,10 +12,12 @@ from typing import Optional
 from etl_entities.instance import Host
 from typing_extensions import Literal
 
+from onetl.impl.generic_options import GenericOptions
+
 try:
-    from pydantic.v1 import SecretStr, validator
+    from pydantic.v1 import Field, SecretStr, validator
 except (ImportError, AttributeError):
-    from pydantic import SecretStr, validator  # type: ignore[no-redef, assignment]
+    from pydantic import Field, SecretStr, validator  # type: ignore[no-redef, assignment]
 
 from onetl.connection.file_connection.file_connection import FileConnection
 from onetl.hooks import slot, support_hooks
@@ -43,48 +45,73 @@ except (ImportError, NameError) as e:
 log = getLogger(__name__)
 
 
+class SambaExtra(GenericOptions):
+    """
+    Extra options for Samba connection.
+
+    You can pass here any parameters supported by [smb.SMBConnection.SMBConnection class](https://pysmb.readthedocs.io/en/latest/api/smb_SMBConnection.html).
+
+    Parameters
+    ---------
+    connect_timeout : int, default: `60`
+        Timeout (in seconds) for establishing TCP connection.
+    operation_timeout : int, default: `30`
+        Timeout (in seconds) for the client operations.
+    my_name : str, default: `onetl`
+        Client name.
+    sign_options : int, default: `SMBConnection.SIGN_WHEN_REQUIRED`
+        Sign options.
+    """
+
+    connect_timeout: int = 60
+    operation_timeout: int = 30
+    my_name: str = "onetl"
+    sign_options: int = SMBConnection.SIGN_WHEN_REQUIRED
+
+    class Config:
+        extra = "allow"
+
+
 @support_hooks
 class Samba(FileConnection):
-    """Samba file connection. |support_hooks|
+    """Samba file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on `pysmb library <https://pypi.org/project/pysmb/>`_.
+    Based on [pysmb library](https://pypi.org/project/pysmb/).
 
-    .. versionadded:: 0.9.4
+    !!! success "Added in 0.9.4"
 
-    .. warning::
+    !!! warning
 
         To use Samba connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[samba]"
 
-            pip install "onetl[samba]"
-
-            # or
-            pip install "onetl[files]"
-
-        See :ref:`install-files` installation instruction for more details.
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
     Parameters
     ----------
     host : str
-        Host of Samba source. For example: ``mydomain.com``.
+        Host of Samba source. For example: `mydomain.com`.
 
     share : str
         The name of the share on the Samba server.
 
-    protocol : str, default: ``SMB``
-        The protocol to use for the connection. Either ``SMB`` or ``NetBIOS``.
+    protocol : str, default: `SMB`
+        The protocol to use for the connection. Either `SMB` or `NetBIOS`.
         Affects the default port and the `is_direct_tcp` flag in `SMBConnection`.
 
     port : int, default: 445
         Port of Samba source.
 
-    domain : str, default: ``
-        Domain name for the Samba connection. Empty strings means use ``host`` as domain name.
+    domain : str, default: ` `
+        Windows workgroup name. Empty strings means use `host` as domain name.
 
-    auth_type : str, default: ``NTLMv2``
-        The authentication type to use. Either ``NTLMv2`` or ``NTLMv1``.
-        Affects the `use_ntlm_v2` flag in `SMBConnection`.
+    auth_type : str, default: `NTLMv2`
+        The authentication type to use. Either `NTLMv2` (recommended) or `NTLMv1` (Windows XP).
 
     user : str, default: None
         User, which have access to the file source. Can be `None` for anonymous connection.
@@ -92,13 +119,15 @@ class Samba(FileConnection):
     password : str, default: None
         Password for file source connection. Can be `None` for anonymous connection.
 
+    extra : SambaExtra, default: `SambaExtra()`
+        Extra options for Samba connection.
+
     Examples
     --------
 
-    Create and check Samba connection:
+    === "Create and check Samba connection"
 
-    .. code:: python
-
+        ```python
         from onetl.connection import Samba
 
         samba = Samba(
@@ -109,6 +138,24 @@ class Samba(FileConnection):
             user="user",
             password="password",
         ).check()
+        ```
+
+    === "Create Samba connection with extra options"
+
+        ```python
+        from onetl.connection import Samba
+        from smb.SMBConnection import SMBConnection
+
+        samba = Samba(
+            host="mydomain.com",
+            share="share_name",
+            protocol="SMB",
+            port=445,
+            user="user",
+            password="password",
+            extra=Samba.Extra(my_name="my_name", sign_options=SMBConnection.SIGN_NEVER),
+        ).check()
+        ```
     """
 
     host: Host
@@ -119,6 +166,16 @@ class Samba(FileConnection):
     auth_type: Literal["NTLMv1", "NTLMv2"] = "NTLMv2"
     user: Optional[str] = None
     password: Optional[SecretStr] = None
+
+    extra: SambaExtra = Field(default_factory=SambaExtra)
+
+    Extra = SambaExtra
+
+    @validator("port", pre=True, always=True)
+    def _set_port_based_on_protocol(cls, port, values):
+        if port is None:
+            return 445 if values.get("protocol") == "SMB" else 139
+        return port
 
     @property
     def instance_url(self) -> str:
@@ -206,17 +263,24 @@ class Samba(FileConnection):
     def _get_client(self) -> SMBConnection:
         is_direct_tcp = self.protocol == "SMB"
         use_ntlm_v2 = self.auth_type == "NTLMv2"
+        extra = self.extra.dict(by_alias=True, exclude={"operation_timeout", "connect_timeout"})
         conn = SMBConnection(
             username=self.user,
             password=self.password.get_secret_value() if self.password else None,
-            my_name="onetl",
             remote_name=self.host,
             domain=self.domain,
             use_ntlm_v2=use_ntlm_v2,
-            sign_options=2,
             is_direct_tcp=is_direct_tcp,
+            **extra,
         )
-        conn.connect(self.host, port=self.port)
+        auth_result = conn.connect(
+            self.host,
+            port=self.port,
+            timeout=self.extra.connect_timeout,
+        )
+        if not auth_result:
+            msg = "Failed to connect to the Samba server."
+            raise ConnectionError(msg)
         return conn
 
     def _is_client_closed(self, client: SMBConnection) -> bool:
@@ -236,6 +300,7 @@ class Samba(FileConnection):
                 self.share,
                 os.fspath(remote_file_path),
                 local_file,
+                timeout=self.extra.operation_timeout,
             )
 
     def _create_dir(self, path: RemotePath) -> None:
@@ -243,11 +308,11 @@ class Samba(FileConnection):
         for parent in reversed(path_obj.parents):
             # create dirs sequentially as .createDirectory(...) cannot create nested dirs
             try:
-                self.client.getAttributes(self.share, os.fspath(parent))
+                self.client.getAttributes(self.share, os.fspath(parent), timeout=self.extra.operation_timeout)
             except OperationFailure:  # noqa: PERF203
-                self.client.createDirectory(self.share, os.fspath(parent))
+                self.client.createDirectory(self.share, os.fspath(parent), timeout=self.extra.operation_timeout)
 
-        self.client.createDirectory(self.share, os.fspath(path))
+        self.client.createDirectory(self.share, os.fspath(path), timeout=self.extra.operation_timeout)
 
     def _upload_file(self, local_file_path: LocalPath, remote_file_path: RemotePath) -> None:
         with local_file_path.open("rb") as file_obj:
@@ -262,18 +327,21 @@ class Samba(FileConnection):
             self.share,
             os.fspath(source),
             os.fspath(target),
+            timeout=self.extra.operation_timeout,
         )
 
     def _remove_file(self, remote_file_path: RemotePath) -> None:
         self.client.deleteFiles(
             self.share,
             os.fspath(remote_file_path),
+            timeout=self.extra.operation_timeout,
         )
 
     def _remove_dir(self, path: RemotePath) -> None:
         self.client.deleteDirectory(
             self.share,
             os.fspath(path),
+            timeout=self.extra.operation_timeout,
         )
 
     def _remove_dir_recursive(self, root: RemotePath) -> None:
@@ -281,10 +349,12 @@ class Samba(FileConnection):
             self.share,
             os.fspath(root).rstrip("/") + "/*",
             delete_matching_folders=True,
+            timeout=self.extra.operation_timeout,
         )
         self.client.deleteDirectory(
             self.share,
             os.fspath(root),
+            timeout=self.extra.operation_timeout,
         )
 
     def _read_text(self, path: RemotePath, encoding: str) -> str:
@@ -296,6 +366,7 @@ class Samba(FileConnection):
             self.share,
             os.fspath(path),
             file_obj,
+            timeout=self.extra.operation_timeout,
         )
         file_obj.seek(0)
         return file_obj.read()
@@ -310,16 +381,12 @@ class Samba(FileConnection):
             self.share,
             os.fspath(path),
             file_obj,
+            timeout=self.extra.operation_timeout,
         )
 
     def _is_dir(self, path: RemotePath) -> bool:
-        return self.client.getAttributes(self.share, os.fspath(path)).isDirectory
+        attributes = self.client.getAttributes(self.share, os.fspath(path), timeout=self.extra.operation_timeout)
+        return attributes.isDirectory
 
     def _is_file(self, path: RemotePath) -> bool:
-        return not self.client.getAttributes(self.share, os.fspath(path)).isDirectory
-
-    @validator("port", pre=True, always=True)
-    def _set_port_based_on_protocol(cls, port, values):
-        if port is None:
-            return 445 if values.get("protocol") == "SMB" else 139
-        return port
+        return not self._is_dir(path)

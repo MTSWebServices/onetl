@@ -11,24 +11,25 @@ class BaseFileFilter(ABC):
     """
     Base file filter interface.
 
-    Filters used by several onETL components, including :ref:`file-downloader` and :ref:`file-mover`,
+    Filters used by several onETL components, including [file-downloader][] and [file-mover][],
     to determine if a file should be handled or not.
 
     All filters are stateless.
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
     """
 
     @abstractmethod
     def match(self, path: PathProtocol) -> bool:
         """
-        Returns ``True`` if path is matching the filter, ``False`` otherwise
+        Returns `True` if path is matching the filter, `False` otherwise
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> filter.match(LocalPath("/path/to/file.csv"))
         True
@@ -36,4 +37,5 @@ class BaseFileFilter(ABC):
         False
         >>> filter.match(LocalPath("/path/to/file.csv"))
         True
+        ```
         """

@@ -7,10 +7,10 @@
 - ✅︎ `columns`
 - ✅︎ `where`
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [`snapshot-strategy`][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [`incremental-strategy`][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [`snapshot-batch-strategy`][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [`incremental-batch-strategy`][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ✅︎ `hint`
 - ❌ `df_schema`
 - ❌ `options` (only Spark config params are used)

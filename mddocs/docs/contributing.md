@@ -16,7 +16,7 @@ Small changes can directly be crafted and submitted to the GitHub
 Repository as a Pull Request. This requires creating a **repo fork** using
 [instruction](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
-## Important notes { #DBR-onetl-contributing-limitations }
+## Important notes { #DBR-onetl-contributing-important-notes }
 
 Please take into account that:
 
@@ -204,14 +204,13 @@ Create virtualenv and install dependencies:
 make venv-install
 ```
 
-Build documentation using Sphinx:
+Build documentation using mkdocs:
 
 ```bash
-cd docs
-make html
+make docs-serve
 ```
 
-Then open in browser `docs/_build/index.html`.
+Then open in browser http://localhost:8000/
 
 ### Create pull request { #DBR-onetl-contributing-create-pull-request }
 
@@ -233,7 +232,7 @@ After pull request is created, it get a corresponding number, e.g. 123 (`pr_numb
 for changelog management.
 
 To submit a change note about your PR, add a text file into the
-[docs/changelog/next_release](changelog/NEXT_RELEASE.md) folder. It should contain an
+[docs/changelog/RELEASE_TEMPLATE](changelog/RELEASE_TEMPLATE.md) folder. It should contain an
 explanation of what applying this PR will change in the way
 end-users interact with the project. One sentence is usually
 enough but feel free to add as many details as you feel necessary
@@ -244,22 +243,15 @@ combined with others, it will be a part of the "news digest"
 telling the readers **what changed** in a specific version of
 the library *since the previous version*.
 
-You should also use
-reStructuredText syntax for highlighting code (inline or block),
-linking parts of the docs or external sites.
-If you wish to sign your change, feel free to add `-- by
-:user:`github-username`` at the end (replace `github-username`
-with your own!).
-
 Finally, name your file following the convention that Towncrier
 understands: it should start with the number of an issue or a
 PR followed by a dot, then add a patch type, like `feature`,
-`doc`, `misc` etc., and add `.rst` as a suffix. If you
+`doc`, `misc` etc., and add `.md` as a suffix. If you
 need to add more than one fragment, you may add an optional
 sequence number (delimited with another period) between the type
 and the suffix.
 
-In general the name will follow `<pr_number>.<category>.rst` pattern,
+In general the name will follow `<pr_number>.<category>.md` pattern,
 where the categories are:
 
 * `feature`: Any new feature
@@ -277,17 +269,12 @@ changes accompanying the relevant code changes.
 
 #### Examples for adding changelog entries to your Pull Requests { #DBR-onetl-contributing-examples-for-adding-changelog-entries-to-your-pull-requests }
 
-```rst title="docs/changelog/next_release/1234.doc.1.rst"
-Added a `:github:user:` role to Sphinx config -- by :github:user:`someuser`
+```markdown title="mddocs/docs/changelog/RELEASE_TEMPLATE/2345.bugfix.md"
+Fixed behavior of `WebDAV` connector
 ```
 
-```rst title="docs/changelog/next_release/2345.bugfix.rst"
-Fixed behavior of `WebDAV` connector -- by :github:user:`someuser`
-```
-
-```rst
-Added support of `timeout` in `S3` connector
--- by :github:user:`someuser`, :github:user:`anotheruser` and :github:user:`otheruser`
+```markdown title="mddocs/docs/changelog/RELEASE_TEMPLATE/3456.feature.md"
+Added support of `timeout` in ``S3`` connector
 ```
 
 #### How to skip change notes check? { #DBR-onetl-contributing-how-to-skip-change-notes-check }
@@ -296,7 +283,7 @@ Just add `ci:skip-changelog` label to pull request.
 
 !!! tip
 
-    See [pyproject.toml](../../pyproject.toml) for all available categories (`tool.towncrier.type`).
+    See [pyproject.toml](https://github.com/MTSWebServices/onetl/blob/develop/pyproject.toml) for all available categories (`tool.towncrier.type`).
 
 #### Release Process { #DBR-onetl-contributing-release-process }
 
@@ -306,83 +293,58 @@ Just add `ci:skip-changelog` label to pull request.
 
 Before making a release from the `develop` branch, follow these steps:
 
-0. Checkout to `develop` branch and update it to the actual state
+1. Checkout to `develop` branch and update it to the actual state
 
-```bash
-git checkout develop
-git pull -p
-```
+    ```bash
+    git checkout develop
+    git pull -p
+    ```
 
-1. Backup `NEXT_RELEASE.rst`
+2. Get current release version
 
-```bash
-cp "docs/changelog/NEXT_RELEASE.rst" "docs/changelog/temp_NEXT_RELEASE.rst"
-```
+    ```bash
+    VERSION=$(cat onetl/VERSION)
+    ```
 
-2. Build the Release notes with Towncrier
+3. Build changelog for current release
 
-```bash
-VERSION=$(cat onetl/VERSION)
-towncrier build "--version=${VERSION}" --yes
-```
+    ```bash
+    make docs-generate-changelog
+    ```
 
-3. Change file with changelog to release version number
+4. Commit and push changes to `develop` branch
 
-```bash
-mv docs/changelog/NEXT_RELEASE.rst "docs/changelog/${VERSION}.rst"
-```
+    ```bash
+    git add .
+    git commit -m "Prepare for release ${VERSION}"
+    git push
+    ```
 
-4. Remove content above the version number heading in the `${VERSION}.rst` file
+5. Merge `develop` branch to `master`, **WITHOUT** squashing
 
-```bash
-awk '!/^.*towncrier release notes start/' "docs/changelog/${VERSION}.rst" > temp && mv temp "docs/changelog/${VERSION}.rst"
-```
+    ```bash
+    git checkout master
+    git pull
+    git merge develop
+    git push
+    ```
 
-5. Update Changelog Index
+6. Add git tag to the latest commit in `master` branch
 
-```bash
-awk -v version=${VERSION} '/DRAFT/{print;print "    " version;next}1' docs/changelog/index.rst > temp && mv temp docs/changelog/index.rst
-```
+    ```bash
+    git tag "$VERSION"
+    git push origin "$VERSION"
+    ```
 
-6. Restore `NEXT_RELEASE.rst` file from backup
+7. Update version in `develop` branch **after release**:
 
-```bash
-mv "docs/changelog/temp_NEXT_RELEASE.rst" "docs/changelog/NEXT_RELEASE.rst"
-```
+    ```bash
+    git checkout develop
 
-7. Commit and push changes to `develop` branch
+    NEXT_VERSION=$(echo "$VERSION" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)
+    echo "$NEXT_VERSION" > onetl/VERSION
 
-```bash
-git add .
-git commit -m "Prepare for release ${VERSION}"
-git push
-```
-
-8. Merge `develop` branch to `master`, **WITHOUT** squashing
-
-```bash
-git checkout master
-git pull
-git merge develop
-git push
-```
-
-9. Add git tag to the latest commit in `master` branch
-
-```bash
-git tag "$VERSION"
-git push origin "$VERSION"
-```
-
-10. Update version in `develop` branch **after release**:
-
-```bash
-git checkout develop
-
-NEXT_VERSION=$(echo "$VERSION" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)
-echo "$NEXT_VERSION" > onetl/VERSION
-
-git add .
-git commit -m "Bump version"
-git push
-```
+    git add .
+    git commit -m "Bump version"
+    git push
+    ```

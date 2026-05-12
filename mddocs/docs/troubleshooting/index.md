@@ -3,15 +3,13 @@
 In case of error please follow instructions below:
 
 - Read the logs or exception messages you've faced with.
-  - If Python logs are note verbose enough, [increase the log level][DBR-onetl-logging].
-  - If Spark logs are note verbose enough, [increase the log level][DBR-onetl-troubleshooting-spark-troubleshooting].
+    - If Python logs are note verbose enough, [increase the log level][DBR-onetl-logging].
+    - If Spark logs are note verbose enough, [increase the log level][DBR-onetl-troubleshooting-spark-troubleshooting].
 - Read documentation related to a class or method you are using.
 - [Google](https://google.com) the error message, and carefully read the search result:
-  - [StackOverflow](https://stackoverflow.com/) answers.
-  - [Spark](https://spark.apache.org/docs/latest/) documentation.
-  - Documentation of database or filesystem you are connecting to.
-  - Documentation of underlying connector.
+    - [StackOverflow](https://stackoverflow.com/) answers.
+    - [Spark](https://spark.apache.org/docs/latest/) documentation.
+    - Documentation of database or filesystem you are connecting to.
+    - Documentation of underlying connector.
 - Search for known [issues](https://github.com/MTSWebServices/onetl/issues), or create a new one.
 - Always use the most resent versions of onETL, PySpark and connector packages, [compatible with your environment][DBR-onetl-install-spark].
-
-- [spark][DBR-onetl-troubleshooting-spark-troubleshooting]

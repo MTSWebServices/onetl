@@ -17,16 +17,17 @@ class DownloadResult(FileResult):
 
     Container for file paths, divided into certain categories:
 
-    * :obj:`~successful`
-    * :obj:`~failed`
-    * :obj:`~skipped`
-    * :obj:`~missing`
+    * [successful][]
+    * [failed][]
+    * [skipped][]
+    * [missing][]
 
-    .. versionadded:: 0.3.0
+    !!! success "Added in 0.3.0"
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file import FileDownloader
     >>> downloader = FileDownloader(local_path="/local", ...)
     >>> download_result = downloader.run(
@@ -54,16 +55,17 @@ class DownloadResult(FileResult):
             RemotePath("/missing/file")
         ]),
     )
+    ```
     """
 
-    successful: FileSet[LocalPath] = Field(default_factory=FileSet)
+    successful: FileSet[LocalPath] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which were downloaded successfully"
 
-    failed: FileSet[FailedRemoteFile] = Field(default_factory=FileSet)
+    failed: FileSet[FailedRemoteFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which were not downloaded because of some failure"
 
-    skipped: FileSet[RemoteFile] = Field(default_factory=FileSet)
+    skipped: FileSet[RemoteFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which were skipped because of some reason"
 
-    missing: FileSet[RemotePath] = Field(default_factory=FileSet)
+    missing: FileSet[RemotePath] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which are not present in the remote file system"

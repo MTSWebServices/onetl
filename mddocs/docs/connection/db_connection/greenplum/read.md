@@ -16,10 +16,10 @@ Data can be read from Greenplum to Spark using [DBReader][DBR-onetl-db-reader]. 
 - ✅︎ `columns` (see note below)
 - ✅︎ `where` (see note below)
 - ✅︎ `hwm` (see note below), supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ❌ `hint` (is not supported by Greenplum)
 - ❌ `df_schema`
 - ✅︎ `options` (see [Greenplum.ReadOptions][onetl.connection.db_connection.greenplum.options.GreenplumReadOptions])
@@ -108,7 +108,7 @@ High-level schema is described in [Greenplum prerequisites][DBR-onetl-connection
 
     ```mermaid
     ---
-    title: Greenplum master <-> Spark driver
+    title: Greenplum master ↔ Spark driver
     ---
 
     sequenceDiagram
@@ -356,4 +356,4 @@ You should use [UNLOGGED](https://docs.vmware.com/en/VMware-Greenplum/7/greenplu
 ::: onetl.connection.db_connection.greenplum.options.GreenplumReadOptions
     options:
         show_root_heading: true
-        heading_level: 3
+        inherited_members: false

@@ -8,7 +8,7 @@
   os: ubuntu-22.04
 
 3_5_x: &3_5_x
-  postgres-version: 18.1-alpine
+  postgres-version: 18.3-alpine
   spark-version: '3.5'
   pydantic-version: 2
   python-version: '3.13'
@@ -16,7 +16,7 @@
   os: ubuntu-latest
 
 4_0_x: &4_0_x
-  postgres-version: 18.1-alpine
+  postgres-version: 18.3-alpine
   spark-version: '4.0'
   pydantic-version: 2
   python-version: '3.14'
@@ -25,7 +25,7 @@
   os: ubuntu-latest
 
 4_1_x: &4_1_x
-  postgres-version: 18.1-alpine
+  postgres-version: 18.3-alpine
   spark-version: '4.1'
   pydantic-version: 2
   python-version: '3.14'

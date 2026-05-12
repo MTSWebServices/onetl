@@ -13,15 +13,15 @@ class BaseReadableFileFormat(ABC):
     """
     Representation of readable file format.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     @abstractmethod
     def check_if_supported(self, spark: SparkSession) -> None:
         """
-        Check if Spark session does support this file format. |support_hooks|
+        Check if Spark session does support this file format. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Raises
         ------
@@ -32,13 +32,13 @@ class BaseReadableFileFormat(ABC):
     @abstractmethod
     def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader:
         """
-        Apply provided format to :obj:`pyspark.sql.DataFrameReader`. |support_hooks|
+        Apply provided format to `pyspark.sql.DataFrameReader`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Returns
         -------
-        :obj:`pyspark.sql.DataFrameReader`
+        pyspark.sql.DataFrameReader
             DataFrameReader with options applied.
         """
 
@@ -47,15 +47,15 @@ class BaseWritableFileFormat(ABC):
     """
     Representation of writable file format.
 
-    .. versionadded:: 0.9.0
+    !!! success "Added in 0.9.0"
     """
 
     @abstractmethod
     def check_if_supported(self, spark: SparkSession) -> None:
         """
-        Check if Spark session does support this file format. |support_hooks|
+        Check if Spark session does support this file format. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Raises
         ------
@@ -66,12 +66,12 @@ class BaseWritableFileFormat(ABC):
     @abstractmethod
     def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter:
         """
-        Apply provided format to :obj:`pyspark.sql.DataFrameWriter`. |support_hooks|
+        Apply provided format to `pyspark.sql.DataFrameWriter`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Returns
         -------
-        :obj:`pyspark.sql.DataFrameWriter`
+        pyspark.sql.DataFrameWriter
             DataFrameWriter with options applied.
         """

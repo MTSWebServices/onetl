@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Generic, Iterable, TypeVar
 
 from humanize import naturalsize
+
+from onetl.base.path_protocol import PathProtocol
 
 try:
     from pydantic.v1 import Field, validator
@@ -24,8 +26,12 @@ from onetl.impl import BaseModel
 
 INDENT = " " * 4
 
+SuccessfulPath_co = TypeVar("SuccessfulPath_co", PurePathProtocol, PathProtocol, covariant=True)
+FailedPath_co = TypeVar("FailedPath_co", PurePathProtocol, PathProtocol, covariant=True)
+MissingPath_co = TypeVar("MissingPath_co", PurePathProtocol, PathProtocol, covariant=True)
 
-class FileResult(BaseModel):
+
+class FileResult(BaseModel, Generic[SuccessfulPath_co, FailedPath_co, MissingPath_co]):
     """
     Result of some file manipulation process, e.g. download, upload, etc.
 
@@ -37,16 +43,16 @@ class FileResult(BaseModel):
     * :obj`missing`
     """
 
-    successful: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    successful: FileSet[SuccessfulPath_co] = Field(default_factory=lambda: FileSet({}))
     "Successfully handled files"
 
-    failed: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    failed: FileSet[FailedPath_co] = Field(default_factory=lambda: FileSet({}))
     "File paths which were handled with some failures"
 
-    skipped: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    skipped: FileSet[SuccessfulPath_co] = Field(default_factory=lambda: FileSet({}))
     "File paths which were skipped because of some reason"
 
-    missing: FileSet[PurePathProtocol] = Field(default_factory=FileSet)
+    missing: FileSet[MissingPath_co] = Field(default_factory=lambda: FileSet({}))
     "Unknown paths which cannot be handled"
 
     @validator("successful", "failed", "skipped", "missing")
@@ -61,6 +67,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -68,6 +75,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.successful_count
         2
+        ```
         """
 
         return len(self.successful)
@@ -80,6 +88,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import RemoteFile
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -87,6 +96,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.failed_count
         2
+        ```
         """
 
         return len(self.failed)
@@ -99,6 +109,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -106,6 +117,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.skipped_count
         2
+        ```
         """
 
         return len(self.skipped)
@@ -118,6 +130,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -125,6 +138,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.missing_count
         2
+        ```
         """
 
         return len(self.missing)
@@ -137,6 +151,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import RemoteFile
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -147,6 +162,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.total_count
         6
+        ```
         """
 
         return self.successful_count + self.failed_count + self.missing_count + self.skipped_count
@@ -159,6 +175,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -166,6 +183,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.successful_size  # in bytes
         1024
+        ```
         """
 
         return self.successful.total_size
@@ -178,6 +196,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import RemoteFile, RemotePathStat
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -188,6 +207,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.failed_size  # in bytes
         2048
+        ```
         """
 
         return self.failed.total_size
@@ -200,6 +220,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -207,6 +228,7 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.skipped_size  # in bytes
         1024
+        ```
         """
 
         return self.skipped.total_size
@@ -219,6 +241,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import RemoteFile, RemotePathStat, LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -232,23 +255,25 @@ class FileResult(BaseModel):
         ... )
         >>> file_result.total_size  # in bytes
         4096
+        ```
         """
 
         return self.successful_size + self.failed_size + self.skipped_size
 
     def raise_if_failed(self) -> None:
         """
-        Raise exception if there are some files in ``failed`` attribute
+        Raise exception if there are some files in `failed` attribute
 
         Raises
         ------
         FailedFilesError
 
-            ``failed`` file set is not empty
+            `failed` file set is not empty
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import FailedRemoteFile, RemotePathStat
         >>> from onetl.exception import NotAFileError, FileMissingError
         >>> from onetl.file.file_result import FileResult
@@ -274,6 +299,7 @@ class FileResult(BaseModel):
         <BLANKLINE>
             '/remote/file2' (size='0 Bytes')
                 PermissionError("'/remote/file2': [Errno 13] Permission denied")
+        ```
         """
 
         if self.failed:
@@ -281,17 +307,18 @@ class FileResult(BaseModel):
 
     def raise_if_missing(self) -> None:
         """
-        Raise exception if there are some files in ``missing`` attribute
+        Raise exception if there are some files in `missing` attribute
 
         Raises
         ------
         MissingFilesError
 
-            ``missing`` file set is not empty
+            `missing` file set is not empty
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -306,6 +333,7 @@ class FileResult(BaseModel):
         onetl.exception.MissingFilesError: Missing 2 files:
             '/missing/file1'
             '/missing/file2'
+        ```
         """
 
         if self.missing:
@@ -313,17 +341,18 @@ class FileResult(BaseModel):
 
     def raise_if_skipped(self) -> None:
         """
-        Raise exception if there are some files in ``skipped`` attribute
+        Raise exception if there are some files in `skipped` attribute
 
         Raises
         ------
         SkippedFilesError
 
-            ``skipped`` file set is not empty
+            `skipped` file set is not empty
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult(
@@ -338,6 +367,7 @@ class FileResult(BaseModel):
         onetl.exception.SkippedFilesError: Skipped 2 files (15 kB):
             '/skipped/file1' (10kB)
             '/skipped/file2' (5 kB)
+        ```
         """
 
         if self.skipped:
@@ -345,17 +375,18 @@ class FileResult(BaseModel):
 
     def raise_if_contains_zero_size(self) -> None:
         """
-        Raise exception if ``successful`` attribute contains a file with zero size
+        Raise exception if `successful` attribute contains a file with zero size
 
         Raises
         ------
         ZeroFileSizeError
 
-            ``successful`` file set contains a file with zero size
+            `successful` file set contains a file with zero size
 
         Examples
         --------
 
+        ```python
         >>> from onetl.exception import ZeroFileSizeError
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
@@ -372,6 +403,7 @@ class FileResult(BaseModel):
         onetl.exception.ZeroFileSizeError: 2 files out of 3 have zero size:
             '/local/empty1.file'
             '/local/empty2.file'
+        ```
         """
 
         self.successful.raise_if_contains_zero_size()
@@ -379,11 +411,12 @@ class FileResult(BaseModel):
     @property
     def is_empty(self) -> bool:
         """
-        Returns ``True`` if there are no files in ``successful``, ``failed`` and ``skipped`` attributes
+        Returns `True` if there are no files in `successful`, `failed` and `skipped` attributes
 
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import LocalPath
         >>> from onetl.file.file_result import FileResult
         >>> file_result1 = FileResult()
@@ -394,29 +427,32 @@ class FileResult(BaseModel):
         ... )
         >>> file_result2.is_empty
         False
+        ```
         """
 
         return not self.failed and not self.successful and not self.skipped
 
     def raise_if_empty(self) -> None:
         """
-        Raise exception if there are no files in ``successful``, ``failed`` and ``skipped`` attributes
+        Raise exception if there are no files in `successful`, `failed` and `skipped` attributes
 
         Raises
         ------
         EmptyFilesError
 
-            ``successful``, ``failed`` and ``skipped`` file sets are empty
+            `successful`, `failed` and `skipped` file sets are empty
 
         Examples
         --------
 
+        ```python
         >>> from onetl.file.file_result import FileResult
         >>> file_result = FileResult()
         >>> file_result.raise_if_empty()
         Traceback (most recent call last):
             ...
         onetl.exception.EmptyFilesError: There are no files in the result
+        ```
         """
 
         if self.is_empty:
@@ -431,6 +467,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import FailedRemoteFile, LocalPath, RemoteFile, RemotePathStat
         >>> from onetl.exception import NotAFileError
         >>> from onetl.file.file_result import FileResult
@@ -474,7 +511,9 @@ class FileResult(BaseModel):
         Missing 2 files:
             '/missing/file2'
             '/missing/file1'
+        ```
 
+        ```python
         >>> file_result2 = FileResult()
         >>> print(file_result2.details)
         No successful files
@@ -484,6 +523,7 @@ class FileResult(BaseModel):
         No skipped files
         <BLANKLINE>
         No missing files
+        ```
         """
 
         result = []
@@ -506,6 +546,7 @@ class FileResult(BaseModel):
         Examples
         --------
 
+        ```python
         >>> from onetl.impl import FailedRemoteFile, LocalPath, RemoteFile, RemotePathStat
         >>> from onetl.exception import NotAFileError
         >>> from onetl.file.file_result import FileResult
@@ -539,15 +580,18 @@ class FileResult(BaseModel):
         Skipped: 2 files (size='0 Bytes')
         <BLANKLINE>
         Missing: 2 files
+        ```
 
+        ```python
         >>> file_result2 = FileResult()
         >>> print(file_result2.summary)
         No files
+        ```
         """
         return self._total_message
 
     def __str__(self):
-        """Same as :obj:`onetl.file.file_result.FileResult.details`"""
+        """Same as [onetl.file.file_result.FileResult.details][]"""
         return self.details
 
     @property

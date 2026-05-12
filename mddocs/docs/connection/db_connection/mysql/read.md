@@ -11,10 +11,10 @@
 - ✅︎ `columns`
 - ✅︎ `where`
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ✅︎ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ✅︎ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ✅︎ `hint` (see [official documentation](https://dev.mysql.com/doc/refman/en/optimizer-hints.html))
 - ❌ `df_schema`
 - ✅︎ `options` (see [MySQL.ReadOptions][onetl.connection.db_connection.mysql.options.MySQLReadOptions])
@@ -67,12 +67,12 @@ with IncrementalStrategy():
 
 ### Select only required columns { #DBR-onetl-connection-db-connection-mysql-read-select-only-required-columns }
 
-Instead of passing `"*"` in `DBReader(columns=[...])` prefer passing exact column names. This reduces the amount of data passed from Oracle to Spark.
+Instead of passing `"*"` in `DBReader(columns=[...])` prefer passing exact column names. This reduces the amount of data passed from MySQL to Spark.
 
 ### Pay attention to `where` value { #DBR-onetl-connection-db-connection-mysql-read-pay-attention-to-where-value }
 
 Instead of filtering data on Spark side using `df.filter(df.column == 'value')` pass proper `DBReader(where="column = 'value'")` clause.
-This both reduces the amount of data send from Oracle to Spark, and may also improve performance of the query.
+This both reduces the amount of data send from MySQL to Spark, and may also improve performance of the query.
 Especially if there are indexes for columns used in `where` clause.
 
 ## Options { #DBR-onetl-connection-db-connection-mysql-read-options }
@@ -80,6 +80,6 @@ Especially if there are indexes for columns used in `where` clause.
 
 ::: onetl.connection.db_connection.mysql.options.MySQLReadOptions
     options:
+        inherited_members: true
         members: true
-        heading_level: 3
         show_root_heading: true

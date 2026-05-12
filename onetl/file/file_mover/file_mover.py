@@ -6,7 +6,7 @@ import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Iterable, List, Optional, Tuple
+from typing import Generator, Iterable, List, Optional, Tuple, Union, cast
 
 from ordered_set import OrderedSet
 
@@ -16,8 +16,7 @@ except (ImportError, AttributeError):
     from pydantic import Field, PrivateAttr, validator  # type: ignore[no-redef, assignment]
 
 from onetl.base import BaseFileConnection, BaseFileFilter, BaseFileLimit
-from onetl.base.path_protocol import PathProtocol, PathWithStatsProtocol
-from onetl.base.pure_path_protocol import PurePathProtocol
+from onetl.base.path_protocol import PathProtocol
 from onetl.file.file_mover.options import FileMoverOptions
 from onetl.file.file_mover.result import MoveResult
 from onetl.file.file_set import FileSet
@@ -41,7 +40,7 @@ from onetl.log import (
 log = logging.getLogger(__name__)
 
 # source, target
-MOVE_ITEMS_TYPE = OrderedSet[Tuple[RemotePath, RemotePath]]
+MOVE_ITEMS_TYPE = OrderedSet[Tuple[Union[RemotePath, RemoteFile], RemotePath]]
 
 
 class FileMoveStatus(Enum):
@@ -54,95 +53,93 @@ class FileMoveStatus(Enum):
 @support_hooks
 class FileMover(FrozenModel):
     """Allows you to move files between different directories in a filesystem,
-    and return an object with move result summary. |support_hooks|
+    and return an object with move result summary. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    .. note::
+    !!! note
 
         This class is used to move files **only** within the same connection,
 
-        It does NOT support direct file transfer between filesystems, like ``FTP -> SFTP``.
-        You should use :ref:`file-downloader` + :ref:`file-uploader` to implement ``FTP -> local dir -> SFTP``.
+        It does NOT support direct file transfer between filesystems, like `FTP -> SFTP`.
+        You should use [file-downloader][] + [file-uploader][] to implement `FTP -> local dir -> SFTP`.
 
-    .. warning::
+    !!! warning
 
         This class does **not** support read strategies.
 
-    .. versionadded:: 0.8.0
+    !!! success "Added in 0.8.0"
 
     Parameters
     ----------
-    connection : :obj:`onetl.connection.FileConnection`
-        Class which contains File system connection properties. See :ref:`file-connections` section.
+    connection : FileConnection
+        Class which contains File system connection properties. See [file-connections][] section.
 
-    target_path : :obj:`os.PathLike` or :obj:`str`
+    target_path : `os.PathLike` or `str`
         Remote path to move files to
 
-    source_path : :obj:`os.PathLike` or :obj:`str`, optional, default: ``None``
+    source_path : `os.PathLike` or `str`, optional, default: `None`
         Remote path to move files from.
 
-        Could be ``None``, but only if you pass absolute file paths directly to
-        :obj:`~run` method
+        Could be `None`, but only if you pass absolute file paths directly to
+        [run][] method
 
-    filters : list of :obj:`BaseFileFilter <onetl.base.base_file_filter.BaseFileFilter>`
-        Return only files/directories matching these filters. See :ref:`file-filters`
+    filters : list of [BaseFileFilter][onetl.base.base_file_filter.BaseFileFilter]
+        Return only files/directories matching these filters. See [file-filters][]
 
-    limits : list of :obj:`BaseFileLimit <onetl.base.base_file_limit.BaseFileLimit>`
+    limits : list of [BaseFileLimit][onetl.base.base_file_limit.BaseFileLimit]
         Apply limits to the list of files/directories, and stop if one of the limits is reached.
-        See :ref:`file-limits`
+        See [file-limits][]
 
-    options : :obj:`~FileMover.Options`  | dict | None, default: ``None``
-        File moving options. See :obj:`FileMover.Options <onetl.file.file_mover.options.FileMoverOptions>`
+    options : [Options][]  | dict | None, default: `None`
+        File moving options. See [FileMover.Options][onetl.file.file_mover.options.FileMoverOptions]
 
     Examples
     --------
 
-    .. tabs::
+    === "Minimal example"
+        ```python
+        from onetl.connection import SFTP
+        from onetl.file import FileMover
 
-        .. code-tab:: py Minimal example
+        sftp = SFTP(...)
 
-            from onetl.connection import SFTP
-            from onetl.file import FileMover
+        # create mover
+        mover = FileMover(
+            connection=sftp,
+            source_path="/path/to/source/dir",
+            target_path="/path/to/target/dir",
+        )
 
-            sftp = SFTP(...)
+        # move files from "/path/to/source/dir" to "/path/to/target/dir"
+        mover.run()
+        ```
+    === "Full example"
+        ```python
+        from onetl.connection import SFTP
+        from onetl.file import FileMover
+        from onetl.file.filter import Glob, ExcludeDir
+        from onetl.file.limit import MaxFilesCount, TotalFilesSize
 
-            # create mover
-            mover = FileMover(
-                connection=sftp,
-                source_path="/path/to/source/dir",
-                target_path="/path/to/target/dir",
-            )
+        sftp = SFTP(...)
 
-            # move files from "/path/to/source/dir" to "/path/to/target/dir"
-            mover.run()
+        # create mover with a bunch of options
+        mover = FileMover(
+            connection=sftp,
+            source_path="/path/to/source/dir",
+            target_path="/path/to/target/dir",
+            filters=[
+                Glob("*.txt"),
+                ExcludeDir("/path/to/source/dir/exclude"),
+            ],
+            limits=[MaxFilesCount(100), TotalFileSize("10GiB")],
+            options=FileMover.Options(if_exists="replace_file"),
+        )
 
-        .. code-tab:: py Full example
-
-            from onetl.connection import SFTP
-            from onetl.file import FileMover
-            from onetl.file.filter import Glob, ExcludeDir
-            from onetl.file.limit import MaxFilesCount, TotalFilesSize
-
-            sftp = SFTP(...)
-
-            # create mover with a bunch of options
-            mover = FileMover(
-                connection=sftp,
-                source_path="/path/to/source/dir",
-                target_path="/path/to/target/dir",
-                filters=[
-                    Glob("*.txt"),
-                    ExcludeDir("/path/to/source/dir/exclude"),
-                ],
-                limits=[MaxFilesCount(100), TotalFileSize("10GiB")],
-                options=FileMover.Options(if_exists="replace_file"),
-            )
-
-            # move files from "/path/to/source/dir" to "/path/to/target/dir",
-            # but only *.txt files
-            # excluding files from "/path/to/source/dir/exclude" directory
-            # and stop before downloading 101 file
-            mover.run()
-
+        # move files from "/path/to/source/dir" to "/path/to/target/dir",
+        # but only *.txt files
+        # excluding files from "/path/to/source/dir/exclude" directory
+        # and stop before downloading 101 file
+        mover.run()
+        ```
     """
 
     Options = FileMoverOptions
@@ -162,43 +159,44 @@ class FileMover(FrozenModel):
     @slot
     def run(self, files: Iterable[str | os.PathLike] | None = None) -> MoveResult:
         """
-        Method for moving files from source to target directory. |support_hooks|
+        Method for moving files from source to target directory. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Parameters
         ----------
 
-        files : Iterable[str | os.PathLike] | None, default ``None``
+        files : Iterable[str | os.PathLike] | None, default `None`
             File list to move.
 
-            If empty, move files from ``source_path`` to ``target_path``,
-            applying ``filter`` and ``limit`` to each one (if set).
+            If empty, move files from `source_path` to `target_path`,
+            applying `filter` and `limit` to each one (if set).
 
-            If not, move to ``target_path`` **all** input files, **without**
+            If not, move to `target_path` **all** input files, **without**
             any filtering and limiting.
 
         Returns
         -------
-        :obj:`MoveResult <onetl.file.file_mover.move_result.MoveResult>`
+        [MoveResult][onetl.file.file_mover.move_result.MoveResult]
 
             Move result object
 
         Raises
         ------
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
 
-            ``source_path`` does not found
+            `source_path` does not found
 
         NotADirectoryError
 
-            ``source_path`` or ``target_path`` is not a directory
+            `source_path` or `target_path` is not a directory
 
         Examples
         --------
 
-        Move files from ``source_path``:
+        Move files from `source_path`:
 
+        ```python
         >>> from onetl.file import FileMover
         >>> mover = FileMover(source_path="/source", target_path="/target", ...)
         >>> move_result = mover.run()
@@ -220,9 +218,11 @@ class FileMover(FrozenModel):
                 RemotePath("/source/missing.file"),
             ]),
         )
+        ```
 
-        Move only certain files from ``source_path``:
+        Move only certain files from `source_path`:
 
+        ```python
         >>> from onetl.file import FileMover
         >>> mover = FileMover(source_path="/source", target_path="/target", ...)
         >>> # paths could be relative or absolute, but all should be in "/source"
@@ -244,9 +244,11 @@ class FileMover(FrozenModel):
             skipped=FileSet([]),
             missing=FileSet([]),
         )
+        ```
 
         Move certain files from any folder:
 
+        ```python
         >>> from onetl.file import FileMover
         >>> mover = FileMover(target_path="/target", ...)  # no source_path set
         >>> # only absolute paths
@@ -267,6 +269,7 @@ class FileMover(FrozenModel):
             skipped=FileSet([]),
             missing=FileSet([]),
         )
+        ```
         """
 
         entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
@@ -310,31 +313,32 @@ class FileMover(FrozenModel):
     @slot
     def view_files(self) -> FileSet[RemoteFile]:
         """
-        Get file list in the ``source_path``,
-        after ``filter`` and ``limit`` applied (if any). |support_hooks|
+        Get file list in the `source_path`,
+        after `filter` and `limit` applied (if any). [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. versionadded:: 0.8.0
+        !!! success "Added in 0.8.0"
 
         Raises
         ------
-        :obj:`onetl.exception.DirectoryNotFoundError`
+        [onetl.exception.DirectoryNotFoundError][]
 
-            ``source_path`` does not found
+            `source_path` does not found
 
         NotADirectoryError
 
-            ``source_path`` is not a directory
+            `source_path` is not a directory
 
         Returns
         -------
         FileSet[RemoteFile]
-            Set of files in ``source_path``, which will be moved by :obj:`~run` method
+            Set of files in `source_path`, which will be moved by [run][] method
 
         Examples
         --------
 
         View files:
 
+        ```python
         >>> from onetl.file import FileMover
         >>> mover = FileMover(source_path="/remote", ...)
         >>> mover.view_files()
@@ -343,6 +347,7 @@ class FileMover(FrozenModel):
             RemoteFile("/remote/file2.txt"),
             RemoteFile("/remote/nested/path/file3.txt"),
         ])
+        ```
         """
 
         if not self.source_path:
@@ -354,12 +359,12 @@ class FileMover(FrozenModel):
         if not self._connection_checked:
             self._check_source_path()
 
-        result = FileSet()
+        result: FileSet[RemoteFile] = FileSet()
 
         try:
             for _root, _dirs, files in self.connection.walk(self.source_path, filters=self.filters, limits=self.limits):
                 for file in files:
-                    result.append(file)
+                    result.append(cast("RemoteFile", file))
 
         except Exception as e:
             msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
@@ -389,7 +394,7 @@ class FileMover(FrozenModel):
         self,
         remote_files: Iterable[os.PathLike | str],
     ) -> MOVE_ITEMS_TYPE:
-        result = OrderedSet()
+        result: MOVE_ITEMS_TYPE = OrderedSet()
 
         for file in remote_files:
             remote_file_path = file if isinstance(file, PathProtocol) else RemotePath(file)
@@ -418,7 +423,7 @@ class FileMover(FrozenModel):
                 raise ValueError(msg)
 
             if not isinstance(old_file, PathProtocol) and self.connection.path_exists(old_file):
-                old_file = self.connection.resolve_file(old_file)
+                old_file = cast("RemoteFile", self.connection.resolve_file(old_file))
 
             result.add((old_file, new_file))
 
@@ -453,11 +458,11 @@ class FileMover(FrozenModel):
         result = MoveResult()
         for status, file in self._bulk_move(to_move):
             if status == FileMoveStatus.SUCCESSFUL:
-                result.successful.add(file)
+                result.successful.add(file)  # type: ignore[arg-type]
             elif status == FileMoveStatus.FAILED:
-                result.failed.add(file)
+                result.failed.add(file)  # type: ignore[arg-type]
             elif status == FileMoveStatus.SKIPPED:
-                result.skipped.add(file)
+                result.skipped.add(file)  # type: ignore[arg-type]
             elif status == FileMoveStatus.MISSING:
                 result.missing.add(file)
 
@@ -478,10 +483,9 @@ class FileMover(FrozenModel):
     def _bulk_move(
         self,
         to_move: MOVE_ITEMS_TYPE,
-    ) -> list[tuple[FileMoveStatus, PurePathProtocol | PathWithStatsProtocol]]:
+    ) -> Generator[tuple[FileMoveStatus, RemoteFile | FailedRemoteFile | RemotePath], None, None]:
         workers = self.options.workers
         files_count = len(to_move)
-        result = []
 
         real_workers = workers
         if files_count < workers:
@@ -502,29 +506,23 @@ class FileMover(FrozenModel):
                 futures = [
                     executor.submit(self._move_file, source_file, target_file) for source_file, target_file in to_move
                 ]
-                result = [future.result() for future in as_completed(futures)]
+                yield from (future.result() for future in as_completed(futures))
         else:
             log.debug("|%s| Using plain old for-loop", self.__class__.__name__)
-            for source_file, target_file in to_move:
-                result.append(
-                    self._move_file(
-                        source_file,
-                        target_file,
-                    ),
-                )
-
-        return result
+            yield from (self._move_file(source_file, target_file) for source_file, target_file in to_move)
 
     def _move_file(
         self,
-        source_file: RemotePath,
+        source_file: RemotePath | RemoteFile,
         target_file: RemotePath,
-    ) -> tuple[FileMoveStatus, PurePathProtocol | PathWithStatsProtocol]:
+    ) -> tuple[FileMoveStatus, RemoteFile | FailedRemoteFile | RemotePath]:
         log.info("|%s| Moving file '%s' to '%s'", self.__class__.__name__, source_file, target_file)
 
         if not self.connection.path_exists(source_file):
             log.warning("|%s| Missing file '%s', skipping", self.__class__.__name__, source_file)
             return FileMoveStatus.MISSING, source_file
+
+        source_file = cast("RemoteFile", source_file)
 
         try:
             replace = False

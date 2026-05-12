@@ -2,8 +2,9 @@
 
 include .env.local
 
-export SPARK_EXTERNAL_IP := $(shell docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
-VERSION = develop
+SPARK_EXTERNAL_IP := $(shell docker network inspect onetl_onetl --format '{{ (index .IPAM.Config 0).Gateway }}')
+VERSION := $(shell cat onetl/VERSION)
+DATE := $(shell date --rfc-3339=date)
 SPARK_VERSION ?= 3.5
 VIRTUAL_ENV ?= .venv
 PYTHON = ${VIRTUAL_ENV}/bin/python
@@ -101,12 +102,29 @@ test-doctest: ##@Run documentation tests
 docs: docs-build docs-open ##@Docs Generate & open docs
 
 docs-build: ##@Docs Generate docs
-	$(MAKE) -C docs html
+	DISABLE_MKDOCS_2_WARNING=true mkdocs build -f mddocs/mkdocs.yml
 
 docs-open: ##@Docs Open docs
-	xdg-open docs/_build/html/index.html
+	xdg-open mddocs/generated/index.html
 
 docs-cleanup: ##@Docs Cleanup docs
-	$(MAKE) -C docs clean
+	rm -rf mddocs/generated/
 
 docs-fresh: docs-cleanup docs-build ##@Docs Cleanup & build docs
+
+docs-serve: ##@Docs Run docs server
+	DISABLE_MKDOCS_2_WARNING=true mkdocs serve -f mddocs/mkdocs.yml
+
+docs-generate-changelog: ##@Docs Generate changelog
+	echo "Building changelog for ${VERSION}"
+	cp "mddocs/docs/changelog/RELEASE_TEMPLATE.md" "mddocs/docs/changelog/temp_RELEASE_TEMPLATE.md"
+	towncrier build "--version=${VERSION}" --yes
+	mv "mddocs/docs/changelog/RELEASE_TEMPLATE.md" "mddocs/docs/changelog/${VERSION}.md"
+	mv "mddocs/docs/changelog/temp_RELEASE_TEMPLATE.md" "mddocs/docs/changelog/RELEASE_TEMPLATE.md"
+
+	# Remove content above the version number heading in the `${VERSION}.md` file
+	awk '/##/,0' "mddocs/docs/changelog/${VERSION}.md" > temp && mv temp "mddocs/docs/changelog/${VERSION}.md"
+
+	# Update Changelog Index and Navigation
+	sed "s#\(.*NEXT_RELEASE.*\)#\1\n- [${VERSION} (${DATE})][DBR-onetl-changelog-${VERSION_ANCHOR}]#" "mddocs/docs/changelog/index.md" > temp && mv temp "mddocs/docs/changelog/index.md"
+	sed "s#\(.*NEXT_RELEASE.*\)#\1\n    * [${VERSION}](changelog/${VERSION}.md)#" "mddocs/docs/nav.md" > temp && mv temp "mddocs/docs/nav.md"

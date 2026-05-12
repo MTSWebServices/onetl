@@ -16,6 +16,7 @@ class SparkTypeToHWM:
     Examples
     --------
 
+    ```python
     >>> from etl_entities.hwm import ColumnIntHWM, ColumnDateHWM
     >>> from pyspark.sql.types import IntegerType, ShortType, DateType, StringType
     >>> from onetl.hwm.store import SparkTypeToHWM
@@ -27,6 +28,8 @@ class SparkTypeToHWM:
     >>> SparkTypeToHWM.get(DateType())
     <class 'etl_entities.hwm.column.date_hwm.ColumnDateHWM'>
     >>> SparkTypeToHWM.get(StringType())
+
+    ```
     """
 
     _mapping: ClassVar[dict[DataType | type[DataType], type[HWM]]] = {}
@@ -82,6 +85,7 @@ def register_spark_type_to_hwm_type_mapping(*spark_types: DataType | type[DataTy
     Examples
     --------
 
+    ```python
     >>> from etl_entities.hwm import ColumnHWM
     >>> from onetl.hwm.store import SparkTypeToHWM
     >>> from onetl.hwm.store import SparkTypeToHWM, register_spark_type_to_hwm_type_mapping
@@ -94,6 +98,8 @@ def register_spark_type_to_hwm_type_mapping(*spark_types: DataType | type[DataTy
     <class 'onetl.hwm.store.hwm_class_registry.MyHWM'>
     >>> SparkTypeToHWM.get(DecimalType(38, 10))
     <class 'etl_entities.hwm.column.int_hwm.ColumnIntHWM'>
+
+    ```
     """
 
     def wrapper(cls: type[HWM]):

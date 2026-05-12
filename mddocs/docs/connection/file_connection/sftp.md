@@ -3,8 +3,8 @@
 
 ::: onetl.connection.file_connection.sftp.SFTP
     options:
+        show_root_heading: true
         members:
-            - __init__
             - check
             - path_exists
             - is_file
@@ -21,3 +21,14 @@
             - walk
             - download_file
             - upload_file
+
+::: onetl.connection.file_connection.sftp.SFTPExtra
+    options:
+        show_root_heading: true
+        members:
+          - host_key_check
+          - timeout
+          - banner_timeout
+          - auth_timeout
+          - channel_timeout
+          - compress

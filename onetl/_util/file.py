@@ -6,8 +6,11 @@ import hashlib
 import io
 import os
 from datetime import datetime
-from pathlib import Path, PurePath
+from pathlib import Path
+from typing import TypeVar
 
+from onetl.base.path_protocol import PathProtocol
+from onetl.base.pure_path_protocol import PurePathProtocol
 from onetl.exception import NotAFileError
 from onetl.impl import path_repr
 
@@ -50,7 +53,10 @@ def is_file_readable(path: str | os.PathLike) -> Path:
     return path
 
 
-def generate_temp_path(root: PurePath) -> PurePath:
+T = TypeVar("T", PurePathProtocol, PathProtocol)
+
+
+def generate_temp_path(root: T) -> T:
     """
     Returns prefix which will be used for creating temp directory
 
@@ -62,6 +68,7 @@ def generate_temp_path(root: PurePath) -> PurePath:
     Examples
     --------
 
+    ```python
     >>> from etl_entities.process import Process
     >>> from pathlib import Path
     >>> generate_temp_path(Path("/tmp")) # doctest: +SKIP
@@ -69,6 +76,8 @@ def generate_temp_path(root: PurePath) -> PurePath:
     >>> with Process(dag="mydag", task="mytask"): # doctest: +SKIP
     ...    generate_temp_path(Path("/abc"))
     Path("/abc/onetl/currenthost/mydag.mytask.myprocess/20230524122150")
+
+    ```
     """
 
     from etl_entities.process import ProcessStackManager

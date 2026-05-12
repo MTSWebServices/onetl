@@ -12,7 +12,7 @@ from onetl.hwm.window import Window
 @runtime_checkable
 class ContainsGetMinMaxValues(Protocol):
     """
-    Protocol for objects containing ``get_min_max_values`` method
+    Protocol for objects containing `get_min_max_values` method
     """
 
     def get_min_max_values(
@@ -23,5 +23,5 @@ class ContainsGetMinMaxValues(Protocol):
         where: Any | None = None,
     ) -> tuple[Any, Any]:
         """
-        Get MIN and MAX values for the column in the source. |support_hooks|
+        Get MIN and MAX values for the column in the source. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
         """

@@ -12,7 +12,7 @@ MongoDB is, by design, \_\_schemaless\_\_. So there are 2 ways how this can be h
 
 - User provides DataFrame schema explicitly:
 
-??? note "See example"
+??? example
 
     ```python
     from onetl.connection import MongoDB
@@ -72,8 +72,8 @@ It is highly recommended to pass `df_schema` explicitly, to avoid type conversio
 
 Here you can find source code with type conversions:
 
-- [MongoDB -> Spark](https://github.com/mongodb/mongo-spark/blob/r10.5.0/src/main/java/com/mongodb/spark/sql/connector/schema/InferSchema.java#L214-L260)
-- [Spark -> MongoDB](https://github.com/mongodb/mongo-spark/blob/r10.5.0/src/main/java/com/mongodb/spark/sql/connector/schema/RowToBsonDocumentConverter.java#L157-L260)
+- [MongoDB -> Spark](https://github.com/mongodb/mongo-spark/blob/r10.6.1/src/main/java/com/mongodb/spark/sql/connector/schema/InferSchema.java#L214-L260)
+- [Spark -> MongoDB](https://github.com/mongodb/mongo-spark/blob/r10.6.1/src/main/java/com/mongodb/spark/sql/connector/schema/RowToBsonDocumentConverter.java#L164-L278)
 
 ## Supported types { #DBR-onetl-connection-db-connection-mongodb-types-supported-types }
 
@@ -159,51 +159,51 @@ Currently it is not possible to cast field types using `DBReader`. But this can 
 
 You can use `$project` aggregation to cast field types:
 
-    ```python
-        from pyspark.sql.types import IntegerType, StructField, StructType
+```python
+from pyspark.sql.types import IntegerType, StructField, StructType
 
-        from onetl.connection import MongoDB
-        from onetl.db import DBReader
+from onetl.connection import MongoDB
+from onetl.db import DBReader
 
-        mongodb = MongoDB(...)
+mongodb = MongoDB(...)
 
-        df = mongodb.pipeline(
-            collection="my_collection",
-            pipeline=[
-                {
-                    "$project": {
-                        # convert unsupported_field to string
-                        "unsupported_field_str": {
-                            "$convert": {
-                                "input": "$unsupported_field",
-                                "to": "string",
-                            },
-                        },
-                        # skip unsupported_field from result
-                        "unsupported_field": 0,
-                    }
-                }
-            ],
-        )
+df = mongodb.pipeline(
+    collection="my_collection",
+    pipeline=[
+        {
+            "$project": {
+                # convert unsupported_field to string
+                "unsupported_field_str": {
+                    "$convert": {
+                        "input": "$unsupported_field",
+                        "to": "string",
+                    },
+                },
+                # skip unsupported_field from result
+                "unsupported_field": 0,
+            }
+        }
+    ],
+)
 
-        # cast field content to proper Spark type
-        df = df.select(
-            df.id,
-            df.supported_field,
-            # explicit cast
-            df.unsupported_field_str.cast("integer").alias("parsed_integer"),
-        )
-    ```
+# cast field content to proper Spark type
+df = df.select(
+    df.id,
+    df.supported_field,
+    # explicit cast
+    df.unsupported_field_str.cast("integer").alias("parsed_integer"),
+)
+```
 
 ### `DBWriter` { #DBR-onetl-connection-db-connection-mongodb-types-dbwriter }
 
 Convert dataframe field to string on Spark side, and then write it to MongoDB:
 
-    ```python
-        df = df.select(
-            df.id,
-            df.unsupported_field.cast("string").alias("array_field_json"),
-        )
+```python
+df = df.select(
+    df.id,
+    df.unsupported_field.cast("string").alias("array_field_json"),
+)
 
-        writer.run(df)
-    ```
+writer.run(df)
+```

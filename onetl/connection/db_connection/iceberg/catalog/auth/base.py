@@ -9,7 +9,7 @@ class IcebergRESTCatalogAuth(ABC):
     """
     Base Iceberg catalog auth interface.
 
-    .. versionadded:: 0.15.0
+    !!! success "Added in 0.15.0"
     """
 
     @abstractmethod

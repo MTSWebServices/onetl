@@ -43,3 +43,45 @@ def test_ftp_connection_without_mandatory_args():
 
     with pytest.raises(ValueError):
         FTP()
+
+
+def test_ftp_connection_with_extra():
+    from onetl.connection import FTP
+
+    conn = FTP(
+        host="some_host",
+        user="some_user",
+        password="pwd",
+    )
+    assert conn.extra.use_passive_mode is None
+    assert conn.extra.encoding == "utf-8"
+
+    conn = FTP(
+        host="some_host",
+        user="some_user",
+        password="pwd",
+        extra=FTP.Extra(
+            use_passive_mode=True,
+            encoding="cp1251",
+            something="abc",
+        ),
+    )
+
+    assert conn.extra.use_passive_mode is True
+    assert conn.extra.encoding == "cp1251"
+    assert conn.extra.something == "abc"
+
+    conn = FTP(
+        host="some_host",
+        user="some_user",
+        password="pwd",
+        extra={
+            "use_passive_mode": True,
+            "encoding": "cp1251",
+            "something": "abc",
+        },
+    )
+
+    assert conn.extra.use_passive_mode is True
+    assert conn.extra.encoding == "cp1251"
+    assert conn.extra.something == "abc"

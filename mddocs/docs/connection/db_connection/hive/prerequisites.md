@@ -10,8 +10,8 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-hive-prerequisites-version-compatibility }
 
 - Hive Metastore version:
-  - Officially declared: 0.12 - 3.1.3 (may require to add proper .jar file explicitly)
-  - Actually tested: 1.2.100, 2.3.10, 3.1.3
+    - Officially declared: 0.12 - 3.1.3 (may require to add proper .jar file explicitly)
+    - Actually tested: 1.2.100, 2.3.10, 3.1.3
 - Spark versions: 3.2.x - 4.1.x
 - Java versions: 8 - 22
 

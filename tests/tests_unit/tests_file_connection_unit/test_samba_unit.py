@@ -48,3 +48,58 @@ def test_samba_connection_without_mandatory_args():
 
     with pytest.raises(ValueError):
         Samba()
+
+
+def test_samba_connection_with_extra():
+    from onetl.connection import Samba
+
+    conn = Samba(
+        host="some_host",
+        share="share_name",
+        user="some_user",
+        password="pwd",
+    )
+    assert conn.extra.connect_timeout == 60
+    assert conn.extra.operation_timeout == 30
+    assert conn.extra.my_name == "onetl"
+    assert conn.extra.sign_options == 2
+
+    conn = Samba(
+        host="some_host",
+        share="share_name",
+        user="some_user",
+        password="pwd",
+        extra=Samba.Extra(
+            connect_timeout=10,
+            operation_timeout=10,
+            my_name="abc",
+            sign_options=1,
+            something="cde",
+        ),
+    )
+
+    assert conn.extra.connect_timeout == 10
+    assert conn.extra.operation_timeout == 10
+    assert conn.extra.my_name == "abc"
+    assert conn.extra.sign_options == 1
+    assert conn.extra.something == "cde"
+
+    conn = Samba(
+        host="some_host",
+        share="share_name",
+        user="some_user",
+        password="pwd",
+        extra={
+            "connect_timeout": 10,
+            "operation_timeout": 10,
+            "my_name": "abc",
+            "sign_options": 1,
+            "something": "cde",
+        },
+    )
+
+    assert conn.extra.connect_timeout == 10
+    assert conn.extra.operation_timeout == 10
+    assert conn.extra.my_name == "abc"
+    assert conn.extra.sign_options == 1
+    assert conn.extra.something == "cde"

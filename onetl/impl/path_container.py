@@ -14,13 +14,13 @@ PurePath = TypeVar("PurePath", bound=PurePathProtocol)
 @dataclass(eq=False, frozen=True)
 class PathContainer(Generic[PurePath]):
     """
-    Read-only container for ``pathlib.PurePath``-like classes with some custom logic.
+    Read-only container for `pathlib.PurePath`-like classes with some custom logic.
 
-    This is need to avoid creating objects of current class using ``PurePath``-like methods
-    (e.g. ``path.with_name("new_name")``) or operators (e.g. ``path / "sub_path"``).
+    This is need to avoid creating objects of current class using `PurePath`-like methods
+    (e.g. `path.with_name("new_name")`) or operators (e.g. `path / "sub_path"`).
 
-    It proxies all the method calls and operators to the underlying ``path`` field,
-    so every method or operator returns new object of the same class as ``path`` field, without any magic.
+    It proxies all the method calls and operators to the underlying `path` field,
+    so every method or operator returns new object of the same class as `path` field, without any magic.
     """
 
     path: PurePath

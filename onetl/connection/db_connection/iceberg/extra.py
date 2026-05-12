@@ -9,7 +9,7 @@ class IcebergExtra(GenericOptions):
     to the Iceberg connection. These extra options are configurations that can be provided to the
     Iceberg, which aren't part of the core connection options.
 
-    See `documentation <https://iceberg.apache.org/docs/latest/spark-configuration/>`_
+    See [documentation](https://iceberg.apache.org/docs/latest/spark-configuration/)
     for more details
     """
 

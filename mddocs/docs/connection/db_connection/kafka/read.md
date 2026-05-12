@@ -8,10 +8,10 @@ It also supports [strategy][DBR-onetl-strategy-read-strategies] for incremental 
 - ❌ `columns` (is not supported by Kafka)
 - ❌ `where` (is not supported by Kafka)
 - ✅︎ `hwm`, supported strategies:
-  - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
-  - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
-  - ❌ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
-  - ❌ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
+    - ✅︎ [Snapshot strategy][DBR-onetl-strategy-snapshot-strategy]
+    - ✅︎ [Incremental strategy][DBR-onetl-connection-db-connection-clickhouse-read-incremental-strategy]
+    - ❌ [Snapshot batch strategy][DBR-onetl-strategy-snapshot-batch-strategy]
+    - ❌ [Incremental batch strategy][DBR-onetl-strategy-incremental-batch-strategy]
 - ❌ `hint` (is not supported by Kafka)
 - ❌ `df_schema` (see note below)
 - ✅︎ `options` (see [Kafka.ReadOptions][onetl.connection.db_connection.kafka.options.KafkaReadOptions])
@@ -134,5 +134,4 @@ deserialized_df = read_df.select(
 ::: onetl.connection.db_connection.kafka.options.KafkaReadOptions
     options:
         inherited_members: true
-        heading_level: 3
         show_root_heading: true

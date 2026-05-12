@@ -79,30 +79,30 @@ class GreenplumExtra(GenericOptions):
 @support_hooks
 @deprecated("Deprecated in 0.15.1 and will be removed in 1.0.0", category=None)
 class Greenplum(JDBCMixin, DBConnection):
-    """Greenplum connection. |support_hooks|
+    """Greenplum connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on package ``io.pivotal:greenplum-spark:2.2.0``
-    (`VMware Greenplum connector for Spark <https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/index.html>`_).
+    Based on package `io.pivotal:greenplum-spark:2.2.0`
+    ([VMware Greenplum connector for Spark](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/index.html)).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`greenplum-prerequisites`
+        Before using this connector please take into account [greenplum-prerequisites][]
 
-    .. versionadded:: 0.5.0
+    !!! success "Added in 0.5.0"
 
-    .. deprecated:: 0.15.1
+    !!! warning "Deprecated since 0.15.1"
         Pivotal connector cannot be downloaded anymore
 
     Parameters
     ----------
     host : str
-        Host of Greenplum master. For example: ``test.greenplum.domain.com`` or ``193.168.1.17``
+        Host of Greenplum master. For example: `test.greenplum.domain.com` or `193.168.1.17`
 
-    port : int, default: ``5432``
+    port : int, default: `5432`
         Port of Greenplum master
 
     user : str
-        User, which have proper access to the database. For example: ``some_user``
+        User, which have proper access to the database. For example: `some_user`
 
     password : str
         Password for database connection
@@ -110,59 +110,59 @@ class Greenplum(JDBCMixin, DBConnection):
     database : str
         Database in RDBMS, NOT schema.
 
-        See `this page <https://www.educba.com/postgresql-database-vs-schema/>`_ for more details
+        See [this page](https://www.educba.com/postgresql-database-vs-schema/) for more details
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"tcpKeepAlive": "true", "server.port": "50000-65535"}``
+        For example: `{"tcpKeepAlive": "true", "server.port": "50000-65535"}`
 
         Supported options are:
-            * All `Postgres JDBC driver properties <https://jdbc.postgresql.org/documentation/use/>`_
-            * Properties from `Greenplum connector for Spark documentation <https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html>`_ page,
-              but only starting with ``server.`` or ``pool.``
+            * All [Postgres JDBC driver properties](https://jdbc.postgresql.org/documentation/use/)
+            * Properties from [Greenplum connector for Spark documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html) page,
+              but only starting with `server.` or `pool.`
 
     Examples
     --------
 
     Create and check Greenplum connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Greenplum
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import Greenplum
-        from pyspark.sql import SparkSession
-
-        # Create Spark session with Greenplum connector loaded
-        maven_packages = Greenplum.get_packages(spark_version="3.2")
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .config("spark.executor.allowSparkContext", "true")
-            # IMPORTANT!!!
-            # Set number of executors according to "Prerequisites" -> "Number of executors"
-            .config("spark.dynamicAllocation.maxExecutors", 10)
-            .config("spark.executor.cores", 1)
-            .getOrCreate()
-        )
-
+    # Create Spark session with Greenplum connector loaded
+    maven_packages = Greenplum.get_packages(spark_version="3.2")
+    spark = (
+        SparkSession.builder.appName("spark-app-name")
+        .config("spark.jars.packages", ",".join(maven_packages))
+        .config("spark.executor.allowSparkContext", "true")
         # IMPORTANT!!!
-        # Set port range of executors according to "Prerequisites" -> "Network ports"
-        extra = {
-            "server.port": "41000-42000",
-        }
+        # Set number of executors according to "Prerequisites" -> "Number of executors"
+        .config("spark.dynamicAllocation.maxExecutors", 10)
+        .config("spark.executor.cores", 1)
+        .getOrCreate()
+    )
 
-        # Create connection
-        greenplum = Greenplum(
-            host="master.host.or.ip",
-            user="user",
-            password="*****",
-            database="target_database",
-            extra=extra,
-            spark=spark,
-        ).check()
+    # IMPORTANT!!!
+    # Set port range of executors according to "Prerequisites" -> "Network ports"
+    extra = {
+        "server.port": "41000-42000",
+    }
+
+    # Create connection
+    greenplum = Greenplum(
+        host="master.host.or.ip",
+        user="user",
+        password="*****",
+        database="target_database",
+        extra=extra,
+        spark=spark,
+    ).check()
+    ```
     """  # noqa: E501
 
     host: Host
@@ -201,41 +201,40 @@ class Greenplum(JDBCMixin, DBConnection):
         package_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        .. warning::
+        !!! warning
 
-            You should pass either ``scala_version`` or ``spark_version``.
+            You should pass either `scala_version` or `spark_version`.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         scala_version : str, optional
-            Scala version in format ``major.minor``.
+            Scala version in format `major.minor`.
 
-            If ``None``, ``spark_version`` is used to determine Scala version.
+            If `None`, `spark_version` is used to determine Scala version.
 
         spark_version : str, optional
-            Spark version in format ``major.minor``.
+            Spark version in format `major.minor`.
 
-            Used only if ``scala_version=None``.
+            Used only if `scala_version=None`.
 
-        package_version : str, optional, default ``2.2.0``
-            Package version in format ``major.minor.patch``
+        package_version : str, optional, default `2.2.0`
+            Package version in format `major.minor.patch`
 
-            .. versionadded:: 0.10.1
+            !!! success "Added in 0.10.1"
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Greenplum
 
-            from onetl.connection import Greenplum
-
-            Greenplum.get_packages(scala_version="2.12")
-            Greenplum.get_packages(spark_version="3.2", package_version="2.3.0")
-
+        Greenplum.get_packages(scala_version="2.12")
+        Greenplum.get_packages(spark_version="3.2", package_version="2.3.0")
+        ```
         """
 
         # Connector version is fixed, so we can perform checks for Scala/Spark version

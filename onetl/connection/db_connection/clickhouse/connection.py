@@ -37,27 +37,27 @@ class ClickhouseExtra(GenericOptions):
 
 @support_hooks
 class Clickhouse(JDBCConnection):
-    """Clickhouse JDBC connection. |support_hooks|
+    """Clickhouse JDBC connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on Maven package `com.clickhouse:clickhouse-jdbc:0.7.2 <https://mvnrepository.com/artifact/com.clickhouse/clickhouse-jdbc/0.7.2>`_
-    (`official Clickhouse JDBC driver <https://github.com/ClickHouse/clickhouse-jdbc>`_).
+    Based on Maven package [com.clickhouse:clickhouse-jdbc:0.7.2](https://mvnrepository.com/artifact/com.clickhouse/clickhouse-jdbc/0.7.2)
+    ([official Clickhouse JDBC driver](https://github.com/ClickHouse/clickhouse-jdbc)).
 
-    .. seealso::
+    !!! info "See also"
 
-        Before using this connector please take into account :ref:`clickhouse-prerequisites`
+        Before using this connector please take into account [clickhouse-prerequisites][]
 
-    .. versionadded:: 0.1.0
+    !!! success "Added in 0.1.0"
 
     Parameters
     ----------
     host : str
-        Host of Clickhouse database. For example: ``test.clickhouse.domain.com`` or ``193.168.1.11``
+        Host of Clickhouse database. For example: `test.clickhouse.domain.com` or `193.168.1.11`
 
-    port : int, default: ``8123``
+    port : int, default: `8123`
         Port of Clickhouse database
 
     user : str
-        User, which have proper access to the database. For example: ``some_user``
+        User, which have proper access to the database. For example: `some_user`
 
     password : str
         Password for database connection
@@ -65,47 +65,46 @@ class Clickhouse(JDBCConnection):
     database : str, optional
         Database (==schema) in Clickhouse.
 
-    spark : :obj:`pyspark.sql.SparkSession`
+    spark : `pyspark.sql.SparkSession`
         Spark session.
 
-    extra : dict, default: ``None``
+    extra : dict, default: `None`
         Specifies one or more extra parameters by which clients can connect to the instance.
 
-        For example: ``{"continueBatchOnError": "false"}``.
+        For example: `{"continueBatchOnError": "false"}`.
 
         See:
-            * `Clickhouse JDBC driver properties documentation <https://clickhouse.com/docs/en/integrations/java#configuration>`_
-            * `Clickhouse core settings documentation <https://clickhouse.com/docs/en/operations/settings/settings>`_
-            * `Clickhouse query complexity documentation <https://clickhouse.com/docs/en/operations/settings/query-complexity>`_
-            * `Clickhouse query level settings <https://clickhouse.com/docs/en/operations/settings/query-level>`_
+            * [Clickhouse JDBC driver properties documentation](https://clickhouse.com/docs/en/integrations/java#configuration)
+            * [Clickhouse core settings documentation](https://clickhouse.com/docs/en/operations/settings/settings)
+            * [Clickhouse query complexity documentation](https://clickhouse.com/docs/en/operations/settings/query-complexity)
+            * [Clickhouse query level settings](https://clickhouse.com/docs/en/operations/settings/query-level)
 
     Examples
     --------
 
     Create and check Clickhouse connection:
 
-    .. code:: python
+    ```python
+    from onetl.connection import Clickhouse
+    from pyspark.sql import SparkSession
 
-        from onetl.connection import Clickhouse
-        from pyspark.sql import SparkSession
+    # Create Spark session with Clickhouse driver loaded
+    maven_packages = Clickhouse.get_packages()
+    spark = (
+        SparkSession.builder.appName("spark-app-name")
+        .config("spark.jars.packages", ",".join(maven_packages))
+        .getOrCreate()
+    )
 
-        # Create Spark session with Clickhouse driver loaded
-        maven_packages = Clickhouse.get_packages()
-        spark = (
-            SparkSession.builder.appName("spark-app-name")
-            .config("spark.jars.packages", ",".join(maven_packages))
-            .getOrCreate()
-        )
-
-        # Create connection
-        clickhouse = Clickhouse(
-            host="database.host.or.ip",
-            user="user",
-            password="*****",
-            extra={"continueBatchOnError": "false"},
-            spark=spark,
-        ).check()
-
+    # Create connection
+    clickhouse = Clickhouse(
+        host="database.host.or.ip",
+        user="user",
+        password="*****",
+        extra={"continueBatchOnError": "false"},
+        spark=spark,
+    ).check()
+    ```
     """
 
     host: Host
@@ -132,39 +131,39 @@ class Clickhouse(JDBCConnection):
         apache_http_client_version: str | None = None,
     ) -> list[str]:
         """
-        Get package names to be downloaded by Spark. |support_hooks|
+        Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
         Allows specifying custom JDBC and Apache HTTP Client versions.
 
-        .. versionadded:: 0.9.0
+        !!! success "Added in 0.9.0"
 
         Parameters
         ----------
         package_version : str, optional
-            ClickHouse JDBC version client packages. Defaults to ``0.7.2``.
+            ClickHouse JDBC version client packages. Defaults to `0.7.2`.
 
             Versions 0.8.0-0.9.2 are not supported,
-            see `issue #2625 <https://github.com/ClickHouse/clickhouse-java/issues/2625>`_.
+            see [issue #2625](https://github.com/ClickHouse/clickhouse-java/issues/2625).
 
-            .. versionadded:: 0.11.0
+            !!! success "Added in 0.11.0"
 
         apache_http_client_version : str, optional
-            Apache HTTP Client version package. Defaults to ``5.4.2``.
+            Apache HTTP Client version package. Defaults to `5.4.2`.
 
-            Used only if ``package_version`` is in range ``0.5.0-0.7.0``.
+            Used only if `package_version` is in range `0.5.0-0.7.0`.
 
-            .. versionadded:: 0.11.0
+            !!! success "Added in 0.11.0"
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import Clickhouse
 
-            from onetl.connection import Clickhouse
-
-            Clickhouse.get_packages()
-            Clickhouse.get_packages(package_version="0.7.2")
-            Clickhouse.get_packages(package_version="0.6.0", apache_http_client_version="5.4.2")
+        Clickhouse.get_packages()
+        Clickhouse.get_packages(package_version="0.7.2")
+        Clickhouse.get_packages(package_version="0.6.0", apache_http_client_version="5.4.2")
+        ```
         """
 
         # 0.9.3+ is not a default due to performance issues: https://github.com/ClickHouse/clickhouse-java/issues/2516

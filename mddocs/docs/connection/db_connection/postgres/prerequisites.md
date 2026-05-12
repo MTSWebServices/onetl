@@ -3,12 +3,12 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-postgres-prerequisites-version-compatibility }
 
 - PostgreSQL server versions:
-  - Officially declared: 8.4 - 18
-  - Actually tested: 9.4.26, 18.1
+    - Officially declared: 9.1 - 18
+    - Actually tested: 9.4.26, 18.3
 - Spark versions: 3.2.x - 4.1.x
 - Java versions: 8 - 22
 
-See [official documentation](https://jdbc.postgresql.org/).
+See [official documentation](https://jdbc.postgresql.org/download/).
 
 ## Installing PySpark { #DBR-onetl-connection-db-connection-postgres-prerequisites-installing-pyspark }
 

@@ -103,17 +103,17 @@ repos:
         priority: 8
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.6
+    rev: 0.11.13
     hooks:
       - id: uv-lock
         priority: 8
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.10
+    rev: v0.15.12
     hooks:
       - id: ruff-format
         priority: 8
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
         priority: 9
 
@@ -130,7 +130,21 @@ repos:
         name: towncrier
         entry: towncrier build --draft
         language: system
-        types: [rst]
+        types: [markdown]
+        pass_filenames: false
+        priority: 8
+      - id: links2anchors
+        name: links2anchors
+        entry: python mddocs/scripts/links2anchors.py
+        language: system
+        types: [markdown]
+        pass_filenames: false
+        priority: 8
+      - id: generate_anchors
+        name: generate_anchors
+        entry: python mddocs/scripts/generate_anchors.py
+        language: system
+        types: [markdown]
         pass_filenames: false
         priority: 8
 

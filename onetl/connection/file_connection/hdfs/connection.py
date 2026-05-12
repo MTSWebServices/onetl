@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import os
 import textwrap
+import warnings
 from contextlib import suppress
 from logging import getLogger
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, cast
 
 from etl_entities.instance import Cluster, Host
+
+from onetl.impl.generic_options import GenericOptions
 
 try:
     from pydantic.v1 import (
@@ -40,6 +43,10 @@ from onetl.impl import LocalPath, RemotePath, RemotePathStat
 
 try:
     from hdfs import Client, InsecureClient  # noqa: F401
+    from requests import Session
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+    from urllib3.util.timeout import Timeout
 
     if TYPE_CHECKING:
         from hdfs.ext.kerberos import KerberosClient  # noqa: F401
@@ -62,143 +69,185 @@ log = getLogger(__name__)
 ENTRY_TYPE = Tuple[str, dict]
 
 
+class HDFSExtra(GenericOptions):
+    """
+    Extra options for HDFS connection.
+
+    You can pass here any parameters supported by [hdfs.client.Client](https://hdfscli.readthedocs.io/en/latest/api.html#hdfs.client.Client),
+    **without** `webdav_` prefix.
+
+    Parameters
+    ---------
+    timeout : urllib3.util.timeout.Timeout, optional
+        Timeout for requests,  see [urllib3 documentation](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Timeout).
+    retry : urllib3.util.retry.Retry, optional
+        Retry for requests, see [urllib3 documentation](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry).
+    """
+
+    timeout: Timeout = Timeout(connect=10, read=60)
+    retry: Retry = Retry.DEFAULT
+
+    class Config:
+        extra = "allow"
+
+
 @support_hooks
 class HDFS(FileConnection, RenameDirMixin):
-    """HDFS file connection. |support_hooks|
+    """HDFS file connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Powered by `HDFS Python client <https://pypi.org/project/hdfs/>`_.
+    Powered by [HDFS Python client](https://pypi.org/project/hdfs/).
 
-    .. warning::
+    !!! warning
 
         Since onETL v0.7.0 to use HDFS connector you should install package as follows:
 
-        .. code:: bash
+        ```bash
+        pip install "onetl[hdfs]"
 
-            pip install "onetl[hdfs]"
+        # or
+        pip install "onetl[files]"
+        ```
+        See [install-files][] installation instruction for more details.
 
-            # or
-            pip install "onetl[files]"
+    !!! note
 
-        See :ref:`install-files` installation instruction for more details.
+        To access Hadoop cluster with Kerberos installed, you should have `kinit` executable
+        in some path in `PATH` environment variable.
 
-    .. note::
-
-        To access Hadoop cluster with Kerberos installed, you should have ``kinit`` executable
-        in some path in ``PATH`` environment variable.
-
-        See :ref:`install-kerberos` instruction for more details.
+        See [install-kerberos][] instruction for more details.
 
     Parameters
     ----------
     cluster : str, optional
-        Hadoop cluster name. For example: ``rnd-dwh``.
+        Hadoop cluster name. For example: `rnd-dwh`.
 
         Used for:
             * HWM and lineage (as instance name for file paths), if set.
-            * Validation of ``host`` value,
+            * Validation of `host` value,
                 if latter is passed and if some hooks are bound to
-                :obj:`Slots.get_cluster_namenodes <onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_cluster_namenodes>`
+                [Slots.get_cluster_namenodes][onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_cluster_namenodes]
 
-        .. warning:
+        !!! warning
 
-            You should pass at least one of these arguments: ``cluster``, ``host``.
+            You should pass at least one of these arguments: `cluster`, `host`.
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
     host : str, optional
-        Hadoop namenode host. For example: ``namenode1.domain.com``.
+        Hadoop namenode host. For example: `namenode1.domain.com`.
 
         Should be an active namenode (NOT standby).
 
         If value is not set, but there are some hooks bound to
-        :obj:`Slots.get_cluster_namenodes <onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_cluster_namenodes>`
-        and :obj:`Slots.is_namenode_active <onetl.connection.file_connection.hdfs.slots.HDFSSlots.is_namenode_active>`,
+        [Slots.get_cluster_namenodes][onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_cluster_namenodes]
+        and [Slots.is_namenode_active][onetl.connection.file_connection.hdfs.slots.HDFSSlots.is_namenode_active],
         onETL will iterate over cluster namenodes to detect which one is active.
 
-        .. warning:
+        !!! warning
 
-            You should pass at least one of these arguments: ``cluster``, ``host``.
+            You should pass at least one of these arguments: `cluster`, `host`.
 
-    webhdfs_port : int, default: ``50070``
+    webhdfs_port : int, default: `50070`
         Port of Hadoop namenode (WebHDFS protocol).
 
         If omitted, but there are some hooks bound to
-        :obj:`Slots.get_webhdfs_port <onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_webhdfs_port>` slot,
-        onETL will try to detect port number for a specific ``cluster``.
+        [Slots.get_webhdfs_port][onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_webhdfs_port] slot,
+        onETL will try to detect port number for a specific `cluster`.
 
     user : str, optional
-        User, which have access to the file source. For example: ``someuser``.
+        User, which have access to the file source. For example: `someuser`.
 
         If set, Kerberos auth will be used. Otherwise an anonymous connection is created.
 
-    password : str, default: ``None``
+    password : str, default: `None`
         User password.
 
         Used for generating Kerberos ticket.
 
-        .. warning ::
+        !!! warning
 
-            You can provide only one of the parameters: ``password`` or ``kinit``.
+            You can provide only one of the parameters: `password` or `kinit`.
             If you provide both, an exception will be raised.
 
-    keytab : str, default: ``None``
+    keytab : str, default: `None`
         LocalPath to keytab file.
 
         Used for generating Kerberos ticket.
 
-        .. warning ::
+        !!! warning
 
-            You can provide only one of the parameters: ``password`` or ``kinit``.
+            You can provide only one of the parameters: `password` or `kinit`.
             If you provide both, an exception will be raised.
 
-    timeout : int, default: ``10``
-        Connection timeout.
+    extra: HDFSExtra, optional
+        Extra options passed to underlying HDFS client.
 
     Examples
     --------
 
-    .. tabs::
+    === "Create HDFS connection with user+password"
+        ```python
+        from onetl.connection import HDFS
 
-        .. code-tab:: py Create HDFS connection with user+password
+        hdfs = HDFS(
+            host="namenode1.domain.com",
+            user="someuser",
+            password="*****",
+        ).check()
+        ```
+    === "Create HDFS connection with user+keytab"
+        ```python
+        from onetl.connection import HDFS
 
-            from onetl.connection import HDFS
+        hdfs = HDFS(
+            host="namenode1.domain.com",
+            user="someuser",
+            keytab="/path/to/keytab",
+        ).check()
+        ```
+    === "Create HDFS connection without auth"
+        ```python
+        from onetl.connection import HDFS
 
-            hdfs = HDFS(
-                host="namenode1.domain.com",
-                user="someuser",
-                password="*****",
-            ).check()
+        hdfs = HDFS(host="namenode1.domain.com").check()
+        ```
+    === "Use cluster name to detect active namenode"
 
-        .. code-tab:: py Create HDFS connection with user+keytab
+        Can be used only if some third-party plugin provides [hdfs-slots][] implementation
 
-            from onetl.connection import HDFS
+        ```python
+        from onetl.connection import HDFS
 
-            hdfs = HDFS(
-                host="namenode1.domain.com",
-                user="someuser",
-                keytab="/path/to/keytab",
-            ).check()
+        hdfs = HDFS(
+            cluster="rnd-dwh",
+            user="someuser",
+            password="*****",
+        ).check()
+        ```
+    === "Configure timeout & number of retries"
 
-        .. code-tab:: py Create HDFS connection without auth
+        ```python
+        from onetl.connection import HDFS
 
-            from onetl.connection import HDFS
+        from urllib3.util.retry import Retry
+        from urllib3.util.timeout import Timeout
 
-            hdfs = HDFS(host="namenode1.domain.com").check()
-
-        .. tab:: Use cluster name to detect active namenode
-
-            Can be used only if some third-party plugin provides :ref:`hdfs-slots` implementation
-
-            .. code:: python
-
-                from onetl.connection import HDFS
-
-                hdfs = HDFS(
-                    cluster="rnd-dwh",
-                    user="someuser",
-                    password="*****",
-                ).check()
-    """  # noqa: E501
+        hdfs = HDFS(
+            host="namenode1.domain.com",
+            user="someuser",
+            keytab="/path/to/keytab",
+            extra=HDFS.Extra(
+                timeout=Timeout(connect=10, read=60),
+                retry=Retry(
+                    total=3,
+                    backoff_factor=0.2,
+                    status_forcelist=[429, 500, 502, 503, 504],
+                    allowed_methods=["HEAD", "GET", "PUT", "OPTIONS"],
+                ),
+            ),
+        ).check()
+        ```
+    """
 
     cluster: Optional[Cluster] = None
     host: Optional[Host] = None
@@ -206,47 +255,54 @@ class HDFS(FileConnection, RenameDirMixin):
     user: Optional[str] = None
     password: Optional[SecretStr] = None
     keytab: Optional[FilePath] = None
-    timeout: int = 10
+    extra: HDFSExtra = Field(default_factory=HDFSExtra)
 
     Slots = HDFSSlots
     # TODO: remove in v1.0.0
     slots = Slots
 
-    _active_host: Optional[Host] = PrivateAttr(default=None)
+    Extra = HDFSExtra
+
+    _active_host: Optional[str] = PrivateAttr(default=None)
 
     @slot
     @classmethod
     def get_current(cls, **kwargs):
         """
-        Create connection for current cluster. |support_hooks|
+        Create connection for current cluster. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-        Automatically sets up current cluster name as ``cluster``.
+        Automatically sets up current cluster name as `cluster`.
 
-        .. note::
+        !!! note
 
             Can be used only if there are a some hooks bound to slot
-            :obj:`Slots.get_current_cluster <onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_current_cluster>`
+            [Slots.get_current_cluster][onetl.connection.file_connection.hdfs.slots.HDFSSlots.get_current_cluster]
 
-        .. versionadded:: 0.7.0
+        !!! success "Added in 0.7.0"
 
         Parameters
         ----------
         user : str
-        password : str | None
-        keytab : str | None
-        timeout : int
+            User which has access to HDFS. See [HDFS][] constructor documentation.
 
-            See :obj:`~HDFS` constructor documentation.
+        password : str | None
+            User password for Kerberos. See [HDFS][] constructor documentation.
+
+        keytab : str | None
+            Path to keytab file for Kerberos. See [HDFS][] constructor documentation.
+
+        extra : HDFSExtra, optional
+            Extra options passed to underlying HDFS client. See [HDFS][] constructor documentation.
 
         Examples
         --------
 
-        .. code:: python
+        ```python
+        from onetl.connection import HDFS
 
-            from onetl.connection import HDFS
-
-            # injecting current cluster name via hooks mechanism
-            hdfs = HDFS.get_current(user="me", password="pass")
+        # injecting current cluster name via hooks mechanism
+        hdfs = HDFS.get_current(user="me", password="pass")
+        ```
         """
 
         log.info("|%s| Detecting current cluster...", cls.__name__)
@@ -382,51 +438,73 @@ class HDFS(FileConnection, RenameDirMixin):
 
         return values
 
+    @root_validator(pre=True)
+    def _timeout_fallback(cls, values):
+        if "timeout" not in values:
+            return values
+
+        timeout_int = values.pop("timeout")
+        timeout = Timeout(total=timeout_int)
+        warnings.warn(
+            "Option `timeout` is deprecated since v0.16.0 and will be removed in v1.0.0. "
+            f"Use extra={cls.__name__}.Extra(timeout={timeout!r}) instead",
+            category=UserWarning,
+            stacklevel=5,
+        )
+        extra = cls.Extra.parse(values.get("extra"))
+        extra_dict = extra.dict(exclude_unset=True, by_alias=True)
+        extra_dict["timeout"] = timeout
+        values["extra"] = cls.Extra.parse(extra_dict)
+        return values
+
     def _get_active_namenode(self) -> str:
         class_name = self.__class__.__name__
-        log.info("|%s| Detecting active namenode of cluster %r ...", class_name, self.cluster)
+        cluster = cast("str", self.cluster)
+        log.info("|%s| Detecting active namenode of cluster %r ...", class_name, cluster)
 
-        namenodes = self.Slots.get_cluster_namenodes(self.cluster)
+        namenodes = self.Slots.get_cluster_namenodes(cast("str", cluster))
         if not namenodes:
-            msg = f"Cannot get list of namenodes for a cluster {self.cluster!r}"
+            msg = f"Cannot get list of namenodes for a cluster {cluster!r}"
             raise RuntimeError(msg)
 
         nodes_len = len(namenodes)
         for i, namenode in enumerate(namenodes, start=1):
             log.debug("|%s|   Trying namenode %r (%d of %d) ...", class_name, namenode, i, nodes_len)
-            if self.Slots.is_namenode_active(namenode, self.cluster):
+            if self.Slots.is_namenode_active(namenode, cluster):
                 log.info("|%s|     Node %r is active!", class_name, namenode)
                 return namenode
             log.debug("|%s|     Node %r is not active, skipping", class_name, namenode)
 
-        msg = f"Cannot detect active namenode for cluster {self.cluster!r}"
+        msg = f"Cannot detect active namenode for cluster {cluster!r}"
         raise RuntimeError(msg)
 
     def _get_host(self) -> str:
-        if not self.host and self.cluster:
+        host = cast("str", self.host)
+
+        if not host and self.cluster:
             return self._get_active_namenode()
 
         # host is passed explicitly or cluster not set
         class_name = self.__class__.__name__
         if self.cluster:
-            log.info("|%s| Detecting if namenode %r of cluster %r is active...", class_name, self.host, self.cluster)
+            log.info("|%s| Detecting if namenode %r of cluster %r is active...", class_name, host, self.cluster)
         else:
-            log.info("|%s| Detecting if namenode %r is active...", class_name, self.host)
+            log.info("|%s| Detecting if namenode %r is active...", class_name, host)
 
-        is_active = self.Slots.is_namenode_active(self.host, self.cluster)
+        is_active = self.Slots.is_namenode_active(cast("str", host), self.cluster)
         if is_active:
-            log.info("|%s|   Namenode %r is active!", class_name, self.host)
-            return self.host
+            log.info("|%s|   Namenode %r is active!", class_name, host)
+            return host
 
         if is_active is None:
             log.debug("|%s|   No hooks, skip validation", class_name)
-            return self.host
+            return host
 
         if self.cluster:
-            msg = f"Host {self.host!r} is not an active namenode of cluster {self.cluster!r}"
+            msg = f"Host {host!r} is not an active namenode of cluster {self.cluster!r}"
             raise RuntimeError(msg)
 
-        msg = f"Host {self.host!r} is not an active namenode"
+        msg = f"Host {host!r} is not an active namenode"
         raise RuntimeError(msg)
 
     def _get_conn_str(self) -> str:
@@ -435,7 +513,16 @@ class HDFS(FileConnection, RenameDirMixin):
             self._active_host = self._get_host()
         return f"http://{self._active_host}:{self.webhdfs_port}"
 
+    def _get_session(self) -> Session:
+        result = Session()
+        adapter = HTTPAdapter(max_retries=self.extra.retry)
+        result.mount("http://", adapter)
+        return result
+
     def _get_client(self) -> Client:
+        session = self._get_session()
+        timeout = (self.extra.timeout.connect_timeout, self.extra.timeout.read_timeout)
+        extra = self.extra.dict(by_alias=True, exclude={"timeout", "retry"})
         if self.user and (self.keytab or self.password):
             from hdfs.ext.kerberos import KerberosClient
 
@@ -446,12 +533,12 @@ class HDFS(FileConnection, RenameDirMixin):
             )
             # checking if namenode is active requires a Kerberos ticket
             conn_str = self._get_conn_str()
-            client = KerberosClient(conn_str, timeout=self.timeout)
+            client = KerberosClient(conn_str, timeout=timeout, session=session, **extra)
         else:
             from hdfs import InsecureClient
 
             conn_str = self._get_conn_str()
-            client = InsecureClient(conn_str, user=self.user)
+            client = InsecureClient(conn_str, user=self.user, timeout=timeout, session=session, **extra)
 
         return client
 

@@ -4,6 +4,5 @@
 ::: onetl.file.format.parquet.Parquet
     options:
         members:
-            - __init__
             - mergeSchema
             - compression

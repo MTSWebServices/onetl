@@ -3,6 +3,7 @@
 
 ::: onetl.connection.file_connection.hdfs.connection.HDFS
     options:
+        show_root_heading: true
         members:
             - get_current
             - check
@@ -21,3 +22,10 @@
             - walk
             - download_file
             - upload_file
+
+::: onetl.connection.file_connection.hdfs.connection.HDFSExtra
+    options:
+        show_root_heading: true
+        members:
+          - timeout
+          - retry

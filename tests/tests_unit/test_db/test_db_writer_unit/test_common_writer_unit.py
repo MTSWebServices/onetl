@@ -36,3 +36,8 @@ def test_writer_target_alias(spark_mock):
     )
 
     assert writer1.target == writer2.target
+
+
+def test_writer_no_connection():
+    with pytest.raises(ValueError, match="field required"):
+        DBWriter(target="schema.table")

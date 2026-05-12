@@ -1,10 +1,11 @@
 site_name: onETL Docs
+site_url: !ENV READTHEDOCS_CANONICAL_URL
 docs_dir: docs                             # Where to find the English markdown files
 site_dir: generated                        # Where to put the English HTML files
 
 theme:
   name: material
-  # custom_dir: '../../overrides/'                    # This is where the customization of the theme lives
+  custom_dir: overrides
   logo: _static/images/logo.svg                      # The logo is shared by all languages
   favicon: _static/images/icon.svg                   # The favicon is shared by all languages
   language: en
@@ -31,6 +32,10 @@ theme:
 extra_css:
   - _static/stylesheets/autodoc_pydantic.css         # CSS is shared by all languages
 
+extra_javascript:
+  - _static/javascripts/mermaid_zoom.js
+  - _static/javascripts/readthedocs.js
+
 extra:                                              # Language Selection
   onetl_logo_wide: '[![onETL logo](_static/images/logo_wide.svg)](https://github.com/MTSWebServices/onetl)'
   repo_status_badge: '[![Repo status - Active](https://www.repostatus.org/badges/latest/active.svg)](https://github.com/MTSWebServices/onetl)'
@@ -41,8 +46,9 @@ extra:                                              # Language Selection
   docs_status_badge: '[![Documentation - ReadTheDocs](https://readthedocs.org/projects/onetl/badge/?version=stable)](https://onetl.readthedocs.io/)'
   ci_status_badge: '[![Github Actions - latest CI build status](https://github.com/MTSWebServices/onetl/workflows/Tests/badge.svg)](https://github.com/MTSWebServices/onetl/actions)'
   precommit_badge: '[![pre-commit.ci Status](https://results.pre-commit.ci/badge/github/MTSWebServices/onetl/develop.svg)](https://results.pre-commit.ci/latest/github/MTSWebServices/onetl/develop)'
-  test_cov_badge: '[![Test coverage - percent](https://codecov.io/gh/MTSWebServices/onetl/branch/develop/graph/badge.svg?token=RIO8URKNZJ)](https://codecov.io/gh/MTSWebServices/onetl)'
+  test_cov_badge: '[![Test coverage - percent](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/MTSOnGithub/03e73a82ecc4709934540ce8201cc3b4/raw/onetl_badge.json)](https://github.com/MTSWebServices/onetl/actions)'
   etl_entities_link: '[`etl-entities`](https://github.com/MTSWebServices/etl-entities)'
+  support_hooks: '[![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](hooks/index.md)'
 
 plugins:
   - autorefs
@@ -52,17 +58,21 @@ plugins:
       default_handler: python
       handlers:
         python:
+          paths: [..]
           options:
             show_source: false
             show_root_heading: false
             show_root_toc_entry: false
-            # extensions:
-            # - griffe_sphinx
+            show_root_full_path: false
+            heading_level: 3
+            docstring_style: numpy
+            docstring_section_style: list
+            inherited_members: true
+            extensions:
+              - scripts/griffe_expand_refs.py:ExpandShortRefs
+              - griffe_inherited_docstrings
             # - griffe_pydantic: {schema: false}
   - macros
-  # - plantuml:
-  #     puml_url: https://www.plantuml.com/plantuml/
-  #     puml_keyword: plantuml
   # - i18n:
   #     docs_structure: folder
   #     languages:
@@ -73,6 +83,7 @@ plugins:
   #       - locale: ru
   #         name: Русский
   #         build: false
+  - towncrier
 
 markdown_extensions:
   - footnotes
@@ -82,12 +93,16 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.critic
   - pymdownx.snippets:
-      base_path: .
+      # When building locally from mddocs/ directory, change base_path to: .
+      base_path: mddocs
       check_paths: true
   - toc:
       permalink: true
   - pymdownx.tabbed:
       alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg

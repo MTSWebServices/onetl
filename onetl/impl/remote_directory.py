@@ -6,45 +6,55 @@ import os
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from onetl.base import PathProtocol, PathStatProtocol
 from onetl.impl.path_container import PathContainer
 from onetl.impl.remote_path import RemotePath
 from onetl.impl.remote_path_stat import RemotePathStat
 
 if TYPE_CHECKING:
-    from onetl.base import PathStatProtocol
 
+    class RemoteDirectory(PathProtocol, RemotePath):
+        def __init__(self, path: RemotePath, stats: PathStatProtocol): ...
 
-@dataclass(eq=False, frozen=True)
-class RemoteDirectory(PathContainer[RemotePath]):
-    """
-    Representation of existing remote directory
-    """
+        @property
+        def path(self) -> RemotePath: ...
 
-    stats: PathStatProtocol = field(default_factory=RemotePathStat)
+        @property
+        def stats(self) -> PathStatProtocol: ...
 
-    def __post_init__(self):
-        # frozen=True does not allow to change any field in __post_init__, small hack here
-        object.__setattr__(self, "path", RemotePath(self.path))
+else:
 
-    def is_dir(self) -> bool:
-        return True
+    @dataclass(eq=False, frozen=True)
+    class RemoteDirectory(PathContainer[RemotePath]):
+        """
+        Representation of existing remote directory
+        """
 
-    def is_file(self) -> bool:
-        return False
+        stats: PathStatProtocol = field(default_factory=RemotePathStat)
 
-    def exists(self) -> bool:
-        return True
+        def __post_init__(self):
+            # frozen=True does not allow to change any field in __post_init__, small hack here
+            object.__setattr__(self, "path", RemotePath(self.path))
 
-    def stat(self) -> PathStatProtocol:
-        return self.stats
+        def is_dir(self) -> bool:
+            return True
 
-    @property
-    def parent(self) -> RemoteDirectory:
-        return RemoteDirectory(self.path.parent)
+        def is_file(self) -> bool:
+            return False
 
-    @property
-    def parents(self) -> list[RemoteDirectory]:
-        return [RemoteDirectory(parent) for parent in self.path.parents]
+        def exists(self) -> bool:
+            return True
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({os.fspath(self.path)!r})"
+        def stat(self) -> PathStatProtocol:
+            return self.stats
+
+        @property
+        def parent(self) -> RemoteDirectory:
+            return RemoteDirectory(self.path.parent)
+
+        @property
+        def parents(self) -> list[RemoteDirectory]:
+            return [RemoteDirectory(parent) for parent in self.path.parents]
+
+        def __repr__(self) -> str:
+            return f"{self.__class__.__name__}({os.fspath(self.path)!r})"

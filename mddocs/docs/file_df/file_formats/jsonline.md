@@ -4,7 +4,6 @@
 ::: onetl.file.format.jsonline.JSONLine
     options:
         members:
-            - __init__
             - allowBackslashEscapingAnyCharacter
             - allowComments
             - allowNonNumericNumbers

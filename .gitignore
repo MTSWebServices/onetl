@@ -156,3 +156,5 @@ docker-compose*override*
 
 metastore_db/
 spark-warehouse/
+
+mddocs/generated/

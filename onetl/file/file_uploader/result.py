@@ -17,16 +17,17 @@ class UploadResult(FileResult):
 
     Container for file paths, divided into certain categories:
 
-    * :obj:`~successful`
-    * :obj:`~failed`
-    * :obj:`~skipped`
-    * :obj:`~missing`
+    * [successful][]
+    * [failed][]
+    * [skipped][]
+    * [missing][]
 
-    .. versionadded:: 0.3.0
+    !!! success "Added in 0.3.0"
 
     Examples
     --------
 
+    ```python
     >>> from onetl.file import FileUploader
     >>> uploader = FileUploader(target_path="/remote", ...)
     >>> upload_result = uploader.run(
@@ -54,16 +55,17 @@ class UploadResult(FileResult):
             LocalPath("/missing/file")
         ]),
     )
+    ```
     """
 
-    successful: FileSet[RemoteFile] = Field(default_factory=FileSet)
+    successful: FileSet[RemoteFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (remote) which were uploaded successfully"
 
-    failed: FileSet[FailedLocalFile] = Field(default_factory=FileSet)
+    failed: FileSet[FailedLocalFile] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which were not uploaded because of some failure"
 
-    skipped: FileSet[LocalPath] = Field(default_factory=FileSet)
+    skipped: FileSet[LocalPath] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which were skipped because of some reason"
 
-    missing: FileSet[LocalPath] = Field(default_factory=FileSet)
+    missing: FileSet[LocalPath] = Field(default_factory=lambda: FileSet({}))
     "File paths (local) which are not present in the local file system"
