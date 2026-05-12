@@ -9,7 +9,7 @@
 - Java versions: 8 - 22
 
 See [official documentation](https://learn.microsoft.com/en-us/sql/connect/jdbc/system-requirements-for-the-jdbc-driver)
-and [official compatibility matrix](https://learn.microsoft.com/en-us/sql/connect/jdbc/microsoft-jdbc-driver-for-sql-server-support-matrix).
+and [official compatibility matrix](https://learn.microsoft.com/en-us/sql/connect/driver-feature-matrix).
 
 ## Installing PySpark { #DBR-onetl-connection-db-connection-mssql-prerequisites-installing-pyspark }
 

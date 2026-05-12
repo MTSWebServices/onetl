@@ -10,7 +10,7 @@
 
 3_5_x: &3_5_x
   oracle-image: gvenzl/oracle-free
-  oracle-version: 23.26.0-slim-faststart
+  oracle-version: 23.26.1-slim-faststart
   db-name: FREEPDB1
   spark-version: '3.5'
   pydantic-version: 2
@@ -20,7 +20,7 @@
 
 4_0_x: &4_0_x
   oracle-image: gvenzl/oracle-free
-  oracle-version: 23.26.0-slim-faststart
+  oracle-version: 23.26.1-slim-faststart
   db-name: FREEPDB1
   spark-version: '4.0'
   pydantic-version: 2
@@ -31,7 +31,7 @@
 
 4_1_x: &4_1_x
   oracle-image: gvenzl/oracle-free
-  oracle-version: 23.26.0-slim-faststart
+  oracle-version: 23.26.1-slim-faststart
   db-name: FREEPDB1
   spark-version: '4.1'
   pydantic-version: 2

@@ -3,7 +3,7 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-oracle-prerequisites-version-compatibility }
 
 - Oracle Server versions:
-    - Officially declared: 19c, 21c, 23ai
+    - Officially declared: 19c, 21c, 23ai, 26ai
     - Actually tested: 11.2, 23.26
 - Spark versions: 3.2.x - 4.1.x
 - Java versions: 8 - 22

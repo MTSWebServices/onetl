@@ -81,7 +81,7 @@ class OracleExtra(GenericOptions):
 class Oracle(JDBCConnection):
     """Oracle JDBC connection. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
-    Based on Maven package [com.oracle.database.jdbc:ojdbc8:23.26.0.0.0](https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8/23.26.0.0.0)
+    Based on Maven package [com.oracle.database.jdbc:ojdbc8:23.26.1.0.0](https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8/23.26.1.0.0)
     ([official Oracle JDBC driver](https://www.oracle.com/cis/database/technologies/appdev/jdbc-downloads.html)).
 
     !!! info "See also"
@@ -210,7 +210,7 @@ class Oracle(JDBCConnection):
         java_version : str, optional
             Java major version, defaults to "8". Must be "8" or "11".
         package_version : str, optional
-            Specifies the version of the Oracle JDBC driver to use. Defaults to "23.26.0.0.0".
+            Specifies the version of the Oracle JDBC driver to use. Defaults to "23.26.1.0.0".
 
         Examples
         --------
@@ -221,12 +221,12 @@ class Oracle(JDBCConnection):
         Oracle.get_packages()
 
         # specify Java and package versions
-        Oracle.get_packages(java_version="8", package_version="23.26.0.0.0")
+        Oracle.get_packages(java_version="8", package_version="23.26.1.0.0")
         ```
         """
 
         default_java_version = "8"
-        default_package_version = "23.26.0.0.0"
+        default_package_version = "23.26.1.0.0"
 
         java_ver = Version(java_version or default_java_version)
         if java_ver.major < 8:  # noqa: PLR2004
@@ -243,7 +243,7 @@ class Oracle(JDBCConnection):
         """Get package name to be downloaded by Spark."""
         msg = "`Oracle.package` will be removed in 1.0.0, use `Oracle.get_packages()` instead"
         warnings.warn(msg, UserWarning, stacklevel=3)
-        return "com.oracle.database.jdbc:ojdbc8:23.26.0.0.0"
+        return "com.oracle.database.jdbc:ojdbc8:23.26.1.0.0"
 
     @property
     def jdbc_url(self) -> str:

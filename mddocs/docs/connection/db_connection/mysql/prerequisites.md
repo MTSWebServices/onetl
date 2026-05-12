@@ -3,7 +3,7 @@
 ## Version Compatibility { #DBR-onetl-connection-db-connection-mysql-prerequisites-version-compatibility }
 
 - MySQL server versions:
-    - Officially declared: 8.0 - 9.5
+    - Officially declared: 8.0 - 9.7
     - Actually tested: 5.7.16, 9.5.0
 - Spark versions: 3.2.x - 4.1.x
 - Java versions: 8 - 22
