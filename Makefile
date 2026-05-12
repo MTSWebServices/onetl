@@ -128,8 +128,3 @@ docs-generate-changelog: ##@Docs Generate changelog
 	# Update Changelog Index and Navigation
 	sed "s#\(.*NEXT_RELEASE.*\)#\1\n- [${VERSION} (${DATE})][DBR-onetl-changelog-${VERSION_ANCHOR}]#" "mddocs/docs/changelog/index.md" > temp && mv temp "mddocs/docs/changelog/index.md"
 	sed "s#\(.*NEXT_RELEASE.*\)#\1\n    * [${VERSION}](changelog/${VERSION}.md)#" "mddocs/docs/nav.md" > temp && mv temp "mddocs/docs/nav.md"
-
-	${PYTHON} mddocs/scripts/generate_anchors.py
-
-docs-generate-anchors: ##@Docs Generate anchors
-	${PYTHON} mddocs/scripts/generate_anchors.py
