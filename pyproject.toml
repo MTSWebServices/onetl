@@ -133,7 +133,7 @@ test-pydantic-1 = ["pydantic<2"]
 test-pydantic-2 = ["pydantic>=2,<3"]
 test-samba = ["pysmb"]
 "test-spark-3.2" = [
-    "pyspark==3.2.4",
+    "pyspark~=3.2.4",
     "numpy>=1.16,<1.24",
     "pandas>=1.0,<2",
     "pyarrow>=1.0",
@@ -141,7 +141,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-3.3" = [
-    "pyspark==3.3.4",
+    "pyspark~=3.3.4",
     "numpy>=1.16,<1.24",
     "pandas>=1.0,<2",
     "pyarrow>=1.0",
@@ -149,7 +149,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-3.4" = [
-    "pyspark==3.4.4",
+    "pyspark~=3.4.4",
     "numpy>=1.16",
     "pandas>=1.0",
     "pyarrow>=1.0",
@@ -157,7 +157,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-3.5" = [
-    "pyspark==3.5.8",
+    "pyspark~=3.5.8",
     "numpy>=1.16",
     "pandas>=1.0",
     "pyarrow>=4.0",
@@ -165,7 +165,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-4.0" = [
-    "pyspark==4.0.1",
+    "pyspark~=4.0.1",
     "numpy>=1.24",
     "pandas>=2.0",
     "pyarrow>=11.0",
@@ -173,7 +173,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-4.1" = [
-    "pyspark==4.1.1",
+    "pyspark~=4.1.1",
     "numpy>=1.24",
     "pandas>=2.0",
     "pyarrow>=11.0",
