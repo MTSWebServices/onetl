@@ -1,14 +1,11 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import contextlib
 import os
 import textwrap
 import warnings
 from logging import getLogger
 from stat import S_ISDIR, S_ISREG
-from typing import Optional
 
 from etl_entities.instance import Host
 
@@ -76,10 +73,10 @@ class SFTPExtra(GenericOptions):
     """
 
     host_key_check: bool = False
-    timeout: Optional[float] = None
-    banner_timeout: Optional[float] = None
-    auth_timeout: Optional[float] = None
-    channel_timeout: Optional[float] = None
+    timeout: float | None = None
+    banner_timeout: float | None = None
+    auth_timeout: float | None = None
+    channel_timeout: float | None = None
     compress: bool = False
 
     class Config:
@@ -169,9 +166,9 @@ class SFTP(FileConnection, RenameDirMixin):
 
     host: Host
     port: int = 22
-    user: Optional[str] = None
-    password: Optional[SecretStr] = None
-    key_file: Optional[FilePath] = None
+    user: str | None = None
+    password: SecretStr | None = None
+    key_file: FilePath | None = None
     extra: SFTPExtra = Field(default_factory=SFTPExtra)
 
     Extra = SFTPExtra

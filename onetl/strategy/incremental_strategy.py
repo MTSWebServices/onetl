@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import Any, Optional
+from typing import Any
 
 from etl_entities.hwm import HWM
 
@@ -408,7 +406,7 @@ class IncrementalStrategy(HWMStrategy):
 
     """
 
-    hwm: Optional[HWM] = None
+    hwm: HWM | None = None
     offset: Any = None
 
     def fetch_hwm(self) -> None:
@@ -725,7 +723,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
 
     """
 
-    hwm: Optional[HWM] = None
+    hwm: HWM | None = None
     offset: Any = None
 
     def fetch_hwm(self) -> None:

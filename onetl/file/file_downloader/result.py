@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 try:
     from pydantic.v1 import Field
 except (ImportError, AttributeError):

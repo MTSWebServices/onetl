@@ -22,10 +22,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -38,14 +34,12 @@ classifiers = [
     "Typing :: Typed",
 ]
 keywords = ["Spark", "ETL", "JDBC", "HWM"]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 dependencies = [
     "etl-entities>=2.5,<2.7",
     "evacuator>=1.0,<1.1",
     "frozendict",
     "humanize",
-    # 3.5.0 fails with "entry_points() got an unexpected keyword argument 'group'"
-    "importlib_metadata>=3.6.0",
     "ordered-set",
     "platformdirs",
     # https://github.com/pydantic/pydantic/issues/4092
@@ -53,8 +47,7 @@ dependencies = [
     "pydantic>=1.9.2,!=1.10.2,<3",
     "pyyaml",
     # https://github.com/python/typing_extensions/pull/188
-    "typing_extensions>=4.5.0,!=4.6.1; python_version == '3.7'",
-    "typing_extensions>=4.5.0; python_version > '3.7'",
+    "typing-extensions>=4.5.0",
 ]
 dynamic = ["version"]
 
@@ -124,7 +117,7 @@ all = [
 test-clickhouse = ["clickhouse-driver"]
 test-greenplum = ["psycopg2-binary"]
 test-kafka = ["confluent-kafka"]
-test-mongodb = ["pymongo"]
+test-mongodb = ["pymongo<4.0"]
 test-mssql = ["pymssql"]
 test-mysql = ["pymysql[rsa]"]
 test-oracle = ["cx_Oracle"]
@@ -232,9 +225,6 @@ conflicts = [
 ]
 
 [tool.uv.dependency-groups]
-"test-spark-3.5" = {requires-python = ">=3.8"}
-"test-spark-4.0" = {requires-python = ">=3.9"}
-"test-spark-4.1" = {requires-python = ">=3.10"}
 dev = {requires-python = ">=3.12"}
 docs = {requires-python = ">=3.11"}
 
@@ -243,7 +233,7 @@ docs = {requires-python = ">=3.11"}
 cx-oracle = ["setuptools<82"]
 
 [tool.ruff]
-target-version = "py37"
+target-version = "py310"
 line-length = 120
 extend-exclude = ["mddocs/", "Makefile"]
 
@@ -264,9 +254,6 @@ ignore = [
     "TC002",
     "TC003",
     "TD",
-    "UP006",
-    "UP007",
-    "UP045",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -302,7 +289,7 @@ ignore = [
 "mddocs/scripts/links2anchors.py" = ["T201", "INP001"]
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.10"
 plugins = ["pydantic.mypy"]
 strict_optional = true
 ignore_missing_imports = true

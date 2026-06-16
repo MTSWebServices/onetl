@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from logging import getLogger
 from typing import TYPE_CHECKING
 
@@ -23,7 +21,7 @@ log = getLogger(__name__)
 
 
 class DBConnection(BaseDBConnection, FrozenModel):
-    spark: SparkSession = Field(repr=False)
+    spark: "SparkSession" = Field(repr=False)
 
     Dialect = DBDialect
 

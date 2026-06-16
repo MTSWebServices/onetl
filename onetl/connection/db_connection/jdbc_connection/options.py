@@ -1,10 +1,7 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import warnings
 from enum import Enum
-from typing import Optional
 
 from onetl._util.alias import avoid_alias
 from onetl.connection.db_connection.jdbc_mixin.options import JDBCFetchOptions
@@ -146,7 +143,7 @@ class JDBCReadOptions(JDBCFetchOptions):
         extra = "allow"
 
     # Options in DataFrameWriter.jdbc() method
-    partition_column: Optional[str] = Field(default=None, alias="partitionColumn")
+    partition_column: str | None = Field(default=None, alias="partitionColumn")
     """Column used to parallelize reading from a table.
 
     !!! warning
@@ -167,13 +164,13 @@ class JDBCReadOptions(JDBCFetchOptions):
     """Number of jobs created by Spark to read the table content in parallel.
     See documentation for [partitioning_mode][] for more details"""
 
-    lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
+    lower_bound: int | None = Field(default=None, alias="lowerBound")
     """See documentation for [partitioning_mode][] for more details"""
 
-    upper_bound: Optional[int] = Field(default=None, alias="upperBound")
+    upper_bound: int | None = Field(default=None, alias="upperBound")
     """See documentation for [partitioning_mode][] for more details"""
 
-    session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
+    session_init_statement: str | None = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
     this option executes a custom SQL statement (or a PL/SQL block).
 
@@ -191,7 +188,7 @@ class JDBCReadOptions(JDBCFetchOptions):
     ```
     '''
 
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     """The number of seconds the driver will wait for a statement to execute.
     Zero means there is no limit.
 
@@ -498,7 +495,7 @@ class JDBCWriteOptions(GenericOptions):
         Renamed `mode` → `if_exists`
     """
 
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     """The number of seconds the driver will wait for a statement to execute.
     Zero means there is no limit.
 
@@ -587,7 +584,7 @@ class JDBCSQLOptions(GenericOptions):
     ```
     """
 
-    partition_column: Optional[str] = Field(default=None, alias="partitionColumn")
+    partition_column: str | None = Field(default=None, alias="partitionColumn")
     """Column used to partition data across multiple executors for parallel query processing.
 
     !!! warning
@@ -616,16 +613,16 @@ class JDBCSQLOptions(GenericOptions):
         ```
     """
 
-    num_partitions: Optional[int] = Field(default=None, alias="numPartitions")
+    num_partitions: int | None = Field(default=None, alias="numPartitions")
     """Number of jobs created by Spark to read the table content in parallel."""
 
-    lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
+    lower_bound: int | None = Field(default=None, alias="lowerBound")
     """Defines the lower boundary for partitioning the query's data. Mandatory if [partition_column][] is set"""
 
-    upper_bound: Optional[int] = Field(default=None, alias="upperBound")
+    upper_bound: int | None = Field(default=None, alias="upperBound")
     """Sets the lower boundary for data partitioning. Mandatory if [partition_column][] is set"""
 
-    session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
+    session_init_statement: str | None = Field(default=None, alias="sessionInitStatement")
     '''After each database session is opened to the remote DB and before starting to read data,
     this option executes a custom SQL statement (or a PL/SQL block).
 
@@ -643,7 +640,7 @@ class JDBCSQLOptions(GenericOptions):
     ```
     '''
 
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     """The number of seconds the driver will wait for a statement to execute.
     Zero means there is no limit.
 
@@ -697,12 +694,12 @@ class JDBCLegacyOptions(GenericOptions):
         known_options = READ_OPTIONS | WRITE_OPTIONS | READ_WRITE_OPTIONS
         extra = "allow"
 
-    partition_column: Optional[str] = Field(default=None, alias="partitionColumn")
+    partition_column: str | None = Field(default=None, alias="partitionColumn")
     num_partitions: PositiveInt = Field(default=1, alias="numPartitions")
-    lower_bound: Optional[int] = Field(default=None, alias="lowerBound")
-    upper_bound: Optional[int] = Field(default=None, alias="upperBound")
-    session_init_statement: Optional[str] = Field(default=None, alias="sessionInitStatement")
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    lower_bound: int | None = Field(default=None, alias="lowerBound")
+    upper_bound: int | None = Field(default=None, alias="upperBound")
+    session_init_statement: str | None = Field(default=None, alias="sessionInitStatement")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     if_exists: JDBCTableExistBehavior = Field(default=JDBCTableExistBehavior.APPEND, alias="mode")
     isolation_level: str = Field(default="READ_UNCOMMITTED", alias="isolationLevel")
     fetchsize: int = 100_000

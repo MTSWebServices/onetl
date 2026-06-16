@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 from datetime import timedelta
 
@@ -26,7 +24,7 @@ class SparkExecutorMetrics(BaseModel):
     def is_empty(self) -> bool:
         return not self.total_run_time
 
-    def update(self, other: SparkExecutorMetrics) -> SparkExecutorMetrics:
+    def update(self, other: "SparkExecutorMetrics") -> "SparkExecutorMetrics":
         self.total_run_time += other.total_run_time
         self.total_cpu_time += other.total_cpu_time
         self.peak_memory_bytes += other.peak_memory_bytes

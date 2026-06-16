@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
 import textwrap
@@ -51,10 +49,11 @@ from onetl.hwm import Window
 from onetl.impl import GenericOptions
 from onetl.log import log_lines, log_with_indent
 
-# do not import PySpark here, as we allow user to use `Greenplum.get_packages()` for creating Spark session
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame
     from pyspark.sql.types import StructType
+
+# do not import PySpark here, as we allow user to use `Greenplum.get_packages()` for creating Spark session
 
 log = logging.getLogger(__name__)
 
@@ -326,11 +325,11 @@ class Greenplum(JDBCMixin, DBConnection):
         columns: list[str] | None = None,
         hint: str | None = None,
         where: str | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         window: Window | None = None,
         limit: int | None = None,
         options: GreenplumReadOptions | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         read_options = self.ReadOptions.parse(options).dict(by_alias=True, exclude_none=True)
         log.info("|%s| Executing SQL query (on executor):", self.__class__.__name__)
         where = self.dialect.apply_window(where, window)
@@ -356,7 +355,7 @@ class Greenplum(JDBCMixin, DBConnection):
     @slot
     def write_df_to_target(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         target: str,
         options: GreenplumWriteOptions | None = None,
     ) -> None:
@@ -384,7 +383,7 @@ class Greenplum(JDBCMixin, DBConnection):
         source: str,
         columns: list[str] | None = None,
         options: GreenplumReadOptions | None = None,
-    ) -> StructType:
+    ) -> "StructType":
         log.info("|%s| Detected dialect: '%s'", self.__class__.__name__, self._get_spark_dialect_class_name())
         log.info("|%s| Fetching schema of table %r ...", self.__class__.__name__, source)
 
@@ -549,7 +548,7 @@ class Greenplum(JDBCMixin, DBConnection):
             occupied=occupied_connections,
         )
 
-    def _check_expected_jobs_number(self, df: DataFrame, action: str) -> None:
+    def _check_expected_jobs_number(self, df: "DataFrame", action: str) -> None:
         # Parallel reading or writing to Greenplum can open a lot of connections.
         # Connection number is limited on server side, so we should prevent creating too much of them because reaching
         # the limit may prevent all other users from connecting the cluster

@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 from pprint import pformat
 
@@ -20,7 +18,7 @@ class SparkOutputMetrics(BaseModel):
     def is_empty(self) -> bool:
         return not any([self.written_bytes, self.written_rows, self.created_files])
 
-    def update(self, other: SparkOutputMetrics) -> SparkOutputMetrics:
+    def update(self, other: "SparkOutputMetrics") -> "SparkOutputMetrics":
         self.written_bytes += other.written_bytes
         self.written_rows += other.written_rows
         self.created_files += other.created_files

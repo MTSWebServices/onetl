@@ -1,12 +1,8 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional, Union, cast
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
 try:
     from pydantic.v1 import Field
@@ -24,7 +20,6 @@ from onetl.hooks import slot, support_hooks
 if TYPE_CHECKING:
     from pyspark.sql import Column, SparkSession
     from pyspark.sql.types import StructType
-
 
 log = logging.getLogger(__name__)
 PARSE_COLUMN_UNSUPPORTED_OPTIONS = {"inferSchema", "samplingRatio"}
@@ -98,7 +93,7 @@ class XML(ReadWriteFileFormat):
     XML tag that encloses each row in XML. Required.
     """
 
-    rootTag: Optional[str] = None
+    rootTag: str | None = None
     """
     XML tag that encloses content of all DataFrame. Default is `ROWS`.
 
@@ -107,7 +102,7 @@ class XML(ReadWriteFileFormat):
         Used only for writing files.
     """
 
-    compression: Union[str, Literal["bzip2", "gzip", "lz4", "snappy"], None] = None
+    compression: str | Literal["bzip2", "gzip", "lz4", "snappy"] | None = None
     """
     Compression codec. By default no compression is used.
 
@@ -116,30 +111,30 @@ class XML(ReadWriteFileFormat):
         Used only for writing files.
     """
 
-    timestampFormat: Optional[str] = None
+    timestampFormat: str | None = None
     """
     Format string used for parsing or serializing timestamp values.
     By default, ISO 8601 format is used (`yyyy-MM-ddTHH:mm:ss.SSSZ`).
     """
 
-    dateFormat: Optional[str] = None
+    dateFormat: str | None = None
     """
     Format string used for parsing or serializing date values.
     By default, ISO 8601 format is used (`yyyy-MM-dd`).
     """
 
-    timezone: Optional[str] = None
+    timezone: str | None = None
     """
     Allows to override timezone used for parsing or serializing date and timestamp values.
     By default, `spark.sql.session.timeZone` is used.
     """
 
-    nullValue: Optional[str] = None
+    nullValue: str | None = None
     """
     String value used to represent null. Default is `null` string.
     """
 
-    ignoreSurroundingSpaces: Optional[bool] = None
+    ignoreSurroundingSpaces: bool | None = None
     """
     If `True`, trim surrounding spaces while parsing values. Default `false`.
 
@@ -148,7 +143,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    mode: Optional[Literal["PERMISSIVE", "DROPMALFORMED", "FAILFAST"]] = None
+    mode: Literal["PERMISSIVE", "DROPMALFORMED", "FAILFAST"] | None = None
     """
     How to handle parsing errors:
       * `PERMISSIVE` - set field value as `null`, move raw data to [columnNameOfCorruptRecord][] column.
@@ -162,7 +157,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    columnNameOfCorruptRecord: Optional[str] = None
+    columnNameOfCorruptRecord: str | None = None
     """
     Name of DataFrame column there corrupted row is stored with `mode=PERMISSIVE`.
 
@@ -198,7 +193,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    inferSchema: Optional[bool] = None
+    inferSchema: bool | None = None
     """
     If `True`, try to infer the input schema by reading a sample of the file (see [samplingRatio][]).
     Default `False` which means that all parsed columns will be `StringType()`.
@@ -208,7 +203,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files. Ignored by [parse_column][] function.
     """
 
-    samplingRatio: Optional[float] = Field(default=None, ge=0, le=1)
+    samplingRatio: float | None = Field(default=None, ge=0, le=1)
     """
     For `inferSchema=True`, read the specified fraction of rows to infer the schema.
     Default `1`.
@@ -218,7 +213,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files. Ignored by [parse_column][] function.
     """
 
-    charset: Optional[str] = None
+    charset: str | None = None
     """
     File encoding. Default is `UTF-8`
 
@@ -227,7 +222,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    valueTag: Optional[str] = None
+    valueTag: str | None = None
     """
     Value used to replace missing values while parsing attributes like `<sometag someattr>`.
     Default `_VALUE`.
@@ -237,7 +232,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    attributePrefix: Optional[str] = None
+    attributePrefix: str | None = None
     """
     While parsing tags containing attributes like `<sometag attr="value">`, attributes are stored as
     DataFrame schema columns with specified prefix, e.g. `_attr`.
@@ -248,7 +243,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    excludeAttribute: Optional[bool] = None
+    excludeAttribute: bool | None = None
     """
     If `True`, exclude attributes while parsing tags like `<sometag attr="value">`.
     Default `false`.
@@ -258,7 +253,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    wildcardColName: Optional[str] = None
+    wildcardColName: str | None = None
     """
     Name of column or columns which should be preserved as raw XML string, and not parsed.
 
@@ -272,7 +267,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    ignoreNamespace: Optional[bool] = None
+    ignoreNamespace: bool | None = None
     """
     If `True`, all namespaces like `<ns:tag>` will be ignored and treated as just `<tag>`.
     Default `False`.
@@ -282,7 +277,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    rowValidationXSDPath: Optional[str] = None
+    rowValidationXSDPath: str | None = None
     """
     Path to XSD file which should be used to validate each row.
     If row does not match XSD, it will be treated as error, behavior depends on [mode][] value.
@@ -304,7 +299,7 @@ class XML(ReadWriteFileFormat):
         Used only for reading files or by [parse_column][] function.
     """
 
-    declaration: Optional[str] = None
+    declaration: str | None = None
     """
     Content of `<?XML ... ?>` declaration.
     Default is `version="1.0" encoding="UTF-8" standalone="yes"`.
@@ -314,7 +309,7 @@ class XML(ReadWriteFileFormat):
         Used only for writing files.
     """
 
-    arrayElementName: Optional[str] = None
+    arrayElementName: str | None = None
     """
     If DataFrame column is `ArrayType`, its content will be written to XML
     inside `<arrayElementName>...</arrayElementName>` tag.
@@ -405,7 +400,7 @@ class XML(ReadWriteFileFormat):
         return [f"com.databricks:spark-xml_{scala_ver.format('{0}.{1}')}:{version}"]
 
     @slot
-    def check_if_supported(self, spark: SparkSession) -> None:
+    def check_if_supported(self, spark: "SparkSession") -> None:
         version = get_spark_version(spark)
         if version.major >= 4:  # noqa: PLR2004
             # since Spark 4.0, XML is bundled with Spark
@@ -423,7 +418,7 @@ class XML(ReadWriteFileFormat):
             )
             raise ValueError(msg) from e
 
-    def parse_column(self, column: str | Column, schema: StructType) -> Column:
+    def parse_column(self, column: "str | Column", schema: "StructType") -> "Column":
         """
         Parses an XML string column into a structured Spark SQL column using the `from_xml` function
         provided by the [Databricks Spark XML library](https://github.com/databricks/spark-xml#pyspark-notes)
@@ -477,10 +472,10 @@ class XML(ReadWriteFileFormat):
 
         Parameters
         ----------
-        column : str | Column
+        column : str | pyspark.sql.Column
             The name of the column or the column object containing XML strings/bytes to parse.
 
-        schema : StructType
+        schema : pyspark.sql.type.StructType
             The schema to apply when parsing the XML data.
             This defines the structure of the output DataFrame column.
 

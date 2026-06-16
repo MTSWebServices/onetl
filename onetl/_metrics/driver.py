@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 
 from humanize import naturalsize
@@ -20,7 +18,7 @@ class SparkDriverMetrics(BaseModel):
     def is_empty(self) -> bool:
         return self.in_memory_bytes < MIN_DRIVER_BYTES
 
-    def update(self, other: SparkDriverMetrics) -> SparkDriverMetrics:
+    def update(self, other: "SparkDriverMetrics") -> "SparkDriverMetrics":
         self.in_memory_bytes += other.in_memory_bytes
         return self
 

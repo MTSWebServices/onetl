@@ -1,10 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import Any, Dict, Optional
-
-from typing_extensions import Literal
+from typing import Any, Literal
 
 from onetl.hooks import slot, support_hooks
 
@@ -68,9 +64,9 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
         ```
     """  # noqa: E501
 
-    name: Optional[str] = None
+    name: str | None = None
     access_delegation: Literal["vended-credentials", "remote-signing"]
-    extra: Dict[str, Any] = Field(default_factory=dict)
+    extra: dict[str, Any] = Field(default_factory=dict)
 
     @slot
     def get_config(self) -> dict[str, str]:

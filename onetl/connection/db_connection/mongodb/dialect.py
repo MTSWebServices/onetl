@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
+from collections.abc import Iterable, Mapping
 from datetime import datetime
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 from onetl.connection.db_connection.db_connection.dialect import DBDialect
 from onetl.connection.db_connection.dialect_mixins import (

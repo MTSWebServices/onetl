@@ -1,12 +1,9 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import ftplib  # nosec
 import os
 import textwrap
 from logging import getLogger
-from typing import Optional
 
 from etl_entities.instance import Host
 
@@ -59,7 +56,7 @@ class FTPExtra(GenericOptions):
         File path encoding
     """
 
-    use_passive_mode: Optional[bool] = None
+    use_passive_mode: bool | None = None
     encoding: str = "utf-8"
 
     class Config:
@@ -138,8 +135,8 @@ class FTP(FileConnection, RenameDirMixin):
 
     host: Host
     port: int = 21
-    user: Optional[str] = None
-    password: Optional[SecretStr] = None
+    user: str | None = None
+    password: SecretStr | None = None
 
     extra: FTPExtra = Field(default_factory=FTPExtra)
 

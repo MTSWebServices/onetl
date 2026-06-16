@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 from onetl.base import BaseFileFilter
 from onetl.base.path_protocol import PathProtocol

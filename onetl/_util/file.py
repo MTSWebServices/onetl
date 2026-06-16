@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import hashlib
 import io
 import os
@@ -22,7 +20,7 @@ def get_file_hash(
     path: os.PathLike | str,
     algorithm: str,
     chunk_size: int = io.DEFAULT_BUFFER_SIZE,
-) -> hashlib._Hash:
+) -> "hashlib._Hash":
     """Get file hash by path and algorithm"""
     digest = hashlib.new(algorithm)
     with Path(path).open("rb") as file:

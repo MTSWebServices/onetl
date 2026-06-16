@@ -1,9 +1,5 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import Optional
-
 from onetl.base.path_protocol import PathWithStatsProtocol
 
 try:
@@ -69,8 +65,8 @@ class FileSizeRange(BaseFileFilter, FrozenModel):
     ```
     """
 
-    min: Optional[ByteSize] = None
-    max: Optional[ByteSize] = None
+    min: ByteSize | None = None
+    max: ByteSize | None = None
 
     @root_validator(skip_on_failure=True)
     def _validate_min_max(cls, values):

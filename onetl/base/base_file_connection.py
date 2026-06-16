@@ -1,10 +1,8 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 from abc import abstractmethod
-from typing import Iterable
+from collections.abc import Iterable
 
 from onetl.base.base_connection import BaseConnection
 from onetl.base.base_file_filter import BaseFileFilter

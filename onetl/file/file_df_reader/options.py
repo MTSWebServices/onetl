@@ -1,8 +1,7 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 try:
     from pydantic.v1 import Field
@@ -43,7 +42,7 @@ class FileDFReaderOptions(FileDFReadOptions, GenericOptions):
     class Config:
         extra = "allow"
 
-    recursive: Optional[bool] = Field(default=None, alias="recursiveFileLookup")
+    recursive: bool | None = Field(default=None, alias="recursiveFileLookup")
     """If `True`, perform recursive file lookup.
 
     !!! warning
@@ -56,7 +55,7 @@ class FileDFReaderOptions(FileDFReadOptions, GenericOptions):
     """
 
     @slot
-    def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader:
+    def apply_to_reader(self, reader: "DataFrameReader") -> "DataFrameReader":
         """
         Apply provided format to `pyspark.sql.DataFrameReader`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 

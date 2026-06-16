@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --only-group docs
+          uv sync --group docs
 
       - name: Check changelog entry exists
         run: |

@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import warnings
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from etl_entities.instance import Host
 
@@ -170,7 +168,7 @@ class MSSQL(JDBCConnection):
 
     database: str
     host: Host
-    port: Optional[int] = None
+    port: int | None = None
     extra: MSSQLExtra = MSSQLExtra()
 
     ReadOptions = MSSQLReadOptions

@@ -1,12 +1,10 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import getpass
 import logging
 import os
 from contextlib import suppress
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from etl_entities.instance import Cluster, Host
 
@@ -148,10 +146,10 @@ class SparkHDFS(SparkFileDFConnection):
     Slots = SparkHDFSSlots
 
     cluster: Cluster
-    host: Optional[Host] = None
+    host: Host | None = None
     ipc_port: int = Field(default=8020, alias=avoid_alias("port"))  # type: ignore[literal-required]
 
-    _active_host: Optional[str] = PrivateAttr(default=None)
+    _active_host: str | None = PrivateAttr(default=None)
 
     @slot
     def path_from_string(self, path: os.PathLike | str) -> RemotePath:
@@ -212,7 +210,7 @@ class SparkHDFS(SparkFileDFConnection):
 
     @slot
     @classmethod
-    def get_current(cls, spark: SparkSession):
+    def get_current(cls, spark: "SparkSession"):
         """
         Create connection for current cluster. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -227,7 +225,7 @@ class SparkHDFS(SparkFileDFConnection):
 
         Parameters
         ----------
-        spark : SparkSession
+        spark : pyspark.sql.SparkSession
 
             See [SparkHDFS][] constructor documentation.
 

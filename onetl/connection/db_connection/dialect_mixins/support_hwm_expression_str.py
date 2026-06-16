@@ -1,14 +1,15 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from etl_entities.hwm import HWM
 
-from onetl.base import BaseDBConnection
+if TYPE_CHECKING:
+    from onetl.base import BaseDBConnection
 
 
 class SupportHWMExpressionStr:
-    connection: BaseDBConnection
+    connection: "BaseDBConnection"
 
     def validate_hwm(self, hwm: HWM | None) -> HWM | None:
         if not hwm or hwm.expression is None:

@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 import threading
 from abc import abstractmethod
+from collections.abc import Iterable, Iterator
 from contextlib import suppress
 from logging import getLogger
-from typing import Any, Iterable, Iterator
+from typing import Any
 
 from humanize import naturalsize
 

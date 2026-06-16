@@ -1,13 +1,11 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 import textwrap
 import warnings
 from contextlib import suppress
 from logging import getLogger
-from typing import TYPE_CHECKING, Optional, Tuple, cast
+from typing import TYPE_CHECKING, cast
 
 from etl_entities.instance import Cluster, Host
 
@@ -66,7 +64,7 @@ except (ImportError, NameError) as err:
     ) from err
 
 log = getLogger(__name__)
-ENTRY_TYPE = Tuple[str, dict]
+ENTRY_TYPE = tuple[str, dict]
 
 
 class HDFSExtra(GenericOptions):
@@ -249,12 +247,12 @@ class HDFS(FileConnection, RenameDirMixin):
         ```
     """
 
-    cluster: Optional[Cluster] = None
-    host: Optional[Host] = None
+    cluster: Cluster | None = None
+    host: Host | None = None
     webhdfs_port: int = Field(alias=avoid_alias("port"), default=50070)  # type: ignore[literal-required]
-    user: Optional[str] = None
-    password: Optional[SecretStr] = None
-    keytab: Optional[FilePath] = None
+    user: str | None = None
+    password: SecretStr | None = None
+    keytab: FilePath | None = None
     extra: HDFSExtra = Field(default_factory=HDFSExtra)
 
     Slots = HDFSSlots
@@ -263,7 +261,7 @@ class HDFS(FileConnection, RenameDirMixin):
 
     Extra = HDFSExtra
 
-    _active_host: Optional[str] = PrivateAttr(default=None)
+    _active_host: str | None = PrivateAttr(default=None)
 
     @slot
     @classmethod

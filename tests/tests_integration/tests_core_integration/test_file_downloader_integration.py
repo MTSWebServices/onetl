@@ -1043,8 +1043,11 @@ def test_file_downloader_detect_hwm_type_incremental_batch_strategy(
     )
 
     error_message = "FileDownloader(hwm=...) cannot be used with IncrementalBatchStrategy"
-    with pytest.raises(ValueError, match=re.escape(error_message)), IncrementalBatchStrategy(
-        step=timedelta(days=5),
+    with (
+        pytest.raises(ValueError, match=re.escape(error_message)),
+        IncrementalBatchStrategy(
+            step=timedelta(days=5),
+        ),
     ):
         downloader.run()
 

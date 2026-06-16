@@ -1,11 +1,7 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
-from typing import Any, Dict, List, Optional
-
-from typing_extensions import Literal
+from typing import Any, Literal
 
 from onetl._util.version import Version
 from onetl.hooks import slot, support_hooks
@@ -89,15 +85,15 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
 
     path: PurePathProtocol
     host: str
-    port: Optional[int] = None
+    port: int | None = None
     protocol: Literal["http", "https"] = "https"
     bucket: str
     region: str
     path_style_access: bool = False
-    access_key: Optional[str] = None
-    secret_key: Optional[SecretStr] = None
-    session_token: Optional[SecretStr] = None
-    extra: Dict[str, Any] = Field(default_factory=dict)
+    access_key: str | None = None
+    secret_key: SecretStr | None = None
+    session_token: SecretStr | None = None
+    extra: dict[str, Any] = Field(default_factory=dict)
 
     @slot
     def get_config(self) -> dict[str, str]:
@@ -116,7 +112,7 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
 
     @slot
     @classmethod
-    def get_packages(cls, package_version: str) -> List[str]:
+    def get_packages(cls, package_version: str) -> list[str]:
         """
         Get package names to be downloaded by Spark. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 

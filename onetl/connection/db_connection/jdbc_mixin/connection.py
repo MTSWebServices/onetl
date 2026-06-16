@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import warnings
 from abc import abstractmethod
+from collections.abc import Callable
 from contextlib import closing
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Callable, ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 try:
     from pydantic.v1 import Field, SecretStr
@@ -68,7 +67,7 @@ class JDBCMixin:
     However, some of Spark's magic is used here, for example to convert raw ResultSet to move convenient DataFrame
     """
 
-    spark: SparkSession = Field(repr=False)
+    spark: "SparkSession" = Field(repr=False)
     user: str
     password: SecretStr
 
@@ -145,7 +144,7 @@ class JDBCMixin:
         self,
         query: str,
         options: JDBCFetchOptions | dict | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
         **Immediately** execute SELECT statement **on Spark driver** and return in-memory DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -214,7 +213,7 @@ class JDBCMixin:
         self,
         statement: str,
         options: JDBCExecuteOptions | dict | None = None,
-    ) -> DataFrame | None:
+    ) -> "DataFrame | None":
         """
         **Immediately** execute DDL, DML or procedure/function **on Spark driver**. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -285,7 +284,7 @@ class JDBCMixin:
         self,
         query: str,
         options: JDBCFetchOptions | JDBCExecuteOptions,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         return self._execute_on_driver(
             statement=query,
             statement_type=JDBCStatementType.PREPARED,
@@ -298,7 +297,7 @@ class JDBCMixin:
         self,
         query: str,
         options: JDBCFetchOptions,
-    ) -> DataFrame | None:
+    ) -> "DataFrame | None":
         return self._execute_on_driver(
             statement=query,
             statement_type=JDBCStatementType.PREPARED,
@@ -311,7 +310,7 @@ class JDBCMixin:
         self,
         query: str,
         options: JDBCExecuteOptions,
-    ) -> DataFrame | None:
+    ) -> "DataFrame | None":
         return self._execute_on_driver(
             statement=query,
             statement_type=JDBCStatementType.CALL,
@@ -477,11 +476,11 @@ class JDBCMixin:
 
         return jdbc_connection.createStatement(*statement_args)
 
-    def _statement_to_dataframe(self, jdbc_connection, jdbc_statement) -> DataFrame:
+    def _statement_to_dataframe(self, jdbc_connection, jdbc_statement) -> "DataFrame":
         result_set = jdbc_statement.getResultSet()
         return self._resultset_to_dataframe(jdbc_connection, result_set)
 
-    def _statement_to_optional_dataframe(self, jdbc_connection, jdbc_statement) -> DataFrame | None:
+    def _statement_to_optional_dataframe(self, jdbc_connection, jdbc_statement) -> "DataFrame | None":
         """
         Returns `org.apache.spark.sql.DataFrame` or `None`, if ResultSet is does not contain any columns.
 
@@ -500,7 +499,7 @@ class JDBCMixin:
 
         return self._resultset_to_dataframe(jdbc_connection, result_set)
 
-    def _resultset_to_dataframe(self, jdbc_connection, result_set) -> DataFrame:
+    def _resultset_to_dataframe(self, jdbc_connection, result_set) -> "DataFrame":
         """
         Converts `java.sql.ResultSet` to `org.apache.spark.sql.DataFrame` using Spark's internal methods.
 

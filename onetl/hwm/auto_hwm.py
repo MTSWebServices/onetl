@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from typing import Any
 
 from etl_entities.hwm import HWM
@@ -29,12 +27,12 @@ class AutoDetectHWM(HWM):
 
         return values
 
-    def update(self: AutoDetectHWM, value: Any) -> AutoDetectHWM:
+    def update(self, value: Any) -> "AutoDetectHWM":
         """Update current HWM value with some implementation-specific logic, and return HWM"""
         msg = "update method should be implemented in auto detected subclasses"
         raise NotImplementedError(msg)
 
-    def reset(self: AutoDetectHWM) -> AutoDetectHWM:
+    def reset(self) -> "AutoDetectHWM":
         raise NotImplementedError
 
     def dict(self, **kwargs):

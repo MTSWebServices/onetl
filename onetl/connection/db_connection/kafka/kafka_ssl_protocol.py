@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 try:
     from pydantic.v1 import Field, SecretStr, validator
@@ -13,12 +11,11 @@ except (ImportError, AttributeError):
 from onetl._util.alias import avoid_alias
 from onetl._util.file import is_file_readable
 from onetl._util.spark import stringify
+from onetl.connection.db_connection.kafka.kafka_protocol import KafkaProtocol
 from onetl.impl import GenericOptions, LocalPath
 
 if TYPE_CHECKING:
-    from onetl.connection import Kafka
-
-from onetl.connection.db_connection.kafka.kafka_protocol import KafkaProtocol
+    from onetl.connection.db_connection.kafka.connection import Kafka
 
 
 class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
@@ -141,43 +138,43 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
         ```
     """
 
-    keystore_type: Optional[str] = Field(  # type: ignore[literal-required]
+    keystore_type: str | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.keystore.type"),
     )
-    keystore_location: Optional[LocalPath] = Field(  # type: ignore[literal-required]
+    keystore_location: LocalPath | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.keystore.location"),
     )
-    keystore_password: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+    keystore_password: SecretStr | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.keystore.password"),
     )
-    keystore_certificate_chain: Optional[str] = Field(  # type: ignore[literal-required]
+    keystore_certificate_chain: str | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.keystore.certificate.chain"),
         repr=False,
     )
-    keystore_key: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+    keystore_key: SecretStr | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.keystore.key"),
     )
 
     # https://knowledge.informatica.com/s/article/145442?language=en_US
-    key_password: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+    key_password: SecretStr | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.key.password"),
     )
     truststore_type: str = Field(alias=avoid_alias("ssl.truststore.type"))  # type: ignore[literal-required]
-    truststore_location: Optional[LocalPath] = Field(  # type: ignore[literal-required]
+    truststore_location: LocalPath | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.truststore.location"),
     )
-    truststore_password: Optional[SecretStr] = Field(  # type: ignore[literal-required]
+    truststore_password: SecretStr | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.truststore.password"),
     )
-    truststore_certificates: Optional[str] = Field(  # type: ignore[literal-required]
+    truststore_certificates: str | None = Field(  # type: ignore[literal-required]
         default=None,
         alias=avoid_alias("ssl.truststore.certificates"),
         repr=False,
@@ -188,7 +185,7 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
         strip_prefixes = ("kafka.",)
         extra = "allow"
 
-    def get_options(self, kafka: Kafka) -> dict:
+    def get_options(self, kafka: "Kafka") -> dict:
         result = self.dict(by_alias=True, exclude_none=True)
         if kafka.auth:
             result["security.protocol"] = "SASL_SSL"
@@ -196,7 +193,7 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             result["security.protocol"] = "SSL"
         return stringify(result)
 
-    def cleanup(self, kafka: Kafka) -> None:
+    def cleanup(self, kafka: "Kafka") -> None:
         # nothing to cleanup
         pass
 

@@ -1,15 +1,14 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
 import shutil
 import textwrap
 import warnings
+from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Generator, Iterable, List, Optional, Tuple, Type, Union, cast
+from typing import cast
 
 from etl_entities.hwm import FileHWM, FileListHWM
 from etl_entities.instance import AbsolutePath
@@ -54,7 +53,7 @@ from onetl.strategy.hwm_strategy import HWMStrategy
 log = logging.getLogger(__name__)
 
 # source, target, temp
-DOWNLOAD_ITEMS_TYPE = OrderedSet[Tuple[RemotePath, LocalPath, Optional[LocalPath]]]
+DOWNLOAD_ITEMS_TYPE = OrderedSet[tuple[RemotePath, LocalPath, LocalPath | None]]
 
 
 class FileDownloadStatus(Enum):
@@ -258,14 +257,14 @@ class FileDownloader(FrozenModel):
     connection: BaseFileConnection
 
     local_path: LocalPath
-    source_path: Optional[RemotePath] = None
-    temp_path: Optional[LocalPath] = None
+    source_path: RemotePath | None = None
+    temp_path: LocalPath | None = None
 
-    filters: List[BaseFileFilter] = Field(default_factory=list, alias="filter")
-    limits: List[BaseFileLimit] = Field(default_factory=list, alias="limit")
+    filters: list[BaseFileFilter] = Field(default_factory=list, alias="filter")
+    limits: list[BaseFileLimit] = Field(default_factory=list, alias="limit")
 
-    hwm: Optional[FileHWM] = None
-    hwm_type: Optional[Union[Type[OldFileListHWM], str]] = None
+    hwm: FileHWM | None = None
+    hwm_type: type[OldFileListHWM] | str | None = None
 
     options: FileDownloaderOptions = FileDownloaderOptions()
 

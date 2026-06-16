@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
 import re
@@ -10,7 +8,7 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from decimal import Decimal
 from textwrap import indent
-from typing import TYPE_CHECKING, Any, ClassVar, Optional
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from onetl._util.spark import get_client_info
 
@@ -177,8 +175,8 @@ class Oracle(JDBCConnection):
 
     host: Host
     port: int = 1521
-    sid: Optional[str] = None
-    service_name: Optional[str] = None
+    sid: str | None = None
+    service_name: str | None = None
     extra: OracleExtra = OracleExtra()
 
     ReadOptions = OracleReadOptions
@@ -316,7 +314,7 @@ class Oracle(JDBCConnection):
         self,
         query: str,
         options: JDBCExecuteOptions,
-    ) -> DataFrame | None:
+    ) -> "DataFrame | None":
         result = super()._call_on_driver(query, options)
         self._handle_compile_errors(query.strip(), options)
         return result

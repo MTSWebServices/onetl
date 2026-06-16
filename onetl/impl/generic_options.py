@@ -1,11 +1,10 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import re
+from collections.abc import Iterable
 from fnmatch import fnmatch
-from typing import Iterable, TypeVar
+from typing import TypeVar
 
 try:
     from pydantic.v1 import root_validator
@@ -29,7 +28,7 @@ class GenericOptions(FrozenModel):
     @classmethod
     def parse(
         cls,
-        options: GenericOptions | dict | None,
+        options: "GenericOptions | dict | None",
     ) -> Self:
         """
         If a parameter inherited from the ReadOptions class was passed, then it will be returned unchanged.

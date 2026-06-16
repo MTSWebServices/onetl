@@ -1,9 +1,5 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import Optional
-
 from typing_extensions import deprecated
 
 try:
@@ -54,7 +50,7 @@ class JDBCOptions(GenericOptions):
         prohibited_options = PROHIBITED_OPTIONS
         extra = "allow"
 
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     """The number of seconds the driver will wait for a statement to execute.
     Zero means there is no limit.
 
@@ -62,7 +58,7 @@ class JDBCOptions(GenericOptions):
     some drivers can check the timeout of each query instead of an entire JDBC batch.
     """
 
-    fetchsize: Optional[int] = None
+    fetchsize: int | None = None
     """How many rows to fetch per round trip.
 
     Tuning this option can influence performance of reading.
@@ -103,7 +99,7 @@ class JDBCFetchOptions(GenericOptions):
         prohibited_options = PROHIBITED_OPTIONS
         extra = "allow"
 
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     """The number of seconds the driver will wait for a statement to execute.
     Zero means there is no limit.
 
@@ -111,7 +107,7 @@ class JDBCFetchOptions(GenericOptions):
     some drivers can check the timeout of each query instead of an entire JDBC batch.
     """
 
-    fetchsize: Optional[int] = None
+    fetchsize: int | None = None
     """How many rows to fetch per round trip.
 
     Tuning this option can influence performance of reading.
@@ -150,7 +146,7 @@ class JDBCExecuteOptions(GenericOptions):
         prohibited_options = PROHIBITED_OPTIONS
         extra = "allow"
 
-    query_timeout: Optional[int] = Field(default=None, alias="queryTimeout")
+    query_timeout: int | None = Field(default=None, alias="queryTimeout")
     """The number of seconds the driver will wait for a statement to execute.
     Zero means there is no limit.
 
@@ -158,7 +154,7 @@ class JDBCExecuteOptions(GenericOptions):
     some drivers can check the timeout of each query instead of an entire JDBC batch.
     """
 
-    fetchsize: Optional[int] = None
+    fetchsize: int | None = None
     """How many rows to fetch per round trip.
 
     Tuning this option can influence performance of reading.

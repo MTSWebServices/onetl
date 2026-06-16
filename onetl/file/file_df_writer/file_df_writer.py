@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 from typing import TYPE_CHECKING
 
@@ -95,7 +93,7 @@ class FileDFWriter(FrozenModel):
     _connection_checked: bool = PrivateAttr(default=False)
 
     @slot
-    def run(self, df: DataFrame) -> None:
+    def run(self, df: "DataFrame") -> None:
         """
         Method for writing DataFrame as files. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -160,7 +158,7 @@ class FileDFWriter(FrozenModel):
 
         entity_boundary_log(log, f"{self.__class__.__name__}.run() ends", char="-")
 
-    def _log_parameters(self, df: DataFrame) -> None:
+    def _log_parameters(self, df: "DataFrame") -> None:
         log.info("|Spark| -> |%s| Writing dataframe using parameters:", self.connection.__class__.__name__)
         log_with_indent(log, "target_path = '%s'", self.target_path)
         log_with_indent(log, "format = %r", self.format)

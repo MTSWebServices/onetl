@@ -1,12 +1,10 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
 import warnings
 from contextlib import suppress
-from typing import TYPE_CHECKING, ClassVar, Dict, List, Optional
+from typing import TYPE_CHECKING, ClassVar
 
 from etl_entities.instance import Host
 
@@ -15,7 +13,7 @@ try:
 except (ImportError, AttributeError):
     from pydantic import SecretStr, root_validator, validator  # type: ignore[no-redef, assignment]
 
-from typing_extensions import Literal
+from typing import Literal
 
 from onetl._util.hadoop import get_hadoop_config
 from onetl._util.java import try_import_java_class
@@ -192,17 +190,17 @@ class SparkS3(SparkFileDFConnection):
     Extra = SparkS3Extra
 
     host: Host
-    port: Optional[int] = None
+    port: int | None = None
     bucket: str
     protocol: Literal["http", "https"] = "https"
-    access_key: Optional[str] = None
-    secret_key: Optional[SecretStr] = None
-    session_token: Optional[SecretStr] = None
-    region: Optional[str] = None
-    path_style_access: Optional[bool] = None
+    access_key: str | None = None
+    secret_key: SecretStr | None = None
+    session_token: SecretStr | None = None
+    region: str | None = None
+    path_style_access: bool | None = None
     extra: SparkS3Extra = SparkS3Extra()
 
-    _ROOT_CONFIG_KEYS: ClassVar[List[str]] = [
+    _ROOT_CONFIG_KEYS: ClassVar[list[str]] = [
         "committer.magic.enabled",
         "committer.name",
         "user.agent.prefix",
@@ -355,16 +353,16 @@ class SparkS3(SparkFileDFConnection):
         paths: list[PurePathProtocol],
         format: BaseReadableFileFormat,
         root: PurePathProtocol | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         options: FileDFReadOptions | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         self._patch_hadoop_conf()
         return super().read_files_as_df(paths, format=format, root=root, df_schema=df_schema, options=options)
 
     @slot
     def write_df_as_files(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         path: PurePathProtocol,
         format: BaseWritableFileFormat,
         options: FileDFWriteOptions | None = None,
@@ -373,7 +371,7 @@ class SparkS3(SparkFileDFConnection):
         return super().write_df_as_files(df, path, format=format, options=options)
 
     @root_validator
-    def _validate_port(cls, values: Dict):
+    def _validate_port(cls, values: dict):
         if values["port"] is not None:
             return values
 
@@ -381,13 +379,13 @@ class SparkS3(SparkFileDFConnection):
         return values
 
     @root_validator
-    def _set_path_style_access(cls, values: Dict):
+    def _set_path_style_access(cls, values: dict):
         if values.get("path_style_access") is None:
             values["path_style_access"] = getattr(values["extra"], "path.style.access", False)
         return values
 
     @validator("spark")
-    def _check_java_class_imported(cls, spark: SparkSession) -> SparkSession:
+    def _check_java_class_imported(cls, spark: "SparkSession") -> "SparkSession":
         java_class = "org.apache.hadoop.fs.s3a.S3AFileSystem"
 
         try:

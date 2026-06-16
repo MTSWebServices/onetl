@@ -38,8 +38,6 @@ Options:
     --file FILE     Process a single file instead of a directory.
 """
 
-from __future__ import annotations
-
 import argparse
 import re
 import sys

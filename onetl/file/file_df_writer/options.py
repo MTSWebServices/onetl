@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
+from collections.abc import Iterable
 from enum import Enum
-from typing import TYPE_CHECKING, Iterable, List, Optional, Union
+from typing import TYPE_CHECKING
 
 try:
     from pydantic.v1 import Field, root_validator
@@ -182,7 +181,7 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
         does not affect behavior of any `mode`
     """
 
-    partition_by: Optional[Union[List[str], str]] = Field(default=None, alias="partitionBy")
+    partition_by: list[str] | str | None = Field(default=None, alias="partitionBy")
     """
     List of columns should be used for data partitioning. `None` means partitioning is disabled.
 
@@ -206,7 +205,7 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
     """
 
     @slot
-    def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter:
+    def apply_to_writer(self, writer: "DataFrameWriter") -> "DataFrameWriter":
         """
         Apply provided format to `pyspark.sql.DataFrameWriter`. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 

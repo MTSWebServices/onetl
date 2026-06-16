@@ -1,13 +1,10 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import glob
 import os
 import re
 import textwrap
 import warnings
-from typing import List, Optional, Union
 
 from typing_extensions import deprecated
 
@@ -97,9 +94,9 @@ class FileFilter(BaseFileFilter, FrozenModel):
     class Config:
         arbitrary_types_allowed = True
 
-    glob: Optional[str] = None
-    regexp: Optional[re.Pattern] = None
-    exclude_dirs: List[RemotePath] = Field(default_factory=list)
+    glob: str | None = None
+    regexp: re.Pattern | None = None
+    exclude_dirs: list[RemotePath] = Field(default_factory=list)
 
     @validator("glob", pre=True)
     def check_glob(cls, value: str) -> str:
@@ -110,14 +107,14 @@ class FileFilter(BaseFileFilter, FrozenModel):
         return value
 
     @validator("regexp", pre=True)
-    def check_regexp(cls, value: Union[re.Pattern, str]) -> re.Pattern:
+    def check_regexp(cls, value: re.Pattern | str) -> re.Pattern:
         if isinstance(value, str):
             return re.compile(value, re.IGNORECASE | re.DOTALL)
 
         return value
 
     @validator("exclude_dirs", each_item=True, pre=True)
-    def check_exclude_dir(cls, value: Union[str, os.PathLike]) -> RemotePath:
+    def check_exclude_dir(cls, value: str | os.PathLike) -> RemotePath:
         return RemotePath(value)
 
     @root_validator

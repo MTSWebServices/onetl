@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
-from typing import Generic, Iterable, TypeVar
+from collections.abc import Iterable
+from typing import Generic, TypeVar
 
 from humanize import naturalsize
 
