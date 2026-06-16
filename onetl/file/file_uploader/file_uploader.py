@@ -1,12 +1,11 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Iterable, Optional, Tuple, cast
+from typing import cast
 
 from ordered_set import OrderedSet
 
@@ -36,7 +35,7 @@ from onetl.log import entity_boundary_log, log_lines, log_options, log_with_inde
 log = logging.getLogger(__name__)
 
 # source, target, temp
-UPLOAD_ITEMS_TYPE = OrderedSet[Tuple[LocalPath, RemotePath, Optional[RemotePath]]]
+UPLOAD_ITEMS_TYPE = OrderedSet[tuple[LocalPath, RemotePath, RemotePath | None]]
 
 
 class FileUploadStatus(Enum):
@@ -145,8 +144,8 @@ class FileUploader(FrozenModel):
 
     target_path: RemotePath
 
-    local_path: Optional[LocalPath] = None
-    temp_path: Optional[RemotePath] = None
+    local_path: LocalPath | None = None
+    temp_path: RemotePath | None = None
 
     options: FileUploaderOptions = FileUploaderOptions()
 

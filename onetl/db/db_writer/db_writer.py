@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from onetl._util.alias import avoid_alias
 
@@ -102,7 +100,7 @@ class DBWriter(FrozenModel):
 
     connection: BaseDBConnection
     target: str = Field(alias=avoid_alias("table"))  # type: ignore[literal-required]
-    options: Optional[GenericOptions] = None
+    options: GenericOptions | None = None
 
     _connection_checked: bool = PrivateAttr(default=False)
 
@@ -127,7 +125,7 @@ class DBWriter(FrozenModel):
         return None
 
     @slot
-    def run(self, df: DataFrame) -> None:
+    def run(self, df: "DataFrame") -> None:
         """
         Method for writing your df to specified target. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 

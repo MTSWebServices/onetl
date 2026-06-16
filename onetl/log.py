@@ -1,20 +1,18 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import io
 import json
 import logging
-import sys
+from collections.abc import Collection, Iterable, Mapping
 from contextlib import redirect_stdout
 from enum import Enum
 from textwrap import dedent
-from typing import TYPE_CHECKING, Any, Collection, Iterable, Mapping, Set
+from typing import TYPE_CHECKING, Any
 
-from etl_entities.hwm import HWM
 from typing_extensions import deprecated
 
 if TYPE_CHECKING:
+    from etl_entities.hwm import HWM
     from pyspark.sql import DataFrame
 
 onetl_log = logging.getLogger("onetl")
@@ -171,17 +169,9 @@ def set_default_logging_format() -> None:
         handler.setFormatter(logging.Formatter(LOG_FORMAT))
 
 
-def _log(logger: logging.Logger, msg: str, *args, level: int = logging.INFO, stacklevel: int = 1, **kwargs) -> None:
-    if sys.version_info >= (3, 8):
-        # https://github.com/python/cpython/pull/7424
-        logger.log(level, msg, *args, stacklevel=stacklevel + 1, **kwargs)
-    else:
-        logger.log(level, msg, *args, **kwargs)
-
-
 def log_with_indent(
     logger: logging.Logger,
-    inp: str,
+    msg: str,
     *args,
     indent: int = 0,
     level: int = logging.INFO,
@@ -210,7 +200,7 @@ def log_with_indent(
     DEBUG onetl.module            message with additional indent
     ```
     """
-    _log(logger, "%s" + inp, " " * (BASE_LOG_INDENT + indent), *args, level=level, stacklevel=stacklevel + 1, **kwargs)
+    logger.log(level, "%s" + msg, " " * (BASE_LOG_INDENT + indent), *args, stacklevel=stacklevel + 1, **kwargs)  # noqa: G003
 
 
 def log_lines(  # noqa: PLR0913
@@ -248,9 +238,9 @@ def log_lines(  # noqa: PLR0913
     stacklevel += 1
     for index, line in enumerate(dedent(inp).splitlines()):
         if name and not index:
-            _log(logger, "%s%s = %s", base_indent, name, line, level=level, stacklevel=stacklevel)
+            logger.log(level, "%s%s = %s", base_indent, name, line, stacklevel=stacklevel)
         else:
-            _log(logger, "%s%s", base_indent, line, level=level, stacklevel=stacklevel)
+            logger.log(level, "%s%s", base_indent, line, stacklevel=stacklevel)
 
 
 def log_json(  # noqa: PLR0913
@@ -356,48 +346,46 @@ def log_collection(  # noqa: PLR0913
     base_indent = " " * (BASE_LOG_INDENT + indent)
     stacklevel += 1
 
-    if not isinstance(collection, (Mapping, Set)):
+    if not isinstance(collection, (Mapping, set)):
         collection = list(collection)  # force convert all iterators to list to know size
 
     start_bracket = "["
     end_bracket = "]"
-    if isinstance(collection, (Mapping, Set)):
+    if isinstance(collection, (Mapping, set)):
         start_bracket = "{"
         end_bracket = "}"
 
     if not collection:
-        _log(logger, "%s%s = %s%s", base_indent, name, start_bracket, end_bracket, level=level, stacklevel=stacklevel)
+        logger.log(level, "%s%s = %s%s", base_indent, name, start_bracket, end_bracket, stacklevel=stacklevel)
         return
 
     nested_indent = " " * (BASE_LOG_INDENT + indent + 4)
-    _log(logger, "%s%s = %s", base_indent, name, start_bracket, level=level, stacklevel=stacklevel)
+    logger.log(level, "%s%s = %s", base_indent, name, start_bracket, stacklevel=stacklevel)
 
     for i, item in enumerate(collection, start=1):
         if max_items and i > max_items and level > logging.DEBUG:
-            _log(
-                logger,
+            logger.log(
+                level,
                 "%s# ... %d more items of type %r",
                 nested_indent,
                 len(collection) - max_items,
                 type(item),
-                level=level,
                 stacklevel=stacklevel,
             )
-            _log(
-                logger,
+            logger.log(
+                level,
                 "%s# change level to 'DEBUG' to print all values",
                 nested_indent,
-                level=level,
                 stacklevel=stacklevel,
             )
             break
 
         if isinstance(collection, Mapping):
-            _log(logger, "%s%r: %r,", nested_indent, item, collection[item], level=level, stacklevel=stacklevel)
+            logger.log(level, "%s%r: %r,", nested_indent, item, collection[item], stacklevel=stacklevel)
         else:
-            _log(logger, "%s%r,", nested_indent, item, level=level, stacklevel=stacklevel)
+            logger.log(level, "%s%r,", nested_indent, item, stacklevel=stacklevel)
 
-    _log(logger, "%s%s", base_indent, end_bracket, level=level, stacklevel=stacklevel)
+    logger.log(level, "%s%s", base_indent, end_bracket, stacklevel=stacklevel)
 
 
 def entity_boundary_log(logger: logging.Logger, msg: str, char: str = "=", stacklevel: int = 1) -> None:
@@ -416,7 +404,7 @@ def entity_boundary_log(logger: logging.Logger, msg: str, char: str = "=", stack
     ```
     """
     filing = char * (HALF_SCREEN_SIZE - len(msg) // 2)
-    _log(logger, "%s %s %s", filing, msg, filing, stacklevel=stacklevel + 1)
+    logger.info("%s %s %s", filing, msg, filing, stacklevel=stacklevel + 1)
 
 
 def log_options(
@@ -473,7 +461,7 @@ def log_options(
         log_with_indent(logger, "%s = %r", name, None, indent=indent, stacklevel=stacklevel, **kwargs)
 
 
-def log_dataframe_schema(logger: logging.Logger, df: DataFrame, indent: int = 0, stacklevel: int = 1):
+def log_dataframe_schema(logger: logging.Logger, df: "DataFrame", indent: int = 0, stacklevel: int = 1):
     """Log dataframe schema in the following format:
 
     Examples
@@ -502,7 +490,7 @@ def log_dataframe_schema(logger: logging.Logger, df: DataFrame, indent: int = 0,
         log_with_indent(logger, "%s", line, indent=indent + 4, stacklevel=stacklevel)
 
 
-def log_hwm(logger: logging.Logger, hwm: HWM, indent: int = 0, stacklevel: int = 1):
+def log_hwm(logger: logging.Logger, hwm: "HWM", indent: int = 0, stacklevel: int = 1):
     """Log HWM in the following format:
 
     Examples

@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     from pydantic.v1 import AnyUrl, Field
@@ -109,12 +107,12 @@ class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
     OAuth2ClientCredentials = IcebergRESTCatalogOAuth2ClientCredentials
 
     url: AnyUrl
-    headers: Dict[str, Any] = Field(default_factory=dict)
-    extra: Dict[str, Any] = Field(default_factory=dict)
+    headers: dict[str, Any] = Field(default_factory=dict)
+    extra: dict[str, Any] = Field(default_factory=dict)
 
-    auth: Optional[IcebergRESTCatalogAuth] = None
+    auth: IcebergRESTCatalogAuth | None = None
 
-    def get_config(self) -> Dict[str, str]:
+    def get_config(self) -> dict[str, str]:
         config = {
             "type": "rest",
             "uri": str(self.url),

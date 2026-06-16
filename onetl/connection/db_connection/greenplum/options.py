@@ -1,10 +1,7 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import warnings
 from enum import Enum
-from typing import Optional
 
 from onetl.impl.generic_options import GenericOptions
 
@@ -108,7 +105,7 @@ class GreenplumReadOptions(GenericOptions):
         prohibited_options = JDBCMixinOptions.Config.prohibited_options | GENERIC_PROHIBITED_OPTIONS | WRITE_OPTIONS
         extra = "allow"
 
-    partition_column: Optional[str] = Field(alias="partitionColumn")
+    partition_column: str | None = Field(alias="partitionColumn")
     """Column used to parallelize reading from a table.
 
     !!! warning
@@ -189,7 +186,7 @@ class GreenplumReadOptions(GenericOptions):
     ```
     """
 
-    num_partitions: Optional[int] = Field(alias="partitions")
+    num_partitions: int | None = Field(alias="partitions")
     """Number of jobs created by Spark to read the table content in parallel.
 
     See documentation for [partition_column][] for more details

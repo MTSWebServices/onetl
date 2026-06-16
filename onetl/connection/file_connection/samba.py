@@ -1,16 +1,13 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 import textwrap
 from io import BytesIO
 from logging import getLogger
 from pathlib import Path
-from typing import Optional
+from typing import Literal
 
 from etl_entities.instance import Host
-from typing_extensions import Literal
 
 from onetl.impl.generic_options import GenericOptions
 
@@ -161,11 +158,11 @@ class Samba(FileConnection):
     host: Host
     share: str
     protocol: Literal["SMB", "NetBIOS"] = "SMB"
-    port: Optional[int] = None
+    port: int | None = None
     domain: str = ""
     auth_type: Literal["NTLMv1", "NTLMv2"] = "NTLMv2"
-    user: Optional[str] = None
-    password: Optional[SecretStr] = None
+    user: str | None = None
+    password: SecretStr | None = None
 
     extra: SambaExtra = Field(default_factory=SambaExtra)
 

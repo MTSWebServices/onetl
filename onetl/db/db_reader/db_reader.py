@@ -1,11 +1,9 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import textwrap
 import warnings
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, List, Optional, Union
+from typing import TYPE_CHECKING, Any
 
 import frozendict
 from etl_entities.hwm import HWM, ColumnHWM, KeyValueHWM
@@ -41,11 +39,11 @@ from onetl.strategy.batch_hwm_strategy import BatchHWMStrategy
 from onetl.strategy.hwm_strategy import HWMStrategy
 from onetl.strategy.strategy_manager import StrategyManager
 
-log = getLogger(__name__)
-
 if TYPE_CHECKING:
     from pyspark.sql.dataframe import DataFrame
     from pyspark.sql.types import StructField, StructType
+
+log = getLogger(__name__)
 
 
 @support_hooks
@@ -301,14 +299,14 @@ class DBReader(FrozenModel):
 
     connection: BaseDBConnection
     source: str = Field(alias=avoid_alias("table"))  # type: ignore[literal-required]
-    columns: Optional[List[str]] = Field(default=None, min_items=1)
-    where: Optional[Any] = None
-    hint: Optional[Any] = None
-    df_schema: Optional[StructType] = None
-    hwm_column: Optional[Union[str, tuple]] = None
-    hwm_expression: Optional[str] = None
-    hwm: Optional[Union[AutoDetectHWM, ColumnHWM, KeyValueHWM]] = None
-    options: Optional[GenericOptions] = None
+    columns: list[str] | None = Field(default=None, min_items=1)
+    where: Any | None = None
+    hint: Any | None = None
+    df_schema: "StructType | None" = None
+    hwm_column: str | tuple | None = None
+    hwm_expression: str | None = None
+    hwm: AutoDetectHWM | ColumnHWM | KeyValueHWM | None = None
+    options: GenericOptions | None = None
 
     AutoDetectHWM = AutoDetectHWM
 
@@ -349,7 +347,7 @@ class DBReader(FrozenModel):
         return result
 
     @validator("df_schema", always=True)
-    def validate_df_schema(cls, value: StructType | None, values: dict) -> StructType | None:
+    def validate_df_schema(cls, value: "StructType | None", values: dict) -> "StructType | None":
         if "connection" not in values:
             return value  # type: ignore[return-value]
         connection: BaseDBConnection = values["connection"]
@@ -553,7 +551,7 @@ class DBReader(FrozenModel):
             raise NoDataError(msg)
 
     @slot
-    def run(self) -> DataFrame:
+    def run(self) -> "DataFrame":
         """
         Reads data from source table and saves as Spark dataframe. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -695,14 +693,13 @@ class DBReader(FrozenModel):
         )
         raise RuntimeError(error_message)
 
-    def _get_hwm_field(self, hwm: HWM) -> StructField:
+    def _get_hwm_field(self, hwm: HWM) -> "StructField":
         log.info(
             "|%s| Getting Spark type for HWM expression: %r",
             self.__class__.__name__,
             hwm.expression,
         )
 
-        result: StructField
         if self.df_schema:
             schema = {field.name.casefold(): field for field in self.df_schema}
             column = hwm.expression.casefold()

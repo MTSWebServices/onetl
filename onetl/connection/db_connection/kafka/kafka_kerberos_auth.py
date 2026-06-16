@@ -1,11 +1,9 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
 import shutil
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 try:
     from pydantic.v1 import Field, PrivateAttr, root_validator, validator
@@ -18,7 +16,7 @@ from onetl.connection.db_connection.kafka.kafka_auth import KafkaAuth
 from onetl.impl import GenericOptions, LocalPath, path_repr
 
 if TYPE_CHECKING:
-    from onetl.connection import Kafka
+    from onetl.connection.db_connection.kafka.connection import Kafka
 
 log = logging.getLogger(__name__)
 
@@ -117,7 +115,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
     """
 
     principal: str
-    keytab: Optional[LocalPath] = Field(default=None, alias="keyTab")
+    keytab: LocalPath | None = Field(default=None, alias="keyTab")
     deploy_keytab: bool = True
     service_name: str = Field(default="kafka", alias="serviceName")
     renew_ticket: bool = Field(default=True, alias="renewTicket")
@@ -125,7 +123,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
     use_keytab: bool = Field(default=True, alias="useKeyTab")
     use_ticket_cache: bool = Field(default=False, alias="useTicketCache")
 
-    _keytab_path: Optional[LocalPath] = PrivateAttr(default=None)
+    _keytab_path: LocalPath | None = PrivateAttr(default=None)
 
     class Config:
         prohibited_options = PROHIBITED_OPTIONS
@@ -133,7 +131,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
         strip_prefixes = ("kafka.",)
         extra = "allow"
 
-    def get_jaas_conf(self, kafka: Kafka) -> str:
+    def get_jaas_conf(self, kafka: "Kafka") -> str:
         options = self.dict(
             by_alias=True,
             exclude_none=True,
@@ -146,7 +144,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
         jaas_conf_items = [f"{key}={value}" for key, value in jaas_conf.items()]
         return "com.sun.security.auth.module.Krb5LoginModule required " + " ".join(jaas_conf_items) + ";"
 
-    def get_options(self, kafka: Kafka) -> dict:
+    def get_options(self, kafka: "Kafka") -> dict:
         result = {
             key: value for key, value in self.dict(by_alias=True, exclude_none=True).items() if key.startswith("sasl.")
         }
@@ -159,7 +157,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
         )
         return stringify(result)
 
-    def cleanup(self, kafka: Kafka) -> None:
+    def cleanup(self, kafka: "Kafka") -> None:
         if self._keytab_path and self._keytab_path.exists():
             log.debug("Removing keytab from %s", path_repr(self._keytab_path))
             try:
@@ -181,7 +179,7 @@ class KafkaKerberosAuth(KafkaAuth, GenericOptions):
             raise ValueError(msg)
         return values
 
-    def _prepare_keytab(self, kafka: Kafka) -> str:
+    def _prepare_keytab(self, kafka: "Kafka") -> str:
         keytab: LocalPath = self.keytab  # type: ignore[assignment]
         if not self.deploy_keytab:
             return os.fspath(keytab)

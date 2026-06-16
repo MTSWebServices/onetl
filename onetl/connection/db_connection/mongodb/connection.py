@@ -1,11 +1,9 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import json
 import logging
 import warnings
-from typing import TYPE_CHECKING, Any, ClassVar, Optional
+from typing import TYPE_CHECKING, Any, ClassVar
 from urllib import parse as parser
 
 from etl_entities.instance import Host
@@ -130,7 +128,7 @@ class MongoDB(DBConnection):
     PipelineOptions = MongoDBPipelineOptions
     Extra = MongoDBExtra
 
-    _server_version: Optional[Version] = PrivateAttr(default=None)
+    _server_version: Version | None = PrivateAttr(default=None)
 
     # any small collection with always present in db, and which any user can access
     # https://www.mongodb.com/docs/manual/reference/system-collections/
@@ -227,7 +225,7 @@ class MongoDB(DBConnection):
         self,
         collection: str,
         pipeline: dict | list[dict] | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         options: MongoDBPipelineOptions | dict | None = None,
     ):
         """
@@ -445,11 +443,11 @@ class MongoDB(DBConnection):
         columns: list[str] | None = None,
         hint: dict | None = None,
         where: dict | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         window: Window | None = None,
         limit: int | None = None,
         options: MongoDBReadOptions | dict | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         read_options = self.ReadOptions.parse(options).dict(by_alias=True, exclude_none=True)
         read_options.update(self._get_connection_params(source))
 
@@ -484,7 +482,7 @@ class MongoDB(DBConnection):
     @slot
     def write_df_to_target(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         target: str,
         options: MongoDBWriteOptions | dict | None = None,
     ) -> None:

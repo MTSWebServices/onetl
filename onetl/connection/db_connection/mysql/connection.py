@@ -1,10 +1,8 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import warnings
 from contextlib import closing
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from etl_entities.instance import Host
 
@@ -109,7 +107,7 @@ class MySQL(JDBCConnection):
 
     host: Host
     port: int = 3306
-    database: Optional[str] = None
+    database: str | None = None
     extra: MySQLExtra = MySQLExtra()
 
     ReadOptions = MySQLReadOptions

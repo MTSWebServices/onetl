@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import secrets
 import warnings
@@ -112,7 +110,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         self,
         query: str,
         options: JDBCSQLOptions | dict | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
         **Lazily** execute SELECT statement **on Spark executor** and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -166,11 +164,11 @@ class JDBCConnection(JDBCMixin, DBConnection):
         columns: list[str] | None = None,
         hint: str | None = None,
         where: str | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         window: Window | None = None,
         limit: int | None = None,
         options: JDBCReadOptions | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         if isinstance(options, JDBCLegacyOptions):
             raw_options = self.ReadOptions.parse(options.dict(exclude_unset=True))
         else:
@@ -234,7 +232,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
     @slot
     def write_df_to_target(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         target: str,
         options: JDBCWriteOptions | None = None,
     ) -> None:
@@ -261,7 +259,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         source: str,
         columns: list[str] | None = None,
         options: JDBCReadOptions | None = None,
-    ) -> StructType:
+    ) -> "StructType":
         log.info("|%s| Detected dialect: '%s'", self.__class__.__name__, self._get_spark_dialect_class_name())
         log.info("|%s| Fetching schema of table %r ...", self.__class__.__name__, source)
 
@@ -322,7 +320,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         self,
         query: str,
         options: JDBCSQLOptions | JDBCReadOptions,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         jdbc_properties = self._get_jdbc_properties(options, exclude={"partitioning_mode"}, exclude_none=True)
         return self.spark.read.format("jdbc").options(dbtable=f"({query}) T", **jdbc_properties).load()
 

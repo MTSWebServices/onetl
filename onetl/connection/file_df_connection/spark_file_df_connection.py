@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from abc import abstractmethod
 from contextlib import AbstractContextManager, ExitStack
 from logging import getLogger
@@ -39,7 +37,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
     Generic class for any Spark-based FileDFConnection classes.
     """
 
-    spark: SparkSession = Field(repr=False)
+    spark: "SparkSession" = Field(repr=False)
 
     @slot
     def check(self):
@@ -70,9 +68,9 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
         paths: list[PurePathProtocol],
         format: BaseReadableFileFormat,
         root: PurePathProtocol | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         options: FileDFReadOptions | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         if root:
             log.info("|%s| Reading data from '%s' ...", self.__class__.__name__, root)
         else:
@@ -102,7 +100,7 @@ class SparkFileDFConnection(BaseFileDFConnection, FrozenModel):
     @slot
     def write_df_as_files(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         path: PurePathProtocol,
         format: BaseWritableFileFormat,
         options: FileDFWriteOptions | None = None,

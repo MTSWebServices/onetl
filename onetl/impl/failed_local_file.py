@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING

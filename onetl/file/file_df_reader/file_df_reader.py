@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
-from typing import TYPE_CHECKING, Iterable, Optional
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from ordered_set import OrderedSet
 
@@ -105,14 +104,14 @@ class FileDFReader(FrozenModel):
 
     connection: BaseFileDFConnection
     format: BaseReadableFileFormat
-    source_path: Optional[PurePathProtocol] = None
-    df_schema: Optional[StructType] = None
+    source_path: PurePathProtocol | None = None
+    df_schema: "StructType | None" = None
     options: FileDFReaderOptions = FileDFReaderOptions()
 
     _connection_checked: bool = PrivateAttr(default=False)
 
     @slot
-    def run(self, files: Iterable[str | os.PathLike] | None = None) -> DataFrame:
+    def run(self, files: Iterable[str | os.PathLike] | None = None) -> "DataFrame":
         """
         Method for reading files as DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -228,7 +227,7 @@ class FileDFReader(FrozenModel):
         entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() ends", char="-")
         return df
 
-    def _read_files(self, paths: FileSet[PurePathProtocol]) -> DataFrame:
+    def _read_files(self, paths: FileSet[PurePathProtocol]) -> "DataFrame":
         log.info("|%s| Paths to be read:", self.__class__.__name__)
         log_lines(log, str(paths))
         log_with_indent(log, "")

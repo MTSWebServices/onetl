@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
+from collections.abc import Iterable
 from textwrap import dedent
-from typing import TYPE_CHECKING, Any, ClassVar, Iterable
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from etl_entities.instance import Cluster
 
@@ -112,7 +111,7 @@ class Hive(DBConnection):
 
     @slot
     @classmethod
-    def get_current(cls, spark: SparkSession):
+    def get_current(cls, spark: "SparkSession"):
         """
         Create connection for current cluster. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -190,7 +189,7 @@ class Hive(DBConnection):
     def sql(
         self,
         query: str,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
         Lazily execute SELECT statement and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -291,7 +290,7 @@ class Hive(DBConnection):
     @slot
     def write_df_to_target(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         target: str,
         options: HiveWriteOptions | None = None,
     ) -> None:
@@ -326,10 +325,10 @@ class Hive(DBConnection):
         columns: list[str] | None = None,
         hint: str | None = None,
         where: str | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         window: Window | None = None,
         limit: int | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         query = self.dialect.get_sql_query(
             table=source,
             columns=columns,
@@ -345,7 +344,7 @@ class Hive(DBConnection):
         self,
         source: str,
         columns: list[str] | None = None,
-    ) -> StructType:
+    ) -> "StructType":
         log.info("|%s| Fetching schema of table %r ...", self.__class__.__name__, source)
         query = self.dialect.get_sql_query(source, columns=columns, where=0, compact=True)
 
@@ -411,7 +410,7 @@ class Hive(DBConnection):
 
         return validated_cluster
 
-    def _execute_sql(self, query: str) -> DataFrame:
+    def _execute_sql(self, query: str) -> "DataFrame":
         return self.spark.sql(query)
 
     def _sort_df_columns_like_table(self, table: str, df_columns: list[str]) -> list[str]:
@@ -485,7 +484,7 @@ class Hive(DBConnection):
 
     def _insert_into(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         table: str,
         options: HiveWriteOptions | dict | None = None,
     ) -> None:
@@ -531,7 +530,7 @@ class Hive(DBConnection):
 
     def _save_as_table(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         table: str,
         options: HiveWriteOptions | dict | None = None,
     ) -> None:

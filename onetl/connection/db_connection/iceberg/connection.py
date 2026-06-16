@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Union
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
@@ -45,7 +44,6 @@ from onetl.log import log_lines, log_with_indent
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame, SparkSession
     from pyspark.sql.types import StructType
-
 
 log = logging.getLogger(__name__)
 
@@ -200,7 +198,7 @@ class Iceberg(DBConnection):
 
     catalog_name: str
     catalog: IcebergCatalog
-    warehouse: Optional[IcebergWarehouse] = None
+    warehouse: IcebergWarehouse | None = None
     extra: IcebergExtra = IcebergExtra()
 
     FilesystemCatalog = IcebergFilesystemCatalog
@@ -221,11 +219,11 @@ class Iceberg(DBConnection):
     def __init__(
         self,
         *,
-        spark: SparkSession,
+        spark: "SparkSession",
         catalog_name: str,
         catalog: IcebergCatalog,
-        warehouse: Optional[IcebergWarehouse] = None,
-        extra: Union[IcebergExtra, Dict[str, Any], None] = None,
+        warehouse: IcebergWarehouse | None = None,
+        extra: IcebergExtra | dict[str, Any] | None = None,
     ):
         super().__init__(
             spark=spark,
@@ -306,7 +304,7 @@ class Iceberg(DBConnection):
         return f"{self.__class__.__name__}[{self.catalog_name}]"
 
     @validator("spark")
-    def _check_java_class_imported(cls, spark: SparkSession) -> SparkSession:
+    def _check_java_class_imported(cls, spark: "SparkSession") -> "SparkSession":
         java_class = "org.apache.iceberg.spark.SparkSessionCatalog"
 
         try:
@@ -345,7 +343,7 @@ class Iceberg(DBConnection):
     def sql(
         self,
         query: str,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
         Lazily execute SELECT statement and return DataFrame. [![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](/hooks/)
 
@@ -441,7 +439,7 @@ class Iceberg(DBConnection):
     @slot
     def write_df_to_target(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         target: str,
         options: IcebergWriteOptions | None = None,
     ) -> None:
@@ -474,10 +472,10 @@ class Iceberg(DBConnection):
         columns: list[str] | None = None,
         hint: str | None = None,
         where: str | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         window: Window | None = None,
         limit: int | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         query = self.dialect.get_sql_query(
             table=self._normalize_table_name(source),
             columns=columns,
@@ -492,7 +490,7 @@ class Iceberg(DBConnection):
         self,
         source: str,
         columns: list[str] | None = None,
-    ) -> StructType:
+    ) -> "StructType":
         source = self._normalize_table_name(source)
         log.info("|%s| Fetching schema of table %r ...", self.__class__.__name__, source)
         query = self.dialect.get_sql_query(source, columns=columns, where=0, compact=True)
@@ -545,7 +543,7 @@ class Iceberg(DBConnection):
 
         return min_value, max_value
 
-    def _execute_sql(self, query: str) -> DataFrame:
+    def _execute_sql(self, query: str) -> "DataFrame":
         return self.spark.sql(query)
 
     def _target_exist(self, name: str) -> bool:
@@ -572,7 +570,7 @@ class Iceberg(DBConnection):
 
     def _save_as_table(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         table: str,
         options: IcebergWriteOptions | dict | None = None,
     ) -> None:
@@ -600,7 +598,7 @@ class Iceberg(DBConnection):
 
     def _insert_into(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         table: str,
         options: IcebergWriteOptions | dict | None = None,
     ) -> None:

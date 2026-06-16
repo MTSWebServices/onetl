@@ -1,9 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from datetime import datetime
-from typing import Optional
 
 from onetl.base.path_protocol import PathWithStatsProtocol
 
@@ -66,8 +63,8 @@ class FileModifiedTime(BaseFileFilter, FrozenModel):
     ```
     """
 
-    since: Optional[datetime] = None
-    until: Optional[datetime] = None
+    since: datetime | None = None
+    until: datetime | None = None
 
     @root_validator(skip_on_failure=True)
     def _validate_since_until(cls, values):

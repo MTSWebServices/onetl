@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from contextlib import suppress
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -19,7 +17,7 @@ class BaseSparkListener:
     See [SparkListener](https://spark.apache.org/docs/3.5.8/api/java/org/apache/spark/scheduler/SparkListener.html) interface.
     """  # noqa: E501
 
-    spark: SparkSession
+    spark: "SparkSession"
 
     def activate(self):
         start_callback_server(self.spark)

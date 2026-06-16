@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 from onetl.base import BaseReadableFileFormat, BaseWritableFileFormat
@@ -33,7 +31,7 @@ class ReadOnlyFileFormat(BaseReadableFileFormat, GenericOptions):
         prohibited_options = PROHIBITED_OPTIONS
 
     @slot
-    def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader:
+    def apply_to_reader(self, reader: "DataFrameReader") -> "DataFrameReader":
         options = self.dict(by_alias=True, exclude_none=True)
         return reader.format(self.name).options(**options)
 
@@ -46,7 +44,7 @@ class WriteOnlyFileFormat(BaseWritableFileFormat, GenericOptions):
         prohibited_options = PROHIBITED_OPTIONS
 
     @slot
-    def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter:
+    def apply_to_writer(self, writer: "DataFrameWriter") -> "DataFrameWriter":
         options = self.dict(by_alias=True, exclude_none=True)
         return writer.format(self.name).options(**options)
 
@@ -59,11 +57,11 @@ class ReadWriteFileFormat(BaseReadableFileFormat, BaseWritableFileFormat, Generi
         prohibited_options = PROHIBITED_OPTIONS
 
     @slot
-    def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader:
+    def apply_to_reader(self, reader: "DataFrameReader") -> "DataFrameReader":
         options = self.dict(by_alias=True, exclude_none=True)
         return reader.format(self.name).options(**options)
 
     @slot
-    def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter:
+    def apply_to_writer(self, writer: "DataFrameWriter") -> "DataFrameWriter":
         options = self.dict(by_alias=True, exclude_none=True)
         return writer.format(self.name).options(**options)

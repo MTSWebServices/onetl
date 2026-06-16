@@ -1,13 +1,9 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import json
 import logging
 import warnings
-from typing import TYPE_CHECKING, ClassVar, Optional, Union, cast
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
 try:
     from pydantic.v1 import Field, root_validator, validator
@@ -24,7 +20,6 @@ from onetl.hooks import slot, support_hooks
 
 if TYPE_CHECKING:
     from pyspark.sql import Column, DataFrameReader, DataFrameWriter, SparkSession
-
 
 PROHIBITED_OPTIONS = frozenset(
     (
@@ -123,7 +118,7 @@ class Avro(ReadWriteFileFormat):
 
     name: ClassVar[str] = "avro"
 
-    schema_dict: Optional[dict] = Field(default=None, alias="avroSchema")
+    schema_dict: dict | None = Field(default=None, alias="avroSchema")
     """
     Avro schema in JSON format representation.
 
@@ -146,7 +141,7 @@ class Avro(ReadWriteFileFormat):
         Mutually exclusive with [schema_url][].
     """
 
-    schema_url: Optional[str] = Field(default=None, alias="avroSchemaUrl")
+    schema_url: str | None = Field(default=None, alias="avroSchemaUrl")
     """
     URL to Avro schema in JSON format. Usually points to Schema Registry, like:
 
@@ -165,7 +160,7 @@ class Avro(ReadWriteFileFormat):
         Mutually exclusive with [schema_dict][].
     """
 
-    recordName: Optional[str] = None
+    recordName: str | None = None
     """
     Record name in written Avro schema.
     Default is `topLevelRecord`.
@@ -175,7 +170,7 @@ class Avro(ReadWriteFileFormat):
         Used only for writing files and by [serialize_column][].
     """
 
-    recordNamespace: Optional[str] = None
+    recordNamespace: str | None = None
     """
     Record namespace in written Avro schema. Default is not set.
 
@@ -184,7 +179,7 @@ class Avro(ReadWriteFileFormat):
         Used only for writing files and by [serialize_column][].
     """
 
-    compression: Union[str, Literal["uncompressed", "snappy", "deflate", "bzip2", "xz", "zstandard"], None] = None
+    compression: str | Literal["uncompressed", "snappy", "deflate", "bzip2", "xz", "zstandard"] | None = None
     """
     Compression codec.
     By default, Spark config value `spark.sql.avro.compression.codec ` (`snappy`) is used.
@@ -194,7 +189,7 @@ class Avro(ReadWriteFileFormat):
         Used only for writing files. Ignored by [serialize_column][].
     """
 
-    mode: Optional[Literal["PERMISSIVE", "FAILFAST"]] = None
+    mode: Literal["PERMISSIVE", "FAILFAST"] | None = None
     """
     How to handle parsing errors:
       * `PERMISSIVE` - set field value as `null`.
@@ -207,7 +202,7 @@ class Avro(ReadWriteFileFormat):
         Used only by [parse_column][] method.
     """
 
-    datetimeRebaseMode: Optional[Literal["CORRECTED", "LEGACY", "EXCEPTION"]] = None
+    datetimeRebaseMode: Literal["CORRECTED", "LEGACY", "EXCEPTION"] | None = None
     """
     While converting dates/timestamps from Julian to Proleptic Gregorian calendar, handle value ambiguity:
       * `EXCEPTION` - fail if ancient dates/timestamps are ambiguous between the two calendars.
@@ -221,7 +216,7 @@ class Avro(ReadWriteFileFormat):
         Used only for reading files and by [parse_column][].
     """
 
-    positionalFieldMatching: Optional[bool] = None
+    positionalFieldMatching: bool | None = None
     """
     If `True`, match Avro schema field and DataFrame column by position.
     If `False`, match by name.
@@ -229,7 +224,7 @@ class Avro(ReadWriteFileFormat):
     Default is `False`.
     """
 
-    enableStableIdentifiersForUnionType: Optional[bool] = None
+    enableStableIdentifiersForUnionType: bool | None = None
     """
     Avro schema may contain union types, which are not supported by Spark.
     Different variants of union are split to separated DataFrame columns with respective type.
@@ -291,7 +286,7 @@ class Avro(ReadWriteFileFormat):
         return [f"org.apache.spark:spark-avro_{scala_ver.format('{0}.{1}')}:{spark_ver.format('{0}.{1}.{2}')}"]
 
     @slot
-    def check_if_supported(self, spark: SparkSession) -> None:
+    def check_if_supported(self, spark: "SparkSession") -> None:
         java_class = "org.apache.spark.sql.avro.AvroFileFormat"
 
         try:
@@ -306,20 +301,20 @@ class Avro(ReadWriteFileFormat):
             raise ValueError(msg) from e
 
     @slot
-    def apply_to_reader(self, reader: DataFrameReader) -> DataFrameReader:
+    def apply_to_reader(self, reader: "DataFrameReader") -> "DataFrameReader":
         options = self.dict(by_alias=True, exclude_none=True, exclude={"schema"})
         if self.schema_dict:
             options["avroSchema"] = json.dumps(self.schema_dict)
         return reader.format(self.name).options(**options)
 
     @slot
-    def apply_to_writer(self, writer: DataFrameWriter) -> DataFrameWriter:
+    def apply_to_writer(self, writer: "DataFrameWriter") -> "DataFrameWriter":
         options = self.dict(by_alias=True, exclude_none=True, exclude={"schema"})
         if self.schema_dict:
             options["avroSchema"] = json.dumps(self.schema_dict)
         return writer.format(self.name).options(**options)
 
-    def parse_column(self, column: str | Column) -> Column:
+    def parse_column(self, column: "str | Column") -> "Column":
         """
         Parses an Avro binary column into a structured Spark SQL column using Spark's
         [from_avro](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.avro.functions.from_avro.html) function,
@@ -341,7 +336,7 @@ class Avro(ReadWriteFileFormat):
 
         Parameters
         ----------
-        column : str | Column
+        column : str | pyspark.sql.Column
             The name of the column or the column object containing Avro bytes to deserialize.
             Schema should match the provided Avro schema.
 
@@ -427,7 +422,7 @@ class Avro(ReadWriteFileFormat):
 
         return from_avro(column, schema).alias(column_name)
 
-    def serialize_column(self, column: str | Column) -> Column:
+    def serialize_column(self, column: "str | Column") -> "Column":
         """
         Serializes a structured Spark SQL column into an Avro binary column using Spark's
         [to_avro](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.avro.functions.to_avro.html#pyspark.sql.avro.functions.to_avro) function.
@@ -448,7 +443,7 @@ class Avro(ReadWriteFileFormat):
 
         Parameters
         ----------
-        column : str | Column
+        column : str | pyspark.sql.Column
             The name of the column or the column object containing the data to serialize to Avro format.
 
         Returns

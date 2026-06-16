@@ -4,7 +4,7 @@
   clickhouse-version: 21.1-alpine
   spark-version: '3.2'
   pydantic-version: 1
-  python-version: '3.7'
+  python-version: '3.10'
   java-version: 8
   os: ubuntu-22.04
 

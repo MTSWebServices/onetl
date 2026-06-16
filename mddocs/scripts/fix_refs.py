@@ -22,8 +22,6 @@ Options:
     --docs-path PATH Also fix broken links in docs .md files under PATH.
 """
 
-from __future__ import annotations
-
 import argparse
 import re
 import sys

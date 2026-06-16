@@ -1,10 +1,6 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, ClassVar, Optional, Union
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from onetl.file.format.file_format import ReadWriteFileFormat
 from onetl.hooks import slot, support_hooks
@@ -80,7 +76,7 @@ class ORC(ReadWriteFileFormat):
 
     name: ClassVar[str] = "orc"
 
-    mergeSchema: Optional[bool] = None
+    mergeSchema: bool | None = None
     """
     Merge schemas of all ORC files being read into a single schema.
     By default, Spark config option `spark.sql.orc.mergeSchema` value is used (`False`).
@@ -90,11 +86,7 @@ class ORC(ReadWriteFileFormat):
         Used only for reading files.
     """
 
-    compression: Union[
-        str,
-        Literal["uncompressed", "snappy", "zlib", "lzo", "zstd", "lz4"],
-        None,
-    ] = None
+    compression: str | Literal["uncompressed", "snappy", "zlib", "lzo", "zstd", "lz4"] | None = None
     """
     Compression codec of the ORC files.
     By default, Spark config option `spark.sql.orc.compression.codec` value is used (`snappy`).
@@ -110,7 +102,7 @@ class ORC(ReadWriteFileFormat):
         extra = "allow"
 
     @slot
-    def check_if_supported(self, spark: SparkSession) -> None:
+    def check_if_supported(self, spark: "SparkSession") -> None:
         # always available
         pass
 

@@ -1,22 +1,19 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 try:
     from pydantic.v1 import Field, SecretStr
 except (ImportError, AttributeError):
     from pydantic import Field, SecretStr  # type: ignore[no-redef, assignment]
 
-from typing_extensions import Literal
 
 from onetl._util.spark import stringify
 from onetl.connection.db_connection.kafka.kafka_auth import KafkaAuth
 from onetl.impl import GenericOptions
 
 if TYPE_CHECKING:
-    from onetl.connection import Kafka
+    from onetl.connection.db_connection.kafka.connection import Kafka
 
 
 class KafkaScramAuth(KafkaAuth, GenericOptions):
@@ -76,7 +73,7 @@ class KafkaScramAuth(KafkaAuth, GenericOptions):
             f'password="{self.password.get_secret_value()}";'
         )
 
-    def get_options(self, kafka: Kafka) -> dict:
+    def get_options(self, kafka: "Kafka") -> dict:
         result = {
             key: value for key, value in self.dict(by_alias=True, exclude_none=True).items() if key.startswith("sasl.")
         }
@@ -88,6 +85,6 @@ class KafkaScramAuth(KafkaAuth, GenericOptions):
         )
         return stringify(result)
 
-    def cleanup(self, kafka: Kafka) -> None:
+    def cleanup(self, kafka: "Kafka") -> None:
         # nothing to cleanup
         pass

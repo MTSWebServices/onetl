@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # isort: skip_file
 
-from __future__ import annotations
-
 from typing import ClassVar
 
 try:

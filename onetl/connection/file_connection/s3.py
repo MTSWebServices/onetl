@@ -1,15 +1,14 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import io
 import logging
 import os
 import textwrap
 import warnings
+from collections.abc import Iterable
 from pathlib import Path
 from pprint import pformat
-from typing import Iterable, Optional, Union, cast
+from typing import cast
 
 from onetl.exception import DirectoryNotEmptyError
 from onetl.hooks import slot, support_hooks
@@ -54,7 +53,7 @@ except (ImportError, AttributeError):
         validator,
     )
 
-from typing_extensions import Literal
+from typing import Literal
 
 from onetl.connection.file_connection.file_connection import FileConnection
 from onetl.impl import LocalPath, RemoteDirectory, RemotePath, RemotePathStat, path_repr
@@ -91,7 +90,7 @@ class S3Extra(GenericOptions):
         status_forcelist=frozenset({500, 502, 503, 504}),
     )
 
-    ssl_verify: Union[FilePath, DirectoryPath, bool] = True
+    ssl_verify: FilePath | DirectoryPath | bool = True
 
     @validator("ssl_verify", pre=True, always=True)
     def _ssl_verify_default_value(cls, value):
@@ -207,13 +206,13 @@ class S3(FileConnection):
     """
 
     host: Host
-    port: Optional[int] = None
+    port: int | None = None
     bucket: str
     access_key: str
     secret_key: SecretStr
     protocol: Literal["http", "https"] = "https"
-    region: Optional[str] = None
-    session_token: Optional[SecretStr] = None
+    region: str | None = None
+    session_token: SecretStr | None = None
     extra: S3Extra = Field(default_factory=S3Extra)
 
     Extra = S3Extra

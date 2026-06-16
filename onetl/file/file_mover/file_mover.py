@@ -1,12 +1,11 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import logging
 import os
+from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Generator, Iterable, List, Optional, Tuple, Union, cast
+from typing import cast
 
 from ordered_set import OrderedSet
 
@@ -40,7 +39,7 @@ from onetl.log import (
 log = logging.getLogger(__name__)
 
 # source, target
-MOVE_ITEMS_TYPE = OrderedSet[Tuple[Union[RemotePath, RemoteFile], RemotePath]]
+MOVE_ITEMS_TYPE = OrderedSet[tuple[RemotePath | RemoteFile, RemotePath]]
 
 
 class FileMoveStatus(Enum):
@@ -147,10 +146,10 @@ class FileMover(FrozenModel):
     connection: BaseFileConnection
 
     target_path: RemotePath
-    source_path: Optional[RemotePath] = None
+    source_path: RemotePath | None = None
 
-    filters: List[BaseFileFilter] = Field(default_factory=list)
-    limits: List[BaseFileLimit] = Field(default_factory=list)
+    filters: list[BaseFileFilter] = Field(default_factory=list)
+    limits: list[BaseFileLimit] = Field(default_factory=list)
 
     options: FileMoverOptions = FileMoverOptions()
 

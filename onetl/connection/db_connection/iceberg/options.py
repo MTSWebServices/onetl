@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from enum import Enum
-from typing import Any, Dict
+from typing import Any
 
 from onetl._util.alias import avoid_alias
 
@@ -138,7 +136,7 @@ class IcebergWriteOptions(GenericOptions):
                     If the table exists, **raises an error**.
     """
 
-    table_properties: Dict[str, Any] = Field(default_factory=dict)
+    table_properties: dict[str, Any] = Field(default_factory=dict)
     """TBLPROPERTIES to add to freshly created table.
 
     Examples: `{"location": "/path"}`

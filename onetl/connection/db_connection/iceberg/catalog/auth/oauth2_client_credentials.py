@@ -1,9 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from datetime import timedelta
-from typing import List, Optional
 
 try:
     from pydantic.v1 import AnyUrl, Field, SecretStr
@@ -87,20 +84,20 @@ class IcebergRESTCatalogOAuth2ClientCredentials(IcebergRESTCatalogAuth, FrozenMo
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Util.java#L366
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Util.java#L389-L404
     client_secret: SecretStr
-    client_id: Optional[str] = None
+    client_id: str | None = None
 
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Properties.java#L33-L39C58
-    token_refresh_interval: Optional[timedelta] = timedelta(hours=1)
+    token_refresh_interval: timedelta | None = timedelta(hours=1)
 
     # by default uses v1/oauth/tokens endpoint of RESTCatalog server
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Properties.java#L30-L31C30
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/auth/OAuth2Manager.java#L275-L293
     # https://github.com/apache/iceberg/blob/720ef99720a1c59e4670db983c951243dffc4f3e/core/src/main/java/org/apache/iceberg/rest/ResourcePaths.java#L57-L59
-    oauth2_token_endpoint: Optional[AnyUrl] = None
+    oauth2_token_endpoint: AnyUrl | None = None
 
-    scopes: List[str] = Field(default_factory=list)
-    audience: Optional[str] = None
-    resource: Optional[str] = None
+    scopes: list[str] = Field(default_factory=list)
+    audience: str | None = None
+    resource: str | None = None
 
     def get_config(self) -> dict[str, str]:
         config = {

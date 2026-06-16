@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 import subprocess
 from logging import getLogger
@@ -26,13 +24,16 @@ def kinit_password(user: str, password: str) -> None:
     cmd = ["kinit", user]
     log.info("|onETL| Executing kerberos auth command: %s", " ".join(cmd))
 
-    with _kinit_lock, subprocess.Popen(  # noqa: S603
-        cmd,
-        stdin=subprocess.PIPE,
-        # do not show user 'Please enter password' banner
-        stdout=subprocess.PIPE,
-        # do not capture stderr, immediately show all errors to user
-    ) as proc:
+    with (
+        _kinit_lock,
+        subprocess.Popen(  # noqa: S603
+            cmd,
+            stdin=subprocess.PIPE,
+            # do not show user 'Please enter password' banner
+            stdout=subprocess.PIPE,
+            # do not capture stderr, immediately show all errors to user
+        ) as proc,
+    ):
         proc.communicate(password.encode("utf-8"))
         exit_code = proc.poll()
         if exit_code:

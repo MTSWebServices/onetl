@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -46,7 +44,7 @@ class SparkListenerJob:
 
         stage_ids = scala_seq_to_python_list(event.stageIds())
         stage_infos = scala_seq_to_python_list(event.stageInfos())
-        for stage_id, stage_info in zip(stage_ids, stage_infos):
+        for stage_id, stage_info in zip(stage_ids, stage_infos, strict=False):
             result._stages[stage_id] = SparkListenerStage.create(stage_info)
 
         return result

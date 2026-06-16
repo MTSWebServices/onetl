@@ -1,10 +1,8 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import warnings
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from onetl._util.alias import avoid_alias
 
@@ -219,7 +217,7 @@ class HiveWriteOptions(GenericOptions):
         does not affect behavior.
     """
 
-    format: Union[str, BaseWritableFileFormat] = "orc"
+    format: str | BaseWritableFileFormat = "orc"
     """Format of files which should be used for storing table data.
 
     Examples
@@ -255,7 +253,7 @@ class HiveWriteOptions(GenericOptions):
         Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
-    partition_by: Optional[Union[List[str], str]] = Field(default=None, alias="partitionBy")
+    partition_by: list[str] | str | None = Field(default=None, alias="partitionBy")
     """
     List of columns should be used for data partitioning. `None` means partitioning is disabled.
 
@@ -266,7 +264,7 @@ class HiveWriteOptions(GenericOptions):
         Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
-    bucket_by: Optional[Tuple[int, Union[List[str], str]]] = Field(default=None, alias="bucketBy")
+    bucket_by: tuple[int, list[str] | str] | None = Field(default=None, alias="bucketBy")
     """Number of buckets plus bucketing columns. `None` means bucketing is disabled.
 
     Each bucket is created as a set of files with name containing result of
@@ -299,7 +297,7 @@ class HiveWriteOptions(GenericOptions):
         Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
-    sort_by: Optional[Union[List[str], str]] = Field(default=None, alias="sortBy")
+    sort_by: list[str] | str | None = Field(default=None, alias="sortBy")
     """Each file in a bucket will be sorted by these columns value. `None` means sorting is disabled.
 
     Examples: `user_id` or `["user_id", "user_phone"]`
@@ -317,7 +315,7 @@ class HiveWriteOptions(GenericOptions):
         Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
-    compression: Optional[str] = None
+    compression: str | None = None
     """Compressing algorithm which should be used for compressing created files in HDFS.
     `None` means compression is disabled.
 
@@ -328,7 +326,7 @@ class HiveWriteOptions(GenericOptions):
         Used **only** while **creating new table**, or in case of `if_exists=replace_entire_table`
     """
 
-    table_properties: Dict[str, Any] = Field(default_factory=dict)
+    table_properties: dict[str, Any] = Field(default_factory=dict)
     """TBLPROPERTIES to add to freshly created table.
 
     !!! success "Added in 0.15.0"

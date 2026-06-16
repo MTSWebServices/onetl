@@ -1,11 +1,9 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import json
 import logging
 from contextlib import closing
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any
 
 from etl_entities.instance import Cluster
 
@@ -215,8 +213,8 @@ class Kafka(DBConnection):
     Slots = KafkaSlots
 
     cluster: Cluster
-    addresses: List[str]
-    auth: Optional[KafkaAuth] = None
+    addresses: list[str]
+    auth: KafkaAuth | None = None
     protocol: KafkaProtocol = PlaintextProtocol()
     extra: KafkaExtra = KafkaExtra()
 
@@ -248,11 +246,11 @@ class Kafka(DBConnection):
         columns: list[str] | None = None,
         hint: Any | None = None,
         where: Any | None = None,
-        df_schema: StructType | None = None,
+        df_schema: "StructType | None" = None,
         window: Window | None = None,
         limit: int | None = None,
         options: KafkaReadOptions | None = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         log.info("|%s| Reading data from topic %r", self.__class__.__name__, source)
         if source not in self._get_topics():
             msg = f"Topic {source!r} doesn't exist"
@@ -292,7 +290,7 @@ class Kafka(DBConnection):
     @slot
     def write_df_to_target(
         self,
-        df: DataFrame,
+        df: "DataFrame",
         target: str,
         options: KafkaWriteOptions | None = None,
     ) -> None:
@@ -342,7 +340,7 @@ class Kafka(DBConnection):
         source: str,
         columns: list[str] | None = None,
         options: KafkaReadOptions | None = None,
-    ) -> StructType:
+    ) -> "StructType":
         from pyspark.sql.types import (
             ArrayType,
             BinaryType,

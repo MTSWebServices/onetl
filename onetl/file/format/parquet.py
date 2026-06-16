@@ -1,10 +1,6 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, ClassVar, Optional, Union
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from onetl.file.format.file_format import ReadWriteFileFormat
 from onetl.hooks import slot, support_hooks
@@ -78,7 +74,7 @@ class Parquet(ReadWriteFileFormat):
 
     name: ClassVar[str] = "parquet"
 
-    mergeSchema: Optional[bool] = None
+    mergeSchema: bool | None = None
     """
     Merge schemas of all Parquet files being read into a single schema.
     By default, Spark config option `spark.sql.parquet.mergeSchema` value is used (`false`).
@@ -88,11 +84,7 @@ class Parquet(ReadWriteFileFormat):
         Used only for reading files.
     """
 
-    compression: Union[
-        str,
-        Literal["uncompressed", "snappy", "gzip", "lzo", "brotli", "lz4", "lz4raw", "zstd"],
-        None,
-    ] = None
+    compression: str | Literal["uncompressed", "snappy", "gzip", "lzo", "brotli", "lz4", "lz4raw", "zstd"] | None = None
     """
     Compression codec of the Parquet files.
     By default, Spark config option `spark.sql.parquet.compression.codec` value is used (`snappy`).
@@ -108,7 +100,7 @@ class Parquet(ReadWriteFileFormat):
         extra = "allow"
 
     @slot
-    def check_if_supported(self, spark: SparkSession) -> None:
+    def check_if_supported(self, spark: "SparkSession") -> None:
         # always available
         pass
 

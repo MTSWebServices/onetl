@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import datetime
 import io
 import os
@@ -9,7 +7,7 @@ import textwrap
 import warnings
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 from etl_entities.instance import Host
 
@@ -27,7 +25,7 @@ except (ImportError, AttributeError):
         validator,
     )
 
-from typing_extensions import Literal
+from typing import Literal
 
 from onetl.connection.file_connection.file_connection import FileConnection
 from onetl.connection.file_connection.mixins.rename_dir_mixin import RenameDirMixin
@@ -84,7 +82,7 @@ class WebDAVExtra(GenericOptions):
     timeout: Timeout = Timeout(connect=10, read=60)
     retry: Retry = Retry.DEFAULT
 
-    ssl_verify: Union[FilePath, DirectoryPath, bool] = True
+    ssl_verify: FilePath | DirectoryPath | bool = True
 
     @validator("ssl_verify", pre=True, always=True)
     def _ssl_verify_default_value(cls, value):
@@ -188,7 +186,7 @@ class WebDAV(FileConnection, RenameDirMixin):
     user: str
     password: SecretStr
     protocol: Literal["http", "https"] = "https"
-    port: Optional[int] = None
+    port: int | None = None
     extra: WebDAVExtra = Field(default_factory=WebDAVExtra)
 
     Extra = WebDAVExtra

@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2024-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
-from __future__ import annotations
-
 import os
 import textwrap
 
@@ -29,7 +27,7 @@ class SparkCommandMetrics(BaseModel):
     def is_empty(self) -> bool:
         return all([self.input.is_empty, self.output.is_empty])
 
-    def update(self, other: SparkCommandMetrics) -> SparkCommandMetrics:
+    def update(self, other: "SparkCommandMetrics") -> "SparkCommandMetrics":
         self.input.update(other.input)
         self.output.update(other.output)
         self.driver.update(other.driver)
