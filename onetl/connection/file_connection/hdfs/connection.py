@@ -553,7 +553,8 @@ class HDFS(FileConnection, RenameDirMixin):
         self.client.makedirs(os.fspath(path))
 
     def _upload_file(self, local_file_path: LocalPath, remote_file_path: RemotePath) -> None:
-        self.client.upload(os.fspath(remote_file_path), os.fspath(local_file_path))
+        # overwrite=True is used to handle client retries
+        self.client.upload(os.fspath(remote_file_path), os.fspath(local_file_path), overwrite=True)
 
     def _rename_file(self, source: RemotePath, target: RemotePath) -> None:
         self.client.rename(os.fspath(source), os.fspath(target))
