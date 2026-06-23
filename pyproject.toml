@@ -44,7 +44,7 @@ dependencies = [
     "platformdirs",
     # https://github.com/pydantic/pydantic/issues/4092
     # https://github.com/pydantic/pydantic/issues/4498
-    "pydantic>=1.9.2,!=1.10.2,<3",
+    "pydantic!=1.10.2,<3,>=1.9.2",
     "pyyaml",
     # https://github.com/python/typing_extensions/pull/188
     "typing-extensions>=4.5.0",
@@ -117,32 +117,32 @@ all = [
 test-clickhouse = ["clickhouse-driver"]
 test-greenplum = ["psycopg2-binary"]
 test-kafka = ["confluent-kafka"]
-test-mongodb = ["pymongo<4.0"]
+test-mongodb = ["pymongo<5.0"]
 test-mssql = ["pymssql"]
 test-mysql = ["pymysql[rsa]"]
 test-oracle = ["cx_Oracle"]
 test-postgres = ["psycopg2-binary"]
-test-pydantic-1 = ["pydantic<2"]
-test-pydantic-2 = ["pydantic>=2,<3"]
+test-pydantic-1 = ["pydantic<3"]
+test-pydantic-2 = ["pydantic<3,>=2"]
 test-samba = ["pysmb"]
 "test-spark-3.2" = [
-    "pyspark~=3.2.4",
-    "numpy>=1.16,<1.24",
-    "pandas>=1.0,<2",
+    "pyspark>=3.2.4,<4.2.0",
+    "numpy>=1.16,<2.3",
+    "pandas>=1.0,<3",
     "pyarrow>=1.0",
     "sqlalchemy<2.0",
     "setuptools",
 ]
 "test-spark-3.3" = [
-    "pyspark~=3.3.4",
-    "numpy>=1.16,<1.24",
-    "pandas>=1.0,<2",
+    "pyspark>=3.3.4,<4.2.0",
+    "numpy>=1.16,<2.3",
+    "pandas>=1.0,<3",
     "pyarrow>=1.0",
     "sqlalchemy<2.0",
     "setuptools",
 ]
 "test-spark-3.4" = [
-    "pyspark~=3.4.4",
+    "pyspark>=3.4.4,<4.2.0",
     "numpy>=1.16",
     "pandas>=1.0",
     "pyarrow>=1.0",
@@ -150,7 +150,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-3.5" = [
-    "pyspark~=3.5.8",
+    "pyspark>=3.5.8,<4.2.0",
     "numpy>=1.16",
     "pandas>=1.0",
     "pyarrow>=4.0",
@@ -158,7 +158,7 @@ test-samba = ["pysmb"]
     "setuptools",
 ]
 "test-spark-4.0" = [
-    "pyspark~=4.0.1",
+    "pyspark>=4.0.1,<4.2.0",
     "numpy>=1.24",
     "pandas>=2.0",
     "pyarrow>=11.0",
@@ -176,7 +176,7 @@ test-samba = ["pysmb"]
 test = [
     "coverage",
     "omegaconf",
-    "pytest<8",
+    "pytest<10",
     "pytest-lazy-fixture",
     "pytest-mock",
     "pytest-rerunfailures",
@@ -201,10 +201,10 @@ docs = [
     "mkdocstrings-python>=2.0,<3",
     "griffe-inherited-docstrings>=1.0,<2",
     "mkdocs-macros-plugin>=1.0,<2",
-    "pymdown-extensions>=10.0,<11",
+    "pymdown-extensions>=10.0,<12",
     "mkdocs-towncrier>=0.1.5,<1",
     "towncrier~=25.8.0",
-    "setuptools<82",
+    "setuptools<83",
 ]
 
 [tool.uv]
@@ -230,7 +230,7 @@ docs = {requires-python = ">=3.11"}
 
 [tool.uv.extra-build-dependencies]
 # fails on missing pkg_resources
-cx-oracle = ["setuptools<82"]
+cx-oracle = ["setuptools<83"]
 
 [tool.ruff]
 target-version = "py310"
