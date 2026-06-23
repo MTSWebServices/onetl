@@ -167,7 +167,9 @@ test-samba = ["pysmb"]
 ]
 "test-spark-4.1" = [
     "pyspark~=4.1.1",
-    "numpy>=1.24",
+    # Upgrading numpy leads to error:
+    # .venv/lib/python3.12/site-packages/numpy/__init__.pyi:737: error: Type statement is only supported in Python 3.12 and greater
+    "numpy>=1.24,<2.5",
     "pandas>=2.0",
     "pyarrow>=11.0",
     "sqlalchemy",
