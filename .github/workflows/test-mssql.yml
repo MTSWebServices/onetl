@@ -69,7 +69,7 @@ jobs:
 
       # astral-sh/setup-uv cannot restore multiple keys
       - name: Cache uv
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.cache/uv
           key: ${{ runner.os }}-python${{ inputs.python-version }}-pydantic${{ inputs.pydantic-version }}-spark${{ inputs.spark-version }}-${{ hashFiles('uv.lock') }}
