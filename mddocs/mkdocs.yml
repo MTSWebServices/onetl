@@ -5,7 +5,6 @@ site_dir: generated                        # Where to put the English HTML files
 
 theme:
   name: material
-  custom_dir: overrides
   logo: _static/images/logo.svg                      # The logo is shared by all languages
   favicon: _static/images/icon.svg                   # The favicon is shared by all languages
   language: en
@@ -30,11 +29,11 @@ theme:
     - yaml
 
 extra_css:
-  - _static/stylesheets/autodoc_pydantic.css         # CSS is shared by all languages
+  - _static/stylesheets/mermaid_zoom.css
+  - _static/stylesheets/autodoc_pydantic.css
 
 extra_javascript:
   - _static/javascripts/mermaid_zoom.js
-  - _static/javascripts/readthedocs.js
 
 extra:                                              # Language Selection
   onetl_logo_wide: '[![onETL logo](_static/images/logo_wide.svg)](https://github.com/MTSWebServices/onetl)'
