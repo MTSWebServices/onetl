@@ -48,6 +48,8 @@ class FTPExtra(GenericOptions):
 
     You can pass here any parameters supported by [ftputil.session.session_factory](https://ftputil.sschwarzer.net/documentation#session-factories).
 
+    !!! success "Added in 0.16.0"
+
     Parameters
     ---------
     use_passive_mode : bool, optional

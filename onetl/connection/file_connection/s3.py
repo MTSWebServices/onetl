@@ -65,8 +65,9 @@ class S3Extra(GenericOptions):
     """
     Extra options for S3 connection.
 
-    You can pass here any parameters supported by [minio.Minio client](https://docs.min.io/aistor/developers/sdk/python/api/),
-    **without** `webdav_` prefix.
+    You can pass here any parameters supported by [minio.Minio client](https://docs.min.io/aistor/developers/sdk/python/api/).
+
+    !!! success "Added in 0.16.0"
 
     Parameters
     ---------

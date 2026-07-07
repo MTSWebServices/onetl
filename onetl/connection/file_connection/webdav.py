@@ -64,6 +64,8 @@ class WebDAVExtra(GenericOptions):
     You can pass here any parameters supported by [webdav3.client.Client](https://github.com/ezhov-evgeny/webdav-client-python-3#webdav-api),
     **without** `webdav_` prefix.
 
+    !!! success "Added in 0.16.0"
+
     Parameters
     ---------
     timeout : urllib3.util.timeout.Timeout, optional

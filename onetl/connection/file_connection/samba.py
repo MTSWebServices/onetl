@@ -48,6 +48,8 @@ class SambaExtra(GenericOptions):
 
     You can pass here any parameters supported by [smb.SMBConnection.SMBConnection class](https://pysmb.readthedocs.io/en/latest/api/smb_SMBConnection.html).
 
+    !!! success "Added in 0.16.0"
+
     Parameters
     ---------
     connect_timeout : int, default: 60

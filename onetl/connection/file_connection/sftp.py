@@ -52,6 +52,8 @@ class SFTPExtra(GenericOptions):
 
     You can pass here any parameters supported by [paramiko.SSHClient](https://docs.paramiko.org/en/stable/api/client.html#paramiko.client.SSHClient).
 
+    !!! success "Added in 0.16.0"
+
     Parameters
     ---------
     host_key_check : bool, optional
