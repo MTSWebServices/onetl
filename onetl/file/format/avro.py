@@ -72,6 +72,7 @@ class Avro(ReadWriteFileFormat):
         The set of supported options depends on Spark version.
 
     === "Reading files"
+
         ```python
         from pyspark.sql import SparkSession
         from onetl.file.format import Avro
@@ -94,7 +95,9 @@ class Avro(ReadWriteFileFormat):
         }
         avro = Avro(avroSchema=schema)  # or avroSchemaUrl=...
         ```
+
     === "Writing files"
+
         ```python
         # Create Spark session with Avro package loaded
         spark = ...

@@ -163,7 +163,7 @@ class JDBCMixin:
 
             SQL query to be executed.
 
-        options : dict, [FetchOptions][], default: `None`
+        options : dict, [FetchOptions][], optional
 
             Options to be passed directly to JDBC driver, like `fetchsize` or `queryTimeout`
 
@@ -228,7 +228,7 @@ class JDBCMixin:
 
             Statement to be executed.
 
-        options : dict, [JDBCExecuteOptions][], default: `None`
+        options : dict, [JDBCExecuteOptions][], optional
 
             Options to be passed directly to JDBC driver, like `queryTimeout`
 

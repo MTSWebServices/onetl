@@ -75,7 +75,7 @@ class SparkS3(SparkFileDFConnection):
     bucket : str
         Bucket name in the S3 file source
 
-    protocol : str, default: `https`
+    protocol : str, default: https
         Connection protocol. Allowed values: `https` or `http`
 
     access_key : str, optional
@@ -120,13 +120,14 @@ class SparkS3(SparkFileDFConnection):
 
             But you may override `aws.credentials.provider` and pass custom credential options.
 
-    spark : `pyspark.sql.SparkSession`
+    spark : pyspark.sql.SparkSession
         Spark session
 
     Examples
     --------
 
     === "Create S3 connection with bucket as subdomain (`my-bucket.domain.com`):"
+
         ```python
         from onetl.connection import SparkS3
         from pyspark.sql import SparkSession
@@ -168,7 +169,9 @@ class SparkS3(SparkFileDFConnection):
             spark=spark,
         ).check()
         ```
+
     === "Create S3 connection with bucket as subpath (`domain.com/my-bucket`)"
+
         ```python
         # Create Spark session with Hadoop AWS libraries loaded
         ...

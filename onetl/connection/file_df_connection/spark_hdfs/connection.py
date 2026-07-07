@@ -70,14 +70,14 @@ class SparkHDFS(SparkFileDFConnection):
         [Slots.is_namenode_active][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.is_namenode_active],
         onETL will iterate over cluster namenodes to detect which one is active.
 
-    ipc_port : int, default: `8020`
+    ipc_port : int, default: 8020
         Port of Hadoop namenode (IPC protocol).
 
         If omitted, but there are some hooks bound to
         [Slots.get_ipc_port][onetl.connection.file_df_connection.spark_hdfs.slots.SparkHDFSSlots.get_ipc_port],
         onETL will try to detect port number for a specific `cluster`.
 
-    spark : `pyspark.sql.SparkSession`
+    spark : pyspark.sql.SparkSession
         Spark session
 
     Examples
@@ -115,7 +115,9 @@ class SparkHDFS(SparkFileDFConnection):
             spark=spark,
         ).check()
         ```
+
     === "Create SparkHDFS connection with anonymous auth"
+
         ```python
         from onetl.connection import SparkHDFS
         from pyspark.sql import SparkSession
@@ -130,6 +132,7 @@ class SparkHDFS(SparkFileDFConnection):
             spark=spark,
         ).check()
         ```
+
     === "Use cluster name to detect active namenode"
 
         Can be used only if some third-party plugin provides [spark-hdfs-slots][] implementation

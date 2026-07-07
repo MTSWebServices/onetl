@@ -50,11 +50,11 @@ class SambaExtra(GenericOptions):
 
     Parameters
     ---------
-    connect_timeout : int, default: `60`
+    connect_timeout : int, default: 60
         Timeout (in seconds) for establishing TCP connection.
-    operation_timeout : int, default: `30`
+    operation_timeout : int, default: 30
         Timeout (in seconds) for the client operations.
-    my_name : str, default: `onetl`
+    my_name : str, default: "onetl"
         Client name.
     sign_options : int, default: `SMBConnection.SIGN_WHEN_REQUIRED`
         Sign options.
@@ -97,26 +97,26 @@ class Samba(FileConnection):
     share : str
         The name of the share on the Samba server.
 
-    protocol : str, default: `SMB`
+    protocol : str, default: "SMB"
         The protocol to use for the connection. Either `SMB` or `NetBIOS`.
         Affects the default port and the `is_direct_tcp` flag in `SMBConnection`.
 
     port : int, default: 445
         Port of Samba source.
 
-    domain : str, default: ` `
+    domain : str, optional
         Windows workgroup name. Empty strings means use `host` as domain name.
 
-    auth_type : str, default: `NTLMv2`
+    auth_type : str, default: "NTLMv2"
         The authentication type to use. Either `NTLMv2` (recommended) or `NTLMv1` (Windows XP).
 
-    user : str, default: None
+    user : str, optional
         User, which have access to the file source. Can be `None` for anonymous connection.
 
-    password : str, default: None
+    password : str, optional
         Password for file source connection. Can be `None` for anonymous connection.
 
-    extra : SambaExtra, default: `SambaExtra()`
+    extra : [SambaExtra][], optional
         Extra options for Samba connection.
 
     Examples

@@ -72,10 +72,10 @@ class FileMover(FrozenModel):
     connection : FileConnection
         Class which contains File system connection properties. See [file-connections][] section.
 
-    target_path : `os.PathLike` or `str`
+    target_path : os.PathLike | str
         Remote path to move files to
 
-    source_path : `os.PathLike` or `str`, optional, default: `None`
+    source_path : os.PathLike | str, optional
         Remote path to move files from.
 
         Could be `None`, but only if you pass absolute file paths directly to
@@ -88,13 +88,14 @@ class FileMover(FrozenModel):
         Apply limits to the list of files/directories, and stop if one of the limits is reached.
         See [file-limits][]
 
-    options : [Options][]  | dict | None, default: `None`
+    options : [Options][]  | dict | None, optional
         File moving options. See [FileMover.Options][onetl.file.file_mover.options.FileMoverOptions]
 
     Examples
     --------
 
     === "Minimal example"
+
         ```python
         from onetl.connection import SFTP
         from onetl.file import FileMover
@@ -111,7 +112,9 @@ class FileMover(FrozenModel):
         # move files from "/path/to/source/dir" to "/path/to/target/dir"
         mover.run()
         ```
+
     === "Full example"
+
         ```python
         from onetl.connection import SFTP
         from onetl.file import FileMover

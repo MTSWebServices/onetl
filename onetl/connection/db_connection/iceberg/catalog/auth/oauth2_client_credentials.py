@@ -51,6 +51,7 @@ class IcebergRESTCatalogOAuth2ClientCredentials(IcebergRESTCatalogAuth, FrozenMo
     --------
 
     === "OAuth2"
+
         ```python
         from onetl.connection import Iceberg
 
@@ -59,7 +60,9 @@ class IcebergRESTCatalogOAuth2ClientCredentials(IcebergRESTCatalogAuth, FrozenMo
             client_secret="my_client_secret",
         )
         ```
+
     === "OAuth2 with optional fields"
+
         ```python
         from datetime import timedelta
         from onetl.connection import Iceberg

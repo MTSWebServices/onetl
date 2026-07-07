@@ -59,6 +59,7 @@ class Excel(ReadWriteFileFormat):
         The set of supported options depends on `spark-excel` package version.
 
     === "Reading files"
+
         ```python
         from pyspark.sql import SparkSession
         from onetl.file.format import Excel
@@ -76,7 +77,9 @@ class Excel(ReadWriteFileFormat):
 
         excel = Excel(header=True, inferSchema=True)
         ```
+
     === "Writing files"
+
         ```python
         # Create Spark session with Excel package loaded
         spark = ...

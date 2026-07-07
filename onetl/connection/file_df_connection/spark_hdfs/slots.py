@@ -22,7 +22,7 @@ class SparkHDFSSlots:
 
         Parameters
         ----------
-        cluster : `str`
+        cluster : str
             Cluster name
 
         Returns
@@ -59,10 +59,10 @@ class SparkHDFSSlots:
 
         Parameters
         ----------
-        host : `str`
+        host : str
             Namenode host (raw)
 
-        cluster : `str`
+        cluster : str
             Cluster name (normalized)
 
         Returns
@@ -139,7 +139,7 @@ class SparkHDFSSlots:
 
         Parameters
         ----------
-        cluster : `str`
+        cluster : str
             Cluster name (normalized)
 
         Returns
@@ -212,7 +212,7 @@ class SparkHDFSSlots:
 
         Parameters
         ----------
-        cluster : `str`
+        cluster : str
             Cluster name (normalized)
 
         Returns
@@ -259,10 +259,10 @@ class SparkHDFSSlots:
 
         Parameters
         ----------
-        host : `str`
+        host : str
             Namenode host (normalized)
 
-        cluster : `str`
+        cluster : str
             Cluster name (normalized)
 
         Returns

@@ -51,31 +51,31 @@ class Clickhouse(JDBCConnection):
     host : str
         Host of Clickhouse database. For example: `test.clickhouse.domain.com` or `193.168.1.11`
 
-    port : int, default: `8123`
+    port : int, default: 8123
         Port of Clickhouse database
 
     user : str
-        User, which have proper access to the database. For example: `some_user`
+        User for database connection
 
     password : str
         Password for database connection
 
     database : str, optional
-        Database (==schema) in Clickhouse.
+        Default database (schema) to connect
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to JDBC driver.
         For example: `{"continueBatchOnError": "false"}`.
 
         See:
-            * [Clickhouse JDBC driver properties documentation](https://clickhouse.com/docs/en/integrations/java#configuration)
-            * [Clickhouse core settings documentation](https://clickhouse.com/docs/en/operations/settings/settings)
-            * [Clickhouse query complexity documentation](https://clickhouse.com/docs/en/operations/settings/query-complexity)
-            * [Clickhouse query level settings](https://clickhouse.com/docs/en/operations/settings/query-level)
+
+        * [Clickhouse JDBC driver properties documentation](https://clickhouse.com/docs/en/integrations/java#configuration)
+        * [Clickhouse core settings documentation](https://clickhouse.com/docs/en/operations/settings/settings)
+        * [Clickhouse query complexity documentation](https://clickhouse.com/docs/en/operations/settings/query-complexity)
+        * [Clickhouse query level settings](https://clickhouse.com/docs/en/operations/settings/query-level)
 
     Examples
     --------

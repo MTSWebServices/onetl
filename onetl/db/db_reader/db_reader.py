@@ -79,7 +79,7 @@ class DBReader(FrozenModel):
         !!! info "Changed in 0.7.0"
             Renamed `table` → `source`
 
-    columns : list of str, default: None
+    columns : list of str, optional
         The list of columns to be read.
 
         If RDBMS supports any kind of expressions, you can pass them too.
@@ -106,7 +106,7 @@ class DBReader(FrozenModel):
             Syntax `DBReader(columns="col1, col2")` (string instead of list) is not supported,
             and will be removed in v1.0.0
 
-    where : Any, default: `None`
+    where : Any, optional
         Custom `where` for SQL query or MongoDB pipeline.
 
         `where` syntax depends on the source. For example, SQL sources
@@ -127,7 +127,7 @@ class DBReader(FrozenModel):
 
             Some sources does not support data filtering.
 
-    hwm : type[HWM] | None, default: `None`
+    hwm : type[HWM] | None, optional
         HWM class to be used as [HWM](https://etl-entities.readthedocs.io/en/stable/hwm/index.html) value.
 
         ```python
@@ -154,7 +154,7 @@ class DBReader(FrozenModel):
         !!! info "Changed in 0.10.0"
             Replaces deprecated `hwm_column` and `hwm_expression`  attributes
 
-    hint : Any, default: `None`
+    hint : Any, optional
         Hint expression used for querying the data.
 
         `hint` syntax depends on the source. For example, SQL sources
@@ -173,7 +173,7 @@ class DBReader(FrozenModel):
 
             Some sources does not support hints.
 
-    df_schema : StructType, optional, default: `None`
+    df_schema : StructType, optional
         Spark DataFrame schema, used for proper type casting of the rows.
 
         ```python
@@ -206,7 +206,7 @@ class DBReader(FrozenModel):
 
             Some sources does not support passing dataframe schema.
 
-    options : dict, [onetl.connection.BaseDBConnection.ReadOptions][], default: `None`
+    options : dict, [onetl.connection.BaseDBConnection.ReadOptions][], optional
         Spark read options, like partitioning mode.
 
         ```python
@@ -225,6 +225,7 @@ class DBReader(FrozenModel):
     --------
 
     === "Minimal example"
+
         ```python
         from onetl.db import DBReader
         from onetl.connection import Postgres
@@ -237,7 +238,9 @@ class DBReader(FrozenModel):
         # read data from table "fiddle.dummy"
         df = reader.run()
         ```
+
     === "With custom reading options"
+
         ```python
         from onetl.connection import Postgres
         from onetl.db import DBReader
@@ -251,7 +254,9 @@ class DBReader(FrozenModel):
         # read data from table "fiddle.dummy"
         df = reader.run()
         ```
+
     === "Full example"
+
         ```python
         from onetl.db import DBReader
         from onetl.connection import Postgres
@@ -272,6 +277,7 @@ class DBReader(FrozenModel):
         # read data from table "fiddle.dummy"
         df = reader.run()
         ```
+
     === "Incremental reading"
 
         See [strategy][] for more examples

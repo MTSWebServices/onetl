@@ -49,11 +49,13 @@ class ORC(ReadWriteFileFormat):
         you should call method `ORC.parse({"orc.option": True})`.
 
     === "Reading files"
+
         ```python
         from onetl.file.format import ORC
 
         orc = ORC(mergeSchema=True)
         ```
+
     === "Writing files"
 
         ```python

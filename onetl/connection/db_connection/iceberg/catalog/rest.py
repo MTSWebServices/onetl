@@ -41,6 +41,7 @@ class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
     --------
 
     === "REST catalog with basic authentication"
+
         ```python
         from onetl.connection import Iceberg
 
@@ -52,7 +53,9 @@ class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
             ),
         )
         ```
+
     === "REST catalog with bearer token"
+
         ```python
         from onetl.connection import Iceberg
 
@@ -63,7 +66,9 @@ class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
             ),
         )
         ```
+
     === "REST catalog with OAuth2 Client Credentials Flow"
+
         ```python
         from onetl.connection import Iceberg
 
@@ -75,7 +80,9 @@ class IcebergRESTCatalog(IcebergCatalog, FrozenModel):
             ),
         )
         ```
+
     === "REST catalog with custom auth"
+
         ```python
         from onetl.connection import Iceberg
 

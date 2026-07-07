@@ -97,32 +97,32 @@ class Greenplum(JDBCMixin, DBConnection):
     host : str
         Host of Greenplum master. For example: `test.greenplum.domain.com` or `193.168.1.17`
 
-    port : int, default: `5432`
+    port : int, default: 5432
         Port of Greenplum master
 
     user : str
-        User, which have proper access to the database. For example: `some_user`
+        User for database connection
 
     password : str
         Password for database connection
 
     database : str
-        Database in RDBMS, NOT schema.
+        Database in RDBMS, NOT schema
 
         See [this page](https://www.educba.com/postgresql-database-vs-schema/) for more details
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to JDBC driver.
         For example: `{"tcpKeepAlive": "true", "server.port": "50000-65535"}`
 
         Supported options are:
-            * All [Postgres JDBC driver properties](https://jdbc.postgresql.org/documentation/use/)
-            * Properties from [Greenplum connector for Spark documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html) page,
-              but only starting with `server.` or `pool.`
+
+        * All [Postgres JDBC driver properties](https://jdbc.postgresql.org/documentation/use/)
+        * Properties from [Greenplum connector for Spark documentation](https://docs.vmware.com/en/VMware-Greenplum-Connector-for-Apache-Spark/2.3/greenplum-connector-spark/options.html) page,
+            but only starting with `server.` or `pool.`
 
     Examples
     --------

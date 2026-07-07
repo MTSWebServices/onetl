@@ -89,16 +89,16 @@ class FileDownloader(FrozenModel):
     connection : FileConnection
         Class which contains File system connection properties. See [file-connections][] section.
 
-    local_path : `os.PathLike` or `str`
+    local_path : os.PathLike | str
         Local path where you download files
 
-    source_path : `os.PathLike` or `str`, optional, default: `None`
+    source_path : os.PathLike | str, optional
         Remote path to download files from.
 
         Could be `None`, but only if you pass absolute file paths directly to
         [run][] method
 
-    temp_path : `os.PathLike` or `str`, optional, default: `None`
+    temp_path : os.PathLike | str, optional
         If set, this path will be used for downloading a file, and then renaming it to the target file path.
         If `None` is passed, files are downloaded directly to `target_path`.
 
@@ -136,13 +136,13 @@ class FileDownloader(FrozenModel):
         !!! info "Changed in 0.8.0"
             Renamed `limit` → `limits`
 
-    options : [Options][]  | dict | None, default: `None`
+    options : [Options][]  | dict | None, optional
         File downloading options.
         See [FileDownloader.Options][onetl.file.file_downloader.options.FileDownloaderOptions]
 
         !!! success "Added in 0.3.0"
 
-    hwm : type[HWM] | None, default: `None`
+    hwm : type[HWM] | None, optional
 
         HWM class to detect changes in incremental run.
         See [File HWM](https://etl-entities.readthedocs.io/en/stable/hwm/file/index.html)
@@ -159,6 +159,7 @@ class FileDownloader(FrozenModel):
     --------
 
     === "Minimal example"
+
         ```python
         from onetl.connection import SFTP
         from onetl.file import FileDownloader
@@ -175,7 +176,9 @@ class FileDownloader(FrozenModel):
         # download files to "/path/to/local"
         downloader.run()
         ```
+
     === "Full example"
+
         ```python
         from onetl.connection import SFTP
         from onetl.file import FileDownloader
@@ -204,7 +207,9 @@ class FileDownloader(FrozenModel):
         # and stop before downloading 101 file
         downloader.run()
         ```
+
     === "Incremental download (by tracking list of file paths)"
+
         ```python
         from onetl.connection import SFTP
         from onetl.file import FileDownloader
@@ -227,7 +232,9 @@ class FileDownloader(FrozenModel):
         with IncrementalStrategy():
             downloader.run()
         ```
+
     === "Incremental download (by tracking file modification time)"
+
         ```python
         from onetl.connection import SFTP
         from onetl.file import FileDownloader

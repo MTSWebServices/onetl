@@ -54,24 +54,23 @@ class MySQL(JDBCConnection):
     host : str
         Host of MySQL database. For example: `mysql0012.domain.com` or `192.168.1.11`
 
-    port : int, default: `3306`
+    port : int, default: 3306
         Port of MySQL database
 
     user : str
-        User, which have proper access to the database. For example: `some_user`
+        User for database connection
 
     password : str
         Password for database connection
 
     database : str, optional
-        Database (==schema) in MySQL
+        Default database (schema) to connect
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to JDBC driver.
         For example: `{"useSSL": "false", "allowPublicKeyRetrieval": "true"}`
 
         See [MySQL JDBC driver properties documentation](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html)

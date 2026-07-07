@@ -22,7 +22,7 @@ class HiveSlots:
 
         Parameters
         ----------
-        cluster : `str`
+        cluster : str
             Cluster name (raw)
 
         Returns

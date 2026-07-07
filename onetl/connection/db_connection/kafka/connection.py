@@ -77,13 +77,13 @@ class Kafka(DBConnection):
     cluster : str
         Cluster name. Used for HWM and lineage.
 
-    auth : KafkaAuth, default: `None`
+    auth : KafkaAuth, optional
         Kafka authentication mechanism. `None` means anonymous auth.
 
     protocol : KafkaProtocol, default: [PlaintextProtocol][onetl.connection.db_connection.kafka.kafka_plaintext_protocol.KafkaPlaintextProtocol]
         Kafka security protocol.
 
-    extra : dict, default: `None`
+    extra : dict, optional
         A dictionary of additional properties to be used when connecting to Kafka.
 
         These are Kafka-specific properties that control behavior of the producer or consumer. See:
@@ -113,6 +113,7 @@ class Kafka(DBConnection):
     --------
 
     === "Create Kafka connection with `PLAINTEXT` protocol and `SCRAM-SHA-256` auth"
+
         ```python
         from onetl.connection import Kafka
         from pyspark.sql import SparkSession
@@ -139,7 +140,9 @@ class Kafka(DBConnection):
             spark=spark,
         ).check()
         ```
+
     === "Create Kafka connection with `PLAINTEXT` protocol and Kerberos (`GSSAPI`) auth"
+
         ```python
         # Create Spark session with Kafka connector loaded
         ...
@@ -156,7 +159,9 @@ class Kafka(DBConnection):
             spark=spark,
         ).check()
         ```
+
     === "Create Kafka connection with `SASL_SSL` protocol and `SCRAM-SHA-512` auth"
+
         ```python
         from pathlib import Path
 
@@ -184,7 +189,9 @@ class Kafka(DBConnection):
             spark=spark,
         ).check()
         ```
+
     === "Create Kafka connection with extra options"
+
         ```python
         # Create Spark session with Kafka connector loaded
         ...

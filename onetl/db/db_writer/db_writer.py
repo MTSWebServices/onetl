@@ -53,7 +53,7 @@ class DBWriter(FrozenModel):
         !!! info "Changed in 0.7.0"
             Renamed `table` → `target`
 
-    options : dict | WriteOptions, default: `None`
+    options : dict | WriteOptions, optional
         Spark write options. Can be in form of special `WriteOptions` object or a dict.
 
         For example:
@@ -70,6 +70,7 @@ class DBWriter(FrozenModel):
     --------
 
     === "Minimal example"
+
         ```python
         from onetl.connection import Postgres
         from onetl.db import DBWriter
@@ -81,7 +82,9 @@ class DBWriter(FrozenModel):
             target="fiddle.dummy",
         )
         ```
+
     === "With custom write options"
+
         ```python
         from onetl.connection import Postgres
         from onetl.db import DBWriter

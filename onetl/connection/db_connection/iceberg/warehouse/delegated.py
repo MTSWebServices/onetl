@@ -41,6 +41,7 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
     --------
 
     === "S3 client with vended credentials"
+
         ```python
         from onetl.connection import Iceberg
 
@@ -51,7 +52,9 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
             extra={"client.region": "us-east-1"},
         )
         ```
+
     === "S3 client with remote signing"
+
         ```python
         from onetl.connection import Iceberg
 

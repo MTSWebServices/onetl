@@ -58,7 +58,7 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
 
     Parameters
     ----------
-    path : `pathlib.Path` or `str`
+    path : os.PathLike | str
 
         Folder name there HWM value files will be stored.
 
@@ -68,7 +68,7 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
         * `C:\Documents and Settings\<User>\Application Data\oneTools\onETL\yml_hwm_store` on Windows
         * `~/Library/Application Support/onETL/yml_hwm_store` on MacOS
 
-    encoding : str, default: `utf-8`
+    encoding : str, default: "utf-8"
 
         Encoding of files with HWM value
 

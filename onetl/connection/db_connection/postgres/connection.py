@@ -57,26 +57,25 @@ class Postgres(JDBCConnection):
     host : str
         Host of Postgres database. For example: `test.postgres.domain.com` or `193.168.1.11`
 
-    port : int, default: `5432`
+    port : int, default: 5432
         Port of Postgres database
 
     user : str
-        User, which have proper access to the database. For example: `some_user`
+        User for database connection
 
     password : str
         Password for database connection
 
     database : str
-        Database in RDBMS, NOT schema.
+        Database in RDBMS, NOT schema
 
         See [this page](https://www.educba.com/postgresql-database-vs-schema/) for more details
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to JDBC driver.
         For example: `{"ssl": "false"}`
 
         See [Postgres JDBC driver properties documentation](https://jdbc.postgresql.org/documentation/use/)

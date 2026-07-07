@@ -50,6 +50,7 @@ class SnapshotStrategy(BaseStrategy):
     --------
 
     ???+ example "Snapshot run with [db-reader][]"
+
         ```python
         from onetl.db import DBReader, DBWriter
         from onetl.strategy import SnapshotStrategy
@@ -73,6 +74,7 @@ class SnapshotStrategy(BaseStrategy):
         ```
 
     ??? example "Snapshot run with [file-downloader][]"
+
         ```python
         from onetl.file import FileDownloader
         from onetl.strategy import SnapshotStrategy
@@ -156,7 +158,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
 
             For example, for `TIMESTAMP` column `step` type should be `datetime.timedelta`, not `int`
 
-    start : Any, default: `None`
+    start : Any, optional
 
         If passed, the value will be used for generating WHERE clauses with `hwm.expression` filter,
         as a start value for the first batch.
@@ -174,7 +176,7 @@ class SnapshotBatchStrategy(BatchHWMStrategy):
             `start` should be the same type as `hwm.expression` value,
             e.g. `datetime.datetime` for `TIMESTAMP` column, `datetime.date` for `DATE`, and so on
 
-    stop : Any, default: `None`
+    stop : Any, optional
 
         If passed, the value will be used for generating WHERE clauses with `hwm.expression` filter,
         as a stop value for the last batch.

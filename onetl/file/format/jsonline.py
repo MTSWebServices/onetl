@@ -41,11 +41,13 @@ class JSONLine(ReadWriteFileFormat):
         The set of supported options depends on Spark version.
 
     === "Reading files"
+
         ```python
         from onetl.file.format import JSONLine
 
         jsonline = JSONLine(encoding="UTF-8", mode="PERMISSIVE")
         ```
+
     === "Writing files"
 
         !!! warning

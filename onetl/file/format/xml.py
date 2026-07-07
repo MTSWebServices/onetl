@@ -55,6 +55,7 @@ class XML(ReadWriteFileFormat):
         The set of supported options depends on `spark-xml` version.
 
     === "Reading files"
+
         ```python
         from onetl.file.format import XML
         from pyspark.sql import SparkSession
@@ -69,6 +70,7 @@ class XML(ReadWriteFileFormat):
 
         xml = XML(rowTag="item", mode="PERMISSIVE")
         ```
+
     === "Writing files"
 
         !!! warning

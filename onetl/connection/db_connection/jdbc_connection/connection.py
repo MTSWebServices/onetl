@@ -124,7 +124,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
 
             SQL query to be executed.
 
-        options : dict, [SQLOptions][], default: `None`
+        options : dict, [SQLOptions][], optional
 
             Spark options to be used while fetching data.
 

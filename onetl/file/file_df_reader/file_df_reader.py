@@ -52,13 +52,13 @@ class FileDFReader(FrozenModel):
     format : [BaseReadableFileFormat][onetl.base.base_file_format.BaseReadableFileFormat]
         File format to read.
 
-    source_path : os.PathLike or str, optional, default: `None`
+    source_path : os.PathLike or str, optional
         Directory path to read data from.
 
         Could be `None`, but only if you pass file paths directly to
         [run][] method
 
-    df_schema : `pyspark.sql.types.StructType`, optional, default: `None`
+    df_schema : pyspark.sql.types.StructType, optional
         Spark DataFrame schema.
 
     options : [FileDFReaderOptions][onetl.file.file_df_reader.options.FileDFReaderOptions], optional
@@ -68,6 +68,7 @@ class FileDFReader(FrozenModel):
     --------
 
     === "Read CSV files from local filesystem"
+
         ```python
         from onetl.connection import SparkLocalFS
         from onetl.file import FileDFReader
@@ -82,7 +83,9 @@ class FileDFReader(FrozenModel):
             source_path="/path/to/directory",
         )
         ```
+
     === "All supported options"
+
         ```python
         from onetl.connection import SparkLocalFS
         from onetl.file import FileDFReader
@@ -127,7 +130,7 @@ class FileDFReader(FrozenModel):
 
         Returns
         -------
-        df : `pyspark.sql.DataFrame`
+        df : pyspark.sql.DataFrame
 
             Spark DataFrame
 

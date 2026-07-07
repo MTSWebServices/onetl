@@ -64,30 +64,29 @@ class MongoDB(DBConnection):
     Parameters
     ----------
     host : str
-        Host of MongoDB. For example: `test.mongodb.com` or `193.168.1.17`.
+        Host of MongoDB. For example: `test.mongodb.com` or `193.168.1.17`
 
-    port : int, default: `27017`.
+    port : int, default: 27017
         Port of MongoDB
 
     user : str
-        User, which have proper access to the database. For example: `some_user`.
+        User for database connection
 
     password : str
-        Password for database connection.
+        Password for database connection
 
     database : str
-        Database in MongoDB.
+        Database in MongoDB
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to MongoDB client.
         For example: `{"tls": "false"}`
 
         See [Connection string options documentation](https://www.mongodb.com/docs/manual/reference/connection-string/#std-label-connections-connection-options)
-        for more details
+        for more details.
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
     Examples
     --------

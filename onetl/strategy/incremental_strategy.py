@@ -197,7 +197,7 @@ class IncrementalStrategy(HWMStrategy):
 
     Parameters
     ----------
-    offset : Any, default: `None`
+    offset : Any, optional
 
         If passed, the offset value will be used to read rows which appeared in the source after the previous read.
 
@@ -344,6 +344,7 @@ class IncrementalStrategy(HWMStrategy):
         ```
 
     ??? example "Incremental run with [db-reader][] and [kafka][]"
+
         ```python
         from onetl.db import DBReader, DBWriter
         from onetl.strategy import IncrementalStrategy
@@ -363,6 +364,7 @@ class IncrementalStrategy(HWMStrategy):
         ```
 
     ??? example "Incremental run with [file-downloader][] and `hwm=FileListHWM(...)`"
+
         ```python
         from onetl.file import FileDownloader
         from onetl.strategy import SnapshotStrategy
@@ -384,6 +386,7 @@ class IncrementalStrategy(HWMStrategy):
         ```
 
     ??? example "Incremental run with [file-downloader][] and `hwm=FileModifiedTimeHWM(...)`"
+
         ```python
         from onetl.file import FileDownloader
         from onetl.strategy import SnapshotStrategy
@@ -488,7 +491,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
 
             For example, for `TIMESTAMP` column `step` type should be `datetime.timedelta`, not `int`
 
-    stop : Any, default: `None`
+    stop : Any, optional
 
         If passed, the value will be used for generating WHERE clauses with `hwm.expression` filter,
         as a stop value for the last batch.
@@ -506,7 +509,7 @@ class IncrementalBatchStrategy(BatchHWMStrategy):
             `stop` should be the same type as `hwm.expression` value,
             e.g. `datetime.datetime` for `TIMESTAMP` column, `datetime.date` for `DATE`, and so on
 
-    offset : Any, default: `None`
+    offset : Any, optional
 
         If passed, the offset value will be used to read rows which appeared in the source after the previous read.
 

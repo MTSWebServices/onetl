@@ -52,7 +52,8 @@ class FTPExtra(GenericOptions):
     ---------
     use_passive_mode : bool, optional
         Set to `True` to use passive mode, ``False`` to use active mode, ``None`` for autodetect
-    encoding : str, default: `utf-8`
+
+    encoding : str, default: "utf-8"
         File path encoding
     """
 
@@ -88,20 +89,20 @@ class FTP(FileConnection, RenameDirMixin):
     host : str
         Host of FTP source. For example: `ftp.domain.com`
 
-    port : int, default: `21`
+    port : int, default: 21
         Port of FTP source
 
-    user : str, default: `None`
+    user : str, optional
         User, which have access to the file source. For example: `someuser`.
 
         `None` means that the user is anonymous.
 
-    password : str, default: `None`
+    password : str, optional
         Password for file source connection.
 
         `None` means that the user is anonymous.
 
-    extra : FTPExtra, default: `FTPExtra()`
+    extra : [FTPExtra][], optional
         Extra options
 
     Examples

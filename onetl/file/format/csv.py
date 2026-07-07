@@ -56,12 +56,15 @@ class CSV(ReadWriteFileFormat):
         The set of supported options depends on Spark version.
 
     === "Reading files"
+
         ```python
         from onetl.file.format import CSV
 
         csv = CSV(header=True, inferSchema=True, mode="PERMISSIVE")
         ```
+
     === "Writing files"
+
         ```python
         from onetl.file.format import CSV
 

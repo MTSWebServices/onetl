@@ -59,7 +59,7 @@ def setup_notebook_logging(level: int | str = logging.INFO) -> None:
 
     Parameters
     ----------
-    level : `int` or `str`, default `INFO`
+    level : int | str, default "INFO"
         Log level for onETL module
     """
 
@@ -86,10 +86,10 @@ def setup_logging(level: int | str = logging.INFO, *, enable_clients: bool = Fal
 
     Parameters
     ----------
-    level : `int` or `str`, default `INFO`
+    level : int | str, default "INFO"
         Log level for onETL module
 
-    enable_clients : `bool`, default `False`
+    enable_clients : bool, optional
         If `True`, enable logging of underlying client modules.
         Otherwise, set client modules log level to `DISABLED`.
 
@@ -129,7 +129,7 @@ def setup_clients_logging(level: int | str = DISABLED) -> None:
 
     Parameters
     ----------
-    level : `int` or `str`, default `DISABLED`
+    level : int | str, default "DISABLED"
         Log level for client modules
 
         !!! note

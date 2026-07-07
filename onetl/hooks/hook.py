@@ -46,7 +46,7 @@ class Hook(Generic[P, T]):
     Parameters
     ----------
 
-        callback : `typing.Callable`
+        callback : typing.Callable
 
             Some callable object which will be wrapped into a Hook, like function or ContextManager class.
 
@@ -403,6 +403,7 @@ def hook(inp=None, *, enabled=True, priority=HookPriority.NORMAL):
     --------
 
     === "Decorate a function or generator"
+
         ```python
         from onetl.hooks import hook, HookPriority
 
@@ -417,7 +418,9 @@ def hook(inp=None, *, enabled=True, priority=HookPriority.NORMAL):
             ...
 
         ```
+
     === "Decorate a context manager"
+
         ```python
         from onetl.hooks import hook, HookPriority
 

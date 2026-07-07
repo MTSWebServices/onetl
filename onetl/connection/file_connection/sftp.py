@@ -54,17 +54,17 @@ class SFTPExtra(GenericOptions):
 
     Parameters
     ---------
-    host_key_check : bool, default: `False`
+    host_key_check : bool, optional
         Set to `True` to validate the SSH server's host key.
-    timeout : float, default: `None`
+    timeout : float, optional
         Optional timeout (in seconds) for the TCP connect.
-    banner_timeout : float, default: `None`
+    banner_timeout : float, optional
         Optional timeout (in seconds) for the SSH banner.
-    auth_timeout : float, default: `None`
+    auth_timeout : float, optional
         Optional timeout (in seconds) for the SSH authentication.
-    channel_timeout : float, default: `None`
+    channel_timeout : float, optional
         Optional timeout (in seconds) for the SSH channel.
-    compress : bool, default: `False`
+    compress : bool, optional
         Set to `True` to enable compression.
 
         !!! warning
@@ -108,19 +108,19 @@ class SFTP(FileConnection, RenameDirMixin):
     host : str
         Host of SFTP source. For example: `192.168.1.19`
 
-    port : int, default: `22`
+    port : int, default: 22
         Port of SFTP source
 
     user : str
         User, which have access to the file source. For example: `someuser`
 
-    password : str, optional.
+    password : str, optional
         Password for SFTP connection, optional.
 
-    key_file : str, optional.
+    key_file : str, optional
         Path to private key file, optional.
 
-    extra : SFTPExtra, default: `SFTPExtra()`
+    extra : [SFTPExtra][], optional
         Extra options for SFTP connection
 
     Examples

@@ -145,7 +145,7 @@ class HDFS(FileConnection, RenameDirMixin):
 
             You should pass at least one of these arguments: `cluster`, `host`.
 
-    webhdfs_port : int, default: `50070`
+    webhdfs_port : int, default: 50070
         Port of Hadoop namenode (WebHDFS protocol).
 
         If omitted, but there are some hooks bound to
@@ -157,7 +157,7 @@ class HDFS(FileConnection, RenameDirMixin):
 
         If set, Kerberos auth will be used. Otherwise an anonymous connection is created.
 
-    password : str, default: `None`
+    password : str, optional
         User password.
 
         Used for generating Kerberos ticket.
@@ -167,7 +167,7 @@ class HDFS(FileConnection, RenameDirMixin):
             You can provide only one of the parameters: `password` or `kinit`.
             If you provide both, an exception will be raised.
 
-    keytab : str, default: `None`
+    keytab : str, optional
         LocalPath to keytab file.
 
         Used for generating Kerberos ticket.
@@ -177,13 +177,14 @@ class HDFS(FileConnection, RenameDirMixin):
             You can provide only one of the parameters: `password` or `kinit`.
             If you provide both, an exception will be raised.
 
-    extra: HDFSExtra, optional
+    extra: [HDFSExtra][], optional
         Extra options passed to underlying HDFS client.
 
     Examples
     --------
 
     === "Create HDFS connection with user+password"
+
         ```python
         from onetl.connection import HDFS
 
@@ -193,7 +194,9 @@ class HDFS(FileConnection, RenameDirMixin):
             password="*****",
         ).check()
         ```
+
     === "Create HDFS connection with user+keytab"
+
         ```python
         from onetl.connection import HDFS
 
@@ -203,12 +206,15 @@ class HDFS(FileConnection, RenameDirMixin):
             keytab="/path/to/keytab",
         ).check()
         ```
+
     === "Create HDFS connection without auth"
+
         ```python
         from onetl.connection import HDFS
 
         hdfs = HDFS(host="namenode1.domain.com").check()
         ```
+
     === "Use cluster name to detect active namenode"
 
         Can be used only if some third-party plugin provides [hdfs-slots][] implementation
@@ -222,6 +228,7 @@ class HDFS(FileConnection, RenameDirMixin):
             password="*****",
         ).check()
         ```
+
     === "Configure timeout & number of retries"
 
         ```python
@@ -289,7 +296,7 @@ class HDFS(FileConnection, RenameDirMixin):
         keytab : str | None
             Path to keytab file for Kerberos. See [HDFS][] constructor documentation.
 
-        extra : HDFSExtra, optional
+        extra : [HDFSExtra][], optional
             Extra options passed to underlying HDFS client. See [HDFS][] constructor documentation.
 
         Examples

@@ -93,23 +93,23 @@ class Oracle(JDBCConnection):
     host : str
         Host of Oracle database. For example: `test.oracle.domain.com` or `193.168.1.10`
 
-    port : int, default: `1521`
+    port : int, default: 1521
         Port of Oracle database
 
     user : str
-        User, which have proper access to the database. For example: `SOME_USER`
+        User for database connection
 
     password : str
         Password for database connection
 
-    sid : str, default: `None`
+    sid : str, optional
         Sid of oracle database. For example: `XE`
 
         !!! warning
 
             You should provide either `sid` or `service_name`, not both of them
 
-    service_name : str, default: `None`
+    service_name : str, optional
         Specifies one or more names by which clients can connect to the instance.
 
         For example: `PDB1`.
@@ -118,17 +118,17 @@ class Oracle(JDBCConnection):
 
             You should provide either `sid` or `service_name`, not both of them
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to JDBC driver.
         For example: `{"remarksReporting": "false"}`
 
         See official documentation:
-            * [Connection parameters](https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/jdbc/OracleDriver.html)
-            * [Connection properties](https://docs.oracle.com/cd/A97335_02/apps.102/a83724/basic1.htm#1024018)
+
+        * [Connection parameters](https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/jdbc/OracleDriver.html)
+        * [Connection properties](https://docs.oracle.com/cd/A97335_02/apps.102/a83724/basic1.htm#1024018)
 
     Examples
     --------

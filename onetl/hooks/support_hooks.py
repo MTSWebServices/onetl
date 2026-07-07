@@ -32,6 +32,7 @@ def skip_hooks(cls: type):
     --------
 
     === "Context manager syntax"
+
         ```python
         @support_hooks
         class MyClass:
@@ -55,7 +56,9 @@ def skip_hooks(cls: type):
         obj.my_method(2)  # will execute callback(obj, 2)
 
         ```
+
     === "Decorator syntax"
+
         ```python
         @support_hooks
         class MyClass:

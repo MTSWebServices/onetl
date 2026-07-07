@@ -54,7 +54,7 @@ class Hive(DBConnection):
 
         !!! success "Added in 0.7.0"
 
-    spark : `pyspark.sql.SparkSession`
+    spark : pyspark.sql.SparkSession
         Spark session with Hive metastore support enabled
 
     Examples
@@ -85,7 +85,9 @@ class Hive(DBConnection):
         # Create connection
         hive = Hive(cluster="rnd-dwh", spark=spark).check()
         ```
+
     === "Create Hive connection with anonymous auth"
+
         ```python
         from onetl.connection import Hive
         from pyspark.sql import SparkSession
@@ -124,7 +126,7 @@ class Hive(DBConnection):
 
         Parameters
         ----------
-        spark : `pyspark.sql.SparkSession`
+        spark : pyspark.sql.SparkSession
             Spark session
 
         Examples

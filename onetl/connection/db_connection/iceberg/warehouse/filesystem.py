@@ -38,6 +38,7 @@ class IcebergFilesystemWarehouse(IcebergWarehouse, FrozenModel):
     --------
 
     === "Local filesystem"
+
         ```python
         from onetl.connection import Iceberg, SparkLocalFS
 
@@ -48,7 +49,9 @@ class IcebergFilesystemWarehouse(IcebergWarehouse, FrozenModel):
             path="/warehouse/path",
         )
         ```
+
     === "HDFS"
+
         ```python
         from onetl.connection import Iceberg, SparkHDFS
 
@@ -63,7 +66,9 @@ class IcebergFilesystemWarehouse(IcebergWarehouse, FrozenModel):
             path="/warehouse/path",
         )
         ```
+
     === "S3"
+
         ```python
         from onetl.connection import Iceberg, SparkS3
 

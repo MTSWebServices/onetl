@@ -69,7 +69,7 @@ class Iceberg(DBConnection):
     warehouse : [IcebergWarehouse][]
         Iceberg warehouse configuration
 
-    extra : dict | None, default: `None`
+    extra : dict | None, optional
         A dictionary of additional properties to be used when configuring Iceberg catalog.
 
         These are Iceberg-specific properties that control behavior of the catalog.
@@ -89,13 +89,14 @@ class Iceberg(DBConnection):
         spark.sql.catalog.my_catalog.cache-enabled = 'true'
         spark.sql.catalog.my_catalog.cache.expiration-interval-ms = '40000'
         ```
-    spark : `pyspark.sql.SparkSession`
+    spark : pyspark.sql.SparkSession
         Spark session
 
     Examples
     --------
 
     === "REST catalog with Bearer token auth, S3 warehouse with explicit credentials"
+
         ```python
         from onetl.connection import Iceberg
         from pyspark.sql import SparkSession
@@ -132,7 +133,9 @@ class Iceberg(DBConnection):
             ),
         )
         ```
+
     === "REST catalog with OAuth2 client credentials, S3 warehouse with vended credentials"
+
         ```python
         from onetl.connection import Iceberg
         from pyspark.sql import SparkSession
@@ -166,7 +169,9 @@ class Iceberg(DBConnection):
             ),
         )
         ```
+
     === "HDFS Filesystem catalog, HDFS warehouse"
+
         ```python
         from onetl.connection import Iceberg, SparkHDFS
         from pyspark.sql import SparkSession

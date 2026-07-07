@@ -54,6 +54,7 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
         )
         ```
+
     === "mTLS (mutual certificate check of client and server)"
 
         Pass PEM key and certificates as files located on Spark driver host:
@@ -81,6 +82,7 @@ class KafkaSSLProtocol(KafkaProtocol, GenericOptions):
             truststore_certificates="-----BEGIN CERTIFICATE...\\n...END CERTIFICATE-----",
         )
         ```
+
     === "Custom Kafka client options"
 
         ```python

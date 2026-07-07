@@ -137,13 +137,13 @@ class WebDAV(FileConnection, RenameDirMixin):
     password : str
         Password for file source connection
 
-    protocol : str, default: `https`
+    protocol : str, default: "https"
         Connection protocol. Allowed values: `https` or `http`
 
     port : int, optional
         Connection port
 
-    extra: WebDAVExtra, optional
+    extra: [WebDAVExtra][], optional
         Extra options passed to WebDAV client
 
     Examples

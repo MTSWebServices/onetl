@@ -49,12 +49,15 @@ class Parquet(ReadWriteFileFormat):
         you should call method `Parquet.parse({"parquet.option": True})`.
 
     === "Reading files"
+
         ```python
         from onetl.file.format import Parquet
 
         parquet = Parquet(mergeSchema=True)
         ```
+
     === "Writing files"
+
         ```python
         from onetl.file.format import Parquet
 

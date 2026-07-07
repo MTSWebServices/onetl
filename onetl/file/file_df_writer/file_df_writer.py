@@ -52,6 +52,7 @@ class FileDFWriter(FrozenModel):
     --------
 
     === "Write CSV files to local filesystem"
+
         ```python
         from onetl.connection import SparkLocalFS
         from onetl.file import FileDFWriter
@@ -65,7 +66,9 @@ class FileDFWriter(FrozenModel):
             target_path="/path/to/directory",
         )
         ```
+
     === "All supported options"
+
         ```python
         from onetl.connection import SparkLocalFS
         from onetl.file import FileDFWriter

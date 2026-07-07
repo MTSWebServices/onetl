@@ -49,7 +49,7 @@ class MSSQL(JDBCConnection):
     host : str
         Host of MSSQL database. For example: `test.mssql.domain.com` or `192.168.1.14`
 
-    port : int, default: `None`
+    port : int, optional
         Port of MSSQL database
 
         !!! info "Changed in 0.11.1"
@@ -57,22 +57,21 @@ class MSSQL(JDBCConnection):
             to allow automatic port discovery with `instanceName`.
 
     user : str
-        User, which have proper access to the database. For example: `some_user`
+        User for database connection
 
     password : str
         Password for database connection
 
     database : str
-        Database in RDBMS, NOT schema.
+        Database in RDBMS, NOT schema
 
         See [this page](https://www.educba.com/postgresql-database-vs-schema/) for more details
 
-    spark : `pyspark.sql.SparkSession`
-        Spark session.
+    spark : pyspark.sql.SparkSession
+        Spark session
 
-    extra : dict, default: `None`
-        Specifies one or more extra parameters by which clients can connect to the instance.
-
+    extra : dict, optional
+        Extra parameters passed directly to JDBC driver.
         For example: `{"connectRetryCount": 3, "connectRetryInterval": 10}`
 
         See [MSSQL JDBC driver properties documentation](https://learn.microsoft.com/en-us/sql/connect/jdbc/setting-the-connection-properties#properties)
@@ -82,6 +81,7 @@ class MSSQL(JDBCConnection):
     --------
 
     === "Create MSSQL connection with plain auth"
+
         ```python
         from onetl.connection import MSSQL
         from pyspark.sql import SparkSession
@@ -106,7 +106,9 @@ class MSSQL(JDBCConnection):
             spark=spark,
         )
         ```
+
     === "Create MSSQL connection with domain auth"
+
         ```python
         # Create Spark session with MSSQL driver loaded
         ...
@@ -126,7 +128,9 @@ class MSSQL(JDBCConnection):
             spark=spark,
         )
         ```
+
     === "Create MSSQL connection with instance name"
+
         ```python
         # Create Spark session with MSSQL driver loaded
         ...
@@ -144,7 +148,9 @@ class MSSQL(JDBCConnection):
             spark=spark,
         )
         ```
+
     === "Create MSSQL read-only connection"
+
         ```python
         # Create Spark session with MSSQL driver loaded
         ...

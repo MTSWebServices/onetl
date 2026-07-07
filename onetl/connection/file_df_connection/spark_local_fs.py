@@ -45,7 +45,7 @@ class SparkLocalFS(SparkFileDFConnection):
 
     Parameters
     ----------
-    spark : `pyspark.sql.SparkSession`
+    spark : pyspark.sql.SparkSession
         Spark session
 
     Examples
