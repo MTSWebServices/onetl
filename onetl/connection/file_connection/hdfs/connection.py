@@ -247,7 +247,6 @@ class HDFS(FileConnection, RenameDirMixin):
                     total=3,
                     backoff_factor=0.2,
                     status_forcelist=[429, 500, 502, 503, 504],
-                    allowed_methods=["HEAD", "GET", "PUT", "OPTIONS"],
                 ),
             ),
         ).check()

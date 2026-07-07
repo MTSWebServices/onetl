@@ -198,7 +198,7 @@ class S3(FileConnection):
             region="us-east-1",
             extra=S3.Extra(
                 timeout=Timeout(connect=10, read=60),
-                retry=Retry(5, backoff_factor=0.2),
+                retry=Retry(total=5, backoff_factor=0.2),
                 ssl_verify=True,
             ),
         ).check()

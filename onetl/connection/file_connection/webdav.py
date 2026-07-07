@@ -175,7 +175,13 @@ class WebDAV(FileConnection, RenameDirMixin):
             password="*****",
             extra=WebDAV.Extra(
                 ssl_verify=True,
-                timeout=Timeout(connect=5, read=10),
+                timeout=Timeout(connect=10, read=60),
+                retry=Retry(
+                    total=3,
+                    backoff_factor=0.2,
+                    # retry on missing files (404 status code)
+                    status_forcelist=[404, 429, 500, 502, 503, 504],
+                ),
                 disable_check=True,
             )
         ).check()
