@@ -24,8 +24,6 @@ Handles:
                        .. code-block::   → ```lang title="..."
   - tabs:              .. tabs:: / .. code-tab:: / .. tab::  → === "..."
   - dropdown:          .. dropdown:: T   → ??? note "T"
-  - substitutions:     |support_hooks|   → inline badge (shields.io)
-  - ext. domain:       :etl-entities:`D <path.html>` → [D](https://etl-entities.readthedocs.io/en/stable/path.html)
   - doctest blocks:    >>> code          → ```python fenced block
   - admonition bodies: normalises indentation to 4 spaces (MkDocs requirement)
 
@@ -127,30 +125,6 @@ def _apply_inline(text: str) -> tuple[str, list[str]]:
 
     # :ref:`label`  →  [label][]
     text = sub(r":ref:`([\w.-]+)`", r"[\1][]", text, "ref: :ref:`label` → [label][]")
-
-    # 4. External Sphinx domain :etl-entities: → plain Markdown link
-    # Configured in docs/conf.py as intersphinx alias with base URL:
-    #   https://etl-entities.readthedocs.io/en/stable/%s
-    # Pattern: :etl-entities:`Display <path.html>`  →  [Display](base/path.html)
-    def _etl_entities_link(m):
-        display, path = m.group(1).strip(), m.group(2).strip()
-        return f"[{display}]({_ETL_ENTITIES_BASE}{path})"
-
-    new = re.sub(r":etl-entities:`([^`<]+?)\s+<([^>`]+)>`", _etl_entities_link, text)
-    if new != text:
-        changes.append("etl-entities: :etl-entities:`D <path>` → [D](url)")
-        text = new
-
-    # 5. RST substitutions → inline badge
-    # |support_hooks| is defined in docs/conf.py as a shields.io badge image.
-    # Inlined directly because mkdocstrings renders docstrings independently
-    # of the mkdocs-macros plugin, so {{ support_hooks }} would not be expanded.
-    text = sub(
-        r"\|support_hooks\|",
-        _SUPPORT_HOOKS_BADGE,
-        text,
-        "substitution: |support_hooks| → badge",
-    )
 
     return text, changes
 
