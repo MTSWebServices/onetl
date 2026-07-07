@@ -67,7 +67,7 @@ class DBReader(FrozenModel):
 
     Parameters
     ----------
-    connection : [onetl.connection.BaseDBConnection][]
+    connection : onetl.connection.BaseDBConnection
         Class which contains DB connection properties. See [db-connections][] section
 
     source : str
@@ -79,7 +79,7 @@ class DBReader(FrozenModel):
         !!! info "Changed in 0.7.0"
             Renamed `table` → `source`
 
-    columns : list of str, optional
+    columns : list[str], optional
         The list of columns to be read.
 
         If RDBMS supports any kind of expressions, you can pass them too.
@@ -127,7 +127,7 @@ class DBReader(FrozenModel):
 
             Some sources does not support data filtering.
 
-    hwm : type[HWM] | None, optional
+    hwm : type[HWM],optional
         HWM class to be used as [HWM](https://etl-entities.readthedocs.io/en/stable/hwm/index.html) value.
 
         ```python
@@ -206,7 +206,7 @@ class DBReader(FrozenModel):
 
             Some sources does not support passing dataframe schema.
 
-    options : dict, [onetl.connection.BaseDBConnection.ReadOptions][], optional
+    options : dict, onetl.connection.BaseDBConnection.ReadOptions, optional
         Spark read options, like partitioning mode.
 
         ```python
@@ -538,7 +538,7 @@ class DBReader(FrozenModel):
         RuntimeError
             Current strategy is not compatible with HWM parameter.
 
-        [onetl.exception.NoDataError][]
+        onetl.exception.NoDataError
             There is no data in source.
 
         Examples

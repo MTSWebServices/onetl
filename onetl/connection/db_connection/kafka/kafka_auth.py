@@ -21,7 +21,7 @@ class KafkaAuth(ABC):
 
         Parameters
         ----------
-        kafka : [Kafka][onetl.connection.db_connection.kafka.connection.Kafka]
+        kafka : onetl.connection.db_connection.kafka.connection.Kafka
             Connection instance
 
         Returns
@@ -40,7 +40,7 @@ class KafkaAuth(ABC):
 
         Parameters
         ----------
-        kafka : [Kafka][onetl.connection.db_connection.kafka.connection.Kafka]
+        kafka : onetl.connection.db_connection.kafka.connection.Kafka
             Connection instance
         """
         ...

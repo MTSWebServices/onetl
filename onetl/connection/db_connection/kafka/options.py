@@ -144,8 +144,9 @@ class KafkaWriteOptions(GenericOptions):
     Same as `df.write.mode(...)`.
 
     Possible values:
-        * `append` (default) - Adds new objects into existing topic.
-        * `error` - Raises an error if topic already exists.
+
+    * `append` (default) - Adds new objects into existing topic.
+    * `error` - Raises an error if topic already exists.
     """
 
     include_headers: bool = Field(default=False, alias="includeHeaders")

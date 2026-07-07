@@ -36,7 +36,7 @@ class TotalFilesSize(BaseFileLimit, FrozenModel):
     Parameters
     ----------
 
-    limit : int or str
+    limit : int | str
         Maximum total size of files to be handled. Can be an integer (bytes) or a string like `1GiB`.
 
     Examples

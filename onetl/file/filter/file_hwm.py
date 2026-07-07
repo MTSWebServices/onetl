@@ -16,7 +16,7 @@ class FileHWMFilter(BaseFileFilter, FrozenModel):
     Parameters
     ----------
 
-    hwm : [etl_entities.hwm.FileHWM][]
+    hwm : etl_entities.hwm.FileHWM
 
         File HWM instance
     """

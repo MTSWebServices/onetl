@@ -27,13 +27,13 @@ class RenameDirMixin(BaseFileConnection):
 
         Parameters
         ----------
-        source_dir_path : str or `os.PathLike`
+        source_dir_path : os.PathLike | str
             Old directory path
 
-        target_dir_path : str or `os.PathLike`
+        target_dir_path : os.PathLike | str
             New directory path
 
-        replace : bool, default `False`
+        replace : bool, optional
             If `True`, existing directory will be replaced.
 
         Returns
@@ -46,10 +46,10 @@ class RenameDirMixin(BaseFileConnection):
         NotADirectoryError
             Path is not a directory
 
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
             Path does not exist
 
-        [onetl.exception.DirectoryExistsError][]
+        onetl.exception.DirectoryExistsError
             Directory already exists, and `replace=False`
 
         Examples

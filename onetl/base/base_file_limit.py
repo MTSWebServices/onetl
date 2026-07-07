@@ -54,7 +54,7 @@ class BaseFileLimit(ABC):
 
         Parameters
         ----------
-        path : [onetl.base.path_protocol.PathProtocol][]
+        path : onetl.base.path_protocol.PathProtocol
             Path to check
 
         Returns

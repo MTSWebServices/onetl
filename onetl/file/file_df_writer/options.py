@@ -69,111 +69,112 @@ class FileDFWriterOptions(FileDFWriteOptions, GenericOptions):
         Default value was changed from `error` to `append`
 
     Possible values:
-        * `error`
-            If folder already exists, raise an exception.
 
-            Same as Spark's `df.write.mode("error").save()`.
+    * `error`
+        If folder already exists, raise an exception.
 
-        * `skip_entire_directory`
-            If folder already exists, left existing files intact and stop immediately without any errors.
+        Same as Spark's `df.write.mode("error").save()`.
 
-            Same as Spark's `df.write.mode("ignore").save()`.
+    * `skip_entire_directory`
+        If folder already exists, left existing files intact and stop immediately without any errors.
 
-        * `append` (default)
-            Appends data into existing directory.
+        Same as Spark's `df.write.mode("ignore").save()`.
 
-            ??? note "Behavior in details"
+    * `append` (default)
+        Appends data into existing directory.
 
-                * Directory does not exist
-                    Directory is created using all the provided options (`format`, `partition_by`, etc).
+        ??? note "Behavior in details"
 
-                * Directory exists, does not contain partitions, but [partition_by][] is set
-                    Data is appended to a directory, but to partitioned directory structure.
+            * Directory does not exist
+                Directory is created using all the provided options (`format`, `partition_by`, etc).
 
-                    !!! warning
+            * Directory exists, does not contain partitions, but [partition_by][] is set
+                Data is appended to a directory, but to partitioned directory structure.
 
-                        Existing files still present in the root of directory,
-                        but Spark will ignore those files while reading,
-                        unless using `recursive=True`.
+                !!! warning
 
-                * Directory exists and contains partitions, but [partition_by][] is not set
-                    Data is appended to a directory, but to the root of
-                    directory instead of nested partition directories.
+                    Existing files still present in the root of directory,
+                    but Spark will ignore those files while reading,
+                    unless using `recursive=True`.
 
-                    !!! warning
+            * Directory exists and contains partitions, but [partition_by][] is not set
+                Data is appended to a directory, but to the root of
+                directory instead of nested partition directories.
 
-                        Spark will ignore such files while reading, unless using `recursive=True`.
+                !!! warning
 
-                * Directory exists and contains partitions,
-                  but with different partitioning schema than [partition_by][]
-                    Data is appended to a directory with new partitioning schema.
+                    Spark will ignore such files while reading, unless using `recursive=True`.
 
-                    !!! warning
+            * Directory exists and contains partitions,
+                but with different partitioning schema than [partition_by][]
+                Data is appended to a directory with new partitioning schema.
 
-                        Spark cannot read directory with multiple partitioning schemas,
-                        unless using `recursive=True` to disable partition scanning.
+                !!! warning
 
-                * Directory exists and partitioned according [partition_by][],
-                  but partition is present only in dataframe
-                    New partition directory is created.
+                    Spark cannot read directory with multiple partitioning schemas,
+                    unless using `recursive=True` to disable partition scanning.
 
-                * Directory exists and partitioned according [partition_by][],
-                  partition is present in both dataframe and directory
-                    New files are added to existing partition directory, existing files are sill present.
+            * Directory exists and partitioned according [partition_by][],
+                but partition is present only in dataframe
+                New partition directory is created.
 
-                * Directory exists and partitioned according [partition_by][],
-                  but partition is present only in directory, not dataframe
-                    Existing partition is left intact.
+            * Directory exists and partitioned according [partition_by][],
+                partition is present in both dataframe and directory
+                New files are added to existing partition directory, existing files are sill present.
 
-        * `replace_overlapping_partitions`
-            If partitions from dataframe already exist in directory structure, they will be overwritten.
+            * Directory exists and partitioned according [partition_by][],
+                but partition is present only in directory, not dataframe
+                Existing partition is left intact.
 
-            Same as Spark's `df.write.option("partitionOverwriteMode", "dynamic").mode("overwrite").save()`.
+    * `replace_overlapping_partitions`
+        If partitions from dataframe already exist in directory structure, they will be overwritten.
 
-            !!! danger
+        Same as Spark's `df.write.option("partitionOverwriteMode", "dynamic").mode("overwrite").save()`.
 
-                This mode does make sense **ONLY** if the directory is partitioned.
-                **IF NOT, YOU'LL LOOSE YOUR DATA!**
+        !!! danger
 
-            ??? note "Behavior in details"
+            This mode does make sense **ONLY** if the directory is partitioned.
+            **IF NOT, YOU'LL LOOSE YOUR DATA!**
 
-                * Directory does not exist
-                    Directory is created using all the provided options
-                    (`format`, `partition_by`, etc).
+        ??? note "Behavior in details"
 
-                * Directory exists, does not contain partitions, but [partition_by][] is set
-                    Directory **will be deleted**, and will be created with partitions.
+            * Directory does not exist
+                Directory is created using all the provided options
+                (`format`, `partition_by`, etc).
 
-                * Directory exists and contains partitions, but [partition_by][] is not set
-                    Directory **will be deleted**, and will be created with partitions.
+            * Directory exists, does not contain partitions, but [partition_by][] is set
+                Directory **will be deleted**, and will be created with partitions.
 
-                * Directory exists and contains partitions,
-                  but with different partitioning schema than [partition_by][]
-                    Data is appended to a directory with new partitioning schema.
+            * Directory exists and contains partitions, but [partition_by][] is not set
+                Directory **will be deleted**, and will be created with partitions.
 
-                    !!! warning
+            * Directory exists and contains partitions,
+                but with different partitioning schema than [partition_by][]
+                Data is appended to a directory with new partitioning schema.
 
-                        Spark cannot read directory with multiple partitioning schemas,
-                        unless using `recursive=True` to disable partition scanning.
+                !!! warning
 
-                * Directory exists and partitioned according [partition_by][],
-                  but partition is present only in dataframe
-                    New partition directory is created.
+                    Spark cannot read directory with multiple partitioning schemas,
+                    unless using `recursive=True` to disable partition scanning.
 
-                * Directory exists and partitioned according [partition_by][],
-                  partition is present in both dataframe and directory
-                    Partition directory **will be deleted**,
-                    and new one is created with files containing data from dataframe.
+            * Directory exists and partitioned according [partition_by][],
+                but partition is present only in dataframe
+                New partition directory is created.
 
-                * Directory exists and partitioned according [partition_by][],
-                  but partition is present only in directory, not dataframe
-                    Existing partition is left intact.
+            * Directory exists and partitioned according [partition_by][],
+                partition is present in both dataframe and directory
+                Partition directory **will be deleted**,
+                and new one is created with files containing data from dataframe.
 
-        * `replace_entire_directory`
-            Remove existing directory and create new one, **overwriting all existing data**.
-            **All existing partitions are dropped.**
+            * Directory exists and partitioned according [partition_by][],
+                but partition is present only in directory, not dataframe
+                Existing partition is left intact.
 
-            Same as Spark's `df.write.option("partitionOverwriteMode", "static").mode("overwrite").save()`.
+    * `replace_entire_directory`
+        Remove existing directory and create new one, **overwriting all existing data**.
+        **All existing partitions are dropped.**
+
+        Same as Spark's `df.write.option("partitionOverwriteMode", "static").mode("overwrite").save()`.
 
     !!! note
 

@@ -17,12 +17,12 @@ def reset_limits(limits: "Iterable[BaseFileLimit]") -> "list[BaseFileLimit]":
 
     Parameters
     ----------
-    limits : Iterable of [onetl.base.base_file_limit.BaseFileLimit][]
+    limits : Iterable[onetl.base.base_file_limit.BaseFileLimit]
         Limits to reset.
 
     Returns
     -------
-    list of BaseFileLimit
+    list[onetl.base.base_file_limit.BaseFileLimit]
         List with limits, but with reset state.
 
         List may contain original filters with reset state, or new copies.

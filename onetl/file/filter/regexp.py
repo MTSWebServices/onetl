@@ -21,7 +21,7 @@ class Regexp(BaseFileFilter, FrozenModel):
     Parameters
     ----------
 
-    pattern : [re.Pattern][]
+    pattern : re.Pattern
 
         Regular expression (e.g. `\d+\.csv`) for which any **file** (only file) path should match.
 

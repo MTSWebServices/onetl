@@ -46,13 +46,13 @@ class FileDFReader(FrozenModel):
 
     Parameters
     ----------
-    connection : [BaseFileDFConnection][onetl.base.base_file_df_connection.BaseFileDFConnection]
+    connection : onetl.base.base_file_df_connection.BaseFileDFConnection
         File DataFrame connection. See [file-df-connections][] section.
 
-    format : [BaseReadableFileFormat][onetl.base.base_file_format.BaseReadableFileFormat]
+    format : onetl.base.base_file_format.BaseReadableFileFormat
         File format to read.
 
-    source_path : os.PathLike or str, optional
+    source_path : os.PathLike | str, optional
         Directory path to read data from.
 
         Could be `None`, but only if you pass file paths directly to
@@ -61,7 +61,7 @@ class FileDFReader(FrozenModel):
     df_schema : pyspark.sql.types.StructType, optional
         Spark DataFrame schema.
 
-    options : [FileDFReaderOptions][onetl.file.file_df_reader.options.FileDFReaderOptions], optional
+    options : onetl.file.file_df_reader.options.FileDFReaderOptions, optional
         Common reading options.
 
     Examples

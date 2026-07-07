@@ -29,7 +29,7 @@ class FileFilter(BaseFileFilter, FrozenModel):
     Parameters
     ----------
 
-    glob : str | None, default `None`
+    glob : str, optional
 
         Pattern (e.g. `*.csv`) for which any **file** (only file) path should match
 
@@ -37,7 +37,7 @@ class FileFilter(BaseFileFilter, FrozenModel):
 
             Mutually exclusive with `regexp`
 
-    regexp : str | re.Pattern | None, default `None`
+    regexp : str | re.Pattern, optional
 
         Regular expression (e.g. `\d+\.csv`) for which any **file** (only file) path should match.
 
@@ -47,7 +47,7 @@ class FileFilter(BaseFileFilter, FrozenModel):
 
             Mutually exclusive with `glob`
 
-    exclude_dirs : list[os.PathLike | str], default `[]`
+    exclude_dirs : list[os.PathLike | str], optional
 
         List of directories which should not be a part of a file or directory path
 

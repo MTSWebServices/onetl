@@ -63,13 +63,13 @@ class Iceberg(DBConnection):
     catalog_name : str
         Catalog name. Arbitrary string used by Spark to identify catalog and tables (`mycatalog.myschema.mytable`).
 
-    catalog : [IcebergCatalog][]
+    catalog : onetl.connection.db_connection.iceberg.catalog.IcebergCatalog
         Iceberg catalog configuration
 
-    warehouse : [IcebergWarehouse][]
+    warehouse : onetl.connection.db_connection.iceberg.warehouse.IcebergWarehouse
         Iceberg warehouse configuration
 
-    extra : dict | None, optional
+    extra : dict, optional
         A dictionary of additional properties to be used when configuring Iceberg catalog.
 
         These are Iceberg-specific properties that control behavior of the catalog.

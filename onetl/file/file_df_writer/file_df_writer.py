@@ -36,16 +36,16 @@ class FileDFWriter(FrozenModel):
 
     Parameters
     ----------
-    connection : [BaseFileDFConnection][onetl.base.base_file_df_connection.BaseFileDFConnection]
+    connection : onetl.base.base_file_df_connection.BaseFileDFConnection
         File DataFrame connection. See [file-df-connections][] section.
 
-    format : [BaseWritableFileFormat][onetl.base.base_file_format.BaseWritableFileFormat]
+    format : onetl.base.base_file_format.BaseWritableFileFormat
         File format to write.
 
-    target_path : os.PathLike or str
+    target_path : os.PathLike | str
         Directory path to write data to.
 
-    options : [FileDFWriterOptions][onetl.file.file_df_writer.options.FileDFWriterOptions], optional
+    options : onetl.file.file_df_writer.options.FileDFWriterOptions, optional
         Common writing options.
 
     Examples

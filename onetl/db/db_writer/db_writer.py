@@ -41,7 +41,7 @@ class DBWriter(FrozenModel):
 
     Parameters
     ----------
-    connection : [onetl.connection.DBConnection][]
+    connection : onetl.connection.DBConnection
         Class which contains DB connection properties. See [db-connections][] section.
 
     target : str

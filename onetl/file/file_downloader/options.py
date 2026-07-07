@@ -38,10 +38,11 @@ class FileDownloaderOptions(GenericOptions):
     How to handle existing files in the local directory.
 
     Possible values:
-        * `error` (default) - mark file as failed
-        * `ignore` - mark file as skipped
-        * `replace_file` - replace existing file with a new one
-        * `replace_entire_directory` - delete local directory content before downloading files
+
+    * `error` (default) - mark file as failed
+    * `ignore` - mark file as skipped
+    * `replace_file` - replace existing file with a new one
+    * `replace_entire_directory` - delete local directory content before downloading files
 
     !!! info "Changed in 0.9.0"
         Renamed `mode` → `if_exists`

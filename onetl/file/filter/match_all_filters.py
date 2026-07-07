@@ -18,10 +18,10 @@ def match_all_filters(path: PathProtocol, filters: Iterable[BaseFileFilter]) -> 
 
     Parameters
     ----------
-    path : [onetl.base.path_protocol.PathProtocol][]
+    path : onetl.base.path_protocol.PathProtocol
         Path to check.
 
-    filters : Iterable of [onetl.base.base_file_filter.BaseFileFilter][]
+    filters : Iterable[onetl.base.base_file_filter.BaseFileFilter]
         Filters to test path against.
 
     Returns

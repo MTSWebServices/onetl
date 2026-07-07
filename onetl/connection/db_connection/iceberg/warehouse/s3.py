@@ -61,7 +61,7 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
     region : str
         S3 region
 
-    extra : Dict[str, str], default: {}
+    extra : dict[str, str], optional
         Additional S3 configuration parameters
 
     Examples

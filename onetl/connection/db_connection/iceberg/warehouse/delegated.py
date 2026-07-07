@@ -34,7 +34,7 @@ class IcebergDelegatedWarehouse(IcebergWarehouse, FrozenModel):
     access_delegation : "vended-credentials" | "remote-signing"
         Value of [X-Iceberg-Access-Delegation](https://github.com/apache/iceberg/blob/apache-iceberg-1.10.0/open-api/rest-catalog-open-api.yaml#L1854) header.
 
-    extra : Dict[str, str], default: {}
+    extra : dict[str, str], optional
         Additional configuration parameters
 
     Examples

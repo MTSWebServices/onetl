@@ -81,15 +81,15 @@ class FileMover(FrozenModel):
         Could be `None`, but only if you pass absolute file paths directly to
         [run][] method
 
-    filters : list of [BaseFileFilter][onetl.base.base_file_filter.BaseFileFilter]
+    filters : list[onetl.base.base_file_filter.BaseFileFilter]
         Return only files/directories matching these filters. See [file-filters][]
 
-    limits : list of [BaseFileLimit][onetl.base.base_file_limit.BaseFileLimit]
+    limits : list[onetl.base.base_file_limit.BaseFileLimit]
         Apply limits to the list of files/directories, and stop if one of the limits is reached.
         See [file-limits][]
 
-    options : [Options][]  | dict | None, optional
-        File moving options. See [FileMover.Options][onetl.file.file_mover.options.FileMoverOptions]
+    options : onetl.file.file_mover.options.FileMoverOptions | dict,optional
+        File moving options.
 
     Examples
     --------
@@ -168,7 +168,7 @@ class FileMover(FrozenModel):
         Parameters
         ----------
 
-        files : Iterable[str | os.PathLike] | None, default `None`
+        files : Iterable[str | os.PathLike],optional
             File list to move.
 
             If empty, move files from `source_path` to `target_path`,
@@ -185,7 +185,7 @@ class FileMover(FrozenModel):
 
         Raises
         ------
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
 
             `source_path` does not found
 
@@ -322,7 +322,7 @@ class FileMover(FrozenModel):
 
         Raises
         ------
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
 
             `source_path` does not found
 

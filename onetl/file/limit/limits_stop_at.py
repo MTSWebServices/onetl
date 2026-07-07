@@ -19,10 +19,10 @@ def limits_stop_at(path: "PathProtocol", limits: "Iterable[BaseFileLimit]") -> b
 
     Parameters
     ----------
-    path : [onetl.base.path_protocol.PathProtocol][]
+    path : onetl.base.path_protocol.PathProtocol
         Path to check.
 
-    limits : Iterable of [onetl.base.base_file_limit.BaseFileLimit][]
+    limits : Iterable[onetl.base.base_file_limit.BaseFileLimit]
         Limits to test path against.
 
     Returns

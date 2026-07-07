@@ -427,69 +427,70 @@ class JDBCWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * `append` (default)
-            Adds new rows into existing table.
 
-            ??? note "Behavior in details"
+    * `append` (default)
+        Adds new rows into existing table.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`createTableOptions`, `createTableColumnTypes`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    Data is appended to a table. Table has the same DDL as before writing data
+            * Table does not exist
+                Table is created using options provided by user
+                (`createTableOptions`, `createTableColumnTypes`, etc).
 
-                    !!! warning
+            * Table exists
+                Data is appended to a table. Table has the same DDL as before writing data
 
-                        This mode does not check whether table already contains
-                        rows from dataframe, so duplicated rows can be created.
+                !!! warning
 
-                        Also Spark does not support passing custom options to
-                        insert statement, like `ON CONFLICT`, so don't try to
-                        implement deduplication using unique indexes or constraints.
+                    This mode does not check whether table already contains
+                    rows from dataframe, so duplicated rows can be created.
 
-                        Instead, write to staging table and perform deduplication
-                        using [execute][] method.
+                    Also Spark does not support passing custom options to
+                    insert statement, like `ON CONFLICT`, so don't try to
+                    implement deduplication using unique indexes or constraints.
 
-        * `replace_entire_table`
-            **Table is dropped and then created, or truncated**.
+                    Instead, write to staging table and perform deduplication
+                    using [execute][] method.
 
-            ??? note "Behavior in details"
+    * `replace_entire_table`
+        **Table is dropped and then created, or truncated**.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`createTableOptions`, `createTableColumnTypes`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    Table content is replaced with dataframe content.
+            * Table does not exist
+                Table is created using options provided by user
+                (`createTableOptions`, `createTableColumnTypes`, etc).
 
-                    After writing completed, target table could either have the same DDL as
-                    before writing data (`truncate=True`), or can be recreated (`truncate=False`
-                    or source does not support truncation).
+            * Table exists
+                Table content is replaced with dataframe content.
 
-        * `ignore`
-            Ignores the write operation if the table already exists.
+                After writing completed, target table could either have the same DDL as
+                before writing data (`truncate=True`), or can be recreated (`truncate=False`
+                or source does not support truncation).
 
-            ??? note "Behavior in details"
+    * `ignore`
+        Ignores the write operation if the table already exists.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`createTableOptions`, `createTableColumnTypes`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    The write operation is ignored, and no data is written to the table.
+            * Table does not exist
+                Table is created using options provided by user
+                (`createTableOptions`, `createTableColumnTypes`, etc).
 
-        * `error`
-            Raises an error if the table already exists.
+            * Table exists
+                The write operation is ignored, and no data is written to the table.
 
-            ??? note "Behavior in details"
+    * `error`
+        Raises an error if the table already exists.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`createTableOptions`, `createTableColumnTypes`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    An error is raised, and no data is written to the table.
+            * Table does not exist
+                Table is created using options provided by user
+                (`createTableOptions`, `createTableColumnTypes`, etc).
+
+            * Table exists
+                An error is raised, and no data is written to the table.
 
     !!! info "Changed in 0.9.0"
         Renamed `mode` → `if_exists`
@@ -530,11 +531,12 @@ class JDBCWriteOptions(GenericOptions):
     """The transaction isolation level, which applies to current connection.
 
     Possible values:
-        * `NONE` (as string, not Python's `None`)
-        * `READ_COMMITTED`
-        * `READ_UNCOMMITTED`
-        * `REPEATABLE_READ`
-        * `SERIALIZABLE`
+
+    * `NONE` (as string, not Python's `None`)
+    * `READ_COMMITTED`
+    * `READ_UNCOMMITTED`
+    * `REPEATABLE_READ`
+    * `SERIALIZABLE`
 
     Values correspond to transaction isolation levels defined by JDBC standard.
     Please refer the documentation for

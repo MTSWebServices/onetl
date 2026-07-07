@@ -27,7 +27,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Path to check
 
         Returns
@@ -57,7 +57,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Path to check
 
         Returns
@@ -90,7 +90,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Path to check
 
         Returns
@@ -100,7 +100,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
             Path does not exist
 
         Examples
@@ -123,7 +123,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Path to get stats for
 
         Returns
@@ -156,7 +156,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Path to resolve
 
         Returns
@@ -166,7 +166,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
             Path does not exist
 
         NotADirectoryError
@@ -193,7 +193,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Path to resolve
 
         Returns
@@ -206,7 +206,7 @@ class BaseFileConnection(BaseConnection):
         FileNotFoundError
             Path does not exist
 
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples
@@ -230,7 +230,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Directory path
 
         Returns
@@ -240,7 +240,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples
@@ -269,7 +269,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             File path
 
         Returns
@@ -279,7 +279,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples
@@ -306,10 +306,10 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Directory path to remove
 
-        recursive : bool, default `False`
+        recursive : bool, optional
             If `True`, remove directory tree recursively (including files and subdirectories).
 
             If `False`, remove only directory itself. Directory should be empty.
@@ -324,7 +324,7 @@ class BaseFileConnection(BaseConnection):
         NotADirectoryError
             Path is not a directory
 
-        [onetl.exception.DirectoryNotEmptyError][]
+        onetl.exception.DirectoryNotEmptyError
             Directory is not empty, and `recursive` is `False`
 
         Examples
@@ -365,13 +365,13 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        source_file_path : str or `os.PathLike`
+        source_file_path : os.PathLike | str
             Old file path
 
-        target_file_path : str or `os.PathLike`
+        target_file_path : os.PathLike | str
             New file path
 
-        replace : bool, default `False`
+        replace : bool, optional
             If `True`, existing file will be replaced.
 
         Returns
@@ -381,7 +381,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Source or target path is not a file
 
         FileNotFoundError
@@ -421,13 +421,13 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             Directory path to list contents.
 
-        filters : list of [BaseFileFilter][onetl.base.base_file_filter.BaseFileFilter], optional
+        filters : list[onetl.base.base_file_filter.BaseFileFilter], optional
             Return only files/directories matching these filters. See [file-filters][]
 
-        limits : list of [BaseFileLimit][onetl.base.base_file_limit.BaseFileLimit], optional
+        limits : list[onetl.base.base_file_limit.BaseFileLimit], optional
             Apply limits to the list of files/directories, and stop if one of the limits is reached.
             See [file-limits][]
 
@@ -441,7 +441,7 @@ class BaseFileConnection(BaseConnection):
         NotADirectoryError
             Path is not a directory
 
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
             Path does not exist
 
         Examples
@@ -477,16 +477,16 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        root : str or `os.PathLike`
+        root : os.PathLike | str
             Directory path to walk into.
 
-        topdown : bool, default `True`
+        topdown : bool
             If `True`, walk in top-down order, otherwise walk in bottom-up order.
 
-        filters : list of [BaseFileFilter][onetl.base.base_file_filter.BaseFileFilter], optional
+        filters : list[onetl.base.base_file_filter.BaseFileFilter], optional
             Return only files/directories matching these filters. See [file-filters][].
 
-        limits : list of [BaseFileLimit][onetl.base.base_file_limit.BaseFileLimit], optional
+        limits : list[onetl.base.base_file_limit.BaseFileLimit], optional
             Apply limits to the list of files/directories, and immediately stop if any of these limits is reached.
             See [file-limits][].
 
@@ -500,7 +500,7 @@ class BaseFileConnection(BaseConnection):
         NotADirectoryError
             Path is not a directory
 
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
             Path does not exist
 
         Examples
@@ -540,13 +540,13 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        remote_file_path : str or `os.PathLike`
+        remote_file_path : os.PathLike | str
             Remote file path to read from
 
-        local_file_path : str or `os.PathLike`
+        local_file_path : os.PathLike | str
             Local file path to create
 
-        replace : bool, default `False`
+        replace : bool, optional
             If `True`, existing file will be replaced
 
         Returns
@@ -556,7 +556,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Remote or local path is not a file
 
         FileNotFoundError
@@ -565,7 +565,7 @@ class BaseFileConnection(BaseConnection):
         FileExistsError
             Local file already exists, and `replace=False`
 
-        [onetl.exception.FileSizeMismatchError][]
+        onetl.exception.FileSizeMismatchError
             Target file size after download is different from source file size.
 
         Examples
@@ -607,13 +607,13 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        local_file_path : str or `os.PathLike`
+        local_file_path : os.PathLike | str
             Local file path to read from
 
-        remote_file_path : str or `os.PathLike`
+        remote_file_path : os.PathLike | str
             Remote file path to create
 
-        replace : bool, default `False`
+        replace : bool, optional
             If `True`, existing file will be replaced
 
         Returns
@@ -623,7 +623,7 @@ class BaseFileConnection(BaseConnection):
 
         Raises
         ------
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Remote or local path is not a file
 
         FileNotFoundError
@@ -632,7 +632,7 @@ class BaseFileConnection(BaseConnection):
         FileExistsError
             Remote file already exists, and `replace=False`
 
-        [onetl.exception.FileSizeMismatchError][]
+        onetl.exception.FileSizeMismatchError
             Target file size after upload is different from source file size.
 
         Examples
@@ -663,10 +663,10 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             File path to read
 
-        encoding : str, default `utf-8`
+        encoding : str, default: "utf-8"
             File content encoding
 
         Returns
@@ -679,7 +679,7 @@ class BaseFileConnection(BaseConnection):
         FileNotFoundError
             Path does not exist
 
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples
@@ -700,7 +700,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             File path to read
 
         Returns
@@ -713,7 +713,7 @@ class BaseFileConnection(BaseConnection):
         FileNotFoundError
             Path does not exist
 
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples
@@ -743,13 +743,13 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             File path to write
 
         content : str
             File content
 
-        encoding : str, default `utf-8`
+        encoding : str, default: "utf-8"
             File content encoding
 
         Returns
@@ -762,7 +762,7 @@ class BaseFileConnection(BaseConnection):
         TypeError
             Content is not a string
 
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples
@@ -790,7 +790,7 @@ class BaseFileConnection(BaseConnection):
 
         Parameters
         ----------
-        path : str or `os.PathLike`
+        path : os.PathLike | str
             File path to write
 
         content : bytes
@@ -806,7 +806,7 @@ class BaseFileConnection(BaseConnection):
         TypeError
             Content is not a string
 
-        [onetl.exception.NotAFileError][]
+        onetl.exception.NotAFileError
             Path is not a file
 
         Examples

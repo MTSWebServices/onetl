@@ -100,115 +100,116 @@ class HiveWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * `append` (default)
-            Appends data into existing partition/table, or create partition/table if it does not exist.
 
-            Same as Spark's `df.write.insertInto(table, overwrite=False)`.
+    * `append` (default)
+        Appends data into existing partition/table, or create partition/table if it does not exist.
 
-            ??? note "Behavior in details"
+        Same as Spark's `df.write.insertInto(table, overwrite=False)`.
 
-                * Table does not exist
-                    Table is created using options provided by user (`format`, `compression`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists, but not partitioned, [partition_by][] is set
-                    Data is appended to a table. Table is still not partitioned (DDL is unchanged).
+            * Table does not exist
+                Table is created using options provided by user (`format`, `compression`, etc).
 
-                * Table exists and partitioned,
-                  but has different partitioning schema than [partition_by][]
-                    Partition is created based on table's `PARTITIONED BY (...)` options.
-                    Explicit [partition_by][] value is ignored.
+            * Table exists, but not partitioned, [partition_by][] is set
+                Data is appended to a table. Table is still not partitioned (DDL is unchanged).
 
-                * Table exists and partitioned according [partition_by][],
-                  but partition is present only in dataframe
-                    Partition is created.
+            * Table exists and partitioned,
+                but has different partitioning schema than [partition_by][]
+                Partition is created based on table's `PARTITIONED BY (...)` options.
+                Explicit [partition_by][] value is ignored.
 
-                * Table exists and partitioned according [partition_by][],
-                  partition is present in both dataframe and table
-                    Data is appended to existing partition.
+            * Table exists and partitioned according [partition_by][],
+                but partition is present only in dataframe
+                Partition is created.
 
-                    !!! warning
+            * Table exists and partitioned according [partition_by][],
+                partition is present in both dataframe and table
+                Data is appended to existing partition.
 
-                        This mode does not check whether table already contains
-                        rows from dataframe, so duplicated rows can be created.
+                !!! warning
 
-                        To implement deduplication, write data to staging table first,
-                        and then perform some deduplication logic using [sql][].
+                    This mode does not check whether table already contains
+                    rows from dataframe, so duplicated rows can be created.
 
-                * Table exists and partitioned according [partition_by][],
-                  but partition is present only in table, not dataframe
-                    Existing partition is left intact.
+                    To implement deduplication, write data to staging table first,
+                    and then perform some deduplication logic using [sql][].
 
-        * `replace_overlapping_partitions`
-            Overwrites data in the existing partition, or create partition/table if it does not exist.
+            * Table exists and partitioned according [partition_by][],
+                but partition is present only in table, not dataframe
+                Existing partition is left intact.
 
-            Same as Spark's `df.write.insertInto(table, overwrite=True)` +
-            `spark.sql.sources.partitionOverwriteMode=dynamic`.
+    * `replace_overlapping_partitions`
+        Overwrites data in the existing partition, or create partition/table if it does not exist.
 
-            !!! danger
+        Same as Spark's `df.write.insertInto(table, overwrite=True)` +
+        `spark.sql.sources.partitionOverwriteMode=dynamic`.
 
-                This mode does make sense **ONLY** if the table is partitioned.
-                **IF NOT, YOU'LL LOSE YOUR DATA!**
+        !!! danger
 
-            ??? note "Behavior in details"
+            This mode does make sense **ONLY** if the table is partitioned.
+            **IF NOT, YOU'LL LOSE YOUR DATA!**
 
-                * Table does not exist
-                    Table is created using options provided by user (`format`, `compression`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists, but not partitioned, [partition_by][] is set
-                    Data is **overwritten in all the table**.
-                    Table is still not partitioned (DDL is unchanged).
+            * Table does not exist
+                Table is created using options provided by user (`format`, `compression`, etc).
 
-                * Table exists and partitioned,
-                  but has different partitioning schema than [partition_by][]
-                    Partition is created based on table's `PARTITIONED BY (...)` options.
-                    Explicit [partition_by][] value is ignored.
+            * Table exists, but not partitioned, [partition_by][] is set
+                Data is **overwritten in all the table**.
+                Table is still not partitioned (DDL is unchanged).
 
-                * Table exists and partitioned according [partition_by][],
-                  but partition is present only in dataframe
-                    Partition is created.
+            * Table exists and partitioned,
+                but has different partitioning schema than [partition_by][]
+                Partition is created based on table's `PARTITIONED BY (...)` options.
+                Explicit [partition_by][] value is ignored.
 
-                * Table exists and partitioned according [partition_by][],
-                  partition is present in both dataframe and table
-                    Existing partition **replaced** with data from dataframe.
+            * Table exists and partitioned according [partition_by][],
+                but partition is present only in dataframe
+                Partition is created.
 
-                * Table exists and partitioned according [partition_by][],
-                  but partition is present only in table, not dataframe
-                    Existing partition is left intact.
+            * Table exists and partitioned according [partition_by][],
+                partition is present in both dataframe and table
+                Existing partition **replaced** with data from dataframe.
 
-        * `replace_entire_table`
-            **Recreates table** (via `DROP + CREATE`), **deleting all existing data**.
-            **All existing partitions are dropped.**
+            * Table exists and partitioned according [partition_by][],
+                but partition is present only in table, not dataframe
+                Existing partition is left intact.
 
-            Same as Spark's `df.write.saveAsTable(table, mode="overwrite")` (NOT `insertInto`)!
+    * `replace_entire_table`
+        **Recreates table** (via `DROP + CREATE`), **deleting all existing data**.
+        **All existing partitions are dropped.**
 
-            !!! warning
+        Same as Spark's `df.write.saveAsTable(table, mode="overwrite")` (NOT `insertInto`)!
 
-                Table is recreated using options provided by user (`format`, `compression`, etc)
-                **instead of using original table options**. Be careful
+        !!! warning
 
-        * `ignore`
-            Ignores the write operation if the table/partition already exists.
+            Table is recreated using options provided by user (`format`, `compression`, etc)
+            **instead of using original table options**. Be careful
 
-            ??? note "Behavior in details"
+    * `ignore`
+        Ignores the write operation if the table/partition already exists.
 
-                * Table does not exist
-                    Table is created using options provided by user (`format`, `compression`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    If the table exists, **no further action is taken**. This is true whether or not new partition
-                    values are present and whether the partitioning scheme differs or not
+            * Table does not exist
+                Table is created using options provided by user (`format`, `compression`, etc).
 
-        * `error`
-            Raises an error if the table/partition already exists.
+            * Table exists
+                If the table exists, **no further action is taken**. This is true whether or not new partition
+                values are present and whether the partitioning scheme differs or not
 
-            ??? note "Behavior in details"
+    * `error`
+        Raises an error if the table/partition already exists.
 
-                * Table does not exist
-                    Table is created using options provided by user (`format`, `compression`, etc).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    If the table exists, **raises an error**. This is true whether or not new partition
-                    values are present and whether the partitioning scheme differs or not
+            * Table does not exist
+                Table is created using options provided by user (`format`, `compression`, etc).
+
+            * Table exists
+                If the table exists, **raises an error**. This is true whether or not new partition
+                values are present and whether the partitioning scheme differs or not
 
 
     !!! note

@@ -115,58 +115,59 @@ class GreenplumReadOptions(GenericOptions):
         It's preferable to use default values to read data parallel by number of segments in Greenplum cluster.
 
     Possible values:
-        * `None` (default):
-            Spark generates N jobs (where N == number of segments in Greenplum cluster),
-            each job is reading only data from a specific segment
-            (filtering data by `gp_segment_id` column).
 
-            This is very effective way to fetch the data from a cluster.
+    * `None` (default):
+        Spark generates N jobs (where N == number of segments in Greenplum cluster),
+        each job is reading only data from a specific segment
+        (filtering data by `gp_segment_id` column).
 
-        * table column
-            Allocate each executor a range of values from a specific column.
+        This is very effective way to fetch the data from a cluster.
 
-            Spark generates for each executor an SQL query:
+    * table column
+        Allocate each executor a range of values from a specific column.
 
-            Executor 1:
+        Spark generates for each executor an SQL query:
 
-            ```sql
-            SELECT ... FROM table
-            WHERE (partition_column >= lowerBound
-                    OR partition_column IS NULL)
-            AND partition_column < (lower_bound + stride)
-            ```
-            Executor 2:
+        Executor 1:
 
-            ```sql
-            SELECT ... FROM table
-            WHERE partition_column >= (lower_bound + stride)
-            AND partition_column < (lower_bound + 2 * stride)
-            ```
-            ...
+        ```sql
+        SELECT ... FROM table
+        WHERE (partition_column >= lowerBound
+                OR partition_column IS NULL)
+        AND partition_column < (lower_bound + stride)
+        ```
+        Executor 2:
 
-            Executor N:
+        ```sql
+        SELECT ... FROM table
+        WHERE partition_column >= (lower_bound + stride)
+        AND partition_column < (lower_bound + 2 * stride)
+        ```
+        ...
 
-            ```sql
-            SELECT ... FROM table
-            WHERE partition_column >= (lower_bound + (N-1) * stride)
-            AND partition_column <= upper_bound
-            ```
-            Where `stride=(upper_bound - lower_bound) / num_partitions`,
-            `lower_bound=MIN(partition_column)`, `upper_bound=MAX(partition_column)`.
+        Executor N:
 
-            !!! note
+        ```sql
+        SELECT ... FROM table
+        WHERE partition_column >= (lower_bound + (N-1) * stride)
+        AND partition_column <= upper_bound
+        ```
+        Where `stride=(upper_bound - lower_bound) / num_partitions`,
+        `lower_bound=MIN(partition_column)`, `upper_bound=MAX(partition_column)`.
 
-                Column type must be numeric. Other types are not supported.
+        !!! note
 
-            !!! note
+            Column type must be numeric. Other types are not supported.
 
-                [num_partitions][] is used just to
-                calculate the partition stride, **NOT** for filtering the rows in table.
-                So all rows in the table will be returned (unlike *Incremental* [strategy][]).
+        !!! note
 
-            !!! note
+            [num_partitions][] is used just to
+            calculate the partition stride, **NOT** for filtering the rows in table.
+            So all rows in the table will be returned (unlike *Incremental* [strategy][]).
 
-                All queries are executed in parallel. To execute them sequentially, use *Batch* [strategy][].
+        !!! note
+
+            All queries are executed in parallel. To execute them sequentially, use *Batch* [strategy][].
 
     !!! warning
 
@@ -246,68 +247,69 @@ class GreenplumWriteOptions(GenericOptions):
     """Behavior of writing data into existing table.
 
     Possible values:
-        * `append` (default)
-            Adds new rows into existing table.
 
-            ??? note "Behavior in details"
+    * `append` (default)
+        Adds new rows into existing table.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`distributedBy` and others).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    Data is appended to a table. Table has the same DDL as before writing data.
+            * Table does not exist
+                Table is created using options provided by user
+                (`distributedBy` and others).
 
-                    !!! warning
+            * Table exists
+                Data is appended to a table. Table has the same DDL as before writing data.
 
-                        This mode does not check whether table already contains
-                        rows from dataframe, so duplicated rows can be created.
+                !!! warning
 
-                        Also Spark does not support passing custom options to
-                        insert statement, like `ON CONFLICT`, so don't try to
-                        implement deduplication using unique indexes or constraints.
+                    This mode does not check whether table already contains
+                    rows from dataframe, so duplicated rows can be created.
 
-                        Instead, write to staging table and perform deduplication
-                        using [execute][] method.
+                    Also Spark does not support passing custom options to
+                    insert statement, like `ON CONFLICT`, so don't try to
+                    implement deduplication using unique indexes or constraints.
 
-        * `replace_entire_table`
-            **Table is dropped and then created**.
+                    Instead, write to staging table and perform deduplication
+                    using [execute][] method.
 
-            ??? note "Behavior in details"
+    * `replace_entire_table`
+        **Table is dropped and then created**.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`distributedBy` and others).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    Table content is replaced with dataframe content.
+            * Table does not exist
+                Table is created using options provided by user
+                (`distributedBy` and others).
 
-                    After writing completed, target table could either have the same DDL as
-                    before writing data (`truncate=True`), or can be recreated (`truncate=False`).
+            * Table exists
+                Table content is replaced with dataframe content.
 
-        * `ignore`
-            Ignores the write operation if the table already exists.
+                After writing completed, target table could either have the same DDL as
+                before writing data (`truncate=True`), or can be recreated (`truncate=False`).
 
-            ??? note "Behavior in details"
+    * `ignore`
+        Ignores the write operation if the table already exists.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`distributedBy` and others).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    The write operation is ignored, and no data is written to the table.
+            * Table does not exist
+                Table is created using options provided by user
+                (`distributedBy` and others).
 
-        * `error`
-            Raises an error if the table already exists.
+            * Table exists
+                The write operation is ignored, and no data is written to the table.
 
-            ??? note "Behavior in details"
+    * `error`
+        Raises an error if the table already exists.
 
-                * Table does not exist
-                    Table is created using options provided by user
-                    (`distributedBy` and others).
+        ??? note "Behavior in details"
 
-                * Table exists
-                    An error is raised, and no data is written to the table.
+            * Table does not exist
+                Table is created using options provided by user
+                (`distributedBy` and others).
+
+            * Table exists
+                An error is raised, and no data is written to the table.
 
     !!! info "Changed in 0.9.0"
         Renamed `mode` → `if_exists`

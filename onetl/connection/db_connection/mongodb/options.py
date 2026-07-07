@@ -205,56 +205,57 @@ class MongoDBWriteOptions(GenericOptions):
     """Behavior of writing data into existing collection.
 
     Possible values:
-        * `append` (default)
-            Adds new objects into existing collection.
 
-            ??? note "Behavior in details"
+    * `append` (default)
+        Adds new objects into existing collection.
 
-                * Collection does not exist
-                    Collection is created using options provided by user
-                    (`shardkey` and others).
+        ??? note "Behavior in details"
 
-                * Collection exists
-                    Data is appended to a collection.
+            * Collection does not exist
+                Collection is created using options provided by user
+                (`shardkey` and others).
 
-                    !!! warning
+            * Collection exists
+                Data is appended to a collection.
 
-                        This mode does not check whether collection already contains
-                        objects from dataframe, so duplicated objects can be created.
+                !!! warning
 
-        * `replace_entire_collection`
-            **Collection is deleted and then created**.
+                    This mode does not check whether collection already contains
+                    objects from dataframe, so duplicated objects can be created.
 
-            ??? note "Behavior in details"
+    * `replace_entire_collection`
+        **Collection is deleted and then created**.
 
-                * Collection does not exist
-                    Collection is created using options provided by user
-                    (`shardkey` and others).
+        ??? note "Behavior in details"
 
-                * Collection exists
-                    Collection content is replaced with dataframe content.
+            * Collection does not exist
+                Collection is created using options provided by user
+                (`shardkey` and others).
 
-        * `ignore`
-            Ignores the write operation if the collection already exists.
+            * Collection exists
+                Collection content is replaced with dataframe content.
 
-            ??? note "Behavior in details"
+    * `ignore`
+        Ignores the write operation if the collection already exists.
 
-                * Collection does not exist
-                    Collection is created using options provided by user
+        ??? note "Behavior in details"
 
-                * Collection exists
-                    The write operation is ignored, and no data is written to the collection.
+            * Collection does not exist
+                Collection is created using options provided by user
 
-        * `error`
-            Raises an error if the collection already exists.
+            * Collection exists
+                The write operation is ignored, and no data is written to the collection.
 
-            ??? note "Behavior in details"
+    * `error`
+        Raises an error if the collection already exists.
 
-                * Collection does not exist
-                    Collection is created using options provided by user
+        ??? note "Behavior in details"
 
-                * Collection exists
-                    An error is raised, and no data is written to the collection.
+            * Collection does not exist
+                Collection is created using options provided by user
+
+            * Collection exists
+                An error is raised, and no data is written to the collection.
 
     !!! info "Changed in 0.9.0"
         Renamed `mode` → `if_exists`

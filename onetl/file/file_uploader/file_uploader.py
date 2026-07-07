@@ -68,13 +68,13 @@ class FileUploader(FrozenModel):
 
     Parameters
     ----------
-    connection : FileConnection
+    connection : onetl.base.BaseFileConnection
         Class which contains File system connection properties. See [file-connections][] section.
 
-    target_path : os.PathLike or str
+    target_path : os.PathLike | str
         Remote path where want you upload files to
 
-    local_path : os.PathLike or str, optional
+    local_path : os.PathLike | str, optional
         The local directory from which the data is loaded.
 
         Could be `None`, but only if you pass absolute file paths directly to
@@ -82,7 +82,7 @@ class FileUploader(FrozenModel):
 
         !!! success "Added in 0.3.0"
 
-    temp_path : os.PathLike or str, optional
+    temp_path : os.PathLike | str, optional
         If set, this path will be used for uploading a file, and then renaming it to the target file path.
         If `None` (default since v0.5.0) is passed, files are uploaded directly to `target_path`.
 
@@ -103,8 +103,8 @@ class FileUploader(FrozenModel):
         !!! info "Changed in 0.5.0"
             Default changed from `/tmp` to `None`
 
-    options : [Options][] | dict | None, optional
-        File upload options. See [FileUploader.Options][onetl.file.file_uploader.options.FileUploaderOptions]
+    options : onetl.file.file_uploader.options.FileUploaderOptions, optional
+        File upload options.
 
     Examples
     --------
@@ -177,7 +177,7 @@ class FileUploader(FrozenModel):
 
         Raises
         ------
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
 
             `local_path` does not found
 
@@ -326,7 +326,7 @@ class FileUploader(FrozenModel):
 
         Raises
         ------
-        [onetl.exception.DirectoryNotFoundError][]
+        onetl.exception.DirectoryNotFoundError
 
             `local_path` does not found
 
