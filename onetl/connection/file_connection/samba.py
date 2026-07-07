@@ -118,7 +118,7 @@ class Samba(FileConnection):
     password : str, optional
         Password for file source connection. Can be `None` for anonymous connection.
 
-    extra : [SambaExtra][], optional
+    extra : SambaExtra, optional
         Extra options for Samba connection.
 
     Examples

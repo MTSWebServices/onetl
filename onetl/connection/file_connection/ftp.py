@@ -104,7 +104,7 @@ class FTP(FileConnection, RenameDirMixin):
 
         `None` means that the user is anonymous.
 
-    extra : [FTPExtra][], optional
+    extra : FTPExtra, optional
         Extra options
 
     Examples

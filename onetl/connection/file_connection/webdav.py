@@ -145,7 +145,7 @@ class WebDAV(FileConnection, RenameDirMixin):
     port : int, optional
         Connection port
 
-    extra : [WebDAVExtra][], optional
+    extra : WebDAVExtra, optional
         Extra options passed to WebDAV client
 
     Examples

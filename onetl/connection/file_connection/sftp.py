@@ -122,7 +122,7 @@ class SFTP(FileConnection, RenameDirMixin):
     key_file : str, optional
         Path to private key file, optional.
 
-    extra : [SFTPExtra][], optional
+    extra : SFTPExtra, optional
         Extra options for SFTP connection
 
     Examples

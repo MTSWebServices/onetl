@@ -177,7 +177,7 @@ class HDFS(FileConnection, RenameDirMixin):
             You can provide only one of the parameters: `password` or `kinit`.
             If you provide both, an exception will be raised.
 
-    extra : [HDFSExtra][], optional
+    extra : HDFSExtra, optional
         Extra options passed to underlying HDFS client.
 
     Examples
@@ -295,7 +295,7 @@ class HDFS(FileConnection, RenameDirMixin):
         keytab : str | None
             Path to keytab file for Kerberos. See [HDFS][] constructor documentation.
 
-        extra : [HDFSExtra][], optional
+        extra : HDFSExtra, optional
             Extra options passed to underlying HDFS client. See [HDFS][] constructor documentation.
 
         Examples
