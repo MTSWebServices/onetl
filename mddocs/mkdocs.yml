@@ -1,12 +1,16 @@
 site_name: onETL Docs
 site_url: !ENV READTHEDOCS_CANONICAL_URL
-docs_dir: docs                             # Where to find the English markdown files
-site_dir: generated                        # Where to put the English HTML files
+docs_dir: docs
+site_dir: generated
+
+exclude_docs: |
+  changelog/RELEASE_TEMPLATE.md
+  changelog/next_release/
 
 theme:
   name: material
-  logo: _static/images/logo.svg                      # The logo is shared by all languages
-  favicon: _static/images/icon.svg                   # The favicon is shared by all languages
+  logo: _static/images/logo.svg
+  favicon: _static/images/icon.svg
   language: en
   features:
     - navigation.indexes
