@@ -51,6 +51,7 @@ extra:                                              # Language Selection
   support_hooks: '[![support hooks](https://img.shields.io/badge/%20-support%20hooks-blue)](hooks/index.md)'
 
 plugins:
+  - search
   - autorefs
   - literate-nav:
       nav_file: nav.md
