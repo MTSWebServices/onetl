@@ -184,7 +184,7 @@ class YAMLHWMStore(BaseHWMStore, FrozenModel):
     def set_hwm(self, hwm: HWM) -> LocalPath:
         """Save HWM value. Returns path to the YAML file."""
         data = self._load(hwm.name)
-        self._dump(hwm.name, [*hwm.serialize(), *data])
+        self._dump(hwm.name, [hwm.serialize(), *data])
         return self.get_file_path(hwm.name)
 
     @classmethod

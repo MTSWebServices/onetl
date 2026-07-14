@@ -36,6 +36,7 @@ def test_hwm_store_yaml_path(request, tmp_path_factory, hwm_delta):
     assert path.exists()
 
     assert not list(path.glob("**/*"))
+    assert not store.get_hwm(hwm.name)
 
     store.set_hwm(hwm)
 
@@ -46,6 +47,8 @@ def test_hwm_store_yaml_path(request, tmp_path_factory, hwm_delta):
         assert item.suffix == ".yml"
 
     assert not empty
+
+    assert store.get_hwm(hwm.name) == hwm
 
 
 def test_hwm_store_yaml_path_not_folder(request, tmp_path_factory):
