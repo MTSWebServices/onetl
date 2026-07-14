@@ -406,7 +406,7 @@ jobs:
           hide-comment: ${{ github.event_name != 'pull_request' }}
 
       - name: Dynamic Badges
-        uses: schneegans/dynamic-badges-action@v1.8.0
+        uses: schneegans/dynamic-badges-action@v1.9.0
         if: github.repository == 'MTSWebServices/onetl' && github.event_name == 'push'
         with:
           auth: ${{ secrets.AUTOMERGE_TOKEN }}
