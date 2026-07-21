@@ -375,7 +375,7 @@ jobs:
           report_paths: reports/junit/*.xml
 
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
