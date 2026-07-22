@@ -298,6 +298,7 @@ class Iceberg(DBConnection):
         from onetl.connection import Iceberg
 
         # Note: Iceberg 1.10.0 requires Java 11+
+        # Note: Iceberg 1.11.0 requires Java 17+
         Iceberg.get_packages(package_version="1.10.0")
         ```
         """

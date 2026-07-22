@@ -135,6 +135,7 @@ class IcebergS3Warehouse(IcebergWarehouse, FrozenModel):
         from onetl.connection import Iceberg
 
         # Note: Iceberg 1.10.0 requires Java 11+
+        # Note: Iceberg 1.11.0 requires Java 17+
         Iceberg.S3Warehouse.get_packages(package_version="1.10.0")
         ```
         """

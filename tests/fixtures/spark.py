@@ -110,7 +110,15 @@ def maven_packages(request):  # noqa: C901, PLR0912
 
     # There is no package for Iceberg Runtime for Spark 4.1 for now
     if "iceberg" in markers and version < (4, 1):
-        iceberg_version = "1.4.3" if version == (3, 2) else "1.10.0"
+        if version == (3, 2):
+            # https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-3.2_2.12/
+            iceberg_version = "1.4.3"
+        elif version == (3, 3):
+            # https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-3.3_2.12/
+            iceberg_version = "1.8.1"
+        else:
+            iceberg_version = "1.11.0"
+
         packages.extend(Iceberg.get_packages(package_version=iceberg_version))
         if "s3" in markers:
             packages.extend(Iceberg.S3Warehouse.get_packages(package_version=iceberg_version))
