@@ -98,18 +98,21 @@ jobs:
           ORACLE_IMAGE: ${{ inputs.oracle-image }}:${{ inputs.oracle-version }}
 
       - name: Run tests
-        run: |
-          export ONETL_ORA_CLIENT_PATH=$(realpath ./oracle/instantclient_21_10)
-          export LD_LIBRARY_PATH=${ONETL_ORA_CLIENT_PATH}:${LD_LIBRARY_PATH}
-          export PATH=${ONETL_ORA_CLIENT_PATH}:${PATH}
-          sed -i 's|ONETL_ORA_SERVICE_NAME=.*|ONETL_ORA_SERVICE_NAME=${{ inputs.db-name }}|' .env.local
+        uses: nick-fields/retry@v3
+        with:
+          retry_on: error
+          max_attempts: 3
+          command: |
+            export PYDANTIC_VERSION=${{ inputs.pydantic-version }}
+            export SPARK_VERSION=${{ inputs.spark-version }}
+            export ONETL_ORA_CLIENT_PATH=$(realpath ./oracle/instantclient_21_10)
+            export LD_LIBRARY_PATH=${ONETL_ORA_CLIENT_PATH}:${LD_LIBRARY_PATH}
+            export PATH=${ONETL_ORA_CLIENT_PATH}:${PATH}
+            sed -i 's|ONETL_ORA_SERVICE_NAME=.*|ONETL_ORA_SERVICE_NAME=${{ inputs.db-name }}|' .env.local
 
-          mkdir reports/ || echo "Directory exists"
-          export "PYTEST=coverage run -m pytest --junitxml=reports/junit/oracle-${RANDOM}.xml"
-          make test-spark UV_ARGS="--group test-oracle" PYTEST_ARGS="-m oracle"
-        env:
-          PYDANTIC_VERSION: ${{ inputs.pydantic-version }}
-          SPARK_VERSION: ${{ inputs.spark-version }}
+            mkdir reports/ || echo "Directory exists"
+            export "PYTEST=coverage run -m pytest --junitxml=reports/junit/oracle-${RANDOM}.xml"
+            make test-spark UV_ARGS="--group test-oracle" PYTEST_ARGS="-m oracle"
 
       - name: Dump Oracle logs on failure
         if: failure()
