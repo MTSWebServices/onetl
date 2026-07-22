@@ -41,7 +41,7 @@ class Excel(ReadWriteFileFormat):
                 See [Maven index](https://mvnrepository.com/artifact/dev.mauch/spark-excel)
                 and [official documentation](https://github.com/crealytics/spark-excel).
 
-        * Java versions: 8 - 22
+        * Java versions: 8 -- 22
 
         See documentation from link above.
 

@@ -108,8 +108,8 @@ def maven_packages(request):  # noqa: C901, PLR0912
         elif version == (4, 0):
             packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="4.0.0"))
 
-    # There is no package for Iceberg Runtime for Spark 4.1 for now
-    if "iceberg" in markers:
+    # There is no package for Iceberg Runtime for Spark 4.2 for now
+    if "iceberg" in markers and version < (4, 2):
         if version == (3, 2):
             # https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-3.2_2.12/
             iceberg_version = "1.4.3"

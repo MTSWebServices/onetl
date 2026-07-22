@@ -170,8 +170,18 @@ test-samba = ["pysmb"]
     # Upgrading numpy leads to error:
     # .venv/lib/python3.12/site-packages/numpy/__init__.pyi:737: error: Type statement is only supported in Python 3.12 and greater
     "numpy>=1.24,<2.5",
-    "pandas>=2.0",
-    "pyarrow>=11.0",
+    "pandas>=2.2",
+    "pyarrow>=15.0",
+    "sqlalchemy",
+    "setuptools",
+]
+"test-spark-4.2" = [
+    "pyspark~=4.2.0",
+    # Upgrading numpy leads to error:
+    # .venv/lib/python3.12/site-packages/numpy/__init__.pyi:737: error: Type statement is only supported in Python 3.12 and greater
+    "numpy>=1.24,<2.5",
+    "pandas>=2.2",
+    "pyarrow>=18.0",
     "sqlalchemy",
     "setuptools",
 ]
@@ -218,6 +228,7 @@ conflicts = [
         { group = "test-spark-3.5" },
         { group = "test-spark-4.0" },
         { group = "test-spark-4.1" },
+        { group = "test-spark-4.2" },
     ],
     [
         { group = "test-pydantic-1" },
