@@ -186,7 +186,33 @@ class KafkaProcessing(BaseProcessing):
         table: str,
         order_by: str | None = None,
     ) -> pandas.DataFrame:
-        pass
+        raise NotImplementedError
+
+    def fix_pandas_df(
+        self,
+        df: pandas.DataFrame,
+    ) -> pandas.DataFrame:
+        df = super().fix_pandas_df(df)
+
+        for column in df.columns:
+            if "headers" in column:
+
+                def convert(headers):
+                    if not headers:
+                        return headers
+
+                    # Spark 4.2 df.collect() uses pyarrow which convert tuples to dicts
+                    result = []
+                    for header in headers:
+                        if isinstance(header, dict):
+                            result.append((header["key"], header["value"]))
+                        else:
+                            result.append(header)
+                    return result
+
+                df[column] = df[column].apply(convert)
+
+        return df
 
     def json_deserialize(
         self,

@@ -2,8 +2,12 @@ import pytest
 
 try:
     import pandas
+    from pyspark import __version__ as spark_version
 except ImportError:
     pytest.skip("Missing pandas", allow_module_level=True)
+
+if spark_version.startswith("4.2"):
+    pytest.skip("Iceberg is not supported in Spark 4.2", allow_module_level=True)
 
 from onetl._util.version import Version
 from onetl.db import DBReader
