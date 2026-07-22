@@ -100,6 +100,7 @@ jobs:
       - name: Run tests
         uses: nick-fields/retry@v3
         with:
+          timeout_minutes: 10
           retry_on: error
           max_attempts: 3
           command: |
