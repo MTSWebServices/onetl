@@ -36,14 +36,23 @@ def create_temp_file(tmp_path_factory):
 @pytest.mark.parametrize(
     ("spark_version", "scala_version", "package"),
     [
+        # Detect using pyspark version
+        (None, None, "org.apache.spark:spark-sql-kafka-0-10_{scala_ver}:{pyspark_ver}"),
         ("3.2.0", None, "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0"),
-        ("3.2.0", "2.12", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0"),
+        # Override Scala version
+        (None, "2.13", "org.apache.spark:spark-sql-kafka-0-10_2.13:{pyspark_ver}"),
         ("3.2.0", "2.13", "org.apache.spark:spark-sql-kafka-0-10_2.13:3.2.0"),
+        # Scala version contain three digits when only two needed
         ("3.5.8", "2.12.2", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.8"),
     ],
 )
 def test_kafka_get_packages(spark_version, scala_version, package):
-    assert Kafka.get_packages(spark_version=spark_version, scala_version=scala_version) == [package]
+    import pyspark
+
+    pyspark_ver = pyspark.__version__
+    scala_ver = "2.12" if pyspark_ver.startswith("3") else "2.13"
+    expected = package.format(pyspark_ver=pyspark_ver, scala_ver=scala_ver)
+    assert Kafka.get_packages(spark_version=spark_version, scala_version=scala_version) == [expected]
 
 
 def test_kafka_missing_package(spark_no_packages):

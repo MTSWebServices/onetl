@@ -18,7 +18,7 @@ from typing import Literal
 from onetl._util.hadoop import get_hadoop_config
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
-from onetl._util.spark import get_client_info, get_spark_version, stringify
+from onetl._util.spark import get_client_info, get_pyspark_version, get_spark_version, stringify
 from onetl._util.version import Version
 from onetl.base import (
     BaseReadableFileFormat,
@@ -213,7 +213,7 @@ class SparkS3(SparkFileDFConnection):
     @classmethod
     def get_packages(
         cls,
-        spark_version: str,
+        spark_version: str | None = None,
         scala_version: str | None = None,
     ) -> list[str]:
         """
@@ -223,8 +223,10 @@ class SparkS3(SparkFileDFConnection):
 
         Parameters
         ----------
-        spark_version : str
+        spark_version : str, optional
             Spark version in format `major.minor.patch`.
+
+            If `None`, imports `pyspark` and uses `pyspark.__version__` instead.
 
         scala_version : str, optional
             Scala version in format `major.minor`.
@@ -237,12 +239,12 @@ class SparkS3(SparkFileDFConnection):
         ```python
         from onetl.connection import SparkS3
 
-        SparkS3.get_packages(spark_version="3.5.8")
+        SparkS3.get_packages()
         SparkS3.get_packages(spark_version="3.5.8", scala_version="2.12")
         ```
         """
 
-        spark_ver = Version(spark_version).min_digits(3)
+        spark_ver = Version(spark_version).min_digits(3) if spark_version else get_pyspark_version()
         scala_ver = Version(scala_version).min_digits(2) if scala_version else get_default_scala_version(spark_ver)
         # https://mvnrepository.com/artifact/org.apache.spark/spark-hadoop-cloud
         return [f"org.apache.spark:spark-hadoop-cloud_{scala_ver.format('{0}.{1}')}:{spark_ver.format('{0}.{1}.{2}')}"]

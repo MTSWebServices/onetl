@@ -16,6 +16,7 @@ from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
 from onetl._util.spark import (
     get_client_info,
+    get_pyspark_version,
     get_spark_version,
     override_job_description,
     stringify,
@@ -389,7 +390,7 @@ class Kafka(DBConnection):
     @classmethod
     def get_packages(
         cls,
-        spark_version: str,
+        spark_version: str | None = None,
         scala_version: str | None = None,
     ) -> list[str]:
         """
@@ -400,8 +401,10 @@ class Kafka(DBConnection):
 
         Parameters
         ----------
-        spark_version : str
+        spark_version : str, optional
             Spark version in format `major.minor.patch`.
+
+            If `None`, imports `pyspark` and uses `pyspark.__version__` instead.
 
         scala_version : str, optional
             Scala version in format `major.minor`.
@@ -414,12 +417,12 @@ class Kafka(DBConnection):
         ```python
         from onetl.connection import Kafka
 
-        Kafka.get_packages(spark_version="3.5.8")
+        Kafka.get_packages()
         Kafka.get_packages(spark_version="3.5.8", scala_version="2.12")
         ```
         """
 
-        spark_ver = Version(spark_version).min_digits(3)
+        spark_ver = Version(spark_version).min_digits(3) if spark_version else get_pyspark_version()
         scala_ver = Version(scala_version).min_digits(2) if scala_version else get_default_scala_version(spark_ver)
         return [
             f"org.apache.spark:spark-sql-kafka-0-10_{scala_ver.format('{0}.{1}')}:{spark_ver.format('{0}.{1}.{2}')}",

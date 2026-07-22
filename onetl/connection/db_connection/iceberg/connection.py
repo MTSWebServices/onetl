@@ -34,7 +34,7 @@ except (ImportError, AttributeError):
     from pydantic import validator  # type: ignore[no-redef, assignment]
 
 from onetl._metrics.recorder import SparkMetricsRecorder
-from onetl._util.spark import get_spark_version, override_job_description, stringify
+from onetl._util.spark import get_pyspark_version, get_spark_version, override_job_description, stringify
 from onetl._util.sql import clear_statement
 from onetl.connection.db_connection.db_connection import DBConnection
 from onetl.hooks import slot, support_hooks
@@ -101,9 +101,12 @@ class Iceberg(DBConnection):
         from onetl.connection import Iceberg
         from pyspark.sql import SparkSession
 
+        iceberg_version = "1.10.0"
+
         maven_packages = [
-            *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
-            *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
+            *Iceberg.get_packages(package_version=iceberg_version),
+            # required to use S3 warehouse
+            *Iceberg.S3Warehouse.get_packages(package_version=iceberg_version),
         ]
         spark = (
             SparkSession.builder.appName("spark-app-name")
@@ -140,10 +143,12 @@ class Iceberg(DBConnection):
         from onetl.connection import Iceberg
         from pyspark.sql import SparkSession
 
+        iceberg_version = "1.10.0"
+
         maven_packages = [
-            *Iceberg.get_packages(package_version="1.10.0", spark_version="3.5"),
+            *Iceberg.get_packages(package_version=iceberg_version),
             # required to use S3 warehouse
-            *Iceberg.S3Warehouse.get_packages(package_version="1.10.0"),
+            *Iceberg.S3Warehouse.get_packages(package_version=iceberg_version),
         ]
         spark = (
             SparkSession.builder.appName("spark-app-name")
@@ -176,7 +181,8 @@ class Iceberg(DBConnection):
         from onetl.connection import Iceberg, SparkHDFS
         from pyspark.sql import SparkSession
 
-        maven_packages = Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
+        iceberg_version = "1.10.0"
+        maven_packages = Iceberg.get_packages(package_version=iceberg_version)
         spark = (
             SparkSession.builder.appName("spark-app-name")
             .config("spark.jars.packages", ",".join(maven_packages))
@@ -257,7 +263,7 @@ class Iceberg(DBConnection):
     def get_packages(
         cls,
         package_version: str,
-        spark_version: str,
+        spark_version: str | None = None,
         scala_version: str | None = None,
     ) -> list[str]:
         """
@@ -271,8 +277,10 @@ class Iceberg(DBConnection):
         package_version : str
             Iceberg package version in format `major.minor.patch`.
 
-        spark_version : str
+        spark_version : str, optional
             Spark version in format `major.minor`.
+
+            If `None`, imports `pyspark` and uses `pyspark.__version__` instead.
 
         scala_version : str, optional
             Scala version in format `major.minor`.
@@ -290,12 +298,12 @@ class Iceberg(DBConnection):
         from onetl.connection import Iceberg
 
         # Note: Iceberg 1.10.0 requires Java 11+
-        Iceberg.get_packages(package_version="1.10.0", spark_version="3.5.8")
+        Iceberg.get_packages(package_version="1.10.0")
         ```
         """
 
         version = Version(package_version).min_digits(3)
-        spark_ver = Version(spark_version).min_digits(2)
+        spark_ver = Version(spark_version).min_digits(2) if spark_version else get_pyspark_version()
         scala_ver = Version(scala_version).min_digits(2) if scala_version else get_default_scala_version(spark_ver)
         return [
             f"org.apache.iceberg:iceberg-spark-runtime-{spark_ver.format('{0}.{1}')}_{scala_ver.format('{0}.{1}')}:{version}",

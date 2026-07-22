@@ -107,7 +107,7 @@ def try_import_pyspark():
     Try to import PySpark, or raise exception if missing.
     """
     try:
-        import pyspark  # noqa: F401
+        import pyspark
     except (ImportError, NameError) as e:
         raise ImportError(
             textwrap.dedent(
@@ -121,6 +121,16 @@ def try_import_pyspark():
                 """,
             ).strip(),
         ) from e
+    else:
+        return pyspark
+
+
+def get_pyspark_version() -> Version:
+    """
+    Get PySpark version
+    """
+    pyspark = try_import_pyspark()
+    return Version(pyspark.__version__)
 
 
 def get_spark_version(spark_session: "SparkSession") -> Version:

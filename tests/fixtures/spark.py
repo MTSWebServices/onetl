@@ -76,26 +76,23 @@ def maven_packages(request):  # noqa: C901, PLR0912
     gp_package_version = os.getenv("ONETL_GP_PACKAGE_VERSION")
     if "greenplum" in markers and gp_package_version != "local":
         packages.extend(
-            Greenplum.get_packages(
-                spark_version=str(pyspark_version),
-                package_version=gp_package_version,
-            ),
+            Greenplum.get_packages(package_version=gp_package_version),
         )
 
     if "avro" in markers:
-        packages.extend(Avro.get_packages(spark_version=str(pyspark_version)))
+        packages.extend(Avro.get_packages())
 
     if "kafka" in markers:
-        packages.extend(Kafka.get_packages(spark_version=str(pyspark_version)))
+        packages.extend(Kafka.get_packages())
 
     if "s3" in markers:
-        packages.extend(SparkS3.get_packages(spark_version=str(pyspark_version)))
+        packages.extend(SparkS3.get_packages())
 
     if "xml" in markers:
-        packages.extend(XML.get_packages(spark_version=str(pyspark_version)))
+        packages.extend(XML.get_packages())
 
     if "mongodb" in markers:
-        packages.extend(MongoDB.get_packages(spark_version=str(pyspark_version)))
+        packages.extend(MongoDB.get_packages())
 
     if "excel" in markers:
         # There are package versions only for specific Spark versions,
@@ -114,18 +111,9 @@ def maven_packages(request):  # noqa: C901, PLR0912
     # There is no package for Iceberg Runtime for Spark 4.1 for now
     if "iceberg" in markers and version < (4, 1):
         iceberg_version = "1.4.3" if version == (3, 2) else "1.10.0"
-        packages.extend(
-            Iceberg.get_packages(
-                package_version=iceberg_version,
-                spark_version=str(pyspark_version),
-            ),
-        )
+        packages.extend(Iceberg.get_packages(package_version=iceberg_version))
         if "s3" in markers:
-            packages.extend(
-                Iceberg.S3Warehouse.get_packages(
-                    package_version=iceberg_version,
-                ),
-            )
+            packages.extend(Iceberg.S3Warehouse.get_packages(package_version=iceberg_version))
 
     return packages
 

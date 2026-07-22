@@ -18,6 +18,7 @@ from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
 from onetl._util.spark import (
     get_client_info,
+    get_pyspark_version,
     get_spark_version,
     override_job_description,
 )
@@ -96,7 +97,7 @@ class MongoDB(DBConnection):
     from pyspark.sql import SparkSession
 
     # Create Spark session with MongoDB connector loaded
-    maven_packages = MongoDB.get_packages(spark_version="3.4")
+    maven_packages = MongoDB.get_packages()
     spark = (
         SparkSession.builder.appName("spark-app-name")
         .config("spark.jars.packages", ",".join(maven_packages))
@@ -156,7 +157,9 @@ class MongoDB(DBConnection):
             If `None`, `spark_version` is used to determine Scala version.
 
         spark_version : str, optional
-            Spark version in format `major.minor`. Used only if `scala_version=None`.
+            Spark version in format `major.minor`.
+
+            Used only if `scala_version=None`. If `None`, imports `pyspark` and uses `pyspark.__version__` instead.
 
         package_version : str, optional
             Specifies the version of the MongoDB Spark connector to use. Defaults to `10.6.1`.
@@ -168,10 +171,10 @@ class MongoDB(DBConnection):
         ```python
         from onetl.connection import MongoDB
 
-        MongoDB.get_packages(scala_version="2.12")
+        MongoDB.get_packages()
 
         # specify custom connector version
-        MongoDB.get_packages(scala_version="2.12", package_version="10.6.1")
+        MongoDB.get_packages(package_version="10.6.1")
         ```
         """
 
@@ -183,8 +186,8 @@ class MongoDB(DBConnection):
             spark_ver = Version(spark_version)
             scala_ver = get_default_scala_version(spark_ver)
         else:
-            msg = "You should pass either `scala_version` or `spark_version`"
-            raise ValueError(msg)
+            spark_ver = get_pyspark_version()
+            scala_ver = get_default_scala_version(spark_ver)
 
         connector_ver = Version(package_version or default_package_version).min_digits(2)
         return [f"org.mongodb.spark:mongo-spark-connector_{scala_ver.format('{0}.{1}')}:{connector_ver}"]

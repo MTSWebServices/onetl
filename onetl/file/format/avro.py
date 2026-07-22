@@ -12,7 +12,7 @@ except (ImportError, AttributeError):
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
-from onetl._util.spark import get_spark_version
+from onetl._util.spark import get_pyspark_version, get_spark_version
 from onetl._util.version import Version
 from onetl.exception import MISSING_JVM_CLASS_MSG
 from onetl.file.format.file_format import ReadWriteFileFormat
@@ -252,7 +252,7 @@ class Avro(ReadWriteFileFormat):
     @classmethod
     def get_packages(
         cls,
-        spark_version: str,
+        spark_version: str | None = None,
         scala_version: str | None = None,
     ) -> list[str]:
         """
@@ -265,8 +265,10 @@ class Avro(ReadWriteFileFormat):
 
         Parameters
         ----------
-        spark_version : str
+        spark_version : str, optional
             Spark version in format `major.minor.patch`.
+
+            If `None`, imports `pyspark` and uses `pyspark.__version__` instead.
 
         scala_version : str, optional
             Scala version in format `major.minor`.
@@ -279,12 +281,12 @@ class Avro(ReadWriteFileFormat):
         ```python
         from onetl.file.format import Avro
 
-        Avro.get_packages(spark_version="3.5.8")
+        Avro.get_packages()
         Avro.get_packages(spark_version="3.5.8", scala_version="2.12")
         ```
         """
 
-        spark_ver = Version(spark_version).min_digits(3)
+        spark_ver = Version(spark_version).min_digits(3) if spark_version else get_pyspark_version()
         scala_ver = Version(scala_version).min_digits(2) if scala_version else get_default_scala_version(spark_ver)
         return [f"org.apache.spark:spark-avro_{scala_ver.format('{0}.{1}')}:{spark_ver.format('{0}.{1}.{2}')}"]
 

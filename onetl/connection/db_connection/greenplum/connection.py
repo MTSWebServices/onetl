@@ -134,7 +134,7 @@ class Greenplum(JDBCMixin, DBConnection):
     from pyspark.sql import SparkSession
 
     # Create Spark session with Greenplum connector loaded
-    maven_packages = Greenplum.get_packages(spark_version="3.2")
+    maven_packages = Greenplum.get_packages()
     spark = (
         SparkSession.builder.appName("spark-app-name")
         .config("spark.jars.packages", ",".join(maven_packages))
@@ -216,7 +216,7 @@ class Greenplum(JDBCMixin, DBConnection):
             If `None`, `spark_version` is used to determine Scala version.
 
         spark_version : str, optional
-            Spark version in format `major.minor`.
+            Spark version.
 
             Used only if `scala_version=None`.
 
@@ -231,8 +231,8 @@ class Greenplum(JDBCMixin, DBConnection):
         ```python
         from onetl.connection import Greenplum
 
-        Greenplum.get_packages(scala_version="2.12")
-        Greenplum.get_packages(spark_version="3.2", package_version="2.3.0")
+        Greenplum.get_packages()
+        Greenplum.get_packages(package_version="2.3.0")
         ```
         """
 
@@ -248,8 +248,7 @@ class Greenplum(JDBCMixin, DBConnection):
                 raise ValueError(msg)
             scala_ver = get_default_scala_version(spark_ver)
         else:
-            msg = "You should pass either `scala_version` or `spark_version`"
-            raise ValueError(msg)
+            scala_ver = Version("2.12")
 
         return [f"io.pivotal:greenplum-spark_{scala_ver.format('{0}.{1}')}:{package_ver}"]
 

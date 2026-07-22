@@ -11,7 +11,7 @@ except (ImportError, AttributeError):
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
-from onetl._util.spark import get_spark_version, stringify
+from onetl._util.spark import get_pyspark_version, get_spark_version, stringify
 from onetl._util.version import Version
 from onetl.exception import MISSING_JVM_CLASS_MSG
 from onetl.file.format.file_format import ReadWriteFileFormat
@@ -331,7 +331,7 @@ class XML(ReadWriteFileFormat):
     @classmethod
     def get_packages(
         cls,
-        spark_version: str,
+        spark_version: str | None = None,
         scala_version: str | None = None,
         package_version: str | None = None,
     ) -> list[str]:
@@ -346,8 +346,10 @@ class XML(ReadWriteFileFormat):
 
         Parameters
         ----------
-        spark_version : str
+        spark_version : str, optional
             Spark version in format `major.minor.patch`.
+
+            If `None`, imports `pyspark` and uses `pyspark.__version__` instead.
 
         scala_version : str, optional
             Scala version in format `major.minor`.
@@ -364,19 +366,14 @@ class XML(ReadWriteFileFormat):
 
                 Version `0.13` and below are not supported.
 
-            !!! note
-
-                It is not guaranteed that custom package versions are supported.
-                Tests are performed only for default version.
-
         Examples
         --------
 
         ```python
         from onetl.file.format import XML
 
-        XML.get_packages(spark_version="3.5.8")
-        XML.get_packages(spark_version="3.5.8", scala_version="2.12")
+        XML.get_packages()
+        XML.get_packages(package_version="0.18.0")
         XML.get_packages(
             spark_version="3.5.8",
             scala_version="2.12",
@@ -384,7 +381,7 @@ class XML(ReadWriteFileFormat):
         )
         ```
         """
-        spark_ver = Version(spark_version)
+        spark_ver = Version(spark_version) if spark_version else get_pyspark_version()
         if spark_ver.major >= 4:  # noqa: PLR2004
             # since Spark 4.0, XML is bundled with Spark
             return []
