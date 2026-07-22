@@ -120,7 +120,7 @@ class Kafka(DBConnection):
         from pyspark.sql import SparkSession
 
         # Create Spark session with Kafka connector loaded
-        maven_packages = Kafka.get_packages(spark_version="3.5.8")
+        maven_packages = Kafka.get_packages()
         exclude_packages = Kafka.get_exclude_packages()
         spark = (
             SparkSession.builder.appName("spark-app-name")

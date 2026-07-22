@@ -61,7 +61,7 @@ class XML(ReadWriteFileFormat):
         from pyspark.sql import SparkSession
 
         # Create Spark session with XML package loaded
-        maven_packages = XML.get_packages(spark_version="3.5.8")
+        maven_packages = XML.get_packages()
         spark = (
             SparkSession.builder.appName("spark-app-name")
             .config("spark.jars.packages", ",".join(maven_packages))

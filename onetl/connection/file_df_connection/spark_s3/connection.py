@@ -133,7 +133,7 @@ class SparkS3(SparkFileDFConnection):
         from pyspark.sql import SparkSession
 
         # Create Spark session with Hadoop AWS libraries loaded
-        maven_packages = SparkS3.get_packages(spark_version="3.5.8")
+        maven_packages = SparkS3.get_packages()
         # Some packages are not used, but downloading takes a lot of time. Skipping them.
         excluded_packages = SparkS3.get_exclude_packages()
         spark = (
