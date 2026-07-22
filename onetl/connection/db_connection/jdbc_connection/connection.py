@@ -37,7 +37,7 @@ from onetl.hwm import Window
 from onetl.log import log_lines, log_with_indent
 
 if TYPE_CHECKING:
-    from pyspark.sql import DataFrame
+    from pyspark.sql import DataFrame, SparkSession
     from pyspark.sql.types import StructType
 
 log = logging.getLogger(__name__)
@@ -73,13 +73,13 @@ class JDBCConnection(JDBCMixin, DBConnection):
     Options = JDBCLegacyOptions
 
     @validator("spark")
-    def _check_java_class_imported(cls, spark):
+    def _check_java_class_imported(cls, spark: "SparkSession") -> "SparkSession":
         try:
             try_import_java_class(spark, cls.DRIVER)
         except Exception as e:
             msg = MISSING_JVM_CLASS_MSG.format(
                 java_class=cls.DRIVER,
-                package_source=cls.__name__,
+                package_source=cls.__name__,  # type: ignore[attr-defined]
                 args="",
             )
             raise ValueError(msg) from e

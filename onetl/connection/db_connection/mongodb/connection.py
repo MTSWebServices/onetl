@@ -38,7 +38,7 @@ from onetl.impl import GenericOptions
 from onetl.log import log_dataframe_schema, log_json, log_options, log_with_indent
 
 if TYPE_CHECKING:
-    from pyspark.sql import DataFrame
+    from pyspark.sql import DataFrame, SparkSession
     from pyspark.sql.types import StructType
 
 log = logging.getLogger(__name__)
@@ -540,7 +540,7 @@ class MongoDB(DBConnection):
         return result
 
     @validator("spark")
-    def _check_java_class_imported(cls, spark):
+    def _check_java_class_imported(cls, spark: "SparkSession") -> "SparkSession":
         java_class = "com.mongodb.spark.sql.connector.MongoTableProvider"
 
         try:
@@ -549,7 +549,7 @@ class MongoDB(DBConnection):
             spark_version = get_spark_version(spark).format("{0}.{1}")
             msg = MISSING_JVM_CLASS_MSG.format(
                 java_class=java_class,
-                package_source=cls.__name__,
+                package_source=cls.__name__,  # type: ignore[attr-defined]
                 args=f"spark_version='{spark_version}'",
             )
             raise ValueError(msg) from e
