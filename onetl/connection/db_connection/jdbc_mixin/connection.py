@@ -196,7 +196,7 @@ class JDBCMixin:
         with override_job_description(self.spark, f"{self}.fetch()"):
             started = time.perf_counter()
             try:
-                df = self._query_on_driver(query, call_options)
+                df, rows_count = self._query_with_count_on_driver(query, call_options)
             except Exception:
                 elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
                 log.exception("|%s| Query failed after %s!", self.__class__.__name__, elapsed)
@@ -208,7 +208,7 @@ class JDBCMixin:
             # as we don't actually use Spark for this method, SparkMetricsRecorder is useless.
             # Just create metrics by hand, and fill them up using information based on dataframe content.
             metrics = SparkCommandMetrics()
-            metrics.input.read_rows = df.count()
+            metrics.input.read_rows = rows_count
             metrics.driver.in_memory_bytes = estimate_dataframe_size(df)
             log.info("|%s| Recorded metrics:", self.__class__.__name__)
             log_lines(log, str(metrics))
@@ -267,7 +267,7 @@ class JDBCMixin:
         with override_job_description(self.spark, f"{self}.execute()"):
             started = time.perf_counter()
             try:
-                df = self._call_on_driver(statement, call_options)
+                df, rows_count = self._call_with_count_on_driver(statement, call_options)
             except Exception:
                 elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
                 log.exception("|%s| Execution failed after %s!", self.__class__.__name__, elapsed)
@@ -282,7 +282,7 @@ class JDBCMixin:
             # as we don't actually use Spark for this method, SparkMetricsRecorder is useless.
             # Just create metrics by hand, and fill them up using information based on dataframe content.
             metrics = SparkCommandMetrics()
-            metrics.input.read_rows = df.count()
+            metrics.input.read_rows = rows_count
             metrics.driver.in_memory_bytes = estimate_dataframe_size(df)
 
             log.info("|%s| Recorded metrics:", self.__class__.__name__)
@@ -294,6 +294,13 @@ class JDBCMixin:
         query: str,
         options: JDBCFetchOptions | JDBCExecuteOptions,
     ) -> "DataFrame":
+        return self._query_with_count_on_driver(query, options)[0]
+
+    def _query_with_count_on_driver(
+        self,
+        query: str,
+        options: JDBCFetchOptions | JDBCExecuteOptions,
+    ) -> "tuple[DataFrame, int]":
         return self._execute_on_driver(
             statement=query,
             statement_type=JDBCStatementType.PREPARED,
@@ -307,6 +314,13 @@ class JDBCMixin:
         query: str,
         options: JDBCFetchOptions,
     ) -> "DataFrame | None":
+        return self._query_optional_with_count_on_driver(query, options)[0]
+
+    def _query_optional_with_count_on_driver(
+        self,
+        query: str,
+        options: JDBCFetchOptions,
+    ) -> "tuple[DataFrame | None, int]":
         return self._execute_on_driver(
             statement=query,
             statement_type=JDBCStatementType.PREPARED,
@@ -320,6 +334,13 @@ class JDBCMixin:
         query: str,
         options: JDBCExecuteOptions,
     ) -> "DataFrame | None":
+        return self._call_with_count_on_driver(query, options)[0]
+
+    def _call_with_count_on_driver(
+        self,
+        query: str,
+        options: JDBCExecuteOptions,
+    ) -> "tuple[DataFrame | None, int]":
         return self._execute_on_driver(
             statement=query,
             statement_type=JDBCStatementType.CALL,
@@ -485,11 +506,11 @@ class JDBCMixin:
 
         return jdbc_connection.createStatement(*statement_args)
 
-    def _statement_to_dataframe(self, jdbc_connection, jdbc_statement) -> "DataFrame":
+    def _statement_to_dataframe(self, jdbc_connection, jdbc_statement) -> "tuple[DataFrame, int]":
         result_set = jdbc_statement.getResultSet()
-        return self._resultset_to_dataframe(jdbc_connection, result_set)
+        return self._resultset_with_count_to_dataframe(jdbc_connection, result_set)
 
-    def _statement_to_optional_dataframe(self, jdbc_connection, jdbc_statement) -> "DataFrame | None":
+    def _statement_to_optional_dataframe(self, jdbc_connection, jdbc_statement) -> "tuple[DataFrame | None, int]":
         """
         Returns `org.apache.spark.sql.DataFrame` or `None`, if ResultSet is does not contain any columns.
 
@@ -499,16 +520,16 @@ class JDBCMixin:
         result_set = jdbc_statement.getResultSet()
 
         if not result_set or result_set.isClosed():
-            return None
+            return None, 0
 
         result_metadata = result_set.getMetaData()
         result_column_count = result_metadata.getColumnCount()
         if not result_column_count:
-            return None
+            return None, 0
 
-        return self._resultset_to_dataframe(jdbc_connection, result_set)
+        return self._resultset_with_count_to_dataframe(jdbc_connection, result_set)
 
-    def _resultset_to_dataframe(self, jdbc_connection, result_set) -> "DataFrame":
+    def _resultset_with_count_to_dataframe(self, jdbc_connection, result_set) -> "tuple[DataFrame, int]":
         """
         Converts `java.sql.ResultSet` to `org.apache.spark.sql.DataFrame` using Spark's internal methods.
 
@@ -548,9 +569,10 @@ class JDBCMixin:
             result_iterator = JdbcUtils.resultSetToRows(result_set, result_schema)
 
         result_list = JavaConverters.seqAsJavaListConverter(result_iterator.toSeq()).asJava()
+        rows_count = result_list.size()
         jdf = self.spark._jsparkSession.createDataFrame(result_list, result_schema)  # type: ignore[attr-defined]  # noqa: SLF001
 
         # But since Spark 3.3 "_wrapped" attribute was removed from SparkSession
         spark_context = getattr(self.spark, "_wrapped", self.spark)
 
-        return DataFrame(jdf, spark_context)
+        return DataFrame(jdf, spark_context), rows_count
