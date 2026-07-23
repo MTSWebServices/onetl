@@ -310,12 +310,12 @@ class Oracle(JDBCConnection):
 
         return values
 
-    def _call_on_driver(
+    def _call_with_count_on_driver(
         self,
         query: str,
         options: JDBCExecuteOptions,
-    ) -> "DataFrame | None":
-        result = super()._call_on_driver(query, options)
+    ) -> "tuple[DataFrame | None, int]":
+        result = super()._call_with_count_on_driver(query, options)
         self._handle_compile_errors(query.strip(), options)
         return result
 
