@@ -1,12 +1,15 @@
 # SPDX-FileCopyrightText: 2022-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 import logging
+import time
 import warnings
 from abc import abstractmethod
 from collections.abc import Callable
 from contextlib import closing
 from enum import Enum, auto
 from typing import TYPE_CHECKING, ClassVar, TypeVar
+
+from humanize import naturaldelta
 
 try:
     from pydantic.v1 import Field, SecretStr
@@ -191,13 +194,16 @@ class JDBCMixin:
         )
 
         with override_job_description(self.spark, f"{self}.fetch()"):
+            started = time.perf_counter()
             try:
                 df = self._query_on_driver(query, call_options)
             except Exception:
-                log.exception("|%s| Query failed!", self.__class__.__name__)
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                log.exception("|%s| Query failed after %s!", self.__class__.__name__, elapsed)
                 raise
 
-            log.info("|%s| Query succeeded, created in-memory dataframe.", self.__class__.__name__)
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            log.info("|%s| Query succeeded, created in-memory dataframe in %s", self.__class__.__name__, elapsed)
 
             # as we don't actually use Spark for this method, SparkMetricsRecorder is useless.
             # Just create metrics by hand, and fill them up using information based on dataframe content.
@@ -259,17 +265,20 @@ class JDBCMixin:
         )
 
         with override_job_description(self.spark, f"{self}.execute()"):
+            started = time.perf_counter()
             try:
                 df = self._call_on_driver(statement, call_options)
             except Exception:
-                log.exception("|%s| Execution failed!", self.__class__.__name__)
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                log.exception("|%s| Execution failed after %s!", self.__class__.__name__, elapsed)
                 raise
 
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
             if not df:
-                log.info("|%s| Execution succeeded, nothing returned.", self.__class__.__name__)
+                log.info("|%s| Execution succeeded in %s, nothing returned", self.__class__.__name__, elapsed)
                 return None
 
-            log.info("|%s| Execution succeeded, created in-memory dataframe.", self.__class__.__name__)
+            log.info("|%s| Execution succeeded, created in-memory dataframe in %s", self.__class__.__name__, elapsed)
             # as we don't actually use Spark for this method, SparkMetricsRecorder is useless.
             # Just create metrics by hand, and fill them up using information based on dataframe content.
             metrics = SparkCommandMetrics()

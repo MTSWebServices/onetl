@@ -1,8 +1,11 @@
 # SPDX-FileCopyrightText: 2025-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 import logging
+import time
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
+
+from humanize import naturaldelta
 
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
@@ -381,12 +384,16 @@ class Iceberg(DBConnection):
         log.info("|%s| Executing SQL query:", self.__class__.__name__)
         log_lines(log, query)
 
-        with SparkMetricsRecorder(self.spark) as recorder:
+        with (
+            SparkMetricsRecorder(self.spark) as recorder,
+            override_job_description(self.spark, f"{self}.sql()"),
+        ):
+            started = time.perf_counter()
             try:
-                with override_job_description(self.spark, f"{self}.sql()"):
-                    df = self._execute_sql(query)
+                df = self._execute_sql(query)
             except Exception:
-                log.exception("|%s| Query failed", self.__class__.__name__)
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                log.exception("|%s| Query failed after %s!", self.__class__.__name__, elapsed)
 
                 metrics = recorder.metrics()
                 if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
@@ -396,7 +403,8 @@ class Iceberg(DBConnection):
                     log_lines(log, str(metrics), level=logging.DEBUG)
                 raise
 
-            log.info("|Spark| DataFrame successfully created from SQL statement")
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            log.info("|Spark| DataFrame successfully created from SQL statement in %s", elapsed)
 
             metrics = recorder.metrics()
             if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
@@ -427,12 +435,17 @@ class Iceberg(DBConnection):
         log.info("|%s| Executing statement:", self.__class__.__name__)
         log_lines(log, statement)
 
-        with SparkMetricsRecorder(self.spark) as recorder:
+        with (
+            SparkMetricsRecorder(self.spark) as recorder,
+            override_job_description(self.spark, f"{self}.execute()"),
+        ):
+            started = time.perf_counter()
             try:
-                with override_job_description(self.spark, f"{self}.execute()"):
-                    self._execute_sql(statement).collect()
+                self._execute_sql(statement).collect()
             except Exception:
-                log.exception("|%s| Execution failed", self.__class__.__name__)
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                log.exception("|%s| Execution failed after %s!", self.__class__.__name__, elapsed)
+
                 metrics = recorder.metrics()
                 if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:
                     # as SparkListener results are not guaranteed to be received in time,
@@ -441,7 +454,8 @@ class Iceberg(DBConnection):
                     log_lines(log, str(metrics), level=logging.DEBUG)
                 raise
 
-            log.info("|%s| Execution succeeded", self.__class__.__name__)
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            log.info("|%s| Execution succeeded in %s", self.__class__.__name__, elapsed)
 
             metrics = recorder.metrics()
             if log.isEnabledFor(logging.DEBUG) and not metrics.is_empty:

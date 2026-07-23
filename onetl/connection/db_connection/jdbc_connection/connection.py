@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 import logging
 import secrets
+import time
 import warnings
 from typing import TYPE_CHECKING, Any, ClassVar
+
+from humanize import naturaldelta
 
 try:
     from pydantic.v1 import SecretStr, validator
@@ -147,15 +150,18 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log.info("|%s| Executing SQL query (on executor):", self.__class__.__name__)
         log_lines(log, query)
 
-        try:
-            with override_job_description(self.spark, f"{self}.sql()"):
+        with override_job_description(self.spark, f"{self}.sql()"):
+            started = time.perf_counter()
+            try:
                 df = self._query_on_executor(query, self.SQLOptions.parse(options))
-        except Exception:
-            log.exception("|%s| Query failed!", self.__class__.__name__)
-            raise
+            except Exception:
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                log.exception("|%s| Query failed after %s!", self.__class__.__name__, elapsed)
+                raise
 
-        log.info("|Spark| DataFrame successfully created from SQL statement")
-        return df
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            log.info("|Spark| DataFrame successfully created from SQL statement in %s", elapsed)
+            return df
 
     @slot
     def read_source_as_df(  # noqa: PLR0913
@@ -223,7 +229,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
 
         result = self._query_on_executor(query, self.ReadOptions.parse(read_options))
 
-        log.info("|Spark| DataFrame successfully created from SQL statement ")
+        log.info("|Spark| DataFrame successfully created from SQL statement")
         if alias:
             result = result.drop(alias)
 
