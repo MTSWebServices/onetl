@@ -91,6 +91,7 @@ def test_postgres(spark_mock):
         "url": "jdbc:postgresql://some_host:5432/database",
         "ApplicationName": f"local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
         "tcpKeepAlive": "true",
+        "reWriteBatchedInserts": "true",
         "stringtype": "unspecified",
     }
 
@@ -118,6 +119,7 @@ def test_postgres_with_port(spark_mock):
         "url": "jdbc:postgresql://some_host:5000/database",
         "ApplicationName": f"local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
         "tcpKeepAlive": "true",
+        "reWriteBatchedInserts": "true",
         "stringtype": "unspecified",
     }
 
@@ -140,6 +142,7 @@ def test_postgres_with_extra(spark_mock):
             "stringtype": "VARCHAR",
             "autosave": "always",
             "tcpKeepAlive": "false",
+            "reWriteBatchedInserts": "false",
             "ApplicationName": "override",
             "ssl": "true",
         },
@@ -155,6 +158,7 @@ def test_postgres_with_extra(spark_mock):
         "stringtype": "VARCHAR",
         "autosave": "always",
         "tcpKeepAlive": "false",
+        "reWriteBatchedInserts": "false",
         "ApplicationName": "override",
         "ssl": "true",
     }

@@ -35,6 +35,9 @@ class PostgresExtra(GenericOptions):
     # while connector is moving data to executors before insert
     tcpKeepAlive: str = "true"
 
+    # x2 on batch writes
+    reWriteBatchedInserts: str = "true"
+
     class Config:
         extra = "allow"
 
