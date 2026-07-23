@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import textwrap
+import time
 import warnings
 from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -14,6 +15,7 @@ from etl_entities.hwm import FileHWM, FileListHWM
 from etl_entities.instance import AbsolutePath
 from etl_entities.old_hwm import FileListHWM as OldFileListHWM
 from etl_entities.source import RemoteFolder
+from humanize import naturaldelta
 from ordered_set import OrderedSet
 
 try:
@@ -398,16 +400,18 @@ class FileDownloader(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
+        method = f"{self.__class__.__name__}.run()"
+
+        if files is None and not self.source_path:
+            msg = f"Cannot call {method} without files arg or with source_path=None"
+            raise ValueError(msg)
+
+        entity_boundary_log(log, f"{method} started")
 
         if not self._connection_checked:
             self._log_parameters(files)
 
         self._check_strategy()
-
-        if files is None and not self.source_path:
-            msg = "Neither file list nor `source_path` are passed"
-            raise ValueError(msg)
 
         # Check everything
         if not self._connection_checked:
@@ -442,13 +446,17 @@ class FileDownloader(FrozenModel):
         if self.hwm:
             self._init_hwm(self.hwm)
 
-        result = self._download_files(to_download)
-        if current_temp_dir:
-            self._remove_temp_dir(current_temp_dir)
+        started = time.perf_counter()
+        try:
+            result = self._download_files(to_download)
+            if current_temp_dir:
+                self._remove_temp_dir(current_temp_dir)
 
-        self._log_result(result)
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() ends", char="-")
-        return result
+            self._log_result(result)
+            return result
+        finally:
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            entity_boundary_log(log, f"{method} ended in %s", elapsed, char="-")
 
     @slot
     def view_files(self) -> FileSet[RemoteFile]:
@@ -494,10 +502,12 @@ class FileDownloader(FrozenModel):
         ```
         """
 
+        method = f"{self.__class__.__name__}.view_files()"
         if not self.source_path:
-            msg = "Cannot call `.view_files()` without `source_path`"
+            msg = f"Cannot call {method} with source_path=None"
             raise ValueError(msg)
 
+        entity_boundary_log(log, f"{method} started")
         log.debug("|%s| Getting files list from path '%s'", self.connection.__class__.__name__, self.source_path)
 
         if not self._connection_checked:
@@ -508,6 +518,7 @@ class FileDownloader(FrozenModel):
             filters.append(FileHWMFilter(hwm=self._init_hwm(self.hwm)))
 
         result: FileSet[RemoteFile] = FileSet()
+        started = time.perf_counter()
         try:
             for _root, _dirs, files in self.connection.walk(self.source_path, filters=filters, limits=self.limits):
                 for file in files:
@@ -516,8 +527,11 @@ class FileDownloader(FrozenModel):
         except Exception as e:
             msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
             raise RuntimeError(msg) from e
-
-        return result
+        else:
+            return result
+        finally:
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            entity_boundary_log(log, f"{method} ended in %s", elapsed, char="-")
 
     @validator("local_path", pre=True, always=True)
     def _resolve_local_path(cls, local_path):

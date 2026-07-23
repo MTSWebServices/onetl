@@ -70,7 +70,7 @@ services:
     profiles: [greenplum, db, all]
 
   clickhouse:
-    image: ${CLICKHOUSE_IMAGE:-clickhouse/clickhouse-server:latest-alpine}
+    image: ${CLICKHOUSE_IMAGE:-clickhouse/clickhouse-server:25.9-alpine}
     restart: unless-stopped
     environment:
       TZ: UTC

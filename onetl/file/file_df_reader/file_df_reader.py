@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 import logging
 import os
+import time
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
+from humanize import naturaldelta
 from ordered_set import OrderedSet
 
 try:
@@ -202,11 +204,13 @@ class FileDFReader(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")
+        method = f"{self.__class__.__name__}.run"
 
         if files is None and not self.source_path:
-            msg = "Neither file list nor `source_path` are passed"
+            msg = f"Cannot call {method}() without files arg or with source_path=None"
             raise ValueError(msg)
+
+        entity_boundary_log(log, f"{method}() started")
 
         if not self._connection_checked:
             self._log_parameters(files)
@@ -214,21 +218,29 @@ class FileDFReader(FrozenModel):
             self._connection_checked = True
 
         if files:
-            job_description = f"{self.connection} -> {self.__class__.__name__}.run([..files..])"
+            job_description = f"{self.connection} -> {method}([..files..])"
         else:
-            job_description = f"{self.connection} -> {self.__class__.__name__}.run({self.source_path})"
+            job_description = f"{self.connection} -> {method}({self.source_path})"
 
         with override_job_description(self.connection.spark, job_description):
             paths: FileSet[PurePathProtocol] = FileSet()
-            if files is not None:
-                paths = FileSet(self._validate_files(files))
-            elif self.source_path:
-                paths = FileSet([self.source_path])
+            started = time.perf_counter()
+            try:
+                if files is not None:
+                    paths = FileSet(self._validate_files(files))
+                elif self.source_path:
+                    paths = FileSet([self.source_path])
 
-            df = self._read_files(paths)
-
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() ends", char="-")
-        return df
+                return self._read_files(paths)
+            except Exception:
+                log.error(  # noqa: TRY400
+                    "|%s| Error while reading dataframe",
+                    self.__class__.__name__,
+                )
+                raise
+            finally:
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                entity_boundary_log(log, f"{method}() ended in %s", elapsed, char="-")
 
     def _read_files(self, paths: FileSet[PurePathProtocol]) -> "DataFrame":
         log.info("|%s| Paths to be read:", self.__class__.__name__)

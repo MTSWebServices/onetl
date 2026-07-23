@@ -388,7 +388,7 @@ def log_collection(  # noqa: PLR0913
     logger.log(level, "%s%s", base_indent, end_bracket, stacklevel=stacklevel)
 
 
-def entity_boundary_log(logger: logging.Logger, msg: str, char: str = "=", stacklevel: int = 1) -> None:
+def entity_boundary_log(logger: logging.Logger, msg: str, *args, char: str = "=", stacklevel: int = 1) -> None:
     """Prints message with boundary characters.
 
     Examples
@@ -396,7 +396,7 @@ def entity_boundary_log(logger: logging.Logger, msg: str, char: str = "=", stack
 
     ```python
     entity_boundary_log(logger, "Begin")
-    entity_boundary_log(logger, "End", "-")
+    entity_boundary_log(logger, "End", char="-")
     ```
     ```text
     =================== Begin ====================
@@ -404,7 +404,8 @@ def entity_boundary_log(logger: logging.Logger, msg: str, char: str = "=", stack
     ```
     """
     filing = char * (HALF_SCREEN_SIZE - len(msg) // 2)
-    logger.info("%s %s %s", filing, msg, filing, stacklevel=stacklevel + 1)
+    formatted_msg = f"%s {msg} %s"
+    logger.info(formatted_msg, filing, *args, filing, stacklevel=stacklevel + 1)
 
 
 def log_options(

@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 import logging
 import os
+import time
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
 from typing import cast
 
+from humanize import naturaldelta
 from ordered_set import OrderedSet
 
 try:
@@ -270,11 +272,13 @@ class FileUploader(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
+        method = f"{self.__class__.__name__}.run()"
 
         if files is None and not self.local_path:
-            msg = "Neither file list nor `local_path` are passed"
+            msg = f"Cannot call {method} without files arg or with local_path=None"
             raise ValueError(msg)
+
+        entity_boundary_log(log, f"{method} started")
 
         if not self._connection_checked:
             self._log_parameters(files)
@@ -300,22 +304,26 @@ class FileUploader(FrozenModel):
 
         to_upload = self._validate_files(files, current_temp_dir=current_temp_dir)
 
-        # remove folder only after everything is checked
-        if self.options.if_exists == FileExistBehavior.REPLACE_ENTIRE_DIRECTORY:
-            self.connection.remove_dir(self.target_path, recursive=True)
-            self.connection.create_dir(self.target_path)
+        started = time.perf_counter()
+        try:
+            # remove folder only after everything is checked
+            if self.options.if_exists == FileExistBehavior.REPLACE_ENTIRE_DIRECTORY:
+                self.connection.remove_dir(self.target_path, recursive=True)
+                self.connection.create_dir(self.target_path)
 
-        if current_temp_dir:
-            current_temp_dir = self.connection.create_dir(current_temp_dir)
+            if current_temp_dir:
+                current_temp_dir = self.connection.create_dir(current_temp_dir)
 
-        result = self._upload_files(to_upload)
+            result = self._upload_files(to_upload)
 
-        if current_temp_dir:
-            self._remove_temp_dir(current_temp_dir)
+            if current_temp_dir:
+                self._remove_temp_dir(current_temp_dir)
 
-        self._log_result(result)
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() ends", char="-")
-        return result
+            self._log_result(result)
+            return result
+        finally:
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            entity_boundary_log(log, f"{method} ended in %s", elapsed, char="-")
 
     @slot
     def view_files(self) -> FileSet[LocalPath]:
@@ -356,17 +364,19 @@ class FileUploader(FrozenModel):
         ```
         """
 
+        method = f"{self.__class__.__name__}.view_files()"
         if not self.local_path:
-            msg = "Cannot call `.view_files()` without `local_path`"
+            msg = f"Cannot call {method} with local_path=None"
             raise ValueError(msg)
 
+        entity_boundary_log(log, f"{method} started")
         log.debug("|Local FS| Getting files list from path '%s'", self.local_path)
 
         if not self._connection_checked:
             self._check_local_path()
 
         result: FileSet[LocalPath] = FileSet()
-
+        started = time.perf_counter()
         try:
             for root, dirs, files in os.walk(self.local_path):
                 log.debug("|Local FS| Listing dir '%s': %d dirs, %d files", root, len(dirs), len(files))
@@ -374,8 +384,11 @@ class FileUploader(FrozenModel):
         except Exception as e:
             msg = f"Couldn't read directory tree from local dir '{self.local_path}'"
             raise RuntimeError(msg) from e
-
-        return result
+        else:
+            return result
+        finally:
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            entity_boundary_log(log, f"{method} ended in %s", elapsed, char="-")
 
     @validator("local_path", pre=True, always=True)
     def _resolve_local_path(cls, local_path):

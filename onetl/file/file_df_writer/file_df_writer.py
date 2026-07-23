@@ -1,7 +1,10 @@
 # SPDX-FileCopyrightText: 2023-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 import logging
+import time
 from typing import TYPE_CHECKING
+
+from humanize import naturaldelta
 
 try:
     from pydantic.v1 import PrivateAttr, validator
@@ -119,27 +122,30 @@ class FileDFWriter(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
-
         if df.isStreaming:
             msg = f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames."
             raise ValueError(msg)
+
+        method = f"{self.__class__.__name__}.run"
+        entity_boundary_log(log, f"{method}() started")
 
         if not self._connection_checked:
             self._log_parameters(df)
             self.connection.check()
             self._connection_checked = True
 
-        with SparkMetricsRecorder(self.connection.spark) as recorder:
+        with (
+            SparkMetricsRecorder(self.connection.spark) as recorder,
+            override_job_description(self.connection.spark, f"{method}({self.target_path}) -> {self.connection}"),
+        ):
+            started = time.perf_counter()
             try:
-                job_description = f"{self.__class__.__name__}.run({self.target_path}) -> {self.connection}"
-                with override_job_description(self.connection.spark, job_description):
-                    self.connection.write_df_as_files(
-                        df=df,
-                        path=self.target_path,
-                        format=self.format,
-                        options=self.options,
-                    )
+                self.connection.write_df_as_files(
+                    df=df,
+                    path=self.target_path,
+                    format=self.format,
+                    options=self.options,
+                )
             except Exception:
                 metrics = recorder.metrics()
                 if metrics.output.is_empty:
@@ -156,10 +162,11 @@ class FileDFWriter(FrozenModel):
                     )
                 self._log_metrics(metrics)
                 raise
-            finally:
+            else:
                 self._log_metrics(recorder.metrics())
-
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() ends", char="-")
+            finally:
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                entity_boundary_log(log, f"{method}() ended in %s", elapsed, char="-")
 
     def _log_parameters(self, df: "DataFrame") -> None:
         log.info("|Spark| -> |%s| Writing dataframe using parameters:", self.connection.__class__.__name__)

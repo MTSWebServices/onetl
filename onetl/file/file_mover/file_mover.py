@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 import logging
 import os
+import time
 from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
 from typing import cast
 
+from humanize import naturaldelta
 from ordered_set import OrderedSet
 
 try:
@@ -274,11 +276,13 @@ class FileMover(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() starts")
+        method = f"{self.__class__.__name__}.run()"
 
         if files is None and not self.source_path:
-            msg = "Neither file list nor `source_path` are passed"
+            msg = f"Cannot call {method} without files arg or with source_path=None"
             raise ValueError(msg)
+
+        entity_boundary_log(log, f"{method} started")
 
         if not self._connection_checked:
             self._log_parameters(files)
@@ -307,9 +311,13 @@ class FileMover(FrozenModel):
             self.connection.remove_dir(self.target_path, recursive=True)
             self.connection.create_dir(self.target_path)
 
-        result = self._move_files(to_move)
-        self._log_result(result)
-        entity_boundary_log(log, f"{self.__class__.__name__}.run() ends", char="-")
+        started = time.perf_counter()
+        try:
+            result = self._move_files(to_move)
+            self._log_result(result)
+        finally:
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            entity_boundary_log(log, f"{method} ended in %s", elapsed, char="-")
         return result
 
     @slot
@@ -352,17 +360,19 @@ class FileMover(FrozenModel):
         ```
         """
 
+        method = f"{self.__class__.__name__}.view_files()"
         if not self.source_path:
-            msg = "Cannot call `.view_files()` without `source_path`"
+            msg = f"Cannot call {method} with source_path=None"
             raise ValueError(msg)
 
+        entity_boundary_log(log, f"{method} started")
         log.debug("|%s| Getting files list from path '%s'", self.connection.__class__.__name__, self.source_path)
 
         if not self._connection_checked:
             self._check_source_path()
 
         result: FileSet[RemoteFile] = FileSet()
-
+        started = time.perf_counter()
         try:
             for _root, _dirs, files in self.connection.walk(self.source_path, filters=self.filters, limits=self.limits):
                 for file in files:
@@ -371,8 +381,11 @@ class FileMover(FrozenModel):
         except Exception as e:
             msg = f"Couldn't read directory tree from remote dir '{self.source_path}'"
             raise RuntimeError(msg) from e
-
-        return result
+        else:
+            return result
+        finally:
+            elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+            entity_boundary_log(log, f"{method} ended in %s", elapsed, char="-")
 
     def _log_parameters(self, files: Iterable[str | os.PathLike] | None = None) -> None:
         connection_class = self.connection.__class__.__name__

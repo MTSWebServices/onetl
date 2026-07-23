@@ -506,7 +506,8 @@ def test_file_downloader_run_without_files_and_source_path(file_connection, tmp_
         connection=file_connection,
         local_path=local_path,
     )
-    with pytest.raises(ValueError, match="Neither file list nor `source_path` are passed"):
+    msg = "Cannot call FileDownloader.run() without files arg or with source_path=None"
+    with pytest.raises(ValueError, match=re.escape(msg)):
         downloader.run()
 
 

@@ -505,7 +505,8 @@ def test_file_mover_run_without_files_and_source_path(file_connection):
         connection=file_connection,
         target_path=target_path,
     )
-    with pytest.raises(ValueError, match="Neither file list nor `source_path` are passed"):
+    msg = "Cannot call FileMover.run() without files arg or with source_path=None"
+    with pytest.raises(ValueError, match=re.escape(msg)):
         mover.run()
 
 

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 import textwrap
+import time
 import warnings
 from logging import getLogger
 from typing import TYPE_CHECKING, Any
@@ -9,6 +10,7 @@ import frozendict
 from etl_entities.hwm import HWM, ColumnHWM, KeyValueHWM
 from etl_entities.old_hwm import IntHWM as OldColumnHWM
 from etl_entities.source import Column, Table
+from humanize import naturaldelta
 
 try:
     from pydantic.v1 import Field, PrivateAttr, root_validator, validator
@@ -489,7 +491,8 @@ class DBReader(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.has_data() starts")
+        method = f"{self.__class__.__name__}.has_data"
+        entity_boundary_log(log, f"{method}() started")
         self._check_strategy()
 
         if not self._connection_checked:
@@ -497,25 +500,33 @@ class DBReader(FrozenModel):
             self.connection.check()
             self._connection_checked = True
 
-        job_description = f"{self.connection} -> {self.__class__.__name__}.has_data({self.source})"
-        with override_job_description(self.connection.spark, job_description):
-            window, limit = self._calculate_window_and_limit()
-            if limit == 0:
-                return False
+        with override_job_description(self.connection.spark, f"{self.connection} -> {method}({self.source})"):
+            started = time.perf_counter()
+            try:
+                window, limit = self._calculate_window_and_limit()
+                if limit == 0:
+                    return False
 
-            df = self.connection.read_source_as_df(
-                source=str(self.source),
-                columns=self.columns,
-                hint=self.hint,
-                where=self.where,
-                df_schema=self.df_schema,
-                window=window,
-                limit=1,
-                **self._get_read_kwargs(),
-            )
-
-            entity_boundary_log(log, msg=f"{self.__class__.__name__}.has_data() ends", char="-")
-            return bool(df.take(1))
+                df = self.connection.read_source_as_df(
+                    source=str(self.source),
+                    columns=self.columns,
+                    hint=self.hint,
+                    where=self.where,
+                    df_schema=self.df_schema,
+                    window=window,
+                    limit=1,
+                    **self._get_read_kwargs(),
+                )
+                return bool(df.take(1))
+            except Exception:
+                log.error(  # noqa: TRY400
+                    "|%s| Error while reading dataframe",
+                    self.__class__.__name__,
+                )
+                raise
+            finally:
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                entity_boundary_log(log, f"{method}() ended in %s", elapsed, char="-")
 
     @slot
     def raise_if_no_data(self) -> None:
@@ -588,7 +599,8 @@ class DBReader(FrozenModel):
         ```
         """
 
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")
+        method = f"{self.__class__.__name__}.run"
+        entity_boundary_log(log, f"{method}() started")
         self._check_strategy()
 
         if not self._connection_checked:
@@ -596,28 +608,35 @@ class DBReader(FrozenModel):
             self.connection.check()
             self._connection_checked = True
 
-        job_description = f"{self.connection} -> {self.__class__.__name__}.run({self.source})"
-        with override_job_description(self.connection.spark, job_description):
-            window, limit = self._calculate_window_and_limit()
+        with override_job_description(self.connection.spark, f"{self.connection} -> {method}({self.source})"):
+            try:
+                started = time.perf_counter()
+                window, limit = self._calculate_window_and_limit()
 
-            # update the HWM with the stop value
-            if self.hwm and window:
-                strategy: HWMStrategy = StrategyManager.get_current()  # type: ignore[assignment]
-                strategy.update_hwm(window.stop_at.value)
+                # update the HWM with the stop value
+                if self.hwm and window:
+                    strategy: HWMStrategy = StrategyManager.get_current()  # type: ignore[assignment]
+                    strategy.update_hwm(window.stop_at.value)
 
-            df = self.connection.read_source_as_df(
-                source=str(self.source),
-                columns=self.columns,
-                hint=self.hint,
-                where=self.where,
-                df_schema=self.df_schema,
-                window=window,
-                limit=limit,
-                **self._get_read_kwargs(),
-            )
-
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() ends", char="-")
-        return df
+                return self.connection.read_source_as_df(
+                    source=str(self.source),
+                    columns=self.columns,
+                    hint=self.hint,
+                    where=self.where,
+                    df_schema=self.df_schema,
+                    window=window,
+                    limit=limit,
+                    **self._get_read_kwargs(),
+                )
+            except Exception:
+                log.error(  # noqa: TRY400
+                    "|%s| Error while reading dataframe",
+                    self.__class__.__name__,
+                )
+                raise
+            finally:
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                entity_boundary_log(log, f"{method}() ended in %s", elapsed, char="-")
 
     def _check_strategy(self):
         strategy = StrategyManager.get_current()

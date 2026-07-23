@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021-present MTS PJSC
 # SPDX-License-Identifier: Apache-2.0
 import logging
+import time
 from typing import TYPE_CHECKING
 
 from onetl._util.alias import avoid_alias
@@ -9,6 +10,8 @@ try:
     from pydantic.v1 import Field, PrivateAttr, validator
 except (ImportError, AttributeError):
     from pydantic import Field, PrivateAttr, validator  # type: ignore[no-redef, assignment]
+
+from humanize import naturaldelta
 
 from onetl._metrics.command import SparkCommandMetrics
 from onetl._metrics.recorder import SparkMetricsRecorder
@@ -155,7 +158,8 @@ class DBWriter(FrozenModel):
             msg = f"DataFrame is streaming. {self.__class__.__name__} supports only batch DataFrames."
             raise ValueError(msg)
 
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() starts")
+        method = f"{self.__class__.__name__}.run"
+        entity_boundary_log(log, f"{method}() started")
 
         if not self._connection_checked:
             self._log_parameters()
@@ -163,22 +167,24 @@ class DBWriter(FrozenModel):
             self.connection.check()
             self._connection_checked = True
 
-        with SparkMetricsRecorder(self.connection.spark) as recorder:
+        with (
+            SparkMetricsRecorder(self.connection.spark) as recorder,
+            override_job_description(self.connection.spark, f"{method}({self.target}) -> {self.connection}"),
+        ):
+            started = time.perf_counter()
             try:
-                job_description = f"{self.__class__.__name__}.run({self.target}) -> {self.connection}"
-                with override_job_description(self.connection.spark, job_description):
-                    self.connection.write_df_to_target(
-                        df=df,
-                        target=str(self.target),
-                        **self._get_write_kwargs(),
-                    )
+                self.connection.write_df_to_target(
+                    df=df,
+                    target=str(self.target),
+                    **self._get_write_kwargs(),
+                )
             except Exception:
                 metrics = recorder.metrics()
                 # SparkListener is not a reliable source of information, metrics may or may not be present.
                 # Because of this we also do not return these metrics as method result
                 if metrics.output.is_empty:
                     log.error(  # noqa: TRY400
-                        "|%s| Error while writing dataframe.",
+                        "|%s| Error while writing dataframe",
                         self.__class__.__name__,
                     )
                 else:
@@ -188,10 +194,11 @@ class DBWriter(FrozenModel):
                     )
                 self._log_metrics(metrics)
                 raise
-            finally:
+            else:
                 self._log_metrics(recorder.metrics())
-
-        entity_boundary_log(log, msg=f"{self.__class__.__name__}.run() ends", char="-")
+            finally:
+                elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
+                entity_boundary_log(log, f"{method}() ended in %s", elapsed, char="-")
 
     def _log_parameters(self) -> None:
         log.info("|Spark| -> |%s| Writing DataFrame to target using parameters:", self.connection.__class__.__name__)
