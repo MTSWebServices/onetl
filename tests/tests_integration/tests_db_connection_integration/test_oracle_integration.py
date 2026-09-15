@@ -35,7 +35,7 @@ def test_oracle_connection_check(spark, processing, caplog):
     assert f"user = '{processing.user}'" in caplog.text
     assert "password = SecretStr('**********')" in caplog.text
     assert processing.password not in caplog.text
-    assert "extra = '{" in caplog.text
+    assert "extra = {" in caplog.text
 
     if processing.sid:
         assert f"sid = '{processing.sid}'" in caplog.text
