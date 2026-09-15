@@ -214,7 +214,7 @@ docs = [
     "mkdocs-git-revision-date-localized-plugin~=1.5.3",
     "pymdown-extensions~=11.0",
     "mkdocs-towncrier~=0.1.5",
-    "towncrier~=25.8.0",
+    "towncrier>=25.8,<26.10",
     "setuptools<82",
 ]
 
