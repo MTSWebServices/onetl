@@ -30,11 +30,11 @@ def test_greenplum_connection_check(spark, processing, caplog):
     assert "|Greenplum|" in caplog.text
     assert f"host = '{processing.host}'" in caplog.text
     assert f"port = {processing.port}" in caplog.text
-    assert f"user = '{processing.user}'" in caplog.text
     assert f"database = '{processing.database}'" in caplog.text
-
-    if processing.password:
-        assert processing.password not in caplog.text
+    assert f"user = '{processing.user}'" in caplog.text
+    assert "password = SecretStr('**********')" in caplog.text
+    assert processing.password not in caplog.text
+    assert "extra = '{" in caplog.text
 
     assert "package = " not in caplog.text
     assert "spark = " not in caplog.text

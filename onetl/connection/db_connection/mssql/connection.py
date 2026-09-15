@@ -36,6 +36,17 @@ class MSSQLExtra(GenericOptions):
     even if it is not mentioned in this documentation.
     """
 
+    disableStatementPooling: str = "false"
+    """Disable statement pooling.
+
+    Enabled to mitigate [#3048](https://github.com/microsoft/mssql-jdbc/pull/3048)"""
+
+    statementPoolingCacheSize: str = "20"
+    """Statement pooling cache size.
+
+    Enabled to mitigate [#3048](https://github.com/microsoft/mssql-jdbc/pull/3048)
+    """
+
     model_config = ConfigDict(extra="allow", prohibited_options=frozenset(("databaseName",)))  # type: ignore[typeddict-unknown-key]
 
 
