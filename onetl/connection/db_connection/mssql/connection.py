@@ -36,13 +36,21 @@ class MSSQLExtra(GenericOptions):
     even if it is not mentioned in this documentation.
     """
 
+    useBulkCopyForBatchInsert: str = "true"
+    """Use BulkCopy API instead of plain `INSERT INTO VALUES`."""
+
+    sendStringParametersAsUnicode: str = "false"
+    """Move conversion of String parameters to database during `INSERT`.
+
+    Enabled to mitigate [#3050](https://github.com/microsoft/mssql-jdbc/issues/3050)"""
+
     disableStatementPooling: str = "false"
-    """Disable statement pooling.
+    """Enable statement pooling.
 
     Enabled to mitigate [#3048](https://github.com/microsoft/mssql-jdbc/pull/3048)"""
 
     statementPoolingCacheSize: str = "20"
-    """Statement pooling cache size.
+    """Size of statement pooling cache.
 
     Enabled to mitigate [#3048](https://github.com/microsoft/mssql-jdbc/pull/3048)
     """

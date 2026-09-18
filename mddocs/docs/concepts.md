@@ -225,7 +225,7 @@ db_reader = DBReader(
     options=MSSQL.ReadOptions(
         numPartitions=10,  # read in 10 parallel jobs
         partitionColumn="id",  # balance data read by assigning each job a part of data using `hash(id) mod N` expression
-        partitioningMode="hash",
+        partitioning_mode="hash",
         fetchsize=1000,  # each job will fetch block of 1000 rows each on every read attempt
     ),
 )
