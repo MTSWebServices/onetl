@@ -106,6 +106,8 @@ def test_mssql(spark_mock):
         "applicationName": f"local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
         "disableStatementPooling": "false",
         "statementPoolingCacheSize": "20",
+        "sendStringParametersAsUnicode": "false",
+        "useBulkCopyForBatchInsert": "true",
     }
 
     assert "passwd" not in repr(conn)
@@ -134,6 +136,8 @@ def test_mssql_with_custom_port(spark_mock):
         "applicationName": f"local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
         "disableStatementPooling": "false",
         "statementPoolingCacheSize": "20",
+        "sendStringParametersAsUnicode": "false",
+        "useBulkCopyForBatchInsert": "true",
     }
 
     assert conn.instance_url == "mssql://some_host:5000/database"
@@ -168,6 +172,8 @@ def test_mssql_with_instance_name(spark_mock):
         "applicationName": f"local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
         "disableStatementPooling": "false",
         "statementPoolingCacheSize": "20",
+        "sendStringParametersAsUnicode": "false",
+        "useBulkCopyForBatchInsert": "true",
     }
 
     assert conn.instance_url == "mssql://some_host\\myinstance/database"
@@ -196,6 +202,8 @@ def test_mssql_with_extra(spark_mock):
             "applicationName": "override",
             "disableStatementPooling": "true",
             "statementPoolingCacheSize": "0",
+            "sendStringParametersAsUnicode": "true",
+            "useBulkCopyForBatchInsert": "false",
         },
         spark=spark_mock,
     )
@@ -212,6 +220,8 @@ def test_mssql_with_extra(spark_mock):
         "trustServerCertificate": "true",
         "disableStatementPooling": "true",
         "statementPoolingCacheSize": "0",
+        "sendStringParametersAsUnicode": "true",
+        "useBulkCopyForBatchInsert": "false",
     }
 
 
