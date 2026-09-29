@@ -62,7 +62,13 @@ class PostgresProcessing(BaseProcessing):
         return f"postgresql+psycopg2://{self.user}:{quote(self.password)}@{self.host}:{self.port}/{self.database}"
 
     def get_conn(self) -> connection:
-        return pg_connect(self.url)
+        return pg_connect(
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+            database=self.database,
+        )
 
     def create_schema_ddl(
         self,
