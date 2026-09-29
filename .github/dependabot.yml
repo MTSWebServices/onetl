@@ -5,7 +5,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - type:ci
     # https://til.simonwillison.net/github/dependabot-python-setup
@@ -16,7 +16,7 @@ updates:
   - package-ecosystem: uv
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - type:dependency
     versioning-strategy: increase-if-necessary
