@@ -20,6 +20,8 @@ class MySQLReadOptions(JDBCReadOptions):
 class MySQLWriteOptions(JDBCWriteOptions):
     __doc__ = JDBCWriteOptions.__doc__.replace("SomeDB", "MySQL")  # type: ignore[assignment, union-attr]
 
+    batchsize: int = 10_000
+
 
 class MySQLSQLOptions(JDBCSQLOptions):
     __doc__ = JDBCSQLOptions.__doc__.replace("SomeDB", "MySQL")  # type: ignore[assignment, union-attr]

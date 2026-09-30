@@ -61,7 +61,7 @@ reader = DBReader(
     df_schema=df_schema,
     where={"field": {"$eq": 123}},
     hint={"field": 1},
-    options=MongoDBReadOptions(batchSize=10000),
+    options=MongoDBReadOptions(batchSize=10_000),
 )
 df = reader.run()
 ```
@@ -107,7 +107,7 @@ reader = DBReader(
     where={"field": {"$eq": 123}},
     hint={"field": 1},
     hwm=DBReader.AutoDetectHWM(name="mongodb_hwm", expression="updated_dt"),
-    options=MongoDBReadOptions(batchSize=10000),
+    options=MongoDBReadOptions(batchSize=10_000),
 )
 
 with IncrementalStrategy():

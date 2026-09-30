@@ -511,10 +511,10 @@ class JDBCWriteOptions(GenericOptions):
 
         Default value is different from Spark.
 
-        Spark uses quite small value `1000`, which is absolutely not usable
+        Spark by default uses quite small value `1000`, which is absolutely not usable
         in BigData world.
 
-        Thus we've overridden default value with `20_000`,
+        Thus we've overridden default value with `10_000`...`20_000` (depending on connector),
         which should increase writing performance.
 
         You can increase it even more, up to `50_000`,

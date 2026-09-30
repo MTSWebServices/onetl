@@ -89,7 +89,7 @@ class DBWriter(FrozenModel):
 
         postgres = Postgres(...)
 
-        options = Postgres.WriteOptions(if_exists="replace_entire_table", batchsize=1000)
+        options = Postgres.WriteOptions(if_exists="replace_entire_table", batchsize=10_000)
 
         writer = DBWriter(
             connection=postgres,
