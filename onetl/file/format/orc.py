@@ -90,7 +90,8 @@ class ORC(ReadWriteFileFormat):
         Used only for reading files.
     """
 
-    compression: str | Literal["uncompressed", "snappy", "zlib", "lzo", "zstd", "lz4"] | None = None
+    # https://github.com/apache/spark/blob/master/sql/core/src/main/java/org/apache/spark/sql/execution/datasources/orc/OrcCompressionCodec.java
+    compression: str | Literal["uncompressed", "snappy", "zlib", "lzo", "zstd", "lz4", "brotli"] | None = None
     """
     Compression codec of the ORC files.
     By default, Spark config option `spark.sql.orc.compression.codec` value is used (`snappy`).

@@ -89,6 +89,7 @@ class Parquet(ReadWriteFileFormat):
         Used only for reading files.
     """
 
+    # https://github.com/apache/spark/blob/master/sql/core/src/main/java/org/apache/spark/sql/execution/datasources/parquet/ParquetCompressionCodec.java
     compression: str | Literal["uncompressed", "snappy", "gzip", "lzo", "brotli", "lz4", "lz4raw", "zstd"] | None = None
     """
     Compression codec of the Parquet files.
