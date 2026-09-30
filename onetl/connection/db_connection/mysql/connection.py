@@ -43,6 +43,9 @@ class MySQLExtra(GenericOptions):
     rewriteBatchedStatements: str = "true"
     """Improve performance of writing data to MySQL"""
 
+    allowNanAndInf: str = "true"
+    """Allow `NaN` and `Infinity` values for Double fields"""
+
     model_config = ConfigDict(extra="allow")
 
 
