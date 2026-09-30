@@ -8,18 +8,38 @@ from onetl.connection.db_connection.jdbc_connection import JDBCTableExistBehavio
 pytestmark = [pytest.mark.postgres]
 
 
-def test_jdbc_read_options_default():
-    options = Postgres.ReadOptions()
+@pytest.mark.parametrize(
+    "klass",
+    [
+        Clickhouse.ReadOptions,
+        MSSQL.ReadOptions,
+        MySQL.ReadOptions,
+        Oracle.ReadOptions,
+        Postgres.ReadOptions,
+    ],
+)
+def test_jdbc_read_options_default(klass: type):
+    options = klass()
 
     assert options.fetchsize == 100_000
     assert options.query_timeout is None
 
 
-def test_jdbc_write_options_default():
-    options = Postgres.WriteOptions()
+@pytest.mark.parametrize(
+    "klass, batchsize",
+    [
+        (Clickhouse.WriteOptions, 20_000),
+        (MSSQL.WriteOptions, 20_000),
+        (MySQL.WriteOptions, 10_000),
+        (Oracle.WriteOptions, 20_000),
+        (Postgres.WriteOptions, 10_000),
+    ],
+)
+def test_jdbc_write_options_default(klass: type, batchsize: int):
+    options = klass()
 
     assert options.if_exists == JDBCTableExistBehavior.APPEND
-    assert options.batchsize == 20_000
+    assert options.batchsize == batchsize
     assert options.isolation_level == "READ_UNCOMMITTED"
     assert options.query_timeout is None
 
