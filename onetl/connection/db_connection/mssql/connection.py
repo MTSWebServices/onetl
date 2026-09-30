@@ -32,7 +32,7 @@ class MSSQLExtra(GenericOptions):
     Extra options for MSSQL connection.
 
     You can pass here any property supported by
-    [MSSQL JDBC driver]((https://learn.microsoft.com/en-us/sql/connect/jdbc/setting-the-connection-properties#properties),
+    [MSSQL JDBC driver](https://learn.microsoft.com/en-us/sql/connect/jdbc/setting-the-connection-properties#properties),
     even if it is not mentioned in this documentation.
     """
 

@@ -90,7 +90,7 @@ def test_mysql(spark_mock):
         "driver": "com.mysql.cj.jdbc.Driver",
         "url": "jdbc:mysql://some_host:3306/database",
         "characterEncoding": "UTF-8",
-        "useUnicode": "yes",
+        "rewriteBatchedStatements": "true",
         "connectionAttributes": f"program_name:local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
     }
 
@@ -117,7 +117,7 @@ def test_mysql_with_port(spark_mock):
         "driver": "com.mysql.cj.jdbc.Driver",
         "url": "jdbc:mysql://some_host:5000/database",
         "characterEncoding": "UTF-8",
-        "useUnicode": "yes",
+        "rewriteBatchedStatements": "true",
         "connectionAttributes": f"program_name:local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
     }
 
@@ -142,7 +142,7 @@ def test_mysql_without_database(spark_mock):
         "driver": "com.mysql.cj.jdbc.Driver",
         "url": "jdbc:mysql://some_host:3306",
         "characterEncoding": "UTF-8",
-        "useUnicode": "yes",
+        "rewriteBatchedStatements": "true",
         "connectionAttributes": f"program_name:local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}",
     }
 
@@ -158,7 +158,7 @@ def test_mysql_with_extra(spark_mock):
         database="database",
         extra={
             "characterEncoding": "CP-1251",
-            "useUnicode": "no",
+            "rewriteBatchedStatements": "false",
             "connectionAttributes": "something:abc",
             "allowMultiQueries": "true",
             "requireSSL": "false",
@@ -172,12 +172,12 @@ def test_mysql_with_extra(spark_mock):
         "driver": "com.mysql.cj.jdbc.Driver",
         "url": "jdbc:mysql://some_host:3306/database",
         "characterEncoding": "CP-1251",
-        "useUnicode": "no",
+        "rewriteBatchedStatements": "false",
+        "allowMultiQueries": "true",
+        "requireSSL": "false",
         "connectionAttributes": (
             f"something:abc,program_name:local-123 abc onETL/{onetl_version} Spark/{spark_mock.version}"
         ),
-        "allowMultiQueries": "true",
-        "requireSSL": "false",
     }
 
     conn = MySQL(
@@ -195,7 +195,7 @@ def test_mysql_with_extra(spark_mock):
         "driver": "com.mysql.cj.jdbc.Driver",
         "url": "jdbc:mysql://some_host:3306/database",
         "characterEncoding": "UTF-8",
-        "useUnicode": "yes",
+        "rewriteBatchedStatements": "true",
         "connectionAttributes": "something:abc,program_name:override",
     }
 

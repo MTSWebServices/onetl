@@ -29,8 +29,20 @@ from onetl.impl import GenericOptions, Host
 
 
 class MySQLExtra(GenericOptions):
-    useUnicode: str = "yes"
+    """
+    Extra options for MySQL connection.
+
+    You can pass here any property supported by
+    [MySQL JDBC driver](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html),
+    even if it is not mentioned in this documentation.
+    """
+
     characterEncoding: str = "UTF-8"
+    """Character encoding for responses"""
+
+    rewriteBatchedStatements: str = "true"
+    """Improve performance of writing data to MySQL"""
+
     model_config = ConfigDict(extra="allow")
 
 
