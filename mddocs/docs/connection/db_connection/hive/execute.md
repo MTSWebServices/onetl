@@ -35,7 +35,7 @@ hive.execute(
         value DOUBLE
     )
     PARTITION BY (business_date DATE)
-    STORED AS orc
+    USING parquet
     """
 )
 ```

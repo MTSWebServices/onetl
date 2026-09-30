@@ -44,11 +44,8 @@ writer.run(write_df)
 
 Prefer these write formats:
 
-- [ORC](https://spark.apache.org/docs/latest/sql-data-sources-orc.html) (**default**)
-- [Parquet](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html)
-
-!!! warning
-    When using `DBWriter`, the default spark data format configured in `spark.sql.sources.default` is ignored, as  `Hive.WriteOptions(format=...)` default value is explicitly set to `orc`.
+- [Parquet](https://spark.apache.org/docs/latest/sql-data-sources-parquet.html) (default, configured by `spark.sql.sources.default`)
+- [ORC](https://spark.apache.org/docs/latest/sql-data-sources-orc.html)
 
 For column-based write formats, each file contains separated sections where column data is stored. The file footer contains
 location of each column section/group. Spark can use this information to load only sections required by specific query, e.g. only selected columns,

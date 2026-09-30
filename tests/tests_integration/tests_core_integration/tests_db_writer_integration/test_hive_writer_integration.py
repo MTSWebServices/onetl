@@ -73,12 +73,12 @@ def test_hive_writer_with_options(spark, processing, get_schema_table, options):
 @pytest.mark.parametrize(
     ("options", "format"),
     [
-        (Hive.WriteOptions(), "orc"),  # default
-        (Hive.WriteOptions(format="orc"), "orc"),
+        (Hive.WriteOptions(), "parquet"),  # default
         (Hive.WriteOptions(format="parquet"), "parquet"),
+        (Hive.WriteOptions(format="orc"), "orc"),
+        (Hive.WriteOptions(format=Parquet(compression="zstd")), "parquet"),
         (Hive.WriteOptions(format=ORC(compression="snappy")), "orc"),
         (Hive.WriteOptions(format=CSV(sep=",", encoding="utf-8", inferSchema=True, compression="gzip")), "csv"),
-        (Hive.WriteOptions(format=Parquet(compression="snappy")), "parquet"),
     ],
 )
 def test_hive_writer_with_format(spark, processing, get_schema_table, options, format):
@@ -311,7 +311,7 @@ def test_hive_writer_insert_into_with_options_ignored(spark, processing, get_sch
     # table DDL remains the same
     assert new_ddl == old_ddl
     assert "compression" not in new_ddl
-    assert "USING parquet" not in new_ddl
+    assert "USING parquet" in new_ddl
     assert "PARTITIONED BY" not in new_ddl
     assert "SORTED BY" not in new_ddl
     assert "CLUSTERED BY" not in new_ddl

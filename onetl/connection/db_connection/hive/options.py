@@ -216,36 +216,36 @@ class HiveWriteOptions(GenericOptions):
         does not affect behavior.
     """
 
-    format: str | BaseWritableFileFormat = "orc"
+    format: str | BaseWritableFileFormat | None = None
     """Format of files which should be used for storing table data.
 
     Examples
     --------
 
-    - string format: `"orc"` (default), `"parquet"`, `"csv"` (NOT recommended).
-    - format class instance: `ORC(compression="snappy")`, `Parquet()`, `CSV(header=True, delimiter=",")`.
+    - string format: `"parquet"` (recommended), `"orc"`, `"csv"` (NOT recommended).
+    - format class instance: `Parquet(compression="zstd")`, `ORC(compression="snappy")`, `CSV(header=True, delimiter=",")`.
 
     ```
     options = Hive.WriteOptions(
         if_exists="append",
         partitionBy="reg_id",
-        format="orc",
+        format="parquet",
     )
 
-    # or using an ORC format class instance:
+    # or using an Parquet format class instance:
 
-    from onetl.file.format import ORC
+    from onetl.file.format import Parquet
 
     options = Hive.WriteOptions(
         if_exists="append",
         partitionBy="reg_id",
-        format=ORC(compression="snappy"),
+        format=Parquet(compression="zstd"),
     )
     ```
     !!! note
 
-        It's better to use column-based formats like `orc` or `parquet`,
-        not row-based (`csv`, `json`)
+        It's better to use column-based formats like Parquet or ORC,
+        not row-based (CSV, JSON, etc).
 
     !!! warning
 
@@ -318,7 +318,7 @@ class HiveWriteOptions(GenericOptions):
     """Compressing algorithm which should be used for compressing created files in HDFS.
     `None` means compression is disabled.
 
-    Examples: `snappy`, `zlib`
+    Examples: `"zstd"`, `"snappy"`, `"zlib"`
 
     !!! warning
 

@@ -47,7 +47,7 @@ class HiveProcessing(BaseProcessing):
         schema: str,
     ) -> str:
         str_fields = ", ".join([f"{key} {value}" for key, value in fields.items()])
-        return f"CREATE TABLE IF NOT EXISTS {schema}.{table} ({str_fields}) STORED AS ORC"
+        return f"CREATE TABLE IF NOT EXISTS {schema}.{table} ({str_fields}) USING PARQUET"
 
     def create_table(
         self,

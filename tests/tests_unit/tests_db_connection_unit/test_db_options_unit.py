@@ -121,11 +121,11 @@ def test_db_options_parse_mismatch_class(options_class, options):
     [
         (
             Postgres,
-            Hive.WriteOptions(format="orc"),
+            Hive.WriteOptions(),
         ),
         (
             Hive,
-            Postgres.WriteOptions(truncate=True),
+            Postgres.WriteOptions(),
         ),
     ],
     ids=["JDBC connection with Hive options.", "Hive connection with JDBC options."],
