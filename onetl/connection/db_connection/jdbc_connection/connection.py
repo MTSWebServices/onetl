@@ -175,15 +175,18 @@ class JDBCConnection(JDBCMixin, DBConnection):
         options: JDBCReadOptions | None = None,
     ) -> "DataFrame":
         if isinstance(options, JDBCLegacyOptions):
-            raw_options = self.ReadOptions.parse(options.model_dump(exclude_unset=True))
+            read_options = self.ReadOptions.parse(options.model_dump(exclude_unset=True))
         else:
-            raw_options = self.ReadOptions.parse(options)
+            read_options = self.ReadOptions.parse(options)
+
+        if limit is not None:
+            read_options = self._exclude_partition_options(read_options)
 
         read_options = self._set_lower_upper_bound(
             table=source,
             where=where,
             hint=hint,
-            options=raw_options,
+            options=read_options,
         )
 
         new_columns = columns.copy() if columns else ["*"]
@@ -269,12 +272,12 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log.info("|%s| Fetching schema of table %r ...", self.__class__.__name__, source)
 
         query = self.dialect.get_sql_query(source, columns=columns, limit=0, compact=True)
-        read_options = self._exclude_partition_options(self.ReadOptions.parse(options), fetchsize=0)
+        read_options = self._exclude_partition_options(self.ReadOptions.parse(options))
 
         log.debug("|%s| Executing SQL query (on driver):", self.__class__.__name__)
         log_lines(log, query, level=logging.DEBUG)
 
-        df = self._query_on_driver(query, read_options)
+        df = self._query_on_driver(query, self._to_fetch_options(read_options))
         log.info("|%s| Schema fetched.", self.__class__.__name__)
 
         return df.schema
@@ -289,7 +292,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         options: JDBCReadOptions | None = None,
     ) -> tuple[Any, Any]:
         log.info("|%s| Getting min and max values for expression %r ...", self.__class__.__name__, window.expression)
-        read_options = self._exclude_partition_options(self.ReadOptions.parse(options), fetchsize=1)
+        read_options = self._exclude_partition_options(self.ReadOptions.parse(options))
 
         query = self.dialect.get_sql_query(
             table=source,
@@ -310,7 +313,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log.info("|%s| Executing SQL query (on driver):", self.__class__.__name__)
         log_lines(log, query)
 
-        df = self._query_on_driver(query, read_options)
+        df = self._query_on_driver(query, self._to_fetch_options(read_options))
         row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
@@ -332,12 +335,21 @@ class JDBCConnection(JDBCMixin, DBConnection):
     def _exclude_partition_options(
         self,
         options: JDBCReadOptions,
-        fetchsize: int,
+    ) -> JDBCReadOptions:
+        return self.ReadOptions.parse(
+            options.copy(
+                exclude={"partition_column", "lower_bound", "upper_bound", "num_partitions", "partitioning_mode"},
+            ).model_dump(),
+        )
+
+    def _to_fetch_options(
+        self,
+        options: JDBCReadOptions,
+        fetchsize: int = 1,
     ) -> JDBCFetchOptions:
         return self.FetchOptions.parse(
             options.copy(
                 update={"fetchsize": fetchsize},
-                exclude={"partition_column", "lower_bound", "upper_bound", "num_partitions", "partitioning_mode"},
             ).model_dump(),
         )
 
