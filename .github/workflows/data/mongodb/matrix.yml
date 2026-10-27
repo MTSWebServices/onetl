@@ -4,7 +4,8 @@
   etl-entities-version: 2
   python-version: '3.10'
   java-version: 8
-  os: ubuntu-latest
+  # https://github.com/bluewave-labs/Checkmate/issues/3842
+  os: ubuntu-24.04
 
 3_5_x: &3_5_x
   mongodb-version: 8.3.8
@@ -12,7 +13,7 @@
   etl-entities-version: 3
   python-version: '3.13'
   java-version: 20
-  os: ubuntu-latest
+  os: ubuntu-24.04
 
 4_0_x: &4_0_x
   mongodb-version: 8.3.8
@@ -21,7 +22,7 @@
   python-version: '3.14'
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
-  os: ubuntu-latest
+  os: ubuntu-24.04
 
 4_2_x: &4_2_x
   mongodb-version: 8.3.8
@@ -29,7 +30,7 @@
   etl-entities-version: 3
   python-version: '3.14'
   java-version: 25
-  os: ubuntu-latest
+  os: ubuntu-24.04
 
 matrix:
   small: [*3_5_x]
