@@ -31,7 +31,7 @@ services:
       POSTGRESQL_USERNAME: onetl
       POSTGRESQL_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 5433:5432
+      - 127.0.0.1:5433:5432
     volumes:
       - ./docker/greenplum/custom_entrypoint.sh:/entrypoint.sh:ro
       - ./docker/greenplum/initdb.d/:/container-entrypoint-initdb.d/:ro
@@ -59,7 +59,7 @@ services:
       POSTGRESQL_USERNAME: onetl
       POSTGRESQL_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 6433:6432
+      - 127.0.0.1:6433:6432
     networks:
       - onetl
     healthcheck:
@@ -80,8 +80,8 @@ services:
       CLICKHOUSE_PASSWORD: 123UsedForTestOnly@!
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     ports:
-      - 8123:8123
-      - 9001:9000
+      - 127.0.0.1:8123:8123
+      - 127.0.0.1:9001:9000
     networks:
       - onetl
     sysctls:
@@ -96,8 +96,6 @@ services:
   zookeeper:
     image: ${ZOOKEEPER_IMAGE:-bitnamilegacy/zookeeper:3.8}
     restart: unless-stopped
-    ports:
-      - 2181:2181
     networks:
       - onetl
     environment:
@@ -114,8 +112,8 @@ services:
     image: ${KAFKA_IMAGE:-bitnamilegacy/kafka:3.9.0}
     restart: unless-stopped
     ports:
-      - 9093:9093
-      - 9095:9095
+      - 127.0.0.1:9093:9093
+      - 127.0.0.1:9095:9095
     environment:
       TZ: UTC
       ALLOW_PLAINTEXT_LISTENER: yes
@@ -147,7 +145,7 @@ services:
     restart: unless-stopped
     command: start-dev --import-realm
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:8080
     environment:
       TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -175,7 +173,7 @@ services:
     image: ${KAFKA_OAUTH_IMAGE:-apache/kafka:3.9.1}
     restart: unless-stopped
     ports:
-      - 9097:9097
+      - 127.0.0.1:9097:9097
     environment:
       TZ: UTC
       KAFKA_NODE_ID: 1
@@ -217,7 +215,7 @@ services:
     image: ${MONGODB_IMAGE:-mongo:latest}
     restart: unless-stopped
     ports:
-      - 27017:27017
+      - 127.0.0.1:27017:27017
     environment:
       TZ: UTC
       MONGO_INITDB_ROOT_DB: admin
@@ -242,7 +240,7 @@ services:
       ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: 123AdminUserForTests@!
     ports:
-      - 1433:1433
+      - 127.0.0.1:1433:1433
     volumes:
       - ./docker/mssql/:/usr/config/:ro
     entrypoint: [/usr/config/entrypoint.sh]
@@ -268,7 +266,7 @@ services:
       MYSQL_USER: onetl
       MYSQL_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
     networks:
       - onetl
     platform: linux/amd64
@@ -288,7 +286,7 @@ services:
       POSTGRES_DB: onetl
       POSTGRES_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
     networks:
       - onetl
     healthcheck:
@@ -311,7 +309,7 @@ services:
       POSTGRESQL_USERNAME: onetl
       POSTGRESQL_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 6432:6432
+      - 127.0.0.1:6432:6432
     networks:
       - onetl
     healthcheck:
@@ -328,9 +326,9 @@ services:
     environment:
       TZ: UTC
     ports:
-      - 9820:9820 # HDFS IPC
-      - 9870:9870 # WebHDFS
-      - 9864:9864 # Datanode UI
+      - 127.0.0.1:9820:9820 # HDFS IPC
+      - 127.0.0.1:9870:9870 # WebHDFS
+      - 127.0.0.1:9864:9864 # Datanode UI
     volumes:
       - ./docker/hdfs/conf/hadoop/:/var/hadoop/conf/:ro
     networks:
@@ -347,7 +345,7 @@ services:
       APP_USER: onetl
       APP_USER_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 1522:1521
+      - 127.0.0.1:1522:1521
     volumes:
       - ./docker/oracle/:/container-entrypoint-initdb.d:ro
     networks:
@@ -373,8 +371,8 @@ services:
       PASSV_MIN_PORT: 30000
       PASSV_MAX_PORT: 30010
     ports:
-      - 2121:21
-      - 30000-30010:30000-30010
+      - 127.0.0.1:2121:21
+      - 127.0.0.1:30000-30010:30000-30010
     volumes:
       - ./docker/ftp/on_post_init.sh:/sources/ftps/eventscripts/on_post_init.sh:ro
     networks:
@@ -399,8 +397,8 @@ services:
       PASSV_MIN_PORT: 30020
       PASSV_MAX_PORT: 30030
     ports:
-      - 2122:21
-      - 30020-30030:30020-30030
+      - 127.0.0.1:2122:21
+      - 127.0.0.1:30020-30030:30020-30030
     volumes:
       - ./docker/ftp/on_post_init.sh:/sources/ftps/eventscripts/on_post_init.sh:ro
     networks:
@@ -418,8 +416,8 @@ services:
     environment:
       TZ: UTC
     ports:
-      - 139:139
-      - 445:445
+      - 127.0.0.1:139:139
+      - 127.0.0.1:445:445
     volumes:
       - ./docker/samba/custom_entrypoint.sh:/custom_entrypoint.sh
     entrypoint: [/custom_entrypoint.sh]
@@ -440,8 +438,8 @@ services:
       MINIO_SECRET_KEY: 123UsedForTestOnly@!
       MINIO_ROOT_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 9010:9000
-      - 9011:9001
+      - 127.0.0.1:9010:9000
+      - 127.0.0.1:9011:9001
     networks:
       - onetl
     healthcheck:
@@ -463,7 +461,7 @@ services:
       AWS_SECRET_ACCESS_KEY: 123UsedForTestOnly@!
       AWS_REGION: us-east-1
     ports:
-      - 8181:8181
+      - 127.0.0.1:8181:8181
     depends_on:
       s3:
         condition: service_healthy
@@ -483,7 +481,7 @@ services:
       SUDO_ACCESS: 'true'
       USER_PASSWORD: 123UsedForTestOnly@!
     ports:
-      - 2222:2222
+      - 127.0.0.1:2222:2222
     networks:
       - onetl
     # no sshpass in the image, so healthcheck is not available
@@ -499,7 +497,7 @@ services:
       APP_USER_NAME: onetl
       APP_USER_PASSWD: 123UsedForTestOnly@!
     ports:
-      - 8000:80
+      - 127.0.0.1:8000:80
     volumes:
       # Remove after https://github.com/chonjay21/docker-webdav/pull/3
       - ./docker/webdav/on_post_init.sh:/sources/webdav/eventscripts/on_post_init.sh:ro
