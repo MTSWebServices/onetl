@@ -58,8 +58,6 @@ venv-install: ##@Env Install requirements to venv
 		--group test-etl-entities-${ETL_ENTITIES_VERSION} \
 		$(UV_ARGS)
 
-	${UV} pip install --no-deps sphinx-plantuml
-
 
 test-spark: ##@Run tests with Spark
 	uv run \

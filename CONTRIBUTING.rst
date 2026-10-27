@@ -218,7 +218,7 @@ Create virtualenv and install dependencies:
 
     make venv-install
 
-Build documentation using Sphinx:
+Build documentation using mkdocs:
 
 .. code:: bash
 
