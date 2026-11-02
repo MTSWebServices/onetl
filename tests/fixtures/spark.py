@@ -95,18 +95,25 @@ def maven_packages(request):  # noqa: C901, PLR0912
         packages.extend(MongoDB.get_packages())
 
     if "excel" in markers:
-        # There are package versions only for specific Spark versions,
-        # see https://github.com/nightscape/spark-excel/issues/902
+        # There are package versions only for specific Spark versions, and this is a mess.
+        # See https://github.com/nightscape/spark-excel/issues/902
+
+        # https://central.sonatype.com/artifact/dev.mauch/spark-excel_2.12/versions
         if version == (3, 2):
-            packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="3.2.4"))
+            packages.extend(Excel.get_packages(package_version="0.32.1-prerelease5", spark_version="3.2.4"))
         elif version == (3, 3):
-            packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="3.3.4"))
+            packages.extend(Excel.get_packages(package_version="0.32.1-prerelease4", spark_version="3.3.4"))
         elif version == (3, 4):
-            packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="3.4.4"))
+            packages.extend(Excel.get_packages(package_version="0.34.1-prerelease29", spark_version="3.4.4"))
         elif version == (3, 5):
-            packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="3.5.6"))
+            packages.extend(Excel.get_packages(package_version="0.32.3-prerelease14", spark_version="3.5.6"))
+        # https://central.sonatype.com/artifact/dev.mauch/spark-excel_2.13/versions
         elif version == (4, 0):
-            packages.extend(Excel.get_packages(package_version="0.31.2", spark_version="4.0.0"))
+            packages.extend(Excel.get_packages(package_version="0.32.3-prerelease17", spark_version="4.0.1"))
+        elif version == (4, 1):
+            packages.extend(Excel.get_packages(package_version="0.34.1-prerelease29", spark_version="4.1.3"))
+        elif version == (4, 2):
+            packages.extend(Excel.get_packages(package_version="0.34.1-prerelease37", spark_version="4.2.0"))
 
     # There is no package for Iceberg Runtime for Spark 4.2+ for now
     # https://github.com/apache/iceberg/issues/17959
