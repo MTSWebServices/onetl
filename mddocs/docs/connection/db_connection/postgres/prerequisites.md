@@ -6,7 +6,7 @@
     - Officially declared: 9.1 -- 18
     - Actually tested: 9.4.26, 18.3
 - Spark versions: 3.2.x -- 4.3.x
-- Java versions: 8 -- 25
+- Java versions: 8 -- 27
 
 See [official documentation](https://jdbc.postgresql.org/download/).
 

@@ -6,7 +6,7 @@
     - Officially declared: 8.4 -- 26.7
     - Actually tested: 5.7.16, 26.7
 - Spark versions: 3.2.x -- 4.3.x
-- Java versions: 8 -- 25
+- Java versions: 8 -- 27
 
 See [official documentation](https://dev.mysql.com/doc/connector-j/en/connector-j-versions.html).
 

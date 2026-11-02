@@ -6,7 +6,7 @@
     - Officially declared: 0.10 or higher
     - Actually tested: 3.2.3, 3.9.0 (only Kafka 3.x supports message headers)
 - Spark versions: 3.2.x -- 4.3.x
-- Java versions: 8 -- 25
+- Java versions: 8 -- 27
 
 See [official documentation](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html).
 

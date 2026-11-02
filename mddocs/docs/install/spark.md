@@ -25,7 +25,7 @@ apt-get install openjdk-11-jdk  # Debian-based
 | [4.0.x](https://spark.apache.org/docs/4.0.5/#downloading) | 3.10 - 3.15 |   17 - 22  |    2.13 |
 | [4.1.x](https://spark.apache.org/docs/4.1.4/#downloading) | 3.10 - 3.15 |   17 - 22  |    2.13 |
 | [4.2.x](https://spark.apache.org/docs/4.2.1/#downloading) | 3.10 - 3.15 |   17 - 25  |    2.13 |
-| [4.3.x](https://spark.apache.org/docs/4.3.0/#downloading) | 3.11 - 3.15 |   17 - 25  |    2.13 |
+| [4.3.x](https://spark.apache.org/docs/4.3.0/#downloading) | 3.11 - 3.15 |   17 - 27  |    2.13 |
 
 ## Installing PySpark { #DBR-onetl-install-spark-installing-pyspark }
 
