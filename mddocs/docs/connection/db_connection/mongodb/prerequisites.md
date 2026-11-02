@@ -4,7 +4,7 @@
 
 - MongoDB server versions:
     - Officially declared: 4.0 or higher
-    - Actually tested: 4.0.0, 8.3.8
+    - Actually tested: 4.0.0, 9.0.4
 - Spark versions: 3.2.x -- 4.2.x
 - Java versions: 8 -- 25
 
