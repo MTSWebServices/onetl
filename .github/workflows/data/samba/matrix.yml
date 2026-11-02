@@ -8,7 +8,7 @@ min: &min
 max: &max
   server-version: latest
   etl-entities-version: 3
-  python-version: '3.13'
+  python-version: '3.15'
   os: ubuntu-latest
 
 matrix:

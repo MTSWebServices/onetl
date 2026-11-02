@@ -15,7 +15,7 @@
 4_0_x: &4_0_x
   etl-entities-version: 3
   spark-version: '4.0'
-  python-version: '3.14'
+  python-version: '3.15'
   # https://issues.apache.org/jira/browse/SPARK-54276
   java-version: 22
   os: ubuntu-latest
@@ -23,7 +23,7 @@
 4_3_x: &4_3_x
   etl-entities-version: 3
   spark-version: '4.3'
-  python-version: '3.14'
+  python-version: '3.15'
   java-version: 25
   os: ubuntu-latest
 

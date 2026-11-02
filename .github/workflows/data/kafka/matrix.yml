@@ -29,8 +29,9 @@
 
 4_3_x: &4_3_x
   kafka-version: 3.9.0
-  spark-version: '4.3'
   etl-entities-version: 3
+  spark-version: '4.3'
+  # Python 3.15 is not supported by confluent-kafka yet (https://github.com/confluentinc/confluent-kafka-python/issues/2299)
   python-version: '3.14'
   java-version: 25
   os: ubuntu-latest
