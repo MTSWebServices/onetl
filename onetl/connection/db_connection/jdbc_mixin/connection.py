@@ -477,7 +477,7 @@ class JDBCMixin:
             else:
                 jdbc_statement.executeUpdate(statement)
 
-            return callback(jdbc_connection, jdbc_statement)
+            return callback(jdbc_connection, jdbc_statement, options)
 
     @staticmethod
     def _build_statement(
@@ -506,11 +506,13 @@ class JDBCMixin:
 
         return jdbc_connection.createStatement(*statement_args)
 
-    def _statement_to_dataframe(self, jdbc_connection, jdbc_statement) -> "tuple[DataFrame, int]":
+    def _statement_to_dataframe(self, jdbc_connection, jdbc_statement, options) -> "tuple[DataFrame, int]":
         result_set = jdbc_statement.getResultSet()
-        return self._resultset_with_count_to_dataframe(jdbc_connection, result_set)
+        return self._resultset_with_count_to_dataframe(jdbc_connection, result_set, options)
 
-    def _statement_to_optional_dataframe(self, jdbc_connection, jdbc_statement) -> "tuple[DataFrame | None, int]":
+    def _statement_to_optional_dataframe(
+        self, jdbc_connection, jdbc_statement, options
+    ) -> "tuple[DataFrame | None, int]":
         """
         Returns `org.apache.spark.sql.DataFrame` or `None`, if ResultSet is does not contain any columns.
 
@@ -527,9 +529,9 @@ class JDBCMixin:
         if not result_column_count:
             return None, 0
 
-        return self._resultset_with_count_to_dataframe(jdbc_connection, result_set)
+        return self._resultset_with_count_to_dataframe(jdbc_connection, result_set, options)
 
-    def _resultset_with_count_to_dataframe(self, jdbc_connection, result_set) -> "tuple[DataFrame, int]":
+    def _resultset_with_count_to_dataframe(self, jdbc_connection, result_set, options) -> "tuple[DataFrame, int]":
         """
         Converts `java.sql.ResultSet` to `org.apache.spark.sql.DataFrame` using Spark's internal methods.
 
@@ -549,19 +551,46 @@ class JDBCMixin:
 
         spark_version = get_spark_version(self.spark)
 
-        if spark_version >= Version("4.0"):
+        alwaysNullable = False  # noqa: N806
+        # Spark 3.4+
+        isTimestampNTZ = getattr(options, "preferTimestampNTZ", False)  # noqa: N806
+        # Spark 4.3+
+        preferTimestampNanos = getattr(options, "preferTimestampNanos", False)  # noqa: N806
+
+        if spark_version >= Version("4.3"):
+            # https://github.com/apache/spark/blob/branch-4.3/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L305-L311
             result_schema = JdbcUtils.getSchema(
                 jdbc_connection,
                 result_set,
                 jdbc_dialect,
-                False,  # noqa: FBT003
-                False,  # noqa: FBT003
+                alwaysNullable,
+                isTimestampNTZ,
+                preferTimestampNanos,
+            )
+        elif spark_version >= Version("4.0"):
+            # https://github.com/apache/spark/blob/branch-4.2/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L279-L284
+            result_schema = JdbcUtils.getSchema(
+                jdbc_connection,
+                result_set,
+                jdbc_dialect,
+                alwaysNullable,
+                isTimestampNTZ,
             )
         elif spark_version >= Version("3.4"):
-            # https://github.com/apache/spark/commit/2349175e1b81b0a61e1ed90c2d051c01cf78de9b
-            result_schema = JdbcUtils.getSchema(result_set, jdbc_dialect, False, False)  # noqa: FBT003
+            # https://github.com/apache/spark/blob/branch-3.4/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L276-L280
+            result_schema = JdbcUtils.getSchema(
+                result_set,
+                jdbc_dialect,
+                alwaysNullable,
+                isTimestampNTZ,
+            )
         else:
-            result_schema = JdbcUtils.getSchema(result_set, jdbc_dialect, False)  # noqa: FBT003
+            # https://github.com/apache/spark/blob/branch-3.3/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JdbcUtils.scala#L263-L266
+            result_schema = JdbcUtils.getSchema(
+                result_set,
+                jdbc_dialect,
+                alwaysNullable,
+            )
 
         if spark_version.major >= 4:  # noqa: PLR2004
             result_iterator = JdbcUtils.resultSetToRows(result_set, result_schema, jdbc_dialect)
@@ -572,7 +601,7 @@ class JDBCMixin:
         rows_count = result_list.size()
         jdf = self.spark._jsparkSession.createDataFrame(result_list, result_schema)  # type: ignore[attr-defined]  # noqa: SLF001
 
-        # But since Spark 3.3 "_wrapped" attribute was removed from SparkSession
+        # Since Spark 3.3 "_wrapped" attribute was removed from SparkSession
         spark_context = getattr(self.spark, "_wrapped", self.spark)
 
         return DataFrame(jdf, spark_context), rows_count

@@ -5,7 +5,7 @@
 - Oracle Server versions:
     - Officially declared: 19c, 21c, 23ai, 26ai
     - Actually tested: 11.2, 23.26
-- Spark versions: 3.2.x -- 4.2.x
+- Spark versions: 3.2.x -- 4.3.x
 - Java versions: 8 -- 25
 
 See [official documentation](https://www.oracle.com/cis/database/technologies/appdev/jdbc-downloads.html).

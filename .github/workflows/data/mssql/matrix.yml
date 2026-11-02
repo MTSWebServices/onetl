@@ -23,9 +23,9 @@
   java-version: 22
   os: ubuntu-latest
 
-4_2_x: &4_2_x
+4_3_x: &4_3_x
   mssql-version: 2025-latest
-  spark-version: '4.2'
+  spark-version: '4.3'
   etl-entities-version: 3
   python-version: '3.14'
   java-version: 25
@@ -33,4 +33,4 @@
 
 matrix:
   small: [*3_5_x]
-  full: [*3_2_x, *3_5_x, *4_0_x, *4_2_x]
+  full: [*3_2_x, *3_5_x, *4_0_x, *4_3_x]

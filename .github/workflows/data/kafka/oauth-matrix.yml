@@ -20,13 +20,13 @@
   java-version: 22
   os: ubuntu-latest
 
-4_2_x: &4_2_x
+4_3_x: &4_3_x
   etl-entities-version: 3
-  spark-version: '4.2'
+  spark-version: '4.3'
   python-version: '3.14'
   java-version: 25
   os: ubuntu-latest
 
 matrix:
   small: [*3_5_x]
-  full: [*3_4_x, *3_5_x, *4_0_x, *4_2_x]
+  full: [*3_4_x, *3_5_x, *4_0_x, *4_3_x]
