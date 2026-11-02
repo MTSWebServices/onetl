@@ -225,7 +225,7 @@ class KafkaProcessing(BaseProcessing):
                     if not headers:
                         return headers
 
-                    # Spark 4.2 df.collect() uses pyarrow which convert tuples to dicts
+                    # Spark 4.2+ df.collect() uses pyarrow which convert tuples to dicts
                     result = []
                     for header in headers:
                         if isinstance(header, dict):

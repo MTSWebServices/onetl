@@ -9,8 +9,8 @@ try:
 except ImportError:
     pytest.skip("Missing pandas", allow_module_level=True)
 
-if spark_version.startswith("4.2"):
-    pytest.skip("Iceberg is not supported in Spark 4.2", allow_module_level=True)
+if spark_version.startswith(("4.2", "4.3")):
+    pytest.skip("Iceberg is not supported in Spark 4.2/4.3", allow_module_level=True)
 
 pytestmark = pytest.mark.iceberg
 

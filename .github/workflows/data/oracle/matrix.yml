@@ -29,11 +29,11 @@
   java-version: 22
   os: ubuntu-latest
 
-4_2_x: &4_2_x
+4_3_x: &4_3_x
   oracle-image: gvenzl/oracle-free
   oracle-version: 23.26.1-slim-faststart
   db-name: FREEPDB1
-  spark-version: '4.2'
+  spark-version: '4.3'
   etl-entities-version: 3
   python-version: '3.14'
   java-version: 25
@@ -41,4 +41,4 @@
 
 matrix:
   small: [*3_5_x]
-  full: [*3_2_x, *3_5_x, *4_0_x, *4_2_x]
+  full: [*3_2_x, *3_5_x, *4_0_x, *4_3_x]

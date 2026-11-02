@@ -5,7 +5,7 @@
 - SQL Server versions:
     - Officially declared: 2016 -- 2025
     - Actually tested: 2017, 2025
-- Spark versions: 3.2.x -- 4.2.x
+- Spark versions: 3.2.x -- 4.3.x
 - Java versions: 8 -- 25
 
 See [official documentation](https://learn.microsoft.com/en-us/sql/connect/jdbc/system-requirements-for-the-jdbc-driver)

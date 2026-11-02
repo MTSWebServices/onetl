@@ -12,7 +12,7 @@
 - Hive Metastore version:
     - Officially declared: 0.12 -- 3.1.3 (may require to add proper .jar file explicitly)
     - Actually tested: 1.2.100, 2.3.10, 3.1.3
-- Spark versions: 3.2.x -- 4.2.x
+- Spark versions: 3.2.x -- 4.3.x
 - Java versions: 8 -- 25
 
 See [official documentation](https://spark.apache.org/docs/latest/sql-data-sources-hive-tables.html).

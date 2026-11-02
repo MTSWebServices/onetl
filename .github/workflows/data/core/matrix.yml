@@ -20,8 +20,8 @@
   java-version: 22
   os: ubuntu-latest
 
-4_2_x: &4_2_x
-  spark-version: '4.2'
+4_3_x: &4_3_x
+  spark-version: '4.3'
   etl-entities-version: 3
   python-version: '3.14'
   # https://issues.apache.org/jira/browse/SPARK-54276
@@ -30,4 +30,4 @@
 
 matrix:
   small: [*3_5_x]
-  full: [*3_2_x, *3_5_x, *4_0_x, *4_2_x]
+  full: [*3_2_x, *3_5_x, *4_0_x, *4_3_x]

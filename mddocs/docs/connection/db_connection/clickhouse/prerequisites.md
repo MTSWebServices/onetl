@@ -5,7 +5,7 @@
 - Clickhouse server versions:
     - Officially declared: 22.8 or higher
     - Actually tested: 21.1, 26.1
-- Spark versions: 3.2.x -- 4.2.x
+- Spark versions: 3.2.x -- 4.3.x
 - Java versions: 8 -- 25
 
 See [official documentation](https://clickhouse.com/docs/en/integrations/java#jdbc-driver).
