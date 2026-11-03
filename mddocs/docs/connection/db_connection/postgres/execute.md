@@ -25,7 +25,7 @@ Method accepts [Postgres.FetchOptions][onetl.connection.db_connection.postgres.o
 
 This method supports **any** query syntax supported by Postgres, like:
 
-- ✅︎ `SELECT ... FROM ...`
+- ✅︎ `SELECT ...`
 - ✅︎ `WITH alias AS (...) SELECT ...`
 - ❌ `SET ...; SELECT ...;` - multiple statements not supported
 
