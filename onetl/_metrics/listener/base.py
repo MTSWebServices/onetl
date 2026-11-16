@@ -36,12 +36,13 @@ class BaseSparkListener:
         spark_context.addSparkListener(self._java_listener)
 
     def deactivate(self):
-        with suppress(Exception):
-            spark_context = self.spark.sparkContext._jsc.sc()  # noqa: SLF001
-            spark_context.removeSparkListener(self._java_listener)
+        java_listener, self._java_listener = self._java_listener, None
+        if java_listener is None:
+            return
 
         with suppress(Exception):
-            self._java_listener = None
+            spark_context = self.spark.sparkContext._jsc.sc()  # noqa: SLF001
+            spark_context.removeSparkListener(java_listener)
 
     def __enter__(self):
         self.activate()
