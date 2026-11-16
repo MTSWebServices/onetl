@@ -19,6 +19,8 @@ class PostgresReadOptions(JDBCReadOptions):
 class PostgresWriteOptions(JDBCWriteOptions):
     __doc__ = JDBCWriteOptions.__doc__.replace("SomeDB", "Postgres")  # type: ignore[assignment, union-attr]
 
+    batchsize: int = 10_000
+
 
 class PostgresSQLOptions(JDBCSQLOptions):
     __doc__ = JDBCSQLOptions.__doc__.replace("SomeDB", "Postgres")  # type: ignore[assignment, union-attr]
