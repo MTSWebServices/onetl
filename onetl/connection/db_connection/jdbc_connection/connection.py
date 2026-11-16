@@ -385,9 +385,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
             options=options,
         )
 
-        # The sessionInitStatement parameter is removed because it only needs to be applied once.
         return options.copy(
-            exclude={"session_init_statement"},
             update={
                 "lower_bound": options.lower_bound if not is_missed_lower_bound else min_partition_value,
                 "upper_bound": options.upper_bound if not is_missed_upper_bound else max_partition_value,
