@@ -54,6 +54,8 @@ class BaseSparkListener:
     def equals(self, other):
         # Java does not provide proper way to get object id for comparison,
         # so we compare string representation which should contain some form of id
+        if self._java_listener is None:
+            return False
         return other.toString() == self._java_listener.toString()
 
     def toString(self):  # noqa: N802
