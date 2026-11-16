@@ -44,7 +44,7 @@ def test_jdbc_write_options_default(klass: type, batchsize: int):
     assert options.query_timeout is None
 
 
-def test_jdbc_options_default():
+def test_jdbc_old_options_default():
     options = Postgres.Options()
 
     assert options.if_exists == JDBCTableExistBehavior.APPEND
@@ -209,15 +209,25 @@ def test_jdbc_old_options_allowed_but_deprecated(arg, value):
     ],
 )
 def test_jdbc_read_options_partitioning_is_not_valid(options_class):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You should set partitionColumn to enable partitioning"):
         options_class(numPartitions=200)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You should set numPartitions > 1 to enable partitioning"):
         options_class(partitionColumn="test")
 
 
-def test_jdbc_read_options_case():
-    camel_case = Postgres.ReadOptions(
+@pytest.mark.parametrize(
+    "options_class",
+    [
+        Postgres.ReadOptions,
+        Clickhouse.ReadOptions,
+        MSSQL.ReadOptions,
+        MySQL.ReadOptions,
+        Oracle.ReadOptions,
+    ],
+)
+def test_jdbc_read_options_case(options_class):
+    camel_case = options_class(
         lowerBound=10,
         upperBound=1000,
         partitionColumn="some_column",
@@ -229,7 +239,7 @@ def test_jdbc_read_options_case():
         camelCaseOption="left unchanged",
         CamelCaseOption="left unchanged",
     )
-    snake_case = Postgres.ReadOptions(
+    snake_case = options_class(
         lower_bound=10,
         upper_bound=1000,
         partition_column="some_column",
@@ -340,16 +350,50 @@ def test_jdbc_write_options_mode_wrong(options_class, options):
 
 
 @pytest.mark.parametrize(
+    "options_class",
+    [
+        Postgres.SQLOptions,
+        Clickhouse.SQLOptions,
+        MSSQL.SQLOptions,
+        MySQL.SQLOptions,
+        Oracle.SQLOptions,
+    ],
+)
+def test_jdbc_sql_options_default(options_class):
+    options = options_class()
+    assert options.fetchsize == 100_000
+    assert options.query_timeout is None
+
+
+@pytest.mark.parametrize(
+    "options_class",
+    [
+        Postgres.SQLOptions,
+        Clickhouse.SQLOptions,
+        MSSQL.SQLOptions,
+        MySQL.SQLOptions,
+        Oracle.SQLOptions,
+    ],
+)
+def test_jdbc_sql_options_partitioning_is_not_valid(options_class):
+    with pytest.raises(ValueError, match="You should set partitionColumn to enable partitioning"):
+        options_class(numPartitions=200)
+
+    with pytest.raises(ValueError, match="You should set numPartitions > 1 to enable partitioning"):
+        options_class(partitionColumn="test")
+
+
+@pytest.mark.parametrize(
     ("options", "expected_message"),
     [
-        ({"numPartitions": 2}, "lowerBound and upperBound must be set if numPartitions > 1"),
-        ({"numPartitions": 2, "lowerBound": 0}, "lowerBound and upperBound must be set if numPartitions > 1"),
-        ({"numPartitions": 2, "upperBound": 10}, "lowerBound and upperBound must be set if numPartitions > 1"),
+        ({}, "lowerBound and upperBound must be set if numPartitions > 1"),
+        ({"lowerBound": 0}, "lowerBound and upperBound must be set if numPartitions > 1"),
+        ({"upperBound": 10}, "lowerBound and upperBound must be set if numPartitions > 1"),
     ],
 )
 def test_jdbc_sql_options_partition_bounds(options, expected_message):
     with pytest.raises(ValueError, match=expected_message):
-        Postgres.SQLOptions(**options)
+        Postgres.SQLOptions(numPartitions=2, partitionColumn="some", **options)
 
 
 @pytest.mark.parametrize(
@@ -377,10 +421,33 @@ def test_jdbc_sql_options_partitioning_mode_prohibited(options_class):
         Oracle.SQLOptions,
     ],
 )
-def test_jdbc_sql_options_default(options_class):
-    options = options_class()
-    assert options.fetchsize == 100_000
-    assert options.query_timeout is None
+def test_jdbc_sql_options_case(options_class):
+    camel_case = options_class(
+        lowerBound=10,
+        upperBound=1000,
+        partitionColumn="some_column",
+        numPartitions=20,
+        fetchsize=1000,
+        sessionInitStatement="BEGIN execute immediate 'alter session set '_serial_direct_read'=true",
+        # unknown options names are NOT being converted from snake_case to CamelCase
+        snake_case_option="left unchanged",
+        camelCaseOption="left unchanged",
+        CamelCaseOption="left unchanged",
+    )
+    snake_case = options_class(
+        lower_bound=10,
+        upper_bound=1000,
+        partition_column="some_column",
+        num_partitions=20,
+        fetchsize=1000,
+        session_init_statement="BEGIN execute immediate 'alter session set '_serial_direct_read'=true",
+        # unknown options names are NOT being converted from snake_case to CamelCase
+        snake_case_option="left unchanged",
+        camelCaseOption="left unchanged",
+        CamelCaseOption="left unchanged",
+    )
+
+    assert camel_case == snake_case
 
 
 def test_jdbc_deprecated_jdbcoptions():

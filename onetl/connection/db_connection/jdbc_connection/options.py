@@ -367,11 +367,11 @@ class JDBCReadOptions(JDBCFetchOptions):
             if self.num_partitions == 1:
                 return self
 
-            msg = "You should set partition_column to enable partitioning"
+            msg = "You should set partitionColumn to enable partitioning"
             raise ValueError(msg)
 
         if self.num_partitions == 1:
-            msg = "You should set num_partitions > 1 to enable partitioning"
+            msg = "You should set numPartitions > 1 to enable partitioning"
             raise ValueError(msg)
 
         if self.partitioning_mode == JDBCPartitioningMode.RANGE:
@@ -585,6 +585,9 @@ class JDBCSQLOptions(GenericOptions):
     ```
     """
 
+    num_partitions: PositiveInt = Field(default=1, alias="numPartitions")
+    """Number of jobs created by Spark to read the table content in parallel."""
+
     partition_column: str | None = Field(default=None, alias="partitionColumn")
     """Column used to partition data across multiple executors for parallel query processing.
 
@@ -613,9 +616,6 @@ class JDBCSQLOptions(GenericOptions):
         -- Where `stride` is calculated as `(upperBound - lowerBound) / numPartitions`.
         ```
     """
-
-    num_partitions: int | None = Field(default=None, alias="numPartitions")
-    """Number of jobs created by Spark to read the table content in parallel."""
 
     lower_bound: int | None = Field(default=None, alias="lowerBound")
     """Defines the lower boundary for partitioning the query's data. Mandatory if `partition_column` is set"""
@@ -675,11 +675,16 @@ class JDBCSQLOptions(GenericOptions):
 
     @model_validator(mode="after")
     def _check_partition_fields(self):
-        if self.num_partitions is None:
-            return self
+        if not self.partition_column:
+            if self.num_partitions == 1:
+                return self
+
+            msg = "You should set partitionColumn to enable partitioning"
+            raise ValueError(msg)
 
         if self.num_partitions == 1:
-            return self
+            msg = "You should set numPartitions > 1 to enable partitioning"
+            raise ValueError(msg)
 
         if self.lower_bound is not None and self.upper_bound is not None:
             return self
