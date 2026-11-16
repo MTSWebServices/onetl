@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DEFAULT_PYTHON: '3.13'
+  DEFAULT_PYTHON: '3.15'
 
 jobs:
   linters:
