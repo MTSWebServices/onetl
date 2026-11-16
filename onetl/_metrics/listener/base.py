@@ -36,12 +36,13 @@ class BaseSparkListener:
         spark_context.addSparkListener(self._java_listener)
 
     def deactivate(self):
-        with suppress(Exception):
-            spark_context = self.spark.sparkContext._jsc.sc()  # noqa: SLF001
-            spark_context.removeSparkListener(self._java_listener)
+        java_listener, self._java_listener = self._java_listener, None
+        if java_listener is None:
+            return
 
         with suppress(Exception):
-            self._java_listener = None
+            spark_context = self.spark.sparkContext._jsc.sc()  # noqa: SLF001
+            spark_context.removeSparkListener(java_listener)
 
     def __enter__(self):
         self.activate()
@@ -50,14 +51,11 @@ class BaseSparkListener:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.deactivate()
 
-    def __del__(self):
-        # If current object is collected by GC, deactivate listener
-        # and free bind Java object
-        self.deactivate()
-
     def equals(self, other):
         # Java does not provide proper way to get object id for comparison,
         # so we compare string representation which should contain some form of id
+        if self._java_listener is None:
+            return False
         return other.toString() == self._java_listener.toString()
 
     def toString(self):  # noqa: N802
