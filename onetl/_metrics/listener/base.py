@@ -50,11 +50,6 @@ class BaseSparkListener:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.deactivate()
 
-    def __del__(self):
-        # If current object is collected by GC, deactivate listener
-        # and free bind Java object
-        self.deactivate()
-
     def equals(self, other):
         # Java does not provide proper way to get object id for comparison,
         # so we compare string representation which should contain some form of id
