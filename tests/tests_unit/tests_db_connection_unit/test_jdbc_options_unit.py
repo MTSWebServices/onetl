@@ -44,8 +44,18 @@ def test_jdbc_write_options_default(klass: type, batchsize: int):
     assert options.query_timeout is None
 
 
-def test_jdbc_old_options_default():
-    options = Postgres.Options()
+@pytest.mark.parametrize(
+    "klass",
+    [
+        Clickhouse,
+        MSSQL,
+        MySQL,
+        Oracle,
+        Postgres,
+    ],
+)
+def test_jdbc_old_options_default(klass):
+    options = klass.Options()
 
     assert options.if_exists == JDBCTableExistBehavior.APPEND
     assert options.fetchsize == 100_000

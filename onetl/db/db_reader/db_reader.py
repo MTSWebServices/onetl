@@ -246,7 +246,7 @@ class DBReader(FrozenModel):
         from onetl.db import DBReader
 
         postgres = Postgres(...)
-        options = Postgres.ReadOptions(sessionInitStatement="select 300", fetchsize="100")
+        options = Postgres.ReadOptions(sessionInitStatement="SET timezone TO 'UTC'", fetchsize="100")
 
         # create reader and pass some options to the underlying connection object
         reader = DBReader(connection=postgres, source="fiddle.dummy", options=options)
@@ -262,7 +262,7 @@ class DBReader(FrozenModel):
         from onetl.connection import Postgres
 
         postgres = Postgres(...)
-        options = Postgres.ReadOptions(sessionInitStatement="select 300", fetchsize="100")
+        options = Postgres.ReadOptions(sessionInitStatement="SET timezone TO 'UTC'", fetchsize="100")
 
         # create reader with specific columns, rows filter
         reader = DBReader(
