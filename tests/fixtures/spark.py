@@ -106,7 +106,7 @@ def maven_packages(request):  # noqa: C901, PLR0912
         elif version == (3, 4):
             packages.extend(Excel.get_packages(package_version="0.34.1-prerelease29", spark_version="3.4.4"))
         elif version == (3, 5):
-            packages.extend(Excel.get_packages(package_version="0.32.3-prerelease14", spark_version="3.5.6"))
+            packages.extend(Excel.get_packages(package_version="0.34.1-prerelease37", spark_version="3.5.6"))
         # https://central.sonatype.com/artifact/dev.mauch/spark-excel_2.13/versions
         elif version == (4, 0):
             packages.extend(Excel.get_packages(package_version="0.32.3-prerelease17", spark_version="4.0.1"))
