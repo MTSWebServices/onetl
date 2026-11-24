@@ -153,6 +153,14 @@ def estimate_dataframe_size(df: "DataFrame") -> int:
         return 0
 
 
+def is_dataframe_empty(df: "DataFrame") -> bool:
+    try:
+        # spark 3.3+
+        return df.isEmpty()
+    except AttributeError:
+        return df._jdf.isEmpty()  # noqa: SLF001
+
+
 def get_executor_total_cores(spark_session: "SparkSession", *, include_driver: bool = False) -> tuple[float, dict]:
     """
     Calculate maximum number of cores which can be used by Spark on all executors.

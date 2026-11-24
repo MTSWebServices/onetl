@@ -15,6 +15,7 @@ from onetl._util.spark import (
     get_client_info,
     get_pyspark_version,
     get_spark_version,
+    is_dataframe_empty,
     override_job_description,
 )
 from onetl._util.version import Version
@@ -374,7 +375,8 @@ class MongoDB(DBConnection):
 
             with override_job_description(self.spark, f"{self}.check()"):
                 read_options = self._get_connection_params(self._CHECK_DUMMY_COLLECTION)
-                self.spark.read.format("mongodb").options(**read_options).load().take(1)
+                df = self.spark.read.format("mongodb").options(**read_options).load()
+                is_dataframe_empty(df)
 
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:

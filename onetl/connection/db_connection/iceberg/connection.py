@@ -11,7 +11,13 @@ from pydantic import field_validator
 from onetl._metrics.recorder import SparkMetricsRecorder
 from onetl._util.java import try_import_java_class
 from onetl._util.scala import get_default_scala_version
-from onetl._util.spark import get_pyspark_version, get_spark_version, override_job_description, stringify
+from onetl._util.spark import (
+    get_pyspark_version,
+    get_spark_version,
+    is_dataframe_empty,
+    override_job_description,
+    stringify,
+)
 from onetl._util.sql import clear_statement
 from onetl._util.version import Version
 from onetl.connection.db_connection.db_connection import DBConnection
@@ -325,7 +331,8 @@ class Iceberg(DBConnection):
 
         try:
             with override_job_description(self.spark, f"{self}.check()"):
-                self._execute_sql(self._check_query).take(1)
+                df = self._execute_sql(self._check_query)
+                is_dataframe_empty(df)
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
@@ -567,7 +574,7 @@ class Iceberg(DBConnection):
 
         # Spark normalizes table names to lowercase, so we do the same
         df = self._execute_sql(query).where(lower(col("tableName")) == table.lower())
-        if df.take(1):
+        if not is_dataframe_empty(df):
             log.info("|%s| Table %r exists.", self.__class__.__name__, name)
             return True
 

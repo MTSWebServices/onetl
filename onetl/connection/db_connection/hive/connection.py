@@ -10,7 +10,7 @@ from humanize import naturaldelta
 from pydantic import field_validator
 
 from onetl._metrics.recorder import SparkMetricsRecorder
-from onetl._util.spark import inject_spark_param, override_job_description, stringify
+from onetl._util.spark import inject_spark_param, is_dataframe_empty, override_job_description, stringify
 from onetl._util.sql import clear_statement
 from onetl.base import BaseWritableFileFormat
 from onetl.connection.db_connection.db_connection import DBConnection
@@ -176,7 +176,8 @@ class Hive(DBConnection):
 
         try:
             with override_job_description(self.spark, f"{self}.check()"):
-                self._execute_sql(self._CHECK_QUERY).take(1)
+                df = self._execute_sql(self._CHECK_QUERY)
+                is_dataframe_empty(df)
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
@@ -486,7 +487,7 @@ class Hive(DBConnection):
 
         # Spark normalizes table names to lowercase, so we do the same
         df = self._execute_sql(query).where(lower(col("tableName")) == table.lower())
-        if df.take(1):
+        if not is_dataframe_empty(df):
             log.info("|%s| Table %r exists.", self.__class__.__name__, name)
             return True
 

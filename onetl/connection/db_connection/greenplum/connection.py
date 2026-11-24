@@ -17,6 +17,7 @@ from onetl._util.spark import (
     get_client_info,
     get_executor_total_cores,
     get_spark_version,
+    is_dataframe_empty,
     override_job_description,
 )
 from onetl._util.version import Version
@@ -319,7 +320,7 @@ class Greenplum(JDBCMixin, DBConnection):
                 read_options["partitions"] = 1
                 read_options["partitionColumn"] = self._CHECK_DUMMY_PARTITION_COLUMN
                 df = self.spark.read.format("greenplum").options(**read_options).load()
-                df.take(1)
+                is_dataframe_empty(df)
 
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:

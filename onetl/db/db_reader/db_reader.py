@@ -13,7 +13,7 @@ from pydantic import Field, PrivateAttr, ValidationInfo, field_validator, model_
 
 from onetl._util.alias import avoid_alias
 from onetl._util.process import get_process_info
-from onetl._util.spark import override_job_description, try_import_pyspark
+from onetl._util.spark import is_dataframe_empty, override_job_description, try_import_pyspark
 from onetl.base import (
     BaseDBConnection,
     ContainsGetDFSchemaMethod,
@@ -562,7 +562,7 @@ class DBReader(FrozenModel):
                     limit=1,
                     **self._get_read_kwargs(),
                 )
-                return bool(df.take(1))
+                return not is_dataframe_empty(df)
             except Exception:
                 log.error(  # noqa: TRY400
                     "|%s| Error while reading dataframe",
