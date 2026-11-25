@@ -10,7 +10,7 @@ from humanize import naturaldelta
 from pydantic import SecretStr, field_validator
 
 from onetl._util.java import try_import_java_class
-from onetl._util.spark import override_job_description
+from onetl._util.spark import is_dataframe_empty, override_job_description
 from onetl._util.sql import clear_statement
 from onetl.connection.db_connection.db_connection import DBConnection
 from onetl.connection.db_connection.jdbc_connection.dialect import JDBCDialect
@@ -96,7 +96,8 @@ class JDBCConnection(JDBCMixin, DBConnection):
         try:
             with override_job_description(self.spark, f"{self}.check()"):
                 self._query_optional_on_driver(self._CHECK_QUERY, self.FetchOptions(fetchsize=1))
-                self._query_on_executor(self._CHECK_QUERY, self.SQLOptions(fetchsize=1)).collect()
+                df = self._query_on_executor(self._CHECK_QUERY, self.SQLOptions(fetchsize=1))
+                is_dataframe_empty(df)
             log.info("|%s| Connection is available.", self.__class__.__name__)
         except Exception as e:
             log.exception("|%s| Connection is unavailable", self.__class__.__name__)
