@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from pydantic import ConfigDict, model_validator
 
 from onetl._util.classproperty import classproperty
-from onetl._util.spark import get_client_info
+from onetl._util.spark import get_client_info, override_call_site
 from onetl._util.version import Version
 from onetl.connection.db_connection.jdbc_connection import JDBCConnection
 from onetl.connection.db_connection.jdbc_connection.options import JDBCReadOptions
@@ -371,7 +371,10 @@ class Oracle(JDBCConnection):
                 LINE,
                 POSITION
         """  # noqa: S608
-        errors = self._query_on_driver(show_errors, options).collect()
+        with override_call_site(self.spark):
+            df = self._query_on_driver(show_errors, options)
+            errors = df.collect()
+
         if not errors:
             return []
 

@@ -16,6 +16,7 @@ from onetl._util.spark import (
     get_pyspark_version,
     get_spark_version,
     is_dataframe_empty,
+    override_call_site,
     override_job_description,
 )
 from onetl._util.version import Version
@@ -426,7 +427,8 @@ class MongoDB(DBConnection):
             read_options["hint"] = json.dumps(hint)
 
         df = self.spark.read.format("mongodb").options(**read_options).load()
-        data = df.collect()
+        with override_call_site(self.spark):
+            data = df.collect()
         if data:
             min_value = data[0]["min"]
             max_value = data[0]["max"]
@@ -512,7 +514,8 @@ class MongoDB(DBConnection):
                 return
 
         log.info("|%s| Saving data to a collection %r", self.__class__.__name__, target)
-        df.write.format("mongodb").mode(mode).options(**write_options_dict).save()
+        with override_call_site(self.spark):
+            df.write.format("mongodb").mode(mode).options(**write_options_dict).save()
         log.info("|%s| Collection %r is successfully written", self.__class__.__name__, target)
 
     @property

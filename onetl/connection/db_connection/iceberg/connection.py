@@ -15,6 +15,7 @@ from onetl._util.spark import (
     get_pyspark_version,
     get_spark_version,
     is_dataframe_empty,
+    override_call_site,
     override_job_description,
     stringify,
 )
@@ -546,7 +547,8 @@ class Iceberg(DBConnection):
         log_lines(log, query)
 
         df = self._execute_sql(query)
-        row = df.collect()[0]
+        with override_call_site(self.spark):
+            row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
 
@@ -606,7 +608,8 @@ class Iceberg(DBConnection):
                 writer = writer.option(method, value)
 
         log.info("|%s| Saving data to a table %r ...", self.__class__.__name__, table)
-        writer.createOrReplace()
+        with override_call_site(self.spark):
+            writer.createOrReplace()
         log.info("|%s| Table %r is successfully created.", self.__class__.__name__, table)
 
     def _insert_into(
@@ -627,12 +630,12 @@ class Iceberg(DBConnection):
 
         log.info("|%s| Inserting data into existing table %r ...", self.__class__.__name__, table)
 
-        writer = df.writeTo(table).using("iceberg")
-
-        if write_options.if_exists == IcebergTableExistBehavior.APPEND:
-            writer.append()
-        else:
-            writer.overwritePartitions()
+        with override_call_site(self.spark):
+            writer = df.writeTo(table).using("iceberg")
+            if write_options.if_exists == IcebergTableExistBehavior.APPEND:
+                writer.append()
+            else:
+                writer.overwritePartitions()
 
         log.info("|%s| Data is successfully inserted into table %r.", self.__class__.__name__, table)
 

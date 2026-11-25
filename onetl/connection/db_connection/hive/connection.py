@@ -10,7 +10,13 @@ from humanize import naturaldelta
 from pydantic import field_validator
 
 from onetl._metrics.recorder import SparkMetricsRecorder
-from onetl._util.spark import inject_spark_param, is_dataframe_empty, override_job_description, stringify
+from onetl._util.spark import (
+    inject_spark_param,
+    is_dataframe_empty,
+    override_call_site,
+    override_job_description,
+    stringify,
+)
 from onetl._util.sql import clear_statement
 from onetl.base import BaseWritableFileFormat
 from onetl.connection.db_connection.db_connection import DBConnection
@@ -274,7 +280,8 @@ class Hive(DBConnection):
         ):
             started = time.perf_counter()
             try:
-                self._execute_sql(statement).collect()
+                with override_call_site(self.spark):
+                    self._execute_sql(statement).collect()
             except Exception:
                 elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
                 log.exception("|%s| Execution failed after %s!", self.__class__.__name__, elapsed)
@@ -396,7 +403,8 @@ class Hive(DBConnection):
         log_lines(log, query)
 
         df = self._execute_sql(query)
-        row = df.collect()[0]
+        with override_call_site(self.spark):
+            row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
 
@@ -523,7 +531,8 @@ class Hive(DBConnection):
         with inject_spark_param(self.spark.conf, PARTITION_OVERWRITE_MODE_PARAM, "dynamic"):
             overwrite = write_options.if_exists != HiveTableExistBehavior.APPEND
 
-            df.write.insertInto(table, overwrite=overwrite)
+            with override_call_site(self.spark):
+                df.write.insertInto(table, overwrite=overwrite)
 
         log.info("|%s| Data is successfully inserted into table %r.", self.__class__.__name__, table)
 
@@ -571,10 +580,11 @@ class Hive(DBConnection):
         mode = "append" if write_options.if_exists == HiveTableExistBehavior.APPEND else "overwrite"
 
         log.info("|%s| Saving data to a table %r ...", self.__class__.__name__, table)
-        writer.mode(mode).saveAsTable(table)
+        with override_call_site(self.spark):
+            writer.mode(mode).saveAsTable(table)
 
-        if write_options.table_properties:
-            properties = ", ".join(f"'{k}'='{stringify(v)}'" for k, v in write_options.table_properties.items())
-            self.sql(f"ALTER TABLE {table} SET TBLPROPERTIES ({properties})")
+            if write_options.table_properties:
+                properties = ", ".join(f"'{k}'='{stringify(v)}'" for k, v in write_options.table_properties.items())
+                self.sql(f"ALTER TABLE {table} SET TBLPROPERTIES ({properties})")
 
         log.info("|%s| Table %r is successfully created.", self.__class__.__name__, table)

@@ -15,6 +15,7 @@ from onetl._util.spark import (
     get_pyspark_version,
     get_spark_version,
     is_dataframe_empty,
+    override_call_site,
     override_job_description,
     stringify,
 )
@@ -394,7 +395,8 @@ class Kafka(DBConnection):
             raise TargetAlreadyExistsError(msg)
 
         log.info("|%s| Saving data to a topic %r", self.__class__.__name__, target)
-        df.write.format("kafka").mode(mode).options(**write_options).save()
+        with override_call_site(self.spark):
+            df.write.format("kafka").mode(mode).options(**write_options).save()
         log.info("|%s| Data is successfully written to topic %r.", self.__class__.__name__, target)
 
     @slot

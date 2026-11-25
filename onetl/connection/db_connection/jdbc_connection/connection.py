@@ -10,7 +10,7 @@ from humanize import naturaldelta
 from pydantic import SecretStr, field_validator
 
 from onetl._util.java import try_import_java_class
-from onetl._util.spark import is_dataframe_empty, override_job_description
+from onetl._util.spark import is_dataframe_empty, override_call_site, override_job_description
 from onetl._util.sql import clear_statement
 from onetl.connection.db_connection.db_connection import DBConnection
 from onetl.connection.db_connection.jdbc_connection.dialect import JDBCDialect
@@ -94,7 +94,10 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log_lines(log, self._CHECK_QUERY, level=logging.DEBUG)
 
         try:
-            with override_job_description(self.spark, f"{self}.check()"):
+            with (
+                override_job_description(self.spark, f"{self}.check()"),
+                override_call_site(self.spark),
+            ):
                 self._query_optional_on_driver(self._CHECK_QUERY, self.FetchOptions(fetchsize=1))
                 df = self._query_on_executor(self._CHECK_QUERY, self.SQLOptions(fetchsize=1))
                 is_dataframe_empty(df)
@@ -259,7 +262,8 @@ class JDBCConnection(JDBCMixin, DBConnection):
         )
         log.info("|%s| Saving data to a table %r", self.__class__.__name__, target)
         log.info("|%s| Detected dialect: '%s'", self.__class__.__name__, self._get_spark_dialect_class_name())
-        df.write.format("jdbc").mode(mode).options(dbtable=target, **jdbc_properties).save()
+        with override_call_site(self.spark):
+            df.write.format("jdbc").mode(mode).options(dbtable=target, **jdbc_properties).save()
         log.info("|%s| Table %r successfully written", self.__class__.__name__, target)
 
     @slot
@@ -315,7 +319,8 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log_lines(log, query)
 
         df = self._query_on_driver(query, self._to_fetch_options(read_options))
-        row = df.collect()[0]
+        with override_call_site(self.spark):
+            row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
 

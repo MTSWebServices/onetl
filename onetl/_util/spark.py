@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 import os
 import textwrap
+import traceback
 from contextlib import contextmanager
 from math import inf
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from pydantic import SecretStr
 
@@ -13,6 +15,8 @@ from onetl._util.version import Version
 if TYPE_CHECKING:
     from pyspark.sql import DataFrame, SparkSession
     from pyspark.sql.conf import RuntimeConfig
+
+ONETL_ROOT = Path(__file__).parent.parent.resolve()
 
 SPARK_JOB_DESCRIPTION_PROPERTY = "spark.job.description"
 SPARK_JOB_GROUP_PROPERTY = "spark.jobGroup.id"
@@ -154,10 +158,10 @@ def estimate_dataframe_size(df: "DataFrame") -> int:
 
 
 def is_dataframe_empty(df: "DataFrame") -> bool:
-    try:
-        # spark 3.3+
-        return df.isEmpty()
-    except AttributeError:
+    with override_call_site(df.sparkSession):
+        if hasattr(df, "isEmpty"):
+            # spark 3.3+
+            return df.isEmpty()
         return df._jdf.isEmpty()  # noqa: SLF001
 
 
@@ -233,6 +237,54 @@ def override_job_description(spark_session: "SparkSession", job_description: str
         yield
     finally:
         spark_context.setLocalProperty(SPARK_JOB_DESCRIPTION_PROPERTY, original_description)  # type: ignore[arg-type]
+
+
+class CallSite(NamedTuple):
+    function: str
+    file: str
+    linenum: int
+
+    def __str__(self):
+        return f"{self.function} at {self.file}:{self.linenum}"
+
+
+def first_onetl_call():
+    """
+    Return a CallSite representing the first onETL call in the current call stack.
+    """
+    stack = traceback.extract_stack()
+    stack_size = len(stack)
+    if stack_size == 0:
+        return None
+    file, line, fun, _text = stack[stack_size - 1]
+    first_onetl_frame = stack_size - 1
+    for i in range(stack_size):
+        file, line, fun, _text = stack[i]
+        if ONETL_ROOT in Path(file).resolve().parents:
+            first_onetl_frame = i
+            break
+    if first_onetl_frame == 0:
+        file, line, fun, _text = stack[0]
+        return CallSite(function=fun, file=file, linenum=line)
+
+    ufile, uline, ufun, _utext = stack[first_onetl_frame - 1]
+    return CallSite(function=ufun, file=ufile, linenum=uline)
+
+
+@contextmanager
+def override_call_site(spark_session: "SparkSession"):
+    """
+    Override Spark CallSite.
+    """
+    from pyspark.traceback_utils import SCCallSiteSync
+
+    call_site_sync = SCCallSiteSync(spark_session)
+    call_site = first_onetl_call()
+    if call_site:
+        call_site_sync._call_site = str(call_site)  # noqa: SLF001
+
+    with call_site_sync:
+        yield
 
 
 def get_client_info(spark_session: "SparkSession", limit: int | None = None, unsupported: str = "") -> str:

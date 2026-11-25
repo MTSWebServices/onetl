@@ -18,6 +18,7 @@ from onetl._util.spark import (
     get_executor_total_cores,
     get_spark_version,
     is_dataframe_empty,
+    override_call_site,
     override_job_description,
 )
 from onetl._util.version import Version
@@ -383,10 +384,11 @@ class Greenplum(JDBCMixin, DBConnection):
             if write_options.if_exists == GreenplumTableExistBehavior.REPLACE_ENTIRE_TABLE
             else write_options.if_exists.value
         )
-        df.write.format("greenplum").options(
-            **self._get_connector_params(target),
-            **options_dict,
-        ).mode(mode).save()
+        with override_call_site(self.spark):
+            df.write.format("greenplum").options(
+                **self._get_connector_params(target),
+                **options_dict,
+            ).mode(mode).save()
 
         log.info("|%s| Table %r is successfully written", self.__class__.__name__, target)
 
@@ -442,7 +444,8 @@ class Greenplum(JDBCMixin, DBConnection):
         log_lines(log, query)
 
         df = self._query_on_driver(query, self.FetchOptions.parse(jdbc_options.model_dump()))
-        row = df.collect()[0]
+        with override_call_site(self.spark):
+            row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
 
@@ -521,7 +524,8 @@ class Greenplum(JDBCMixin, DBConnection):
         log_lines(log, query, level=logging.DEBUG)
 
         df = self._query_on_driver(query, self.FetchOptions())
-        result = df.collect()
+        with override_call_site(self.spark):
+            result = df.collect()
 
         log.debug(
             "|%s| Query succeeded, resulting in-memory dataframe contains %d rows",
@@ -543,7 +547,8 @@ class Greenplum(JDBCMixin, DBConnection):
         log_lines(log, query, level=logging.DEBUG)
 
         df = self._query_on_driver(query, self.FetchOptions())
-        result = df.collect()
+        with override_call_site(self.spark):
+            result = df.collect()
 
         log.debug(
             "|%s| Query succeeded, resulting in-memory dataframe contains %d rows",
