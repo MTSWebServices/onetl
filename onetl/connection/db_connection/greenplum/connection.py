@@ -384,7 +384,7 @@ class Greenplum(JDBCMixin, DBConnection):
             if write_options.if_exists == GreenplumTableExistBehavior.REPLACE_ENTIRE_TABLE
             else write_options.if_exists.value
         )
-        with override_call_site(self.spark):
+        with override_call_site(df):
             df.write.format("greenplum").options(
                 **self._get_connector_params(target),
                 **options_dict,
@@ -444,7 +444,7 @@ class Greenplum(JDBCMixin, DBConnection):
         log_lines(log, query)
 
         df = self._query_on_driver(query, self.FetchOptions.parse(jdbc_options.model_dump()))
-        with override_call_site(self.spark):
+        with override_call_site(df):
             row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
@@ -524,7 +524,7 @@ class Greenplum(JDBCMixin, DBConnection):
         log_lines(log, query, level=logging.DEBUG)
 
         df = self._query_on_driver(query, self.FetchOptions())
-        with override_call_site(self.spark):
+        with override_call_site(df):
             result = df.collect()
 
         log.debug(
@@ -547,7 +547,7 @@ class Greenplum(JDBCMixin, DBConnection):
         log_lines(log, query, level=logging.DEBUG)
 
         df = self._query_on_driver(query, self.FetchOptions())
-        with override_call_site(self.spark):
+        with override_call_site(df):
             result = df.collect()
 
         log.debug(

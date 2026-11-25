@@ -395,7 +395,7 @@ class Kafka(DBConnection):
             raise TargetAlreadyExistsError(msg)
 
         log.info("|%s| Saving data to a topic %r", self.__class__.__name__, target)
-        with override_call_site(self.spark):
+        with override_call_site(df):
             df.write.format("kafka").mode(mode).options(**write_options).save()
         log.info("|%s| Data is successfully written to topic %r.", self.__class__.__name__, target)
 

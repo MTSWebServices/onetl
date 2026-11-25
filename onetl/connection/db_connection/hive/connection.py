@@ -280,8 +280,9 @@ class Hive(DBConnection):
         ):
             started = time.perf_counter()
             try:
-                with override_call_site(self.spark):
-                    self._execute_sql(statement).collect()
+                df = self._execute_sql(statement)
+                with override_call_site(df):
+                    df.collect()
             except Exception:
                 elapsed = naturaldelta(time.perf_counter() - started, minimum_unit="milliseconds")
                 log.exception("|%s| Execution failed after %s!", self.__class__.__name__, elapsed)
@@ -403,7 +404,7 @@ class Hive(DBConnection):
         log_lines(log, query)
 
         df = self._execute_sql(query)
-        with override_call_site(self.spark):
+        with override_call_site(df):
             row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
@@ -531,7 +532,7 @@ class Hive(DBConnection):
         with inject_spark_param(self.spark.conf, PARTITION_OVERWRITE_MODE_PARAM, "dynamic"):
             overwrite = write_options.if_exists != HiveTableExistBehavior.APPEND
 
-            with override_call_site(self.spark):
+            with override_call_site(df):
                 df.write.insertInto(table, overwrite=overwrite)
 
         log.info("|%s| Data is successfully inserted into table %r.", self.__class__.__name__, table)
@@ -580,7 +581,7 @@ class Hive(DBConnection):
         mode = "append" if write_options.if_exists == HiveTableExistBehavior.APPEND else "overwrite"
 
         log.info("|%s| Saving data to a table %r ...", self.__class__.__name__, table)
-        with override_call_site(self.spark):
+        with override_call_site(df):
             writer.mode(mode).saveAsTable(table)
 
             if write_options.table_properties:

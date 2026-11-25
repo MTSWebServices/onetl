@@ -158,7 +158,7 @@ def estimate_dataframe_size(df: "DataFrame") -> int:
 
 
 def is_dataframe_empty(df: "DataFrame") -> bool:
-    with override_call_site(df.sparkSession):
+    with override_call_site(df):
         if hasattr(df, "isEmpty"):
             # spark 3.3+
             return df.isEmpty()
@@ -272,13 +272,13 @@ def first_onetl_call():
 
 
 @contextmanager
-def override_call_site(spark_session: "SparkSession"):
+def override_call_site(df: "DataFrame"):
     """
     Override Spark CallSite.
     """
     from pyspark.traceback_utils import SCCallSiteSync
 
-    call_site_sync = SCCallSiteSync(spark_session)
+    call_site_sync = SCCallSiteSync(df._sc)  # noqa: SLF001
     call_site = first_onetl_call()
     if call_site:
         call_site_sync._call_site = str(call_site)  # noqa: SLF001

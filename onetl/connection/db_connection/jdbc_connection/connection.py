@@ -94,10 +94,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log_lines(log, self._CHECK_QUERY, level=logging.DEBUG)
 
         try:
-            with (
-                override_job_description(self.spark, f"{self}.check()"),
-                override_call_site(self.spark),
-            ):
+            with override_job_description(self.spark, f"{self}.check()"):
                 self._query_optional_on_driver(self._CHECK_QUERY, self.FetchOptions(fetchsize=1))
                 df = self._query_on_executor(self._CHECK_QUERY, self.SQLOptions(fetchsize=1))
                 is_dataframe_empty(df)
@@ -262,7 +259,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         )
         log.info("|%s| Saving data to a table %r", self.__class__.__name__, target)
         log.info("|%s| Detected dialect: '%s'", self.__class__.__name__, self._get_spark_dialect_class_name())
-        with override_call_site(self.spark):
+        with override_call_site(df):
             df.write.format("jdbc").mode(mode).options(dbtable=target, **jdbc_properties).save()
         log.info("|%s| Table %r successfully written", self.__class__.__name__, target)
 
@@ -319,7 +316,7 @@ class JDBCConnection(JDBCMixin, DBConnection):
         log_lines(log, query)
 
         df = self._query_on_driver(query, self._to_fetch_options(read_options))
-        with override_call_site(self.spark):
+        with override_call_site(df):
             row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]

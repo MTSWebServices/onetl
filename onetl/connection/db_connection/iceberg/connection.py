@@ -547,7 +547,7 @@ class Iceberg(DBConnection):
         log_lines(log, query)
 
         df = self._execute_sql(query)
-        with override_call_site(self.spark):
+        with override_call_site(df):
             row = df.collect()[0]
         min_value = row["min"]
         max_value = row["max"]
@@ -608,7 +608,7 @@ class Iceberg(DBConnection):
                 writer = writer.option(method, value)
 
         log.info("|%s| Saving data to a table %r ...", self.__class__.__name__, table)
-        with override_call_site(self.spark):
+        with override_call_site(df):
             writer.createOrReplace()
         log.info("|%s| Table %r is successfully created.", self.__class__.__name__, table)
 
@@ -630,7 +630,7 @@ class Iceberg(DBConnection):
 
         log.info("|%s| Inserting data into existing table %r ...", self.__class__.__name__, table)
 
-        with override_call_site(self.spark):
+        with override_call_site(df):
             writer = df.writeTo(table).using("iceberg")
             if write_options.if_exists == IcebergTableExistBehavior.APPEND:
                 writer.append()

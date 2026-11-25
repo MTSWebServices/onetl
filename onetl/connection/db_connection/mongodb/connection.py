@@ -427,7 +427,7 @@ class MongoDB(DBConnection):
             read_options["hint"] = json.dumps(hint)
 
         df = self.spark.read.format("mongodb").options(**read_options).load()
-        with override_call_site(self.spark):
+        with override_call_site(df):
             data = df.collect()
         if data:
             min_value = data[0]["min"]
@@ -514,7 +514,7 @@ class MongoDB(DBConnection):
                 return
 
         log.info("|%s| Saving data to a collection %r", self.__class__.__name__, target)
-        with override_call_site(self.spark):
+        with override_call_site(df):
             df.write.format("mongodb").mode(mode).options(**write_options_dict).save()
         log.info("|%s| Collection %r is successfully written", self.__class__.__name__, target)
 

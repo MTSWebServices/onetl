@@ -371,8 +371,8 @@ class Oracle(JDBCConnection):
                 LINE,
                 POSITION
         """  # noqa: S608
-        with override_call_site(self.spark):
-            df = self._query_on_driver(show_errors, options)
+        df = self._query_on_driver(show_errors, options)
+        with override_call_site(df):
             errors = df.collect()
 
         if not errors:
